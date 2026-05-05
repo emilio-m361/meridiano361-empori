@@ -1,23 +1,74 @@
-<div class="p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- AREA CLIENTI (Verde) -->
-  <div class="bg-green-100 p-6 rounded-xl shadow-md border-t-4 border-green-500">
-    <h2 class="text-xl font-bold text-green-800 mb-4">AREA CLIENTI</h2>
-    <button class="w-full mb-2 bg-white p-3 rounded shadow text-left">🛒 Ordini (Standard/Bomb.)</button>
-    <button class="w-full mb-2 bg-white p-3 rounded shadow text-left">⏰ Prenotazioni</button>
-    <button class="w-full bg-white p-3 rounded shadow text-left">✉️ Richieste Info</button>
-  </div>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M361 - Empori</title>
+    <!-- Tailwind per la grafica -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+    </style>
+</head>
+<body>
 
-  <!-- AREA NEGOZIO (Blu) -->
-  <div class="bg-blue-100 p-6 rounded-xl shadow-md border-t-4 border-blue-500">
-    <h2 class="text-xl font-bold text-blue-800 mb-4">AREA NEGOZIO</h2>
-    <button class="w-full bg-white p-3 rounded shadow text-left">📅 Calendario Commerciale</button>
-  </div>
+    <!-- Header simile all'originale -->
+    <header class="bg-white border-b border-gray-200 p-4 flex justify-between items-center px-8">
+        <div class="flex items-center gap-2">
+            <h1 class="text-2xl font-bold text-gray-800">meridiano<span class="text-red-600">361</span></h1>
+        </div>
+        <div class="text-sm text-gray-500">
+            <strong>EMILIO MAZZOLARI</strong> <span class="bg-gray-100 px-2 py-1 rounded ml-2">Coordinatore</span>
+        </div>
+    </header>
 
-  <!-- AREA LOGISTICA (Arancio) -->
-  <div class="bg-orange-100 p-6 rounded-xl shadow-md border-t-4 border-orange-500">
-    <h2 class="text-xl font-bold text-orange-800 mb-4">AREA LOGISTICA</h2>
-    <button class="w-full bg-white p-3 rounded shadow text-left">📦 Rifornimento</button>
-  </div>
+    <main class="max-w-6xl mx-auto p-8">
+        
+        <!-- Banner di Benvenuto -->
+        <div class="bg-[#1e293b] text-white p-8 rounded-2xl mb-10 shadow-lg">
+            <h2 class="text-3xl font-bold mb-2">Ciao Emilio 👋</h2>
+            <p class="text-gray-400">Benvenuto nella gestione Empori. Scegli una sezione per iniziare.</p>
+        </div>
 
-</div>
+        <!-- Griglia Sezioni -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            <!-- AREA CLIENTI -->
+            <div class="group bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer">
+                <div class="bg-green-50 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-2xl">🛒</div>
+                <h3 class="font-bold text-gray-800 text-lg">Ordini Clienti</h3>
+                <p class="text-sm text-gray-500 mt-1">Gestione ordini standard e bomboniere</p>
+            </div>
+
+            <div class="group bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer">
+                <div class="bg-blue-50 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-2xl">📅</div>
+                <h3 class="font-bold text-gray-800 text-lg">Prenotazioni</h3>
+                <p class="text-sm text-gray-500 mt-1">Prenotazioni arrivi speciali</p>
+            </div>
+
+            <div class="group bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer">
+                <div class="bg-purple-50 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-2xl">💬</div>
+                <h3 class="font-bold text-gray-800 text-lg">Richieste Info</h3>
+                <p class="text-sm text-gray-500 mt-1">Assistenza e segnalazioni clienti</p>
+            </div>
+
+            <!-- AREA NEGOZIO -->
+            <div class="group bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer">
+                <div class="bg-red-50 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-2xl">🗓️</div>
+                <h3 class="font-bold text-gray-800 text-lg">Calendario</h3>
+                <p class="text-sm text-gray-500 mt-1">Campagne e visual commerciale</p>
+            </div>
+
+            <!-- AREA LOGISTICA -->
+            <div class="group bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer">
+                <div class="bg-orange-50 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-2xl">📦</div>
+                <h3 class="font-bold text-gray-800 text-lg">Rifornimento</h3>
+                <p class="text-sm text-gray-500 mt-1">Ordini alimentari e cosmesi</p>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>
