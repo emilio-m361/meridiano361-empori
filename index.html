@@ -10,15 +10,15 @@
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         .text-m361-red { color: #e1251b; }
         .bg-m361-dark { background-color: #1e293b; }
+        .icon-box { background-color: #fef2f2; } /* Rosso molto tenue per lo sfondo icone */
     </style>
 </head>
 <body>
 
-    <!-- Header con Logo Originale -->
+    <!-- Header -->
     <header class="bg-white border-b border-gray-200 p-4 flex justify-between items-center px-8">
         <div class="flex items-center gap-2">
-            <!-- Logo originale estratto dal sito -->
-            <img src="https://www.meridiano361.it/wp-content/uploads/2021/03/logo m361_rosso.png" alt="Meridiano 361" class="h-10">
+            <img src="https://www.meridiano361.it/wp-content/uploads/2021/03/logo-m361_rosso.png" alt="Meridiano 361" class="h-10">
         </div>
         <div class="text-sm text-gray-500 font-semibold uppercase tracking-wider">
             Emilio Mazzolari <span class="bg-gray-100 px-2 py-1 rounded ml-2 font-normal text-xs">Coordinatore</span>
@@ -27,7 +27,7 @@
 
     <main class="max-w-6xl mx-auto p-8">
         
-        <!-- Banner di Benvenuto -->
+        <!-- Banner -->
         <div class="bg-m361-dark text-white p-8 rounded-2xl mb-10 shadow-lg">
             <h2 class="text-3xl font-bold mb-2">Ciao Emilio 👋</h2>
             <p class="text-gray-400">Benvenuto nella gestione Empori. Scegli una sezione per iniziare.</p>
@@ -36,26 +36,43 @@
         <!-- AREA CLIENTI -->
         <section class="mb-12">
             <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <span class="w-2 h-6 bg-green-500 rounded-full"></span> AREA CLIENTI
+                <span class="w-2 h-6 bg-[#e1251b] rounded-full"></span> AREA CLIENTI
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer">
-                    <div class="bg-red-50 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-2xl">🛒</div>
+                
+                <!-- Ordini -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer group">
+                    <div class="icon-box w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-colors group-hover:bg-red-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#e1251b" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                        </svg>
+                    </div>
                     <h3 class="font-bold text-gray-800 text-lg">Ordini</h3>
                     <p class="text-sm text-gray-500 mt-1">Gestione ordini standard e bomboniere</p>
                 </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer">
-                    <div class="bg-red-50 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-2xl"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-[#e1251b]">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-</svg></div>
+
+                <!-- Prenotazioni (Icona Calendario + Segnalibro) -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer group">
+                    <div class="icon-box w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-colors group-hover:bg-red-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#e1251b" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+                        </svg>
+                    </div>
                     <h3 class="font-bold text-gray-800 text-lg">Prenotazioni</h3>
                     <p class="text-sm text-gray-500 mt-1">Prenotazioni arrivi speciali</p>
                 </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer">
-                    <div class="bg-red-50 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-2xl">💬</div>
+
+                <!-- Info -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer group">
+                    <div class="icon-box w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-colors group-hover:bg-red-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#e1251b" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                        </svg>
+                    </div>
                     <h3 class="font-bold text-gray-800 text-lg">Info</h3>
                     <p class="text-sm text-gray-500 mt-1">Assistenza e segnalazioni clienti</p>
                 </div>
+
             </div>
         </section>
 
@@ -65,16 +82,29 @@
                 <span class="w-2 h-6 bg-blue-500 rounded-full"></span> AREA NEGOZIO
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer">
-                    <div class="bg-red-50 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-2xl">🗓️</div>
+                
+                <!-- Calendario -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer group">
+                    <div class="icon-box w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-colors group-hover:bg-red-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#e1251b" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                        </svg>
+                    </div>
                     <h3 class="font-bold text-gray-800 text-lg">Calendario Commerciale</h3>
                     <p class="text-sm text-gray-500 mt-1">Campagne e visual commerciale</p>
                 </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer">
-                    <div class="bg-red-50 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-2xl">📦</div>
+
+                <!-- Rifornimento -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer group">
+                    <div class="icon-box w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-colors group-hover:bg-red-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#e1251b" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-5.25v9" />
+                        </svg>
+                    </div>
                     <h3 class="font-bold text-gray-800 text-lg">Rifornimento</h3>
                     <p class="text-sm text-gray-500 mt-1">Ordini alimentari e cosmesi</p>
                 </div>
+
             </div>
         </section>
 
