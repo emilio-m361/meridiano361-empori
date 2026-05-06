@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         /* Palette Brand M361 */
-        /* Rosso estratto dall'immagine: #b75252 */
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
         .text-m361-red { color: #b75252; }
         .bg-m361-red { background-color: #b75252; }
@@ -19,23 +18,26 @@
 </head>
 <body>
 
-    <!-- Header -->
-    <header class="bg-white border-b border-m361-gray p-4 flex justify-between items-center px-8">
-        <div class="flex items-center">
+    <!-- Header con Titolo centrato e pulsante Esci -->
+    <header class="bg-white border-b border-m361-gray p-4 flex justify-between items-center px-8 sticky top-0 z-50">
+        <div class="flex items-center gap-6">
             <img src="logom361_rosso.jpg" alt="Meridiano 361" class="h-10 object-contain">
+            <div class="h-6 w-px bg-gray-200"></div>
+            <h1 class="text-sm font-medium text-gray-500 tracking-wide">Piattaforma gestione empori361</h1>
+        </div>
+
+        <button onclick="alert('Logout...')" class="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-m361-red border border-m361-red hover:bg-red-50 transition-all uppercase tracking-wider">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+            </svg>
+            Esci
+        </button>
     </header>
 
     <main class="max-w-6xl mx-auto p-8">
         
-        <!-- Banner di Benvenuto con bordo del nuovo Rosso -->
-        <div class="bg-m361-dark text-white p-8 rounded-2xl mb-10 shadow-lg border-l-8 border-[#b75252]">
-            <h2 class="text-3xl font-bold mb-2">Ciao Emilio 👋</h2>
-            <p class="text-gray-400 font-light italic">Piattaforma gestione Empori Meridiano 361</p>
-        </div>
-
         <!-- AREA CLIENTI -->
         <section class="mb-12">
-            <!-- Scritta in nero (text-m361-dark) e barra rossa (#b75252) -->
             <h2 class="text-sm font-bold text-m361-dark mb-6 flex items-center gap-2 tracking-[0.2em]">
                 <span class="w-1.5 h-5 bg-m361-red rounded-full"></span> AREA CLIENTI
             </h2>
@@ -43,14 +45,14 @@
                 
                 <!-- Ordini -->
                 <div onclick="window.location.href='ordini.html'" class="bg-white p-6 rounded-2xl border border-m361-gray hover:border-[#b75252] transition-all cursor-pointer group shadow-sm">
-    <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-50 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="#b75252" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-        </svg>
-    </div>
-    <h3 class="font-bold text-m361-dark text-lg">Ordini</h3>
-    <p class="text-[10px] text-gray-400 mt-2 uppercase tracking-wider font-semibold">Gestione ordini standard e bomboniere</p>
-</div>
+                    <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-50 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="#b75252" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-m361-dark text-lg">Ordini</h3>
+                    <p class="text-[10px] text-gray-400 mt-2 uppercase tracking-wider font-semibold">Gestione ordini standard e bomboniere</p>
+                </div>
 
                 <!-- Prenotazioni -->
                 <div class="bg-white p-6 rounded-2xl border border-m361-gray hover:border-[#b75252] transition-all cursor-pointer group shadow-sm">
@@ -76,11 +78,10 @@
 
         <!-- AREA NEGOZIO -->
         <section>
-            <!-- Scritta in nero (text-m361-dark) e barra rossa (#b75252) -->
             <h2 class="text-sm font-bold text-m361-dark mb-6 flex items-center gap-2 tracking-[0.2em]">
                 <span class="w-1.5 h-5 bg-m361-red rounded-full"></span> AREA NEGOZIO
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 
                 <!-- Calendario -->
                 <div class="bg-white p-6 rounded-2xl border border-m361-gray hover:border-[#b75252] transition-all cursor-pointer group shadow-sm">
@@ -89,17 +90,38 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                         </svg>
                     </div>
-                    <h3 class="font-bold text-m361-dark text-lg">Calendario Commerciale</h3>
+                    <h3 class="font-bold text-m361-dark text-lg leading-tight">Calendario Commerciale</h3>
                 </div>
 
                 <!-- Rifornimento -->
                 <div class="bg-white p-6 rounded-2xl border border-m361-gray hover:border-[#b75252] transition-all cursor-pointer group shadow-sm">
-                    <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-100 transition-colors">
+                    <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-50 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="#b75252" class="w-6 h-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-5.25v9" />
                         </svg>
                     </div>
                     <h3 class="font-bold text-m361-dark text-lg">Rifornimento</h3>
+                </div>
+
+                <!-- Prezzi da fare -->
+                <div class="bg-white p-6 rounded-2xl border border-m361-gray hover:border-[#b75252] transition-all cursor-pointer group shadow-sm">
+                    <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-50 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="#b75252" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581a2.25 2.25 0 003.182 0l4.318-4.318a2.25 2.25 0 000-3.182L11.159 3.659A2.25 2.25 0 009.568 3z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-m361-dark text-lg">Prezzi da fare</h3>
+                </div>
+
+                <!-- Turni -->
+                <div class="bg-white p-6 rounded-2xl border border-m361-gray hover:border-[#b75252] transition-all cursor-pointer group shadow-sm">
+                    <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-50 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="#b75252" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-m361-dark text-lg">Turni</h3>
                 </div>
 
             </div>
