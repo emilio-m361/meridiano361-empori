@@ -25,9 +25,13 @@
             align-items: center;
         }
         
-        input:focus, select:focus { outline: none; border-color: #b75252; box-shadow: 0 0 0 1px #b75252; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #b75252; box-shadow: 0 0 0 1px #b75252; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
+
+        /* Stile per l'icona WhatsApp disattivata */
+        .wa-disabled { filter: grayscale(1); opacity: 0.3; }
+        .wa-icon { cursor: pointer; transition: all 0.3s ease; }
 
         @media (max-width: 1024px) {
             .product-header { display: none; }
@@ -75,14 +79,14 @@
                             <option value="Cremona">Cremona</option>
                             <option value="Reggio Emilia">Reggio Emilia</option>
                             <option value="Viadana">Viadana</option>
-                            <option value="ADD_NEW">-- Aggiungi --</option>
+                            <option value="ADD_NEW">-- Aggiungi Nuovo --</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Operatore *</label>
                         <select id="select-operator" onchange="handleOpChange(this)" required class="w-full border rounded-lg p-2.5 text-sm bg-gray-50">
                             <option value="" selected>Seleziona...</option>
-                            <option value="ADD_NEW">-- Aggiungi --</option>
+                            <option value="ADD_NEW">-- Aggiungi Nuovo --</option>
                         </select>
                     </div>
                     <div>
@@ -104,7 +108,7 @@
                         <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Cellulare *</label>
                         <div class="flex items-center gap-2">
                             <input type="tel" required class="flex-1 border rounded-lg p-2.5 text-sm">
-                            <i class="fab fa-whatsapp text-2xl text-green-500"></i>
+                            <i id="wa-toggle" onclick="this.classList.toggle('wa-disabled')" class="fab fa-whatsapp wa-icon text-2xl text-green-500" title="Clicca se il cliente non ha WhatsApp"></i>
                         </div>
                     </div>
                     <div><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Email</label><input type="email" class="w-full border rounded-lg p-2.5 text-sm"></div>
@@ -133,11 +137,11 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="text-[10px] text-gray-400 uppercase tracking-wider border-b">
-                                <th class="p-2 font-bold w-32">Codice</th>
-                                <th class="p-2 font-bold min-w-[180px]">Descrizione</th>
+                                <th class="p-2 font-bold w-32">Codice *</th>
+                                <th class="p-2 font-bold min-w-[180px]">Descrizione *</th>
                                 <th class="p-2 font-bold w-20">Prezzo</th>
                                 <th class="p-2 font-bold w-20">Tot</th>
-                                <th class="p-2 font-bold w-16">Qtà</th>
+                                <th class="p-2 font-bold w-16 text-center">Qtà</th>
                                 <th class="p-2 font-bold w-16 bg-parte-green text-center">Da Parte</th>
                                 <th class="p-2 font-bold w-16 text-center">Da Forn</th>
                                 <th class="p-2 font-bold w-36 text-center">Da Empori</th>
@@ -158,7 +162,7 @@
                                 <td colspan="2" class="p-2">
                                     <div class="flex items-center gap-2 bg-white border p-1.5 rounded-lg px-2">
                                         <span class="text-[9px] font-bold text-gray-400 uppercase">Acconto</span>
-                                        <input type="number" id="acconto" oninput="calcFinals()" class="w-24 text-right font-bold text-blue-600 bg-transparent outline-none" placeholder="€">
+                                        <input type="number" id="acconto" oninput="calcFinals()" class="w-24 text-right font-bold text-blue-600 bg-transparent outline-none" placeholder="0">
                                     </div>
                                 </td>
                                 <td colspan="1" class="p-2">
@@ -236,24 +240,24 @@
         function addRow() {
             const tbody = document.getElementById('order-rows');
             const id = Date.now();
-            const currentCitta = document.getElementById('select-emporio').value;
             
             const row = document.createElement('tr');
             row.className = "product-row border-b hover:bg-gray-50/50 transition-all";
             row.id = `row-${id}`;
 
+            // Campo Descrizione con required
             let secondCol = currentOrderType === 'standard' 
-                ? `<input type="text" class="w-full border rounded p-2 text-sm">`
-                : `<textarea class="w-full border rounded p-2 text-sm h-16" placeholder="Composizione bomboniera..."></textarea>`;
+                ? `<input type="text" required class="w-full border rounded p-2 text-sm">`
+                : `<textarea required class="w-full border rounded p-2 text-sm h-16" placeholder="Composizione bomboniera..."></textarea>`;
 
             row.innerHTML = `
-                <td class="p-2"><input type="text" id="cod-${id}" oninput="validate(${id})" class="w-full border rounded p-2 text-xs font-mono uppercase h-[38px]"></td>
+                <td class="p-2"><input type="text" required id="cod-${id}" oninput="validate(${id})" class="w-full border rounded p-2 text-xs font-mono uppercase h-[38px]"></td>
                 <td class="p-2">${secondCol}</td>
-                <td class="p-2"><input type="number" step="0.01" id="pr-u-${id}" oninput="calc(${id})" class="w-full border rounded p-2 text-sm text-right" placeholder="€"></td>
+                <td class="p-2"><input type="number" step="0.01" id="pr-u-${id}" oninput="calc(${id})" class="w-full border rounded p-2 text-sm text-right" placeholder="0"></td>
                 <td class="p-2 font-bold text-slate-600 text-sm">€ <span id="tot-riga-${id}">0.00</span></td>
-                <td class="p-2"><input type="number" id="qty-${id}" value="1" oninput="calc(${id})" class="w-full border rounded p-2 text-sm font-bold text-center"></td>
-                <td class="p-2 bg-parte-green"><input type="number" id="parte-${id}" oninput="calc(${id})" class="w-full border rounded p-2 text-sm bg-transparent text-center"></td>
-                <td class="p-2"><input type="number" id="forn-${id}" oninput="calc(${id})" class="w-full border rounded p-2 text-sm text-center"></td>
+                <td class="p-2"><input type="number" id="qty-${id}" oninput="calc(${id})" class="w-full border rounded p-2 text-sm font-bold text-center" placeholder="0"></td>
+                <td class="p-2 bg-parte-green"><input type="number" id="parte-${id}" oninput="calc(${id})" class="w-full border rounded p-2 text-sm bg-transparent text-center" placeholder="0"></td>
+                <td class="p-2"><input type="number" id="forn-${id}" oninput="calc(${id})" class="w-full border rounded p-2 text-sm text-center" placeholder="0"></td>
                 <td class="p-2">
                     <select id="es-${id}" onchange="calc(${id})" required class="w-full border rounded p-1 text-[10px] bg-white">
                         <option value="">da dove?</option>
@@ -264,7 +268,7 @@
                     </select>
                 </td>
                 <td class="p-2">
-                    <input type="text" id="at-${id}" class="w-full border rounded p-1 text-[10px]" placeholder="specifica">
+                    <input type="text" id="at-${id}" class="w-full border rounded p-1 text-[10px]" placeholder="0">
                 </td>
                 <td class="p-2 bg-ord-red font-bold text-m361-red text-lg text-center" id="do-${id}">0</td>
                 <td class="p-2 text-center"><button type="button" onclick="this.closest('tr').remove(); calcFinals()" class="text-gray-300 hover:text-red-500">✕</button></td>
@@ -295,8 +299,8 @@
         }
 
         function validate(id) {
-            const ok = document.getElementById(`cod-${id}`).value;
-            document.getElementById(`cod-${id}`).style.borderColor = ok ? "" : "#fbbf24";
+            const el = document.getElementById(`cod-${id}`);
+            el.style.borderColor = el.value ? "" : "#fbbf24";
         }
 
         window.onload = () => { 
