@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M361 - Nuovo Ordine Standard/Bomboniere</title>
+    <title>M361 - Gestione Ordini</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -11,10 +11,13 @@
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
         .text-m361-red { color: #b75252; }
         .bg-m361-red { background-color: #b75252; }
-        .bg-parte-green { background-color: #dcfce7; }
-        .bg-ord-red-light { background-color: #fee2e2; }
-        .row-error { background-color: #fee2e2 !important; border: 2px solid #ef4444 !important; }
-        input:focus, select:focus, textarea:focus { outline: none; ring: 2px; ring-color: #b75252; border-color: #b75252; }
+        
+        /* RIMOZIONE FRECCE INPUT NUMERICI */
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        .wa-active { color: #25D366; }
+        .wa-inactive { color: #cbd5e1; }
         
         @media (max-width: 1024px) {
             .product-table thead { display: none; }
@@ -36,7 +39,7 @@
 
     <main class="max-w-[1600px] mx-auto p-4 md:p-6">
         
-        <!-- Selezione Iniziale -->
+        <!-- SELEZIONE TIPO ORDINE -->
         <div id="order-type-selection" class="mb-8 text-center bg-white p-8 md:p-16 rounded-3xl shadow-sm border border-gray-100">
             <div class="flex flex-col md:flex-row justify-center gap-6">
                 <button onclick="initOrder('standard')" class="group px-10 py-6 bg-m361-red text-white hover:opacity-90 rounded-2xl font-bold transition-all shadow-md text-lg uppercase flex items-center justify-center gap-3">
@@ -50,40 +53,47 @@
 
         <form id="orderForm" class="hidden space-y-6" onsubmit="return validateSubmission(event)">
             
-            <!-- INFO CLIENTE E EMPORIO -->
+            <!-- SEZIONE SEDE E CLIENTE -->
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- SEDE -->
                 <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <h2 class="text-xs font-bold mb-6 tracking-widest uppercase flex items-center gap-2">
                         <span class="w-1 h-4 bg-m361-red rounded-full"></span> Sede e Operatore
                     </h2>
                     <div class="space-y-4">
-                        <select id="select-emporio" onchange="updateAllEmporiDropdowns()" required class="w-full border-gray-200 border rounded-xl p-3 text-sm bg-gray-50">
+                        <select id="select-emporio" required class="w-full border-gray-200 border rounded-xl p-3 text-sm bg-gray-50">
                             <option value="">Città *</option>
                             <option value="Casalmaggiore">Casalmaggiore</option>
                             <option value="Cremona">Cremona</option>
                             <option value="Reggio Emilia">Reggio Emilia</option>
                             <option value="Viadana">Viadana</option>
                         </select>
-                        <select id="select-operatore" required class="w-full border-gray-200 border rounded-xl p-3 text-sm bg-white">
+                        <select id="select-operatore" required class="w-full border-gray-200 border rounded-xl p-3 text-sm">
                             <option value="">Operatore *</option>
                             <option value="Operatore 1">Operatore 1</option>
                             <option value="Operatore 2">Operatore 2</option>
-                            <option value="Operatore 3">Operatore 3</option>
                             <option value="Altro">Altro...</option>
                         </select>
                         <input type="date" id="order-date" required class="w-full border-gray-200 border rounded-xl p-3 text-sm">
                     </div>
                 </div>
 
+                <!-- CLIENTE -->
                 <div class="lg:col-span-3 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <h2 class="text-xs font-bold mb-6 tracking-widest uppercase flex items-center gap-2">
-                        <span class="w-1 h-4 bg-m361-red rounded-full"></span> Cliente
+                        <span class="w-1 h-4 bg-m361-red rounded-full"></span> Anagrafica Cliente
                     </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <input type="text" placeholder="Nome *" required class="w-full border-gray-200 border rounded-xl p-3 text-sm">
-                        <input type="text" placeholder="Cognome *" required class="w-full border-gray-200 border rounded-xl p-3 text-sm">
-                        <input type="tel" placeholder="Cellulare *" required class="w-full border-gray-200 border rounded-xl p-3 text-sm">
-                        <input type="email" placeholder="Email" class="w-full border-gray-200 border rounded-xl p-3 text-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                        <input type="text" placeholder="Nome *" required class="border-gray-200 border rounded-xl p-3 text-sm">
+                        <input type="text" placeholder="Cognome *" required class="border-gray-200 border rounded-xl p-3 text-sm">
+                        
+                        <div class="relative">
+                            <input type="tel" placeholder="Cellulare *" required class="w-full border-gray-200 border rounded-xl p-3 text-sm pr-10">
+                            <button type="button" onclick="toggleWA(this)" class="absolute right-3 top-3 transition-colors wa-active" title="Usa WhatsApp">
+                                <i class="fab fa-whatsapp fa-lg"></i>
+                            </button>
+                        </div>
+
                         <div class="flex gap-2 p-1 bg-gray-100 rounded-xl h-[46px] items-center">
                             <label class="flex-1 flex items-center justify-center text-xs font-bold cursor-pointer h-full rounded-lg has-[:checked]:bg-white transition-all">
                                 <input type="radio" name="mod_consegna" value="Ritiro" checked class="hidden"> Ritiro
@@ -96,17 +106,17 @@
                 </div>
             </div>
 
-            <!-- CONTENITORE TIPOLOGIE -->
+            <!-- CONTENITORE PRODOTTI/TIPOLOGIE -->
             <div id="groups-container" class="space-y-8"></div>
 
-            <!-- AGGIUNGI TIPOLOGIA -->
+            <!-- AGGIUNGI TIPOLOGIA (Solo per Bomboniere) -->
             <div id="add-group-container" class="hidden flex justify-center">
                 <button type="button" onclick="addGroup()" class="bg-slate-800 text-white px-8 py-4 rounded-2xl font-bold uppercase text-xs shadow-lg hover:bg-slate-700 transition-all">
-                    <i class="fas fa-layer-group mr-2"></i> Aggiungi Nuova Tipologia
+                    <i class="fas fa-layer-group mr-2"></i> Aggiungi Nuova Tipologia Bomboniera
                 </button>
             </div>
 
-            <!-- RIEPILOGO FINALE -->
+            <!-- RIEPILOGO -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <div class="flex flex-col md:flex-row justify-end items-stretch gap-4">
                     <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex flex-col justify-center min-w-[180px] text-center">
@@ -116,7 +126,7 @@
                     <div class="bg-white border border-slate-200 p-4 rounded-2xl flex flex-col justify-center items-center min-w-[180px]">
                         <span class="text-[9px] font-bold text-slate-400 uppercase">Acconto</span>
                         <input type="text" id="acconto" onfocus="clearCurrency(this)" onblur="formatCurrency(this)" oninput="calcGrandTotal()" 
-                               class="w-full text-center font-bold text-slate-700 bg-transparent text-2xl outline-none" value="€ 0.00">
+                               class="w-full text-center text-slate-700 bg-transparent text-2xl outline-none" value="€ 0.00">
                     </div>
                     <div class="bg-m361-red p-4 rounded-2xl flex flex-col justify-center min-w-[180px] text-center shadow-lg">
                         <span class="text-[9px] font-bold text-white/80 uppercase">Da Pagare</span>
@@ -125,11 +135,7 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-2xl border border-gray-100">
-                <textarea id="order-notes" rows="2" class="w-full border-gray-200 border rounded-2xl p-4 text-sm" placeholder="Note..."></textarea>
-            </div>
-
-            <button type="submit" id="submit-btn" class="w-full bg-m361-red text-white font-bold py-5 rounded-2xl uppercase tracking-widest shadow-xl hover:scale-[1.01] transition-all">
+            <button type="submit" class="w-full bg-m361-red text-white font-bold py-5 rounded-2xl uppercase tracking-widest shadow-xl hover:scale-[1.01] transition-all">
                 <i class="fas fa-save mr-2"></i> Salva Ordine
             </button>
         </form>
@@ -150,41 +156,50 @@
             addGroup();
         }
 
+        function toggleWA(btn) {
+            btn.classList.toggle('wa-active');
+            btn.classList.toggle('wa-inactive');
+        }
+
         function addGroup() {
             groupCount++;
             const groupId = groupCount;
             const container = document.getElementById('groups-container');
             
-            const groupHtml = `
-                <div id="group-${groupId}" class="bg-white p-4 md:p-6 rounded-3xl shadow-sm border border-gray-100 relative group-container">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                        <div class="flex items-center gap-3">
-                            <span class="w-1 h-6 bg-m361-red rounded-full"></span>
-                            <input type="text" placeholder="Nome Tipologia" 
-                                   class="font-bold text-lg border-b-2 border-transparent focus:border-m361-red outline-none px-2 py-1" 
-                                   value="${currentType === 'standard' ? 'Prodotti' : 'Tipologia ' + groupId}">
-                        </div>
-                        <div class="flex gap-2 w-full md:w-auto">
-                            <button type="button" onclick="addRow(${groupId})" class="flex-1 md:flex-none bg-slate-100 text-slate-700 px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-slate-200 transition-all">
-                                <i class="fas fa-plus mr-1"></i> Aggiungi Riga
-                            </button>
-                            ${groupId > 1 ? `<button type="button" onclick="removeGroup(${groupId})" class="text-red-400 hover:text-red-600 p-2 text-sm">Rimuovi Tipologia</button>` : ''}
-                        </div>
+            // Per ordini standard non mostriamo il subtotale tipologia
+            const subtotalSection = currentType === 'bomboniere' ? `
+                <div class="mt-4 flex justify-end border-t pt-4">
+                    <div class="text-right">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase block">Subtotale Tipologia</span>
+                        <span id="subtotal-${groupId}" class="text-xl font-bold text-slate-600">€ 0.00</span>
                     </div>
+                </div>` : '';
 
+            const groupTitle = currentType === 'bomboniere' ? `Bomboniera Tipologia ${groupId}` : 'Elenco Prodotti';
+
+            const groupHtml = `
+                <div id="group-${groupId}" class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-bold text-slate-700 uppercase text-sm flex items-center gap-2">
+                            <span class="w-1 h-4 bg-m361-red rounded-full"></span> ${groupTitle}
+                        </h3>
+                        <button type="button" onclick="addRow(${groupId})" class="bg-slate-100 text-slate-700 px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-slate-200">
+                            <i class="fas fa-plus mr-1"></i> Aggiungi Riga
+                        </button>
+                    </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-separate border-spacing-y-2 product-table">
                             <thead>
-                                <tr class="text-[10px] text-gray-400 uppercase tracking-widest px-2 text-center">
-                                    <th class="pb-2 pl-4 text-left">Codice *</th>
-                                    <th class="pb-2 text-left">Descrizione *</th>
+                                <tr class="text-[10px] text-gray-400 uppercase tracking-widest text-center">
+                                    <th class="pb-2 pl-4 text-left">Codice</th>
+                                    <th class="pb-2 text-left">Descrizione</th>
                                     <th class="pb-2 w-24">Prezzo</th>
                                     <th class="pb-2 w-16">Qtà</th>
-                                    <th class="pb-2 w-16 bg-green-50 text-green-700 rounded-t-lg">da parte</th>
-                                    <th class="pb-2 w-16">da forn</th>
-                                    <th class="pb-2 w-32">da empori</th>
-                                    <th class="pb-2 w-32">da altri</th>
-                                    <th class="pb-2 w-16 bg-red-50 text-m361-red rounded-t-lg">da ord</th>
+                                    <th class="pb-2 w-16 bg-green-50 text-green-700 rounded-t-lg">Parte</th>
+                                    <th class="pb-2 w-16">Forn.</th>
+                                    <th class="pb-2 w-24">Empori</th>
+                                    <th class="pb-2 w-24">Altri</th>
+                                    <th class="pb-2 w-16 bg-red-50 text-m361-red rounded-t-lg">Da Ord</th>
                                     <th class="pb-2 w-24 text-right pr-4">Totale</th>
                                     <th class="pb-2 w-8"></th>
                                 </tr>
@@ -192,12 +207,7 @@
                             <tbody id="rows-container-${groupId}"></tbody>
                         </table>
                     </div>
-                    <div class="mt-4 flex justify-end border-t pt-4">
-                        <div class="text-right">
-                            <span class="text-[10px] font-bold text-slate-400 uppercase block">Subtotale Tipologia</span>
-                            <span id="subtotal-${groupId}" class="text-xl font-bold text-slate-600">€ 0.00</span>
-                        </div>
-                    </div>
+                    ${subtotalSection}
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', groupHtml);
@@ -208,31 +218,21 @@
             const tbody = document.getElementById(`rows-container-${groupId}`);
             const rowId = Date.now() + Math.random();
             const row = document.createElement('tr');
-            row.className = "product-row group transition-all rounded-xl overflow-hidden";
+            row.className = "product-row transition-all";
             row.id = `row-${rowId}`;
 
             row.innerHTML = `
-                <td data-label="Codice" class="p-2 lg:pl-4"><input type="text" required class="w-full border-gray-200 border rounded-xl p-2 text-sm font-mono uppercase bg-gray-50/50"></td>
-                <td data-label="Descrizione" class="p-2"><input type="text" required class="w-full border-gray-200 border rounded-xl p-2 text-sm"></td>
+                <td data-label="Codice" class="p-2 lg:pl-4"><input type="text" class="w-full border-gray-200 border rounded-xl p-2 text-sm uppercase"></td>
+                <td data-label="Descrizione" class="p-2"><input type="text" class="w-full border-gray-200 border rounded-xl p-2 text-sm"></td>
                 <td data-label="Prezzo" class="p-2"><input type="text" onfocus="clearCurrency(this)" onblur="formatCurrency(this)" oninput="calcRow('${rowId}', ${groupId})" class="price-input w-full border-gray-200 border rounded-xl p-2 text-right text-sm" value="€ 0.00"></td>
-                <td data-label="Qtà" class="p-2"><input type="number" min="0" oninput="calcRow('${rowId}', ${groupId})" class="qty-input w-full border-gray-200 border rounded-xl p-2 font-bold text-center text-sm" value="0"></td>
-                <td data-label="Parte" class="p-2 bg-parte-green"><input type="number" min="0" oninput="calcRow('${rowId}', ${groupId})" class="parte-input w-full border-green-200 border rounded-xl p-2 text-center text-sm font-bold text-green-700" value="0"></td>
-                <td data-label="Forn" class="p-2"><input type="number" min="0" oninput="calcRow('${rowId}', ${groupId})" class="forn-input w-full border-gray-200 border rounded-xl p-2 text-center text-sm" value="0"></td>
-                <td data-label="Empori" class="p-2">
-                    <div class="flex flex-col gap-1">
-                        <input type="number" min="0" oninput="calcRow('${rowId}', ${groupId})" class="emp-q-input w-full border-gray-200 border rounded-lg p-1 text-center text-xs" value="0">
-                        <select class="emporio-dropdown w-full border-gray-200 border rounded-lg p-1 text-[9px] bg-gray-50">${getEmporioOptions()}</select>
-                    </div>
-                </td>
-                <td data-label="Altri" class="p-2">
-                    <div class="flex flex-col gap-1">
-                        <input type="number" min="0" oninput="calcRow('${rowId}', ${groupId})" class="altri-q-input w-full border-gray-200 border rounded-lg p-1 text-center text-xs" value="0">
-                        <input type="text" placeholder="Specifica..." class="altri-desc-input w-full border-gray-200 border rounded-lg p-1 text-[9px]">
-                    </div>
-                </td>
-                <td data-label="Ord" class="p-2 bg-ord-red-light text-center font-bold text-m361-red" id="do-${rowId}">0</td>
+                <td data-label="Qtà" class="p-2"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="qty-input w-full border-gray-200 border rounded-xl p-2 font-bold text-center text-sm" value="0"></td>
+                <td data-label="Parte" class="p-2 bg-green-50"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="parte-input w-full border-green-200 border rounded-xl p-2 text-center text-sm font-bold text-green-700" value="0"></td>
+                <td data-label="Forn" class="p-2"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="forn-input w-full border-gray-200 border rounded-xl p-2 text-center text-sm" value="0"></td>
+                <td data-label="Empori" class="p-2"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="emp-q-input w-full border-gray-200 border rounded-xl p-2 text-center text-sm" value="0"></td>
+                <td data-label="Altri" class="p-2"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="altri-q-input w-full border-gray-200 border rounded-xl p-2 text-center text-sm" value="0"></td>
+                <td data-label="Ord" class="p-2 bg-red-50 text-center font-bold text-m361-red" id="do-${rowId}">0</td>
                 <td data-label="Totale" class="p-2 text-right pr-4 font-bold text-slate-700">€ <span class="row-total" id="tot-riga-${rowId}">0.00</span></td>
-                <td class="p-2 text-center"><button type="button" onclick="removeRow('${rowId}', ${groupId})" class="text-gray-300 hover:text-red-500 transition-all">✕</button></td>
+                <td class="p-2 text-center"><button type="button" onclick="removeRow('${rowId}', ${groupId})" class="text-gray-300 hover:text-red-500">✕</button></td>
             `;
             tbody.appendChild(row);
         }
@@ -242,53 +242,19 @@
             const qty = +row.querySelector('.qty-input').value || 0;
             const price = parseFloat(row.querySelector('.price-input').value.replace('€', '').trim()) || 0;
             
-            const parte = +row.querySelector('.parte-input').value || 0;
-            const forn = +row.querySelector('.forn-input').value || 0;
-            const emp = +row.querySelector('.emp-q-input').value || 0;
-            const altri = +row.querySelector('.altri-q-input').value || 0;
+            const p = +row.querySelector('.parte-input').value || 0;
+            const f = +row.querySelector('.forn-input').value || 0;
+            const e = +row.querySelector('.emp-q-input').value || 0;
+            const a = +row.querySelector('.altri-q-input').value || 0;
 
-            const sommaProvenienze = parte + forn + emp + altri;
-            const daOrd = qty - sommaProvenienze;
-            
-            const displayOrd = document.getElementById(`do-${rowId}`);
-            
-            // CONTROLLO ERRORE: Somma provenienze > Quantità totale
-            if (sommaProvenienze > qty) {
-                row.classList.add('row-error');
-                displayOrd.innerText = "ERR";
-                displayOrd.title = "La somma delle provenienze supera la quantità totale!";
-            } else {
-                row.classList.remove('row-error');
-                displayOrd.innerText = daOrd;
-                displayOrd.title = "";
-            }
+            const daOrd = qty - (p + f + e + a);
+            document.getElementById(`do-${rowId}`).innerText = daOrd > 0 ? daOrd : 0;
 
             const total = qty * price;
             document.getElementById(`tot-riga-${rowId}`).innerText = total.toFixed(2);
             
-            validateGlobalErrors();
-            calcSubtotal(groupId);
-        }
-
-        function validateGlobalErrors() {
-            const hasErrors = document.querySelectorAll('.row-error').length > 0;
-            const btn = document.getElementById('submit-btn');
-            if (hasErrors) {
-                btn.disabled = true;
-                btn.classList.add('opacity-50', 'cursor-not-allowed');
-                btn.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i> Correggi errori nelle righe';
-            } else {
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                btn.innerHTML = '<i class="fas fa-save mr-2"></i> Salva Ordine';
-            }
-        }
-
-        function getEmporioOptions() {
-            const mainCitta = document.getElementById('select-emporio').value;
-            let options = '<option value="">Dove?</option>';
-            ALL_EMPORI.forEach(e => { if(e !== mainCitta) options += `<option value="${e}">${e}</option>`; });
-            return options;
+            if(currentType === 'bomboniere') calcSubtotal(groupId);
+            calcGrandTotal();
         }
 
         function calcSubtotal(groupId) {
@@ -297,42 +263,37 @@
                 sub += parseFloat(el.innerText) || 0;
             });
             document.getElementById(`subtotal-${groupId}`).innerText = `€ ${sub.toFixed(2)}`;
-            calcGrandTotal();
         }
 
         function calcGrandTotal() {
             let grand = 0;
             document.querySelectorAll('.row-total').forEach(el => grand += parseFloat(el.innerText) || 0);
-            const acc = parseFloat(document.getElementById('acconto').value.replace('€', '').trim()) || 0;
+            const accVal = document.getElementById('acconto').value.replace('€', '').trim();
+            const acc = parseFloat(accVal) || 0;
             document.getElementById('grand-total').innerText = `€ ${grand.toFixed(2)}`;
             document.getElementById('saldo-finale').innerText = `€ ${(grand - acc).toFixed(2)}`;
         }
 
-        function removeGroup(id) { document.getElementById(`group-${id}`).remove(); calcGrandTotal(); validateGlobalErrors(); }
-        function removeRow(rowId, groupId) { document.getElementById(`row-${rowId}`).remove(); calcSubtotal(groupId); validateGlobalErrors(); }
-        
         function formatCurrency(input) {
             let val = parseFloat(input.value.replace('€', '').trim()) || 0;
             input.value = "€ " + val.toFixed(2);
         }
+
         function clearCurrency(input) {
             let val = input.value.replace('€', '').trim();
-            input.value = (val == "0.00" || val == "0") ? "" : val;
+            if(val == "0.00" || val == "0") input.value = "";
         }
-        function updateAllEmporiDropdowns() {
-            document.querySelectorAll('.emporio-dropdown').forEach(select => {
-                const currentVal = select.value;
-                select.innerHTML = getEmporioOptions();
-                select.value = currentVal;
-            });
+
+        function removeRow(rowId, groupId) {
+            document.getElementById(`row-${rowId}`).remove();
+            if(currentType === 'bomboniere') calcSubtotal(groupId);
+            calcGrandTotal();
         }
+
         function validateSubmission(e) {
-            if (document.querySelectorAll('.row-error').length > 0) {
-                alert("Attenzione: ci sono errori nelle quantità inserite.");
-                return false;
-            }
-            alert("Ordine salvato con successo!");
-            return true;
+            e.preventDefault();
+            alert("Ordine salvato correttamente!");
+            return false;
         }
 
         window.onload = () => { document.getElementById('order-date').valueAsDate = new Date(); };
