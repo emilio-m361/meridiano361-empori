@@ -15,7 +15,6 @@
         .bg-ord-red { background-color: rgba(183, 82, 82, 0.15); }
         .bg-m361-antracite { background-color: #334155; }
         
-        /* Colore uniforme per tutti i campi compilati dall'utente */
         input, select, textarea { color: #334155 !important; }
         
         .section-title {
@@ -63,7 +62,6 @@
         </div>
 
         <form id="orderForm" class="hidden" onsubmit="return validateSubmission(event)">
-            <!-- EMPORIO -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
                 <h2 class="text-xs font-bold mb-6 tracking-widest uppercase flex items-center gap-2">
                     <span class="w-1.5 h-6 bg-m361-red rounded-full"></span> 
@@ -78,6 +76,7 @@
                             <option value="Cremona">Cremona</option>
                             <option value="Reggio Emilia">Reggio Emilia</option>
                             <option value="Viadana">Viadana</option>
+                            <option value="ADD_NEW">-- Aggiungi Città --</option>
                         </select>
                     </div>
                     <div>
@@ -85,7 +84,7 @@
                         <select id="select-operator" required class="w-full border rounded-lg p-2.5 text-sm bg-gray-50">
                             <option value="" selected>Seleziona...</option>
                             <option value="Operatore 1">Operatore 1</option>
-                            <option value="ADD_NEW">-- Aggiungi --</option>
+                            <option value="ADD_NEW">-- Aggiungi Operatore --</option>
                         </select>
                     </div>
                     <div>
@@ -95,7 +94,6 @@
                 </div>
             </div>
 
-            <!-- CLIENTE -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
                 <h2 class="text-xs font-bold mb-6 tracking-widest uppercase flex items-center gap-2">
                     <span class="w-1.5 h-6 bg-m361-red rounded-full"></span> 
@@ -122,7 +120,6 @@
                 </div>
             </div>
 
-            <!-- PRODOTTI -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xs font-bold tracking-widest uppercase flex items-center gap-2">
@@ -184,7 +181,6 @@
                 </div>
             </div>
 
-            <!-- NOTE -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
                 <h2 class="text-xs font-bold mb-4 tracking-widest uppercase flex items-center gap-2">
                     <span class="w-1.5 h-6 bg-slate-400 rounded-full"></span> 
@@ -201,7 +197,35 @@
 
     <script>
         let currentType = 'standard';
-        const ALL_EMPORI = ["Casalmaggiore", "Cremona", "Reggio Emilia", "Viadana"];
+        let ALL_EMPORI = ["Casalmaggiore", "Cremona", "Reggio Emilia", "Viadana"];
+
+        // GESTIONE AGGIUNTA DINAMICA VOCI (CITTÀ E OPERATORE)
+        document.addEventListener('change', function(e) {
+            if (e.target && (e.target.id === 'select-emporio' || e.target.id === 'select-operator')) {
+                if (e.target.value === 'ADD_NEW') {
+                    const label = e.target.id === 'select-emporio' ? 'la nuova città' : 'il nuovo operatore';
+                    const newValue = prompt(`Inserisci ${label}:`);
+                    
+                    if (newValue && newValue.trim() !== "") {
+                        const option = document.createElement('option');
+                        option.value = newValue.trim();
+                        option.textContent = newValue.trim();
+                        
+                        // Inserisce prima dell'ultima voce (-- Aggiungi --)
+                        e.target.insertBefore(option, e.target.lastElementChild);
+                        e.target.value = newValue.trim();
+
+                        // Se è una città, aggiorna l'array globale e i dropdown nelle righe
+                        if (e.target.id === 'select-emporio') {
+                            ALL_EMPORI.push(newValue.trim());
+                            updateAllEmporiDropdowns();
+                        }
+                    } else {
+                        e.target.value = "";
+                    }
+                }
+            }
+        });
 
         function formatCurrency(input) {
             let val = parseFloat(input.value.replace('€', '').trim()) || 0;
@@ -273,7 +297,6 @@
             updateEmporiDropdown(id);
         }
 
-        // Funzione per aggiornare i menu a tendina "Da Empori" in base alla città principale selezionata
         function updateAllEmporiDropdowns() {
             const selects = document.querySelectorAll('.emporio-dropdown');
             selects.forEach(select => {
@@ -343,9 +366,7 @@
             return true;
         }
 
-        function handleCittaChange(el) {
-            // Logica esistente per gestire cambi città se necessaria
-        }
+        function handleCittaChange(el) { }
 
         window.onload = () => { 
             document.getElementById('order-date').valueAsDate = new Date(); 
