@@ -13,7 +13,6 @@
         .bg-m361-dark { background-color: #1e293b; }
         .border-m361-red { border-color: #b75252; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #b75252; ring: 1px solid #b75252; }
-        /* Chrome, Safari, Edge, Opera */
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
@@ -30,66 +29,67 @@
             <img src="logom361_rosso.jpg" alt="Logo" class="h-8">
             <h1 class="font-bold text-lg border-l pl-4 ml-2">Nuovo Ordine</h1>
         </div>
-        <div class="flex items-center gap-2">
-            <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Emporio:</span>
-            <select id="select-emporio" onchange="updateOperators()" class="text-xs font-bold uppercase bg-transparent border-none text-m361-red cursor-pointer">
-                <option value="Cremona">Cremona</option>
-                <option value="Casalmaggiore">Casalmaggiore</option>
-                <option value="Reggio Emilia">Reggio Emilia</option>
-                <option value="Viadana">Viadana</option>
-                <option value="nuovo">+ Aggiungi Nuovo...</option>
-            </select>
-        </div>
     </header>
 
     <main class="max-w-6xl mx-auto p-6">
-        
         <form id="orderForm">
-            <!-- SEZIONE 1: ANAGRAFICA E DATA -->
+            
+            <!-- SEZIONE 1: DATI EMPORIO -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xs font-bold text-gray-400 tracking-widest uppercase flex items-center gap-2">
-                        <span class="w-1.5 h-4 bg-m361-red rounded-full"></span> Dati Cliente & Operatore
-                    </h2>
-                    <div class="flex items-center gap-2">
-                        <label class="text-[10px] font-bold text-gray-400 uppercase">Data Ordine:</label>
-                        <input type="date" id="order-date" class="text-xs border rounded p-1 font-semibold text-gray-600">
+                <h2 class="text-xs font-bold text-gray-400 mb-6 tracking-widest uppercase flex items-center gap-2">
+                    <span class="w-1.5 h-4 bg-m361-red rounded-full"></span> Dati Emporio
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Città Emporio *</label>
+                        <select id="select-emporio" onchange="updateOperators()" class="w-full border rounded-lg p-2.5 text-sm bg-gray-50 font-semibold">
+                            <option value="Casalmaggiore">Casalmaggiore</option>
+                            <option value="Cremona">Cremona</option>
+                            <option value="Reggio Emilia">Reggio Emilia</option>
+                            <option value="Viadana">Viadana</option>
+                            <option value="nuovo">+ Aggiungi Nuovo Emporio...</option>
+                        </select>
                     </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <!-- Operatore -->
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Data Ordine *</label>
+                        <input type="date" id="order-date" required class="w-full border rounded-lg p-2.5 text-sm">
+                    </div>
                     <div>
                         <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Preso da *</label>
-                        <div class="flex gap-1">
+                        <div class="flex gap-2">
                             <select id="select-operator" required class="flex-1 border rounded-lg p-2.5 text-sm bg-gray-50">
                                 <!-- Popolato via JS -->
                             </select>
-                            <button type="button" onclick="addNewOperator()" class="bg-gray-100 px-2 rounded-lg text-gray-400 hover:text-m361-red">+</button>
+                            <button type="button" onclick="addNewOperator()" class="bg-gray-100 px-3 rounded-lg text-gray-500 hover:text-m361-red font-bold">+</button>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Cliente -->
+            <!-- SEZIONE 2: DATI CLIENTI -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                <h2 class="text-xs font-bold text-gray-400 mb-6 tracking-widest uppercase flex items-center gap-2">
+                    <span class="w-1.5 h-4 bg-m361-red rounded-full"></span> Dati Clienti
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                         <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Nome e Cognome Cliente *</label>
                         <input type="text" required placeholder="Mario Rossi" class="w-full border rounded-lg p-2.5 text-sm">
                     </div>
-
-                    <!-- Telefono e Spunte -->
                     <div>
                         <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Cellulare *</label>
-                        <div class="flex items-center gap-3 mt-2">
+                        <div class="flex items-center gap-4">
                             <input type="tel" required placeholder="333 1234567" class="flex-1 border rounded-lg p-2.5 text-sm">
-                            <label class="flex items-center gap-1 text-[10px] font-bold text-gray-400">
-                                <input type="checkbox" class="accent-[#b75252]"> WA
-                            </label>
-                            <label class="flex items-center gap-1 text-[10px] font-bold text-gray-400">
-                                <input type="checkbox" class="accent-[#b75252]"> SMS
-                            </label>
+                            <div class="flex items-center gap-3">
+                                <label class="flex items-center gap-1 text-[10px] font-bold text-gray-400 cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 accent-[#b75252]"> WA
+                                </label>
+                                <label class="flex items-center gap-1 text-[10px] font-bold text-gray-400 cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 accent-[#b75252]"> SMS
+                                </label>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Email -->
                     <div>
                         <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Email</label>
                         <input type="email" placeholder="mario@email.it" class="w-full border rounded-lg p-2.5 text-sm">
@@ -97,10 +97,10 @@
                 </div>
             </div>
 
-            <!-- SEZIONE 2: TABELLA PRODOTTI -->
+            <!-- SEZIONE 3: PRODOTTI -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
                 <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
-                    <h2 class="text-xs font-bold text-gray-400 tracking-widest uppercase">Prodotti in ordine</h2>
+                    <h2 class="text-xs font-bold text-gray-400 tracking-widest uppercase">Prodotti</h2>
                     <button type="button" onclick="addRow()" class="text-[10px] bg-m361-dark text-white px-3 py-1.5 rounded-full hover:bg-m361-red transition-colors font-bold uppercase">
                         + Aggiungi riga
                     </button>
@@ -123,7 +123,7 @@
                 </div>
             </div>
 
-            <!-- SEZIONE 3: CHECKLIST E NOTE -->
+            <!-- FOOTER: CHECKLIST E NOTE -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <h2 class="text-xs font-bold text-gray-400 mb-6 tracking-widest uppercase">Check-list Avanzamento</h2>
@@ -144,10 +144,10 @@
                 </div>
 
                 <div class="flex flex-col gap-4">
-                    <textarea placeholder="Note interne (es. preferenze orari, specifiche pacchetto)..." class="w-full h-full min-h-[150px] border rounded-2xl p-4 text-sm resize-none"></textarea>
+                    <textarea placeholder="Note interne..." class="w-full h-full min-h-[150px] border rounded-2xl p-4 text-sm resize-none"></textarea>
                     <div class="flex gap-4">
-                        <button type="button" class="flex-1 bg-gray-200 text-gray-600 font-bold py-4 rounded-xl uppercase text-xs tracking-widest hover:bg-gray-300">Salva Bozza</button>
-                        <button type="submit" class="flex-1 bg-m361-red text-white font-bold py-4 rounded-xl uppercase text-xs tracking-widest hover:opacity-90 shadow-lg shadow-red-200">Conferma Ordine</button>
+                        <button type="button" class="flex-1 bg-gray-200 text-gray-600 font-bold py-4 rounded-xl uppercase text-xs tracking-widest hover:bg-gray-300 transition-all">Salva Bozza</button>
+                        <button type="submit" class="flex-1 bg-m361-red text-white font-bold py-4 rounded-xl uppercase text-xs tracking-widest hover:opacity-90 shadow-lg shadow-red-200 transition-all">Conferma Ordine</button>
                     </div>
                 </div>
             </div>
@@ -157,9 +157,9 @@
     <script>
         const operatoriDB = {
             "Cremona": ["Emilio Mazzolari", "Chiara Monteverdi", "Giulia Galelli"],
-            "Reggio Emilia": ["Marica Poli", "Manuela Capanni", "Alessia Bartolomei"],
-            "Viadana": ["Alberini Roberta", "Amadini Giuseppina", "Aroldi Ave", "Bellelli Carla", "Bertolini Mariagrazia", "Bortesi Tiziana", "Chittolini Carla", "Falugi Donatella", "Furlotti Franco", "Germani Sara", "Ghelfi Elena", "Mortini Claudio", "Panato Mirella", "Piotrowska Barbara", "Rovina Alessia", "Sanfelici Marta", "Scazza Manuela"],
-            "Casalmaggiore": ["Araldi Barbara", "Bossi Erica", "Cattani Elena Maria", "Chiarini Matilde", "Federici Miriam", "Frigeri Giulia", "Galelli Giulia", "Galli Ileana", "Gatti Piero", "Lunardini Francesco", "Lunardini Giuseppe", "Lunardini Vittoria", "Mabrouk Teyssir", "Machetti Barbara", "Maffei Carla", "Marchini Michele", "Pavesi Edoardo", "Poli Francesca", "Raineri Giovanna", "Rivetti Alessandra", "Scaravonati Maria Marcella", "Vezzosi Robertha"]
+            "Reggio Emilia": ["Marica Pioli", "Manuela Capanni", "Alessia Bartolomei"],
+            "Viadana": ["Roberta Alberini", "Giuseppina Amadini", "Ave Aroldi", "Carla Bellelli", "Mariagrazia Bertolini", "Tiziana Bortesi", "Carla Chittolini", "Donatella Falugi", "Franco Furlotti", "Sara Germani", "Elena Ghelfi", "Claudio Mortini", "Mirella Panato", "Barbara Piotrowska", "Alessia Rovina", "Marta Sanfelici", "Manuela Scazza"],
+            "Casalmaggiore": ["Barbara Araldi", "Erica Bossi", "Elena Maria Cattani", "Matilde Chiarini", "Miriam Federici", "Giulia Frigeri", "Giulia Galelli", "Ileana Galli", "Piero Gatti", "Francesco Lunardini", "Giuseppe Lunardini", "Vittoria Lunardini", "Teyssir Mabrouk", "Barbara Machetti", "Carla Maffei", "Michele Marchini", "Edoardo Pavesi", "Francesca Poli", "Giovanna Raineri", "Alessandra Rivetti", "Maria Marcella Scaravonati", "Roberta Vezzosi"]
         };
 
         function updateOperators() {
@@ -172,11 +172,11 @@
                     const select = document.getElementById('select-emporio');
                     const opt = document.createElement('option');
                     opt.value = nuovo; opt.text = nuovo;
-                    select.add(opt, select.options[select.options.length - 1]);
+                    select.add(opt, select.options.length - 1);
                     select.value = nuovo;
                     operatoriDB[nuovo] = [];
                     updateOperators();
-                }
+                } else { document.getElementById('select-emporio').value = "Casalmaggiore"; }
                 return;
             }
 
@@ -191,11 +191,19 @@
 
         function addNewOperator() {
             const emporio = document.getElementById('select-emporio').value;
-            const nuovo = prompt(`Aggiungi nuovo operatore per ${emporio}:`);
-            if(nuovo) {
-                operatoriDB[emporio].push(nuovo);
-                updateOperators();
-                document.getElementById('select-operator').value = nuovo;
+            let nuovo = prompt(`Inserisci NUOVO OPERATORE per ${emporio} (Obbligatorio: NOME COGNOME):`);
+            
+            if (nuovo) {
+                nuovo = nuovo.trim();
+                // Controllo se contiene almeno uno spazio tra nome e cognome
+                if (nuovo.indexOf(' ') === -1) {
+                    alert("ERRORE: Devi inserire sia il NOME che il COGNOME separati da uno spazio.");
+                    addNewOperator();
+                } else {
+                    operatoriDB[emporio].push(nuovo);
+                    updateOperators();
+                    document.getElementById('select-operator').value = nuovo;
+                }
             }
         }
 
@@ -206,7 +214,7 @@
             row.className = "border-b hover:bg-gray-50/50 transition-colors";
             row.id = `row-${rowId}`;
             row.innerHTML = `
-                <td class="p-3"><input type="text" required placeholder="Nome prodotto..." class="w-full bg-transparent border-b border-transparent focus:border-gray-200 py-1 text-sm"></td>
+                <td class="p-3"><input type="text" required placeholder="Es. Caffè 250g" class="w-full bg-transparent border-b border-transparent focus:border-gray-200 py-1 text-sm"></td>
                 <td class="p-3"><input type="number" min="0" value="1" oninput="calculateRow(${rowId})" id="qty-${rowId}" class="w-full text-center bg-gray-50 rounded p-1 text-sm font-bold"></td>
                 <td class="p-3"><input type="number" min="0" value="0" oninput="calculateRow(${rowId})" id="parte-${rowId}" class="w-full text-center bg-gray-50 rounded p-1 text-sm italic"></td>
                 <td class="p-3"><input type="number" min="0" value="0" oninput="calculateRow(${rowId})" id="altri-${rowId}" class="w-full text-center bg-gray-50 rounded p-1 text-sm italic"></td>
@@ -236,7 +244,7 @@
 
         document.getElementById('orderForm').onsubmit = (e) => {
             e.preventDefault();
-            alert("Ordine confermato con successo!");
+            alert("Ordine inviato al sistema!");
         };
     </script>
 </body>
