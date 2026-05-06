@@ -28,6 +28,8 @@
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
+        .input-error { border-color: #ef4444 !important; background-color: #fef2f2 !important; color: #ef4444 !important; }
+
         .wa-disabled { filter: grayscale(1); opacity: 0.3; }
         .wa-icon { cursor: pointer; transition: all 0.3s ease; }
 
@@ -37,10 +39,6 @@
                 border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 15px; background: white;
             }
             .product-row td { display: block; width: 100% !important; padding: 0 !important; border: none !important; }
-            .product-row td::before {
-                content: attr(data-label); display: block; font-size: 10px; font-weight: 700;
-                text-transform: uppercase; color: #94a3b8; margin-bottom: 2px;
-            }
         }
     </style>
 </head>
@@ -62,7 +60,7 @@
             </div>
         </div>
 
-        <form id="orderForm" class="hidden">
+        <form id="orderForm" class="hidden" onsubmit="return validateSubmission()">
             <!-- EMPORIO -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
                 <h2 class="text-xs font-bold mb-6 tracking-widest uppercase flex items-center gap-2">
@@ -108,7 +106,7 @@
                         <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Cellulare *</label>
                         <div class="flex items-center gap-2">
                             <input type="tel" required class="flex-1 border rounded-lg p-2.5 text-sm">
-                            <i id="wa-toggle" onclick="this.classList.toggle('wa-disabled')" class="fab fa-whatsapp wa-icon text-2xl text-green-500" title="Clicca se il cliente non ha WhatsApp"></i>
+                            <i id="wa-toggle" onclick="this.classList.toggle('wa-disabled')" class="fab fa-whatsapp wa-icon text-2xl text-green-500"></i>
                         </div>
                     </div>
                     <div><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Email</label><input type="email" class="w-full border rounded-lg p-2.5 text-sm"></div>
@@ -129,7 +127,7 @@
                         <span class="w-1.5 h-6 bg-m361-red rounded-full"></span> 
                         <span id="title-prodotti" class="section-title text-[10px]">Prodotti</span>
                     </h2>
-                    <button type="button" onclick="addRow()" class="text-[10px] bg-m361-antracite text-white px-6 py-2.5 rounded-xl font-bold uppercase shadow-md hover:opacity-90 transition-all">
+                    <button type="button" onclick="addRow()" class="text-[10px] bg-m361-antracite text-white px-6 py-2.5 rounded-xl font-bold uppercase shadow-md hover:opacity-90">
                         + Aggiungi
                     </button>
                 </div>
@@ -140,7 +138,7 @@
                             <tr class="text-[10px] text-gray-400 uppercase tracking-wider border-b">
                                 <th class="p-2 font-bold w-32">Codice *</th>
                                 <th class="p-2 font-bold min-w-[180px]">Descrizione *</th>
-                                <th class="p-2 font-bold w-20">Prezzo</th>
+                                <th class="p-2 font-bold w-24">Prezzo</th>
                                 <th class="p-2 font-bold w-20">Tot</th>
                                 <th class="p-2 font-bold w-16 text-center">Qtà</th>
                                 <th class="p-2 font-bold w-16 bg-parte-green text-center">Da Parte</th>
@@ -162,8 +160,13 @@
                                 </td>
                                 <td colspan="2" class="p-2 border-x">
                                     <div class="flex items-center gap-2 bg-white border p-1.5 rounded-lg px-2">
-                                        <span class="text-[9px] font-bold text-gray-400 uppercase">Acconto €</span>
-                                        <input type="number" id="acconto" oninput="calcFinals()" class="w-24 text-right font-bold text-slate-700 bg-transparent outline-none" placeholder="0">
+                                        <span class="text-[9px] font-bold text-gray-400 uppercase">Acconto</span>
+                                        <input type="text" id="acconto" 
+                                               onfocus="clearCurrency(this)" 
+                                               onblur="formatCurrency(this)" 
+                                               oninput="calcFinals()" 
+                                               class="w-24 text-right font-bold text-slate-700 bg-transparent outline-none" 
+                                               value="€ 0.00">
                                     </div>
                                 </td>
                                 <td colspan="1" class="p-2">
@@ -179,13 +182,13 @@
                 </div>
             </div>
 
-            <!-- NOTE FINALI -->
+            <!-- NOTE -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
                 <h2 class="text-xs font-bold mb-4 tracking-widest uppercase flex items-center gap-2">
                     <span class="w-1.5 h-6 bg-slate-400 rounded-full"></span> 
-                    <span class="section-title text-[10px]">Note Ordine</span>
+                    <span class="section-title text-[10px]">Note</span>
                 </h2>
-                <textarea id="order-notes" rows="3" class="w-full border rounded-xl p-3 text-sm" placeholder="Inserisci qui eventuali note o istruzioni speciali..."></textarea>
+                <textarea id="order-notes" rows="3" class="w-full border rounded-xl p-3 text-sm" placeholder="scrivi"></textarea>
             </div>
 
             <div class="flex justify-end">
@@ -195,54 +198,29 @@
     </main>
 
     <script>
-        let operatoriDB = {
-            "Cremona": ["Emilio Mazzolari", "Chiara Monteverdi", "Giulia Galelli"],
-            "Reggio Emilia": ["Marica Pioli", "Manuela Capanni", "Alessia Bartolomei"],
-            "Viadana": ["Emilio Mazzolari", "Chiara Monteverdi"],
-            "Casalmaggiore": ["Emilio Mazzolari", "Chiara Monteverdi"]
-        };
+        let hasErrors = false;
+
+        function formatCurrency(input) {
+            let val = parseFloat(input.value.replace('€', '').trim()) || 0;
+            input.value = "€ " + val.toFixed(2);
+        }
+
+        function clearCurrency(input) {
+            let val = input.value.replace('€', '').trim();
+            input.value = val == "0.00" ? "" : val;
+        }
+
+        function getNumericValue(id) {
+            const el = document.getElementById(id);
+            if (!el) return 0;
+            return parseFloat(el.value.replace('€', '').trim()) || 0;
+        }
 
         function initOrder(type) {
             document.getElementById('order-type-selection').classList.add('hidden');
             document.getElementById('orderForm').classList.remove('hidden');
             document.getElementById('title-prodotti').innerText = type === 'bomboniere' ? 'Configurazione Bomboniere' : 'Prodotti';
             addRow(type);
-        }
-
-        function handleCittaChange(select) {
-            if(select.value === 'ADD_NEW') {
-                const nuova = prompt("Inserisci Nome nuova Città:");
-                if(nuova) {
-                    const opt = new Option(nuova, nuova);
-                    select.add(opt, select.options.length - 1);
-                    select.value = nuova;
-                    operatoriDB[nuova] = [];
-                } else select.value = "";
-            }
-            updateOperators();
-        }
-
-        function updateOperators() {
-            const val = document.getElementById('select-emporio').value;
-            const opSelect = document.getElementById('select-operator');
-            opSelect.innerHTML = '<option value="">Seleziona...</option>';
-            if(val && val !== 'ADD_NEW') {
-                (operatoriDB[val] || []).forEach(op => opSelect.add(new Option(op, op)));
-            }
-            opSelect.add(new Option("-- Aggiungi Nuovo --", "ADD_NEW"));
-        }
-
-        function handleOpChange(select) {
-            if(select.value === 'ADD_NEW') {
-                const emporio = document.getElementById('select-emporio').value;
-                const nuovo = prompt("Inserisci Nome e Cognome:");
-                if(nuovo) {
-                    const opt = new Option(nuovo, nuovo);
-                    select.add(opt, select.options.length - 1);
-                    select.value = nuovo;
-                    if(emporio) operatoriDB[emporio].push(nuovo);
-                } else select.value = "";
-            }
         }
 
         function addRow(type) {
@@ -259,34 +237,29 @@
             row.innerHTML = `
                 <td class="p-2"><input type="text" required id="cod-${id}" class="w-full border rounded p-2 font-mono uppercase"></td>
                 <td class="p-2">${descField}</td>
-                <td class="p-2"><input type="number" step="0.01" id="pr-u-${id}" oninput="calc(${id})" class="w-full border rounded p-2 text-right" placeholder="0"></td>
+                <td class="p-2">
+                    <input type="text" id="pr-u-${id}" 
+                           onfocus="clearCurrency(this)" 
+                           onblur="formatCurrency(this)" 
+                           oninput="calc(${id})" 
+                           class="w-full border rounded p-2 text-right" value="€ 0.00">
+                </td>
                 <td class="p-2 font-bold text-slate-600">€ <span id="tot-riga-${id}">0.00</span></td>
                 <td class="p-2"><input type="number" id="qty-${id}" oninput="calc(${id})" class="w-full border rounded p-2 font-bold text-center" placeholder="0"></td>
                 <td class="p-2 bg-parte-green"><input type="number" id="parte-${id}" oninput="calc(${id})" class="w-full border rounded p-2 text-center bg-transparent" placeholder="0"></td>
                 <td class="p-2"><input type="number" id="forn-${id}" oninput="calc(${id})" class="w-full border rounded p-2 text-center" placeholder="0"></td>
-                
-                <!-- DA EMPORI -->
                 <td class="p-2 border-x bg-gray-50/30">
                     <div class="flex gap-1">
                         <input type="number" id="emp-q-${id}" oninput="calc(${id})" class="w-12 border rounded p-1 text-center" placeholder="0">
-                        <select id="emp-loc-${id}" class="flex-1 border rounded p-1 text-[9px]">
-                            <option value="">Dove?</option>
-                            <option value="CR">Cremona</option>
-                            <option value="CS">Casalmaggiore</option>
-                            <option value="VD">Viadana</option>
-                            <option value="RE">Reggio E.</option>
-                        </select>
+                        <select class="flex-1 border rounded p-1 text-[9px]"><option value="">Dove?</option><option value="CR">Cremona</option><option value="CS">Casalmaggiore</option></select>
                     </div>
                 </td>
-
-                <!-- DA ALTRI -->
                 <td class="p-2 bg-gray-50/30">
                     <div class="flex gap-1">
                         <input type="number" id="alt-q-${id}" oninput="calc(${id})" class="w-12 border rounded p-1 text-center" placeholder="0">
                         <input type="text" class="flex-1 border rounded p-1 text-[9px]" placeholder="specifica">
                     </div>
                 </td>
-
                 <td class="p-2 bg-ord-red font-bold text-m361-red text-center text-lg" id="do-${id}">0</td>
                 <td class="p-2 text-center"><button type="button" onclick="this.closest('tr').remove(); calcFinals()" class="text-gray-300 hover:text-red-500">✕</button></td>
             `;
@@ -295,14 +268,26 @@
 
         function calc(id) {
             const qty = +document.getElementById(`qty-${id}`).value || 0;
-            const pru = +document.getElementById(`pr-u-${id}`).value || 0;
+            const pru = getNumericValue(`pr-u-${id}`);
             const p = +document.getElementById(`parte-${id}`).value || 0;
             const f = +document.getElementById(`forn-${id}`).value || 0;
             const eq = +document.getElementById(`emp-q-${id}`).value || 0;
             const aq = +document.getElementById(`alt-q-${id}`).value || 0;
             
+            const sommaDisponibili = p + f + eq + aq;
+            const riga = document.getElementById(`row-${id}`);
+            const inputsDisponibilita = riga.querySelectorAll('input[id^="parte-"], input[id^="forn-"], input[id^="emp-q-"], input[id^="alt-q-"]');
+
+            if (sommaDisponibili > qty && qty > 0) {
+                inputsDisponibilita.forEach(el => el.classList.add('input-error'));
+                hasErrors = true;
+            } else {
+                inputsDisponibilita.forEach(el => el.classList.remove('input-error'));
+                hasErrors = false;
+            }
+
             document.getElementById(`tot-riga-${id}`).innerText = (qty * pru).toFixed(2);
-            const daOrd = qty - (p + f + eq + aq);
+            const daOrd = qty - sommaDisponibili;
             document.getElementById(`do-${id}`).innerText = daOrd > 0 ? daOrd : 0;
             calcFinals();
         }
@@ -310,18 +295,21 @@
         function calcFinals() {
             let total = 0;
             document.querySelectorAll('[id^="tot-riga-"]').forEach(el => total += parseFloat(el.innerText) || 0);
-            const acc = +document.getElementById('acconto').value || 0;
+            const acc = getNumericValue('acconto');
             document.getElementById('grand-total').innerText = `€ ${total.toFixed(2)}`;
             document.getElementById('saldo-finale').innerText = `€ ${(total - acc).toFixed(2)}`;
         }
 
-        window.onload = () => { document.getElementById('order-date').valueAsDate = new Date(); };
-        
-        document.getElementById('orderForm').onsubmit = (e) => {
-            e.preventDefault();
+        function validateSubmission() {
+            if (document.querySelectorAll('.input-error').length > 0) {
+                alert("Errore: Le quantità inserite (da parte, fornitori, empori, altri) superano la quantità totale ordinata dal cliente.");
+                return false;
+            }
             alert("Ordine Salvato!");
-            window.location.href = "ordini_incorso.html";
-        };
+            return true;
+        }
+
+        window.onload = () => { document.getElementById('order-date').valueAsDate = new Date(); };
     </script>
 </body>
 </html>
