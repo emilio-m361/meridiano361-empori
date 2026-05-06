@@ -6,13 +6,15 @@
     <title>M361 - Nuovo Ordine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Icone FontAwesome per WhatsApp -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
         .text-m361-red { color: #b75252; }
         .bg-m361-red { background-color: #b75252; }
         .bg-m361-red-soft { background-color: rgba(183, 82, 82, 0.1); }
         .bg-parte-green { background-color: rgba(107, 141, 83, 0.15); }
-        .bg-m361-antracite { background-color: #334155; } /* Grigio antracite per tasto aggiungi */
+        .bg-m361-antracite { background-color: #334155; }
         
         .section-title {
             color: #475569;
@@ -24,23 +26,11 @@
         }
         
         input:focus, select:focus { outline: none; border-color: #b75252; box-shadow: 0 0 0 1px #b75252; }
-        
-        /* Chrome, Safari, Edge, Opera: toglie le freccette dai numeri */
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
-        @media (max-width: 1024px) {
-            .product-header { display: none; }
-            .product-row { 
-                display: flex; flex-direction: column; gap: 8px; padding: 15px; 
-                border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 15px; background: white;
-            }
-            .product-row td { display: block; width: 100% !important; padding: 0 !important; border: none !important; }
-            .product-row td::before {
-                content: attr(data-label); display: block; font-size: 10px; font-weight: 700;
-                text-transform: uppercase; color: #94a3b8; margin-bottom: 2px;
-            }
-        }
+        .type-pill { cursor: pointer; transition: all 0.3s; border: 2px solid transparent; }
+        .type-pill.active { border-color: #b75252; background-color: white; color: #b75252; }
     </style>
 </head>
 <body class="pb-20">
@@ -53,8 +43,16 @@
     </header>
 
     <main class="max-w-7xl mx-auto p-4 md:p-6">
-        <form id="orderForm">
-            
+        <!-- SELEZIONE TIPOLOGIA ORDINE -->
+        <div id="order-type-selection" class="mb-8 text-center bg-white p-8 rounded-2xl shadow-sm border">
+            <h3 class="text-gray-500 font-bold uppercase text-xs tracking-widest mb-4">Seleziona Tipo di Ordine</h3>
+            <div class="flex justify-center gap-4">
+                <button onclick="initOrder('standard')" class="px-8 py-4 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold transition-all">ORDINE STANDARD</button>
+                <button onclick="initOrder('bomboniere')" class="px-8 py-4 bg-m361-red text-white hover:opacity-90 rounded-xl font-bold transition-all shadow-lg">ORDINE BOMBONIERE</button>
+            </div>
+        </div>
+
+        <form id="orderForm" class="hidden">
             <!-- SEZIONE 1: EMPORIO -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
                 <h2 class="text-xs font-bold mb-6 tracking-widest uppercase flex items-center gap-2">
@@ -62,35 +60,31 @@
                     <span class="section-title text-[10px]">Emporio</span>
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Città *</label>
-                        <select id="select-emporio" onchange="handleEmporioChange()" required class="w-full border rounded-lg p-2.5 text-sm bg-gray-50">
-                            <option value="" selected>Seleziona...</option>
-                            <option value="Casalmaggiore">Casalmaggiore</option>
-                            <option value="Cremona">Cremona</option>
-                            <option value="Reggio Emilia">Reggio Emilia</option>
-                            <option value="Viadana">Viadana</option>
-                        </select>
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Città *</label>
+                            <select id="select-emporio" onchange="handleEmporioChange()" required class="w-full border rounded-lg p-2.5 text-sm bg-gray-50">
+                                <option value="" selected>Seleziona...</option>
+                                <option value="Casalmaggiore">Casalmaggiore</option>
+                                <option value="Cremona">Cremona</option>
+                                <option value="Reggio Emilia">Reggio Emilia</option>
+                                <option value="Viadana">Viadana</option>
+                            </select>
+                        </div>
+                        <button type="button" class="mt-5 text-xl text-slate-400">+</button>
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Operatore *</label>
-                        <select id="select-operator" required class="w-full border rounded-lg p-2.5 text-sm bg-gray-50">
-                            <option value="" selected>Seleziona...</option>
-                        </select>
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Operatore *</label>
+                            <select id="select-operator" required class="w-full border rounded-lg p-2.5 text-sm bg-gray-50">
+                                <option value="" selected>Seleziona...</option>
+                            </select>
+                        </div>
+                        <button type="button" class="mt-5 text-xl text-slate-400">+</button>
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Data *</label>
                         <input type="date" id="order-date" required class="w-full border rounded-lg p-2.5 text-sm">
-                    </div>
-                </div>
-
-                <!-- Canali in minuscolo -->
-                <div id="cremona-options" class="hidden mt-6 p-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2">Canale: *</label>
-                    <div class="flex flex-wrap gap-4">
-                        <label class="flex items-center gap-2 text-sm cursor-pointer lowercase"><input type="radio" name="canale" value="emporio" checked class="accent-m361-red"> emporio</label>
-                        <label class="flex items-center gap-2 text-sm cursor-pointer lowercase"><input type="radio" name="canale" value="meridiano361.it" class="accent-m361-red"> meridiano361.it</label>
-                        <label class="flex items-center gap-2 text-sm cursor-pointer lowercase"><input type="radio" name="canale" value="on-earth.it" class="accent-m361-red"> on-earth.it</label>
                     </div>
                 </div>
             </div>
@@ -101,69 +95,65 @@
                     <span class="w-1.5 h-6 bg-m361-red rounded-full"></span> 
                     <span class="section-title text-[10px]">Cliente</span>
                 </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                     <div><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Nome *</label><input type="text" required class="w-full border rounded-lg p-2.5 text-sm"></div>
                     <div><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Cognome *</label><input type="text" required class="w-full border rounded-lg p-2.5 text-sm"></div>
+                    <div><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Email</label><input type="email" class="w-full border rounded-lg p-2.5 text-sm"></div>
                     <div>
                         <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Modalità *</label>
                         <div class="flex gap-4 p-2.5 bg-gray-50 border rounded-lg h-[42px] items-center">
                             <label class="flex items-center gap-2 text-xs cursor-pointer"><input type="radio" name="mod_consegna" value="Ritiro" required class="accent-m361-red"> Ritiro</label>
-                            <label class="flex items-center gap-2 text-xs cursor-pointer"><input type="radio" name="mod_consegna" value="Spedizione" class="accent-m361-red"> Spedizione</label>
+                            <label class="flex items-center gap-2 text-xs cursor-pointer"><input type="radio" name="mod_consegna" value="Spedizione" class="accent-m361-red"> Spediz.</label>
                         </div>
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Cellulare *</label>
                         <div class="flex items-center gap-2">
                             <input type="tel" required class="flex-1 border rounded-lg p-2.5 text-sm">
-                            <label class="text-[10px] font-bold text-gray-400 flex items-center gap-1"><input type="checkbox" class="accent-[#b75252]"> WA</label>
+                            <label class="cursor-pointer">
+                                <input type="checkbox" checked class="hidden peer">
+                                <i class="fab fa-whatsapp text-2xl text-gray-300 peer-checked:text-green-500 transition-colors"></i>
+                            </label>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- SEZIONE 3: PRODOTTI -->
+            <!-- SEZIONE 3: PRODOTTI / BOMBONIERE -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xs font-bold tracking-widest uppercase flex items-center gap-2">
                         <span class="w-1.5 h-6 bg-m361-red rounded-full"></span> 
-                        <span class="section-title text-[10px]">Prodotti</span>
+                        <span id="title-prodotti" class="section-title text-[10px]">Prodotti</span>
                     </h2>
-                    <button type="button" onclick="addRow()" class="text-[10px] bg-m361-antracite text-white px-6 py-2.5 rounded-xl hover:opacity-90 transition-all font-bold uppercase shadow-md">
-                        + Aggiungi
+                    <button type="button" onclick="addRow()" class="text-[10px] bg-m361-antracite text-white px-6 py-2.5 rounded-xl font-bold uppercase shadow-md">
+                        + Aggiungi Riga
                     </button>
                 </div>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
-                        <thead class="product-header">
+                        <thead>
                             <tr class="text-[10px] text-gray-400 uppercase tracking-wider border-b">
                                 <th class="p-2 font-bold w-32">Codice</th>
-                                <th class="p-2 font-bold min-w-[180px]">Descrizione</th>
+                                <th class="p-2 font-bold">Descrizione / Composizione</th>
                                 <th class="p-2 font-bold w-16">Qtà</th>
                                 <th class="p-2 font-bold w-24">Prezzo</th>
-                                <th class="p-2 font-bold w-24">Tot</th>
-                                <th class="p-2 font-bold w-16 bg-parte-green text-center">Parte</th>
-                                <th class="p-2 font-bold w-16 text-center">Forn.</th>
-                                <th class="p-2 font-bold w-36 text-center">Da Empori</th>
-                                <th class="p-2 font-bold w-36 text-center">Da Altri</th>
-                                <th class="p-2 font-bold w-16 bg-m361-red-soft text-m361-red text-center">Da Ord.</th>
+                                <th id="col-confez" class="p-2 font-bold w-24 hidden text-center">Confez. (€3)</th>
+                                <th class="p-2 font-bold w-24 text-right">Totale</th>
+                                <th class="p-2 font-bold w-16 bg-parte-green text-center">Da Parte</th>
+                                <th class="p-2 font-bold w-16 text-center">Da Forn.</th>
                                 <th class="p-2 w-8"></th>
                             </tr>
                         </thead>
                         <tbody id="order-rows"></tbody>
                         <tfoot class="border-t-2 border-gray-100">
                             <tr class="bg-gray-50/50">
-                                <td colspan="3" class="p-4 text-right font-bold text-xs uppercase text-gray-400 italic">Riepilogo:</td>
+                                <td colspan="4" class="p-4 text-right font-bold text-xs uppercase text-gray-400">Riepilogo:</td>
                                 <td colspan="2" class="p-2">
                                     <div class="flex items-center justify-between bg-white border p-2 rounded-lg">
-                                        <span class="text-[9px] font-bold text-gray-400 uppercase">Totale</span>
+                                        <span class="text-[9px] font-bold text-gray-400 uppercase">Totale Ordine</span>
                                         <span id="grand-total" class="font-bold text-slate-800">€ 0.00</span>
-                                    </div>
-                                </td>
-                                <td colspan="2" class="p-2">
-                                    <div class="flex items-center gap-2 bg-white border p-1.5 rounded-lg px-2">
-                                        <span class="text-[9px] font-bold text-gray-400 uppercase">Acconto</span>
-                                        <input type="text" id="acconto" oninput="formatCurrencyInput(this); calcFinals()" class="w-20 text-right font-bold text-blue-600 bg-transparent outline-none" placeholder="€ 0.00">
                                     </div>
                                 </td>
                                 <td colspan="2" class="p-2">
@@ -172,21 +162,21 @@
                                         <span id="saldo-finale" class="font-bold">€ 0.00</span>
                                     </div>
                                 </td>
-                                <td colspan="2"></td>
+                                <td></td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
             </div>
 
-            <!-- AZIONE FINALE -->
             <div class="flex justify-end">
-                <button type="submit" class="w-full md:w-80 bg-m361-red text-white font-bold py-5 rounded-xl uppercase text-xs tracking-widest shadow-xl hover:opacity-90 transition-all">Salva Ordine</button>
+                <button type="submit" class="w-full md:w-80 bg-m361-red text-white font-bold py-5 rounded-xl uppercase text-xs tracking-widest shadow-xl">Salva Ordine</button>
             </div>
         </form>
     </main>
 
     <script>
+        let currentOrderType = 'standard';
         let operatoriDB = {
             "Cremona": ["Emilio Mazzolari", "Chiara Monteverdi", "Giulia Galelli"],
             "Reggio Emilia": ["Marica Pioli", "Manuela Capanni", "Alessia Bartolomei"],
@@ -194,95 +184,85 @@
             "Casalmaggiore": ["Emilio Mazzolari", "Chiara Monteverdi"]
         };
 
-        function handleEmporioChange() {
-            const val = document.getElementById('select-emporio').value;
-            document.getElementById('cremona-options').classList.toggle('hidden', val !== 'Cremona');
-            const opSelect = document.getElementById('select-operator');
-            opSelect.innerHTML = '<option value="">Seleziona...</option>';
-            (operatoriDB[val] || []).forEach(op => {
-                opSelect.add(new Option(op, op));
-            });
+        function initOrder(type) {
+            currentOrderType = type;
+            document.getElementById('order-type-selection').classList.add('hidden');
+            document.getElementById('orderForm').classList.remove('hidden');
+            document.getElementById('title-prodotti').innerText = type === 'bomboniere' ? 'Configurazione Bomboniere' : 'Prodotti';
+            
+            if(type === 'bomboniere') {
+                document.getElementById('col-confez').classList.remove('hidden');
+            }
+            addRow();
         }
 
-        function formatCurrencyInput(input) {
-            let value = input.value.replace(/[^\d.]/g, '');
-            if (value && !value.includes('€')) {
-                // Semplice aiuto visuale: il valore numerico viene processato dai calcoli
-            }
+        function handleEmporioChange() {
+            const val = document.getElementById('select-emporio').value;
+            const opSelect = document.getElementById('select-operator');
+            opSelect.innerHTML = '<option value="">Seleziona...</option>';
+            (operatoriDB[val] || []).forEach(op => opSelect.add(new Option(op, op)));
         }
 
         function addRow() {
             const tbody = document.getElementById('order-rows');
             const id = Date.now();
-            const currentCitta = document.getElementById('select-emporio').value;
-            
             const row = document.createElement('tr');
-            row.className = "product-row border-b hover:bg-gray-50/50 transition-all";
+            row.className = "border-b hover:bg-gray-50/50 transition-all";
             row.id = `row-${id}`;
+
+            let secondCol = currentOrderType === 'standard' 
+                ? `<input type="text" class="w-full border rounded p-2 text-sm" placeholder="Descrizione prodotto...">`
+                : `<textarea class="w-full border rounded p-2 text-sm h-16" placeholder="Es: Sacchetto rosso, oggetto blu, fiorellino..."></textarea>`;
+
+            let confezCol = currentOrderType === 'bomboniere'
+                ? `<td class="p-2 text-center"><input type="checkbox" id="conf-${id}" onchange="calc(${id})" class="w-5 h-5 accent-m361-red"></td>`
+                : `<td class="hidden"></td>`;
+
             row.innerHTML = `
-                <td data-label="Codice" class="p-2"><input type="text" id="cod-${id}" oninput="validate(${id})" class="w-full border rounded p-2 text-xs font-mono uppercase h-[38px]"></td>
-                <td data-label="Descrizione" class="p-2"><input type="text" id="desc-${id}" oninput="validate(${id})" class="w-full border rounded p-2 text-sm h-[38px]"></td>
-                <td data-label="Qtà" class="p-2"><input type="number" id="qty-${id}" value="1" oninput="calc(${id})" class="w-full border rounded p-2 text-sm font-bold text-center"></td>
-                <td data-label="Prezzo" class="p-2"><input type="number" step="0.01" id="pr-u-${id}" oninput="calc(${id})" class="w-full border rounded p-2 text-sm text-right" placeholder="€"></td>
-                <td data-label="Tot" class="p-2 font-bold text-slate-600 text-sm">€ <span id="tot-riga-${id}">0.00</span></td>
-                <td data-label="Parte" class="p-2 bg-parte-green"><input type="number" id="parte-${id}" oninput="calc(${id})" class="w-full border rounded p-2 text-sm bg-transparent text-center"></td>
-                <td data-label="Forn." class="p-2"><input type="number" id="forn-${id}" oninput="calc(${id})" class="w-full border rounded p-2 text-sm text-center"></td>
-                <td data-label="Da Empori" class="p-2">
-                    <input type="number" id="ev-${id}" oninput="calc(${id})" class="w-full border rounded p-1 text-xs mb-1 text-center" placeholder="qtà">
-                    <select id="es-${id}" class="w-full border rounded p-1 text-[10px] bg-white">
-                        <option value="">da dove?</option>
-                        ${["Casalmaggiore","Cremona","Reggio Emilia","Viadana"].filter(c => c !== currentCitta).map(c => `<option>${c}</option>`).join('')}
-                    </select>
-                </td>
-                <td data-label="Da Altri" class="p-2">
-                    <input type="number" id="av-${id}" oninput="calc(${id})" class="w-full border rounded p-1 text-xs mb-1 text-center" placeholder="qtà">
-                    <input type="text" id="at-${id}" class="w-full border rounded p-1 text-[10px]" placeholder="specifica">
-                </td>
-                <td data-label="Da Ord." class="p-2 bg-m361-red-soft font-bold text-m361-red text-lg text-center" id="do-${id}">0</td>
+                <td class="p-2"><input type="text" class="w-full border rounded p-2 text-xs font-mono uppercase"></td>
+                <td class="p-2">${secondCol}</td>
+                <td class="p-2"><input type="number" id="qty-${id}" value="1" oninput="calc(${id})" class="w-full border rounded p-2 text-sm font-bold text-center"></td>
+                <td class="p-2"><input type="number" step="0.01" id="pr-u-${id}" oninput="calc(${id})" class="w-full border rounded p-2 text-sm text-right" placeholder="€"></td>
+                ${confezCol}
+                <td class="p-2 font-bold text-right text-sm text-slate-600">€ <span id="tot-riga-${id}">0.00</span></td>
+                <td class="p-2 bg-parte-green"><input type="number" id="parte-${id}" class="w-full border rounded p-2 text-sm bg-transparent text-center"></td>
+                <td class="p-2"><input type="number" id="forn-${id}" class="w-full border rounded p-2 text-sm text-center"></td>
                 <td class="p-2 text-center"><button type="button" onclick="this.closest('tr').remove(); calcFinals()" class="text-gray-300 hover:text-red-500">✕</button></td>
             `;
             tbody.appendChild(row);
-            validate(id);
         }
 
         function calc(id) {
             const qty = +document.getElementById(`qty-${id}`).value || 0;
             const pru = +document.getElementById(`pr-u-${id}`).value || 0;
-            const p = +document.getElementById(`parte-${id}`).value || 0;
-            const f = +document.getElementById(`forn-${id}`).value || 0;
-            const ev = +document.getElementById(`ev-${id}`).value || 0;
-            const av = +document.getElementById(`av-${id}`).value || 0;
+            let total = qty * pru;
 
-            const totRiga = qty * pru;
-            document.getElementById(`tot-riga-${id}`).innerText = totRiga.toFixed(2);
-            
-            const daOrd = qty - (p + f + ev + av);
-            document.getElementById(`do-${id}`).innerText = daOrd > 0 ? daOrd : 0;
-            
+            if (currentOrderType === 'bomboniere') {
+                const wantsConfez = document.getElementById(`conf-${id}`).checked;
+                if (wantsConfez) {
+                    total += (qty * 3);
+                }
+            }
+
+            document.getElementById(`tot-riga-${id}`).innerText = total.toFixed(2);
             calcFinals();
         }
 
         function calcFinals() {
             let total = 0;
             document.querySelectorAll('[id^="tot-riga-"]').forEach(el => total += parseFloat(el.innerText) || 0);
-            
-            // Gestione pulita dell'acconto
-            let accInput = document.getElementById('acconto').value;
-            let accValue = parseFloat(accInput.replace(/[^\d.]/g, '')) || 0;
-            
             document.getElementById('grand-total').innerText = `€ ${total.toFixed(2)}`;
-            document.getElementById('saldo-finale').innerText = `€ ${(total - accValue).toFixed(2)}`;
+            document.getElementById('saldo-finale').innerText = `€ ${total.toFixed(2)}`;
         }
 
-        function validate(id) {
-            const ok = document.getElementById(`cod-${id}`).value || document.getElementById(`desc-${id}`).value;
-            document.getElementById(`cod-${id}`).style.borderColor = ok ? "" : "#fbbf24";
-            document.getElementById(`desc-${id}`).style.borderColor = ok ? "" : "#fbbf24";
-        }
+        document.getElementById('orderForm').onsubmit = (e) => {
+            e.preventDefault();
+            alert("Ordine Salvato con Successo!");
+            window.location.href = "ordini_incorso.html";
+        };
 
         window.onload = () => { 
             document.getElementById('order-date').valueAsDate = new Date(); 
-            addRow(); 
         };
     </script>
 </body>
