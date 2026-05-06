@@ -18,7 +18,8 @@
 
         .wa-active { color: #25D366; }
         .wa-inactive { color: #cbd5e1; }
-        
+        .row-error { background-color: #fee2e2 !important; border: 2px solid #ef4444 !important; }
+
         @media (max-width: 1024px) {
             .product-table thead { display: none; }
             .product-row { display: block; background: #fff; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; }
@@ -61,7 +62,7 @@
                         <span class="w-1 h-4 bg-m361-red rounded-full"></span> Sede e Operatore
                     </h2>
                     <div class="space-y-4">
-                        <select id="select-emporio" required class="w-full border-gray-200 border rounded-xl p-3 text-sm bg-gray-50">
+                        <select id="select-emporio" onchange="updateAllEmporiDropdowns()" required class="w-full border-gray-200 border rounded-xl p-3 text-sm bg-gray-50">
                             <option value="">Città *</option>
                             <option value="Casalmaggiore">Casalmaggiore</option>
                             <option value="Cremona">Cremona</option>
@@ -83,7 +84,7 @@
                     <h2 class="text-xs font-bold mb-6 tracking-widest uppercase flex items-center gap-2">
                         <span class="w-1 h-4 bg-m361-red rounded-full"></span> Anagrafica Cliente
                     </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
                         <input type="text" placeholder="Nome *" required class="border-gray-200 border rounded-xl p-3 text-sm">
                         <input type="text" placeholder="Cognome *" required class="border-gray-200 border rounded-xl p-3 text-sm">
                         
@@ -93,13 +94,15 @@
                                 <i class="fab fa-whatsapp fa-lg"></i>
                             </button>
                         </div>
+                        
+                        <input type="email" placeholder="Email" class="border-gray-200 border rounded-xl p-3 text-sm">
 
                         <div class="flex gap-2 p-1 bg-gray-100 rounded-xl h-[46px] items-center">
                             <label class="flex-1 flex items-center justify-center text-xs font-bold cursor-pointer h-full rounded-lg has-[:checked]:bg-white transition-all">
                                 <input type="radio" name="mod_consegna" value="Ritiro" checked class="hidden"> Ritiro
                             </label>
                             <label class="flex-1 flex items-center justify-center text-xs font-bold cursor-pointer h-full rounded-lg has-[:checked]:bg-white transition-all">
-                                <input type="radio" name="mod_consegna" value="Spedizione" class="hidden"> Spedizione
+                                <input type="radio" name="mod_consegna" value="Spedizione" class="hidden"> Sped.
                             </label>
                         </div>
                     </div>
@@ -135,7 +138,12 @@
                 </div>
             </div>
 
-            <button type="submit" class="w-full bg-m361-red text-white font-bold py-5 rounded-2xl uppercase tracking-widest shadow-xl hover:scale-[1.01] transition-all">
+            <!-- NOTE -->
+            <div class="bg-white p-6 rounded-2xl border border-gray-100">
+                <textarea id="order-notes" rows="2" class="w-full border-gray-200 border rounded-2xl p-4 text-sm" placeholder="Note aggiuntive..."></textarea>
+            </div>
+
+            <button type="submit" id="submit-btn" class="w-full bg-m361-red text-white font-bold py-5 rounded-2xl uppercase tracking-widest shadow-xl hover:scale-[1.01] transition-all">
                 <i class="fas fa-save mr-2"></i> Salva Ordine
             </button>
         </form>
@@ -161,12 +169,26 @@
             btn.classList.toggle('wa-inactive');
         }
 
+        function getEmporioOptions() {
+            const mainCitta = document.getElementById('select-emporio').value;
+            let options = '<option value="">Dove?</option>';
+            ALL_EMPORI.forEach(e => { if(e !== mainCitta) options += `<option value="${e}">${e}</option>`; });
+            return options;
+        }
+
+        function updateAllEmporiDropdowns() {
+            document.querySelectorAll('.emporio-dropdown').forEach(select => {
+                const currentVal = select.value;
+                select.innerHTML = getEmporioOptions();
+                select.value = currentVal;
+            });
+        }
+
         function addGroup() {
             groupCount++;
             const groupId = groupCount;
             const container = document.getElementById('groups-container');
             
-            // Per ordini standard non mostriamo il subtotale tipologia
             const subtotalSection = currentType === 'bomboniere' ? `
                 <div class="mt-4 flex justify-end border-t pt-4">
                     <div class="text-right">
@@ -197,8 +219,8 @@
                                     <th class="pb-2 w-16">Qtà</th>
                                     <th class="pb-2 w-16 bg-green-50 text-green-700 rounded-t-lg">Parte</th>
                                     <th class="pb-2 w-16">Forn.</th>
-                                    <th class="pb-2 w-24">Empori</th>
-                                    <th class="pb-2 w-24">Altri</th>
+                                    <th class="pb-2 w-32">Empori</th>
+                                    <th class="pb-2 w-32">Altri</th>
                                     <th class="pb-2 w-16 bg-red-50 text-m361-red rounded-t-lg">Da Ord</th>
                                     <th class="pb-2 w-24 text-right pr-4">Totale</th>
                                     <th class="pb-2 w-8"></th>
@@ -218,7 +240,7 @@
             const tbody = document.getElementById(`rows-container-${groupId}`);
             const rowId = Date.now() + Math.random();
             const row = document.createElement('tr');
-            row.className = "product-row transition-all";
+            row.className = "product-row transition-all rounded-xl";
             row.id = `row-${rowId}`;
 
             row.innerHTML = `
@@ -228,8 +250,18 @@
                 <td data-label="Qtà" class="p-2"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="qty-input w-full border-gray-200 border rounded-xl p-2 font-bold text-center text-sm" value="0"></td>
                 <td data-label="Parte" class="p-2 bg-green-50"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="parte-input w-full border-green-200 border rounded-xl p-2 text-center text-sm font-bold text-green-700" value="0"></td>
                 <td data-label="Forn" class="p-2"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="forn-input w-full border-gray-200 border rounded-xl p-2 text-center text-sm" value="0"></td>
-                <td data-label="Empori" class="p-2"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="emp-q-input w-full border-gray-200 border rounded-xl p-2 text-center text-sm" value="0"></td>
-                <td data-label="Altri" class="p-2"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="altri-q-input w-full border-gray-200 border rounded-xl p-2 text-center text-sm" value="0"></td>
+                <td data-label="Empori" class="p-2">
+                    <div class="flex flex-col gap-1">
+                        <input type="number" oninput="calcRow('${rowId}', ${groupId})" class="emp-q-input w-full border-gray-200 border rounded-lg p-1 text-center text-xs" value="0">
+                        <select class="emporio-dropdown w-full border-gray-200 border rounded-lg p-1 text-[9px] bg-gray-50">${getEmporioOptions()}</select>
+                    </div>
+                </td>
+                <td data-label="Altri" class="p-2">
+                    <div class="flex flex-col gap-1">
+                        <input type="number" oninput="calcRow('${rowId}', ${groupId})" class="altri-q-input w-full border-gray-200 border rounded-lg p-1 text-center text-xs" value="0">
+                        <input type="text" placeholder="Specifica..." class="w-full border-gray-200 border rounded-lg p-1 text-[9px]">
+                    </div>
+                </td>
                 <td data-label="Ord" class="p-2 bg-red-50 text-center font-bold text-m361-red" id="do-${rowId}">0</td>
                 <td data-label="Totale" class="p-2 text-right pr-4 font-bold text-slate-700">€ <span class="row-total" id="tot-riga-${rowId}">0.00</span></td>
                 <td class="p-2 text-center"><button type="button" onclick="removeRow('${rowId}', ${groupId})" class="text-gray-300 hover:text-red-500">✕</button></td>
@@ -247,29 +279,49 @@
             const e = +row.querySelector('.emp-q-input').value || 0;
             const a = +row.querySelector('.altri-q-input').value || 0;
 
-            const daOrd = qty - (p + f + e + a);
-            document.getElementById(`do-${rowId}`).innerText = daOrd > 0 ? daOrd : 0;
+            const sumProvenienze = p + f + e + a;
+            const daOrd = qty - sumProvenienze;
+            
+            // Validazione visiva
+            if (sumProvenienze > qty) {
+                row.classList.add('row-error');
+            } else {
+                row.classList.remove('row-error');
+            }
 
-            const total = qty * price;
-            document.getElementById(`tot-riga-${rowId}`).innerText = total.toFixed(2);
+            document.getElementById(`do-${rowId}`).innerText = daOrd > 0 ? daOrd : 0;
+            document.getElementById(`tot-riga-${rowId}`).innerText = (qty * price).toFixed(2);
             
             if(currentType === 'bomboniere') calcSubtotal(groupId);
             calcGrandTotal();
+            validateGlobal();
+        }
+
+        function validateGlobal() {
+            const errors = document.querySelectorAll('.row-error').length;
+            const btn = document.getElementById('submit-btn');
+            if (errors > 0) {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
         }
 
         function calcSubtotal(groupId) {
             let sub = 0;
-            document.getElementById(`rows-container-${groupId}`).querySelectorAll('.row-total').forEach(el => {
-                sub += parseFloat(el.innerText) || 0;
-            });
-            document.getElementById(`subtotal-${groupId}`).innerText = `€ ${sub.toFixed(2)}`;
+            const container = document.getElementById(`rows-container-${groupId}`);
+            if(container) {
+                container.querySelectorAll('.row-total').forEach(el => sub += parseFloat(el.innerText) || 0);
+                document.getElementById(`subtotal-${groupId}`).innerText = `€ ${sub.toFixed(2)}`;
+            }
         }
 
         function calcGrandTotal() {
             let grand = 0;
             document.querySelectorAll('.row-total').forEach(el => grand += parseFloat(el.innerText) || 0);
-            const accVal = document.getElementById('acconto').value.replace('€', '').trim();
-            const acc = parseFloat(accVal) || 0;
+            const acc = parseFloat(document.getElementById('acconto').value.replace('€', '').trim()) || 0;
             document.getElementById('grand-total').innerText = `€ ${grand.toFixed(2)}`;
             document.getElementById('saldo-finale').innerText = `€ ${(grand - acc).toFixed(2)}`;
         }
@@ -288,6 +340,7 @@
             document.getElementById(`row-${rowId}`).remove();
             if(currentType === 'bomboniere') calcSubtotal(groupId);
             calcGrandTotal();
+            validateGlobal();
         }
 
         function validateSubmission(e) {
