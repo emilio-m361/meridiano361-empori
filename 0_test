@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M361 - Ordini in Corso</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; uppercase; }
+        .bg-m361-red { background-color: #b75252; }
+    </style>
+</head>
+<body class="pb-20">
+
+    <header class="bg-white border-b p-4 px-8 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+            <img src="logom361_rosso.jpg" alt="Logo" class="h-8">
+            <h1 class="font-bold text-lg border-l pl-4 ml-2 text-slate-700">Ordini in Corso</h1>
+        </div>
+        <a href="nuovo_ordine.html" class="bg-m361-red text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md">+ NUOVO ORDINE</a>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 text-[10px] text-gray-400 uppercase tracking-wider border-b">
+                        <th class="p-4 font-bold">Data</th>
+                        <th class="p-4 font-bold">Emporio</th>
+                        <th class="p-4 font-bold">Cliente</th>
+                        <th class="p-4 font-bold">Prodotti (Codici)</th>
+                        <th class="p-4 font-bold text-center">Da Fare</th>
+                        <th class="p-4 font-bold">Saldo</th>
+                        <th class="p-4 font-bold">Stato</th>
+                        <th class="p-4 w-10"></th>
+                    </tr>
+                </thead>
+                <tbody id="lista-ordini" class="divide-y divide-gray-100 text-sm">
+                    <tr id="loading-row">
+                        <td colspan="8" class="p-10 text-center text-gray-400 italic">Caricamento ordini in tempo reale...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // USA LE STESSE CHIAVI CHE HAI USATO NEL FILE NUOVO ORDINE
+        const firebaseConfig = {
+            apiKey: "IL_TUO_API_KEY",
+            authDomain: "IL_TUO_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://IL_TUO_PROJECT_ID-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "IL_TUO_PROJECT_ID",
+            storageBucket: "IL_TUO_PROJECT_ID.appspot.com",
+            messagingSenderId: "...",
+            appId: "..."
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const ordiniRef = ref(db, 'ordini');
+
+        // ASCOLTO DEI DATI IN TEMPO REALE
+        onValue(ordiniRef, (snapshot) => {
+            const data = snapshot.val();
+            const container = document.getElementById('lista-ordini');
+            container.innerHTML = ""; // Pulisce la tabella
+
+            if (!data) {
+                container.innerHTML = '<tr><td colspan="8" class="p-10 text-center text-gray-400">Nessun ordine in corso trovato.</td></tr>';
+                return;
+            }
+
+            // Trasforma l'oggetto in array e lo inverte per vedere i più recenti in alto
+            const arrayOrdini = Object.entries(data).reverse();
+
+            arrayOrdini.forEach(([id, ordine]) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors";
+                
+                // Crea la stringa dei prodotti (es: "A01 (x2), B05 (x1)")
+                const codiciProdotti = ordine.prodotti.map(p => `${p.codice} (${p.quantita})`).join(", ");
+                
+                // Calcola totale pezzi "Da Fare"
+                const totaleDaFare = ordine.prodotti.reduce((acc, p) => acc + parseInt(p.daFare || 0), 0);
+
+                tr.innerHTML = `
+                    <td class="p-4 font-medium text-slate-600">${ordine.data}</td>
+                    <td class="p-4 text-slate-500">${ordine.citta}</td>
+                    <td class="p-4">
+                        <div class="font-bold text-slate-700">${ordine.cliente.nome} ${ordine.cliente.cognome}</div>
+                        <div class="text-[10px] text-gray-400">${ordine.cliente.cellulare}</div>
+                    </td>
+                    <td class="p-4 text-xs text-slate-500 max-w-xs truncate">${codiciProdotti}</td>
+                    <td class="p-4 text-center font-bold text-m361-red">${totaleDaFare}</td>
+                    <td class="p-4 font-bold text-slate-700">${ordine.saldo}</td>
+                    <td class="p-4">
+                        <span class="status-badge bg-orange-100 text-orange-600">${ordine.stato || 'In corso'}</span>
+                    </td>
+                    <td class="p-4 text-right">
+                        <button class="text-gray-300 hover:text-slate-600"><i class="fas fa-ellipsis-v"></i></button>
+                    </td>
+                `;
+                container.appendChild(tr);
+            });
+        });
+    </script>
+</body>
+</html>
