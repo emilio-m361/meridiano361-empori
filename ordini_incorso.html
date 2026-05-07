@@ -160,121 +160,20 @@ const SUPABASE_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-async function caricaOrdini() {
-    const container = document.getElementById('orders-container');
-    
-    // 1. Recupero dati
-    const { data: ordini, error } = await _supabase
-        .from('ordini_incorso')
-        .select('*')
-        .order('created_at', { ascending: false });
+// --- FUNZIONI OPERATIVE (Globali) ---
 
-    if (error) {
-        console.error("Errore caricamento:", error);
-        container.innerHTML = `<p class="text-center text-red-500">Errore: ${error.message}</p>`;
-        return;
-    }
-
-    // 2. Pulizia container
-    container.innerHTML = "";
-
-    if (!ordini || ordini.length === 0) {
-        container.innerHTML = `<p class="text-center text-slate-400 py-10">Nessun ordine trovato nella tabella "ordini_incorso".</p>`;
-        return;
-    }
-
-  // Funzione per aggiornare un campo su Supabase (es. cliente_avvisato o merce_pronta)
 async function aggiornaStato(id, campo, valore) {
     const { error } = await _supabase
         .from('ordini_incorso')
         .update({ [campo]: valore })
         .eq('id', id);
     
-    if (error) alert("Errore aggiornamento: " + error.message);
-}
-
-// Funzione per archiviare l'ordine
-async function archiviaOrdine(id, elementId) {
-    // 1. Recupera i dati dell'ordine corrente
-    const { data: ordine } = await _supabase
-        .from('ordini_incorso')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-    // 2. Inserisci in ordini_archiviati (assicurati che la tabella esista)
-    const { error: errInsert } = await _supabase
-        .from('ordini_archiviati')
-        .insert([{ ...ordine, id: undefined, archiviato_il: new Date() }]);
-
-    if (!errInsert) {
-        // 3. Elimina da ordini_incorso
-        await _supabase.from('ordini_incorso').delete().eq('id', id);
-        
-        // Animazione e rimozione card
-        const el = document.getElementById(elementId);
-        el.classList.add('archive-anim');
-        setTimeout(() => el.remove(), 500);
-    } else {
-        alert("Errore archiviazione: " + errInsert.message);
+    if (error) {
+        console.error("Errore:", error);
+        alert("Errore aggiornamento: " + error.message);
     }
 }
 
-const card = `
-<div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row gap-6 items-center mb-4 transition-all" id="${cardId}">
-    
-    <div class="flex-1 w-full">
-        <div class="flex justify-between items-start mb-2">
-            <div class="flex items-center gap-3">
-                <span class="status-badge ${ord.merce_pronta ? 'status-ready' : 'status-waiting'}">
-                    ${ord.merce_pronta ? 'Merce Pronta' : 'In Attesa'}
-                </span>
-                <span class="text-[10px] font-mono text-slate-400">#${ord.id.toString().slice(-5)}</span>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="modificaOrdine('${ord.id}')" class="text-slate-400 hover:text-blue-600 transition-colors p-1">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 Fugiat 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                </button>
-                <button onclick="eliminaOrdine('${ord.id}', '${cardId}')" class="text-slate-400 hover:text-m361-red transition-colors p-1">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                </button>
-            </div>
-        </div>
-        <h3 class="text-xl font-black text-slate-800 uppercase tracking-tight">${ord.cliente_nome} ${ord.cliente_cognome}</h3>
-        <p class="text-xs text-slate-500 mt-2 flex items-start gap-2">
-            <span class="font-bold text-slate-700">ORDINE:</span> ${ord.merce_ordinata || 'Nessun dettaglio merce'}
-        </p>
-    </div>
-
-    <div class="flex-1 w-full flex flex-col gap-3 border-l border-r border-slate-100 px-6">
-        <label class="flex items-center gap-3 cursor-pointer group">
-            <input type="checkbox" ${ord.merce_pronta ? 'checked' : ''} onchange="aggiornaStato('${ord.id}', 'merce_pronta', this.checked)" class="w-5 h-5 accent-blue-600 rounded-lg">
-            <span class="text-[11px] font-bold text-slate-600 uppercase group-hover:text-blue-600">Merce Pronta</span>
-        </label>
-        <label class="flex items-center gap-3 cursor-pointer group">
-            <input type="checkbox" ${ord.cliente_avvisato ? 'checked' : ''} onchange="aggiornaStato('${ord.id}', 'cliente_avvisato', this.checked)" class="w-5 h-5 accent-blue-600 rounded-lg">
-            <span class="text-[11px] font-bold text-slate-600 uppercase group-hover:text-blue-600">Cliente Avvisato</span>
-        </label>
-    </div>
-
-    <div class="flex-1 w-full text-right flex flex-col items-end justify-center">
-        <p class="text-[10px] font-bold text-slate-400 uppercase">Da incassare</p>
-        <p class="text-2xl font-black text-m361-red mb-4">€ ${parseFloat(ord.da_pagare || 0).toFixed(2)}</p>
-        
-        <div class="flex gap-2">
-            <button onclick="archiviaOrdine('${ord.id}', '${cardId}', 'ritirato')" class="bg-m361-green text-white px-3 py-2 rounded-xl text-[9px] font-bold uppercase hover:opacity-90 shadow-sm">
-                Ritirato
-            </button>
-            <button onclick="archiviaOrdine('${ord.id}', '${cardId}', 'spedito')" class="bg-slate-800 text-white px-3 py-2 rounded-xl text-[9px] font-bold uppercase hover:opacity-90 shadow-sm">
-                Spedito
-            </button>
-        </div>
-    </div>
-</div>`;
-    }
-// Avvia al caricamento
-window.onload = caricaOrdini;
-    // Funzione per eliminare l'ordine con conferma
 async function eliminaOrdine(id, elementId) {
     if (confirm("Sei sicuro di voler eliminare definitivamente questo ordine?")) {
         const { error } = await _supabase.from('ordini_incorso').delete().eq('id', id);
@@ -289,25 +188,32 @@ async function eliminaOrdine(id, elementId) {
     }
 }
 
-// Funzione per reindirizzare alla pagina di modifica
 function modificaOrdine(id) {
-    // Reindirizza a ordini_nuovi.html passando l'ID come parametro per caricare i dati
     window.location.href = `ordini_nuovi.html?edit=${id}`;
 }
 
-// Funzione Archiviazione aggiornata (Ritirato/Spedito)
 async function archiviaOrdine(id, elementId, metodo) {
-    const { data: ordine } = await _supabase.from('ordini_incorso').select('*').eq('id', id).single();
+    // Recupera l'ordine attuale
+    const { data: ordine, error: fetchError } = await _supabase
+        .from('ordini_incorso')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+    if (fetchError) return alert("Errore recupero ordine: " + fetchError.message);
+
+    // Prepara l'oggetto per l'archivio (rimuoviamo l'ID originale per lasciarlo generare a Supabase o gestirlo pulito)
+    const datiArchivio = { 
+        ...ordine, 
+        id: undefined, 
+        stato: 'Evaso', 
+        metodo_evasione: metodo,
+        data_evasione: new Date() 
+    };
 
     const { error: errInsert } = await _supabase
         .from('ordini_archiviati')
-        .insert([{ 
-            ...ordine, 
-            id: undefined, 
-            stato: 'Evaso', 
-            metodo_evasione: metodo, // "Ritirato" o "Spedito"
-            data_evasione: new Date() 
-        }]);
+        .insert([datiArchivio]);
 
     if (!errInsert) {
         await _supabase.from('ordini_incorso').delete().eq('id', id);
@@ -315,9 +221,92 @@ async function archiviaOrdine(id, elementId, metodo) {
         el.classList.add('archive-anim');
         setTimeout(() => el.remove(), 500);
     } else {
-        alert("Errore archiviazione: " + errInsert.message);
+        alert("Errore archiviazione: " + errInsert.message + ". Verifica che la tabella 'ordini_archiviati' esista!");
     }
 }
+
+// --- CARICAMENTO DATI ---
+
+async function caricaOrdini() {
+    const container = document.getElementById('orders-container');
+    
+    const { data: ordini, error } = await _supabase
+        .from('ordini_incorso')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        container.innerHTML = `<p class="text-center text-red-500">Errore: ${error.message}</p>`;
+        return;
+    }
+
+    container.innerHTML = "";
+
+    if (!ordini || ordini.length === 0) {
+        container.innerHTML = `<p class="text-center text-slate-400 py-10">Nessun ordine in corso.</p>`;
+        return;
+    }
+
+    ordini.forEach(ord => {
+        const cardId = `card-${ord.id}`;
+        const importo = ord.da_pagare ? parseFloat(ord.da_pagare).toFixed(2) : "0.00";
+        
+        const cardHTML = `
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row gap-6 items-center mb-4 transition-all" id="${cardId}">
+            
+            <div class="flex-1 w-full">
+                <div class="flex justify-between items-start mb-2">
+                    <div class="flex items-center gap-3">
+                        <span class="status-badge ${ord.merce_pronta ? 'status-ready' : 'status-waiting'}">
+                            ${ord.merce_pronta ? 'Merce Pronta' : 'In Attesa'}
+                        </span>
+                        <span class="text-[10px] font-mono text-slate-400">#${ord.id.toString().slice(-5)}</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="modificaOrdine('${ord.id}')" class="text-slate-400 hover:text-blue-600 transition-colors p-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        </button>
+                        <button onclick="eliminaOrdine('${ord.id}', '${cardId}')" class="text-slate-400 hover:text-m361-red transition-colors p-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <h3 class="text-xl font-black text-slate-800 uppercase tracking-tight">${ord.cliente_nome || ''} ${ord.cliente_cognome || ''}</h3>
+                <p class="text-xs text-slate-500 mt-2 flex items-start gap-2">
+                    <span class="font-bold text-slate-700 uppercase text-[10px]">Merce:</span> ${ord.merce_ordinata || 'Dettaglio non inserito'}
+                </p>
+            </div>
+
+            <div class="flex-1 w-full flex flex-col gap-3 border-l border-r border-slate-100 px-6">
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <input type="checkbox" ${ord.merce_pronta ? 'checked' : ''} onchange="aggiornaStato('${ord.id}', 'merce_pronta', this.checked)" class="w-5 h-5 accent-blue-600 rounded-lg cursor-pointer">
+                    <span class="text-[11px] font-bold text-slate-600 uppercase group-hover:text-blue-600 transition-colors">Merce Pronta</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <input type="checkbox" ${ord.cliente_avvisato ? 'checked' : ''} onchange="aggiornaStato('${ord.id}', 'cliente_avvisato', this.checked)" class="w-5 h-5 accent-blue-600 rounded-lg cursor-pointer">
+                    <span class="text-[11px] font-bold text-slate-600 uppercase group-hover:text-blue-600 transition-colors">Cliente Avvisato</span>
+                </label>
+            </div>
+
+            <div class="flex-1 w-full text-right flex flex-col items-end justify-center">
+                <p class="text-[10px] font-bold text-slate-400 uppercase">Da incassare</p>
+                <p class="text-2xl font-black text-m361-red mb-4">€ ${importo}</p>
+                
+                <div class="flex gap-2">
+                    <button onclick="archiviaOrdine('${ord.id}', '${cardId}', 'ritirato')" class="bg-m361-green text-white px-3 py-2 rounded-xl text-[9px] font-bold uppercase hover:opacity-90 shadow-sm transition-all">
+                        Ritirato
+                    </button>
+                    <button onclick="archiviaOrdine('${ord.id}', '${cardId}', 'spedito')" class="bg-slate-800 text-white px-3 py-2 rounded-xl text-[9px] font-bold uppercase hover:opacity-90 shadow-sm transition-all">
+                        Spedito
+                    </button>
+                </div>
+            </div>
+        </div>`;
+        container.insertAdjacentHTML('beforeend', cardHTML);
+    });
+}
+
+window.onload = caricaOrdini;
 </script>
 </body>
 </html>
