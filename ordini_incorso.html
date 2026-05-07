@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M361 - Ordini in Corso</title>
+    <title>M361 - Logistica Ordini</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
@@ -21,15 +21,15 @@
     <header class="bg-white border-b p-4 px-8 flex justify-between items-center sticky top-0 z-50">
         <div class="flex items-center gap-4">
             <img src="logom361_rosso.jpg" alt="Logo" class="h-10">
-            <h1 class="font-bold text-xl border-l pl-4 ml-2 text-slate-700">Ordini in Corso</h1>
+            <h1 class="font-bold text-xl border-l pl-4 ml-2 text-slate-700">Gestione Logistica</h1>
         </div>
-        <a href="ordini_nuovi.html" class="bg-m361-red text-white px-6 py-2 rounded-xl text-xs font-bold uppercase shadow-md hover:opacity-90 transition-all">+ Nuovo</a>
+        <a href="ordini_nuovi.html" class="bg-m361-red text-white px-6 py-2 rounded-xl text-xs font-bold uppercase shadow-md hover:opacity-90">Nuovo Ordine</a>
     </header>
 
     <main class="max-w-7xl mx-auto p-4 md:p-8">
         <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
             <div class="flex flex-wrap gap-2">
-                <button onclick="caricaOrdini('tutti')" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase hover:opacity-80">Tutti</button>
+                <button onclick="caricaOrdini('tutti')" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase">Tutti</button>
                 <button onclick="caricaOrdini('da_ordinare')" class="bg-white border border-slate-200 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold uppercase hover:border-m361-red">Merce da ordinare</button>
                 <button onclick="caricaOrdini('da_avvisare')" class="bg-white border border-slate-200 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold uppercase hover:border-m361-red">Clienti da avvisare</button>
                 <button onclick="caricaOrdini('avvisati')" class="bg-white border border-slate-200 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold uppercase hover:border-m361-red">Clienti avvisati</button>
@@ -41,7 +41,7 @@
         </div>
 
         <div class="space-y-4" id="orders-container">
-            <p class="text-center text-slate-400 py-10">Caricamento ordini...</p>
+            <p class="text-center text-slate-400 py-10">Caricamento logistica in corso...</p>
         </div>
     </main>
 
@@ -52,23 +52,21 @@
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function aggiornaStato(id, campo, valore) {
-            const { error } = await _supabase.from('ordini_incorso').update({ [campo]: valore }).eq('id', id);
-            if (error) alert("Errore: " + error.message);
+            await _supabase.from('ordini_incorso').update({ [campo]: valore }).eq('id', id);
         }
 
         async function eliminaOrdine(id, elementId) {
-            if (confirm("Eliminare definitivamente questo ordine?")) {
+            if (confirm("Eliminare l'ordine?")) {
                 const { error } = await _supabase.from('ordini_incorso').delete().eq('id', id);
                 if (!error) document.getElementById(elementId).remove();
             }
         }
 
         async function evadiOrdine(id, elementId, tipo) {
-            const msg = tipo === 'Ritiro' ? "Confermi che l'ordine è stato RITIRATO?" : "Confermi che l'ordine è stato SPEDITO?";
-            if (confirm(msg)) {
+            const azione = tipo === 'Spedizione' ? 'SPEDITO' : 'RITIRATO';
+            if (confirm(`Confermi che l'ordine è stato ${azione}? Sarà spostato in archivio.`)) {
                 const { data: ordine } = await _supabase.from('ordini_incorso').select('*').eq('id', id).single();
-                const datiArchivio = { ...ordine, id: undefined, stato: 'Evaso', data_evasione: new Date() };
-                const { error: errInsert } = await _supabase.from('ordini_archiviati').insert([datiArchivio]);
+                const { error: errInsert } = await _supabase.from('ordini_archiviati').insert([{ ...ordine, id: undefined, stato: 'Evaso', data_evasione: new Date() }]);
                 if (!errInsert) {
                     await _supabase.from('ordini_incorso').delete().eq('id', id);
                     const el = document.getElementById(elementId);
@@ -80,34 +78,25 @@
 
         async function caricaOrdini(filtro = 'tutti') {
             const container = document.getElementById('orders-container');
-            container.innerHTML = '<p class="text-center text-slate-400 py-10">Filtraggio in corso...</p>';
+            container.innerHTML = '<p class="text-center text-slate-400 py-10">Filtraggio...</p>';
 
             let query = _supabase.from('ordini_incorso').select('*').order('created_at', { ascending: false });
 
-            if (filtro === 'da_ordinare') {
-                query = query.eq('merce_pronta', false);
-            } else if (filtro === 'da_avvisare') {
-                query = query.eq('merce_pronta', true).eq('cliente_avvisato', false);
-            } else if (filtro === 'avvisati') {
-                query = query.eq('cliente_avvisato', true);
-            }
+            if (filtro === 'da_ordinare') query = query.eq('merce_pronta', false);
+            else if (filtro === 'da_avvisare') query = query.eq('merce_pronta', true).eq('cliente_avvisato', false);
+            else if (filtro === 'avvisati') query = query.eq('cliente_avvisato', true);
 
             const { data: ordini, error } = await query;
-            if (error) {
-                container.innerHTML = `<p class="text-center text-red-500">Errore: ${error.message}</p>`;
-                return;
-            }
+            if (error) return;
 
-            container.innerHTML = ordini.length === 0 ? `<p class="text-center text-slate-400 py-10">Nessun ordine trovato.</p>` : "";
+            container.innerHTML = ordini.length === 0 ? `<p class="text-center text-slate-400 py-10">Nessun ordine presente per questa categoria.</p>` : "";
 
             ordini.forEach(ord => {
                 const cardId = `card-${ord.id}`;
-                const nomeCliente = (ord.cliente_nome || "") + " " + (ord.cliente_cognome || "");
+                const nomeCliente = `${ord.cliente_nome || ''} ${ord.cliente_cognome || ''}`.trim();
                 const badgeTesto = ord.merce_pronta ? 'Merce Pronta' : 'Merce da ordinare';
                 const badgeClasse = ord.merce_pronta ? 'status-ready' : 'status-waiting';
-                
-                // Determina il testo del pulsante finale
-                const testoPulsanteEvasione = ord.metodo_consegna === 'Spedizione' ? 'SPEDITO' : 'RITIRATO';
+                const testoEvasione = ord.metodo_consegna === 'Spedizione' ? 'SPEDITO' : 'RITIRATO';
 
                 container.insertAdjacentHTML('beforeend', `
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row gap-6 items-center mb-4" id="${cardId}">
@@ -118,32 +107,32 @@
                                 <span class="text-[10px] font-mono text-slate-400">#${ord.id.toString().slice(-5)}</span>
                             </div>
                             <div class="flex gap-4">
-                                <button onclick="window.location.href='ordini_nuovi.html?edit=${ord.id}'" class="text-[#6b8d53] p-1 hover:scale-110 transition-transform">
+                                <button onclick="window.location.href='ordini_nuovi.html?edit=${ord.id}'" class="text-blue-500 hover:text-blue-700 transition-colors">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                 </button>
-                                <button onclick="eliminaOrdine('${ord.id}', '${cardId}')" class="text-[#b75252] p-1 hover:scale-110 transition-transform">
+                                <button onclick="eliminaOrdine('${ord.id}', '${cardId}')" class="text-red-400 hover:text-red-600">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                 </button>
                             </div>
                         </div>
-                        <h3 class="text-xl font-black text-slate-800 uppercase tracking-tight">${nomeCliente.trim() || 'Senza nome'}</h3>
-                        <p class="text-xs text-slate-500 mt-1 uppercase font-bold text-[10px]">${ord.metodo_consegna || 'Ritiro in sede'}</p>
+                        <h3 class="text-xl font-black text-slate-800 uppercase tracking-tight">${nomeCliente || 'Senza Nome'}</h3>
+                        <p class="text-[11px] text-slate-500 font-bold uppercase mt-1 tracking-wider">${ord.metodo_consegna || 'Ritiro in sede'}</p>
                     </div>
+
                     <div class="flex-1 w-full flex flex-col gap-3 border-l border-r border-slate-100 px-6">
                         <label class="flex items-center gap-3 cursor-pointer">
                             <input type="checkbox" ${ord.merce_pronta ? 'checked' : ''} onchange="aggiornaStato('${ord.id}', 'merce_pronta', this.checked)" class="w-5 h-5 accent-blue-600 rounded-lg">
-                            <span class="text-[11px] font-bold text-slate-600 uppercase">Merce Pronta</span>
+                            <span class="text-[11px] font-bold text-slate-600 uppercase">Merce Arrivata / Pronta</span>
                         </label>
                         <label class="flex items-center gap-3 cursor-pointer">
                             <input type="checkbox" ${ord.cliente_avvisato ? 'checked' : ''} onchange="aggiornaStato('${ord.id}', 'cliente_avvisato', this.checked)" class="w-5 h-5 accent-blue-600 rounded-lg">
                             <span class="text-[11px] font-bold text-slate-600 uppercase">Cliente Avvisato</span>
                         </label>
                     </div>
-                    <div class="flex-1 w-full text-right flex flex-col items-end justify-center">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Da incassare</p>
-                        <p class="text-2xl font-black text-[#b75252] mb-4">€ ${parseFloat(ord.da_pagare || 0).toFixed(2)}</p>
-                        <button onclick="evadiOrdine('${ord.id}', '${cardId}', '${ord.metodo_consegna}')" class="bg-slate-700 text-white px-6 py-2 rounded-xl text-[10px] font-bold uppercase hover:bg-slate-900 shadow-sm transition-colors">
-                            ${testoPulsanteEvasione}
+
+                    <div class="flex-1 w-full text-right flex items-center justify-end">
+                        <button onclick="evadiOrdine('${ord.id}', '${cardId}', '${ord.metodo_consegna}')" class="bg-slate-700 text-white px-8 py-3 rounded-xl text-[11px] font-black uppercase hover:bg-slate-900 shadow-md transition-all">
+                            ${testoEvasione}
                         </button>
                     </div>
                 </div>`);
