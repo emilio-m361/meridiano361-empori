@@ -2,56 +2,86 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>M361 - Gestione Ordine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M361 - Gestione Ordini</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        .text-m361-red { color: #b75252; }
         .bg-m361-red { background-color: #b75252; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
     </style>
 </head>
-<body class="p-8">
+<body class="pb-20">
+    <header class="bg-white border-b p-4 px-6 md:px-8 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+        <div class="flex items-center gap-4">
+            <img src="logom361_rosso.jpg" alt="Logo" class="h-8">
+            <h1 id="page-title" class="font-bold text-lg border-l pl-4 text-slate-700 uppercase">Nuovo Ordine</h1>
+        </div>
+        <button onclick="window.location.href='ordini_incorso.html'" class="flex items-center gap-2 text-slate-500 hover:text-m361-red transition-colors font-bold text-sm">
+            <i class="fas fa-arrow-left"></i> Indietro
+        </button>
+    </header>
 
-    <div class="max-w-2xl mx-auto bg-white p-8 rounded-[2rem] shadow-sm border border-slate-200">
-        <h1 id="page-title" class="text-2xl font-black text-slate-800 uppercase mb-8">Nuovo Ordine</h1>
-        
-        <form id="orderForm" class="space-y-6">
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Nome</label>
-                    <input type="text" id="cust-nome" required class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-100">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Cognome</label>
-                    <input type="text" id="cust-cognome" required class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-100">
-                </div>
-            </div>
-
+    <main class="max-w-4xl mx-auto p-6">
+        <form id="orderForm" class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-100 space-y-8">
+            
             <div>
-                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Totale Ordine (€)</label>
-                <input type="number" step="0.01" id="totale-ordine" required class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-100">
-            </div>
-
-            <div>
-                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-3">Modalità Consegna</label>
-                <div class="flex gap-4">
-                    <label class="flex-1 border p-4 rounded-xl flex items-center gap-3 cursor-pointer">
-                        <input type="radio" name="mod_consegna" value="Ritiro" checked class="w-5 h-5 accent-[#b75252]">
-                        <span class="font-bold text-slate-700">Ritiro in sede</span>
-                    </label>
-                    <label class="flex-1 border p-4 rounded-xl flex items-center gap-3 cursor-pointer">
-                        <input type="radio" name="mod_consegna" value="Spedizione" class="w-5 h-5 accent-[#b75252]">
-                        <span class="font-bold text-slate-700">Spedizione</span>
-                    </label>
+                <h2 class="text-xs font-black mb-6 tracking-widest uppercase flex items-center gap-2 text-slate-400">
+                    <span class="w-1 h-4 bg-m361-red rounded-full"></span> Anagrafica Cliente
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Nome</label>
+                        <input type="text" id="cust-nome" required class="w-full border-gray-200 border rounded-2xl p-4 text-sm focus:ring-2 focus:ring-red-100 outline-none transition-all">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Cognome</label>
+                        <input type="text" id="cust-cognome" required class="w-full border-gray-200 border rounded-2xl p-4 text-sm focus:ring-2 focus:ring-red-100 outline-none transition-all">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Cellulare</label>
+                        <input type="tel" id="cust-tel" required class="w-full border-gray-200 border rounded-2xl p-4 text-sm focus:ring-2 focus:ring-red-100 outline-none transition-all">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Email</label>
+                        <input type="email" id="cust-email" class="w-full border-gray-200 border rounded-2xl p-4 text-sm focus:ring-2 focus:ring-red-100 outline-none transition-all">
+                    </div>
                 </div>
             </div>
 
-            <button type="submit" id="submit-btn" class="w-full bg-[#b75252] text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-lg hover:opacity-90 transition-all">
+            <div class="pt-4 border-t border-slate-50">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
+                    <div class="space-y-4">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Modalità Consegna</label>
+                        <div class="flex gap-4">
+                            <label class="flex-1 flex items-center justify-center gap-3 p-4 border rounded-2xl cursor-pointer hover:bg-slate-50 transition-all has-[:checked]:border-m361-red has-[:checked]:bg-red-50">
+                                <input type="radio" name="mod_consegna" value="Ritiro" checked class="w-4 h-4 accent-[#b75252]">
+                                <span class="text-sm font-bold text-slate-700">Ritiro in sede</span>
+                            </label>
+                            <label class="flex-1 flex items-center justify-center gap-3 p-4 border rounded-2xl cursor-pointer hover:bg-slate-50 transition-all has-[:checked]:border-m361-red has-[:checked]:bg-red-50">
+                                <input type="radio" name="mod_consegna" value="Spedizione" class="w-4 h-4 accent-[#b75252]">
+                                <span class="text-sm font-bold text-slate-700">Spedizione</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Totale da Incassare (€)</label>
+                        <input type="number" step="0.01" id="totale-ordine" required class="w-full border-gray-200 border rounded-2xl p-4 text-2xl font-black text-m361-red outline-none focus:ring-2 focus:ring-red-100">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" id="submit-btn" class="w-full bg-[#b75252] text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl hover:opacity-90 active:scale-[0.98] transition-all">
                 Salva Ordine
             </button>
         </form>
-    </div>
+    </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const SUPABASE_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
@@ -60,22 +90,28 @@
         const urlParams = new URLSearchParams(window.location.search);
         const editId = urlParams.get('edit');
 
-        // FUNZIONE PER CARICARE I DATI SE SIAMO IN MODALITÀ MODIFICA
-        async function initPage() {
+        // CARICAMENTO DATI IN CASO DI MODIFICA
+        async function loadOrderData() {
             if (editId) {
                 document.getElementById('page-title').innerText = "Modifica Ordine";
                 document.getElementById('submit-btn').innerText = "Aggiorna Ordine";
 
-                // Recupera i dati da Supabase
                 const { data: ord, error } = await _supabase
                     .from('ordini_incorso')
                     .select('*')
                     .eq('id', editId)
                     .single();
 
+                if (error) {
+                    console.error("Errore recupero:", error);
+                    return;
+                }
+
                 if (ord) {
                     document.getElementById('cust-nome').value = ord.cliente_nome || '';
                     document.getElementById('cust-cognome').value = ord.cliente_cognome || '';
+                    document.getElementById('cust-tel').value = ord.cliente_cellulare || '';
+                    document.getElementById('cust-email').value = ord.cliente_email || '';
                     document.getElementById('totale-ordine').value = ord.totale_ordine || '';
                     
                     document.querySelectorAll('input[name="mod_consegna"]').forEach(radio => {
@@ -85,40 +121,47 @@
             }
         }
 
-        // GESTIONE DEL SALVATAGGIO (INSERT O UPDATE)
+        // SALVATAGGIO
         document.getElementById('orderForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
             btn.disabled = true;
+            btn.innerText = "Salvataggio in corso...";
 
-            const formData = {
+            const payload = {
                 cliente_nome: document.getElementById('cust-nome').value,
                 cliente_cognome: document.getElementById('cust-cognome').value,
-                totale_ordine: document.getElementById('totale-ordine').value,
+                cliente_cellulare: document.getElementById('cust-tel').value,
+                cliente_email: document.getElementById('cust-email').value,
+                totale_ordine: parseFloat(document.getElementById('totale-ordine').value) || 0,
                 modalita_consegna: document.querySelector('input[name="mod_consegna"]:checked').value
             };
 
-            let result;
+            let error;
             if (editId) {
-                // MODIFICA: Esegue l'UPDATE sull'ID esistente
-                result = await _supabase.from('ordini_incorso').update(formData).eq('id', editId);
+                // UPDATE
+                const result = await _supabase.from('ordini_incorso').update(payload).eq('id', editId);
+                error = result.error;
             } else {
-                // NUOVO: Esegue l'INSERT
-                formData.merce_pronta = false;
-                formData.cliente_avvisato = false;
-                result = await _supabase.from('ordini_incorso').insert([formData]);
+                // INSERT NUOVO
+                payload.merce_pronta = false;
+                payload.cliente_avvisato = false;
+                payload.stato = 'Nuovo';
+                const result = await _supabase.from('ordini_incorso').insert([payload]);
+                error = result.error;
             }
 
-            if (!result.error) {
-                alert(editId ? "Ordine aggiornato!" : "Ordine creato!");
-                window.location.href = 'index.html'; // Sostituisci con il nome del tuo file lista
+            if (!error) {
+                alert(editId ? "Ordine aggiornato!" : "Ordine creato con successo!");
+                window.location.href = 'ordini_incorso.html';
             } else {
-                alert("Errore: " + result.error.message);
+                alert("Errore nel salvataggio: " + error.message);
                 btn.disabled = false;
+                btn.innerText = editId ? "Aggiorna Ordine" : "Salva Ordine";
             }
         };
 
-        window.onload = initPage;
+        window.onload = loadOrderData;
     </script>
 </body>
 </html>
