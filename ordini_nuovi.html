@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M361 - Gestione Ordini</title>
+    <title>M361 - Nuovo Ordine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -16,142 +16,229 @@
         input[type=number] { -moz-appearance: textfield; }
         .wa-active { color: #25D366; }
         .wa-inactive { color: #cbd5e1; }
+        .row-error { background-color: #fee2e2 !important; border: 2px solid #ef4444 !important; }
     </style>
 </head>
 <body class="pb-20">
 
-    <header class="bg-white border-b p-4 px-6 md:px-8 flex justify-between items-center sticky top-0 z-50 shadow-sm">
-        <div class="flex items-center gap-4">
-            <img src="logom361_rosso.jpg" alt="Logo" class="h-8">
-            <h1 id="header-title" class="font-bold text-lg border-l pl-4 text-slate-700 hidden md:block">Nuovo Ordine</h1>
-        </div>
-        <button onclick="window.location.href='ordini_incorso.html'" class="flex items-center gap-2 text-slate-500 hover:text-m361-red transition-colors font-bold text-sm">
-            <i class="fas fa-arrow-left"></i> Indietro
-        </button>
-    </header>
+<header class="bg-white border-b p-4 px-6 md:px-8 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+    <div class="flex items-center gap-4">
+        <img src="logom361_rosso.jpg" alt="Logo" class="h-8">
+        <h1 id="header-title" class="font-bold text-lg border-l pl-4 text-slate-700 hidden md:block">Nuovo Ordine</h1>
+    </div>
+    <button onclick="window.location.reload()" class="flex items-center gap-2 text-slate-500 hover:text-m361-red transition-colors font-bold text-sm">
+        <i class="fas fa-undo"></i> Reset
+    </button>
+</header>
 
-    <main class="max-w-4xl mx-auto p-4 md:p-6">
-        <form id="orderForm" class="space-y-6 bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-            <h2 id="form-title" class="text-xl font-bold uppercase tracking-tight text-slate-800 mb-4">Dati Ordine</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Nome *</label>
-                    <input type="text" id="cust-nome" required class="w-full border-gray-200 border rounded-xl p-3 text-sm focus:ring-2 focus:ring-red-100 outline-none">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Cognome *</label>
-                    <input type="text" id="cust-cognome" required class="w-full border-gray-200 border rounded-xl p-3 text-sm focus:ring-2 focus:ring-red-100 outline-none">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Cellulare *</label>
-                    <input type="tel" id="cust-tel" required class="w-full border-gray-200 border rounded-xl p-3 text-sm focus:ring-2 focus:ring-red-100 outline-none">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Email</label>
-                    <input type="email" id="cust-email" class="w-full border-gray-200 border rounded-xl p-3 text-sm focus:ring-2 focus:ring-red-100 outline-none">
+<main class="max-w-[1600px] mx-auto p-4 md:p-6">
+
+    <div id="order-type-selection" class="mb-8 text-center bg-white p-8 md:p-16 rounded-3xl shadow-sm border border-gray-100">
+        <div class="flex flex-col md:flex-row justify-center gap-6">
+            <button onclick="initOrder('standard')" class="group px-10 py-6 bg-m361-red text-white hover:opacity-90 rounded-2xl font-bold transition-all shadow-md text-lg uppercase flex items-center justify-center gap-3">
+                <i class="fas fa-shopping-bag"></i> Ordine Standard
+            </button>
+            <button onclick="initOrder('bomboniere')" class="group px-10 py-6 bg-m361-red text-white hover:opacity-90 rounded-2xl font-bold transition-all shadow-lg text-lg uppercase flex items-center justify-center gap-3">
+                <i class="fas fa-gift"></i> Ordine Bomboniere
+            </button>
+        </div>
+    </div>
+
+    <form id="orderForm" class="hidden space-y-6" onsubmit="return saveToSupabase(event)">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h2 class="text-xs font-bold mb-6 tracking-widest uppercase flex items-center gap-2 text-slate-400">
+                    <span class="w-1 h-4 bg-m361-red rounded-full"></span> Sede e Operatore
+                </h2>
+                <div class="space-y-4">
+                    <select id="select-emporio" required onchange="handleCittaChange(this)" class="w-full border-gray-200 border rounded-xl p-3 text-sm bg-gray-50">
+                        <option value="">Città *</option>
+                        <option value="Casalmaggiore">Casalmaggiore</option>
+                        <option value="Cremona">Cremona</option>
+                        <option value="Reggio Emilia">Reggio Emilia</option>
+                        <option value="Viadana">Viadana</option>
+                    </select>
+
+                    <select id="select-operatore" required class="w-full border-gray-200 border rounded-xl p-3 text-sm">
+                        <option value="">Operatore *</option>
+                    </select>
+
+                    <input type="date" id="order-date" required class="w-full border-gray-200 border rounded-xl p-3 text-sm">
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-50">
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-3">Modalità Consegna</label>
-                    <div class="flex gap-4">
-                        <label class="flex-1 flex items-center justify-center p-3 border rounded-xl cursor-pointer has-[:checked]:border-m361-red has-[:checked]:bg-red-50 transition-all">
-                            <input type="radio" name="mod_consegna" value="Ritiro" checked class="hidden"> <span class="text-sm font-semibold">Ritiro</span>
+            <div class="lg:col-span-3 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h2 class="text-xs font-bold mb-6 tracking-widest uppercase flex items-center gap-2 text-slate-400">
+                    <span class="w-1 h-4 bg-m361-red rounded-full"></span> Anagrafica Cliente
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input type="text" id="cust-nome" placeholder="Nome *" required class="border-gray-200 border rounded-xl p-3 text-sm">
+                    <input type="text" id="cust-cognome" placeholder="Cognome *" required class="border-gray-200 border rounded-xl p-3 text-sm">
+                    <input type="tel" id="cust-tel" placeholder="Cellulare *" required class="border-gray-200 border rounded-xl p-3 text-sm">
+                    <input type="email" id="cust-email" placeholder="Email" class="md:col-span-2 border-gray-200 border rounded-xl p-3 text-sm">
+                    <div class="flex gap-2 p-1 bg-gray-100 rounded-xl">
+                        <label class="flex-1 flex items-center justify-center text-xs font-bold cursor-pointer py-2 rounded-lg has-[:checked]:bg-white transition-all">
+                            <input type="radio" name="mod_consegna" value="Ritiro" checked class="hidden"> Ritiro
                         </label>
-                        <label class="flex-1 flex items-center justify-center p-3 border rounded-xl cursor-pointer has-[:checked]:border-m361-red has-[:checked]:bg-red-50 transition-all">
-                            <input type="radio" name="mod_consegna" value="Spedizione" class="hidden"> <span class="text-sm font-semibold">Spedizione</span>
+                        <label class="flex-1 flex items-center justify-center text-xs font-bold cursor-pointer py-2 rounded-lg has-[:checked]:bg-white transition-all">
+                            <input type="radio" name="mod_consegna" value="Spedizione" class="hidden"> Spedizione
                         </label>
                     </div>
                 </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Totale Ordine (€)</label>
-                    <input type="number" step="0.01" id="totale-ordine" required class="w-full border-gray-200 border rounded-xl p-3 text-lg font-bold text-m361-red outline-none">
-                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xs font-bold tracking-widest uppercase flex items-center gap-2 text-slate-400">
+                    <span class="w-1 h-4 bg-m361-red rounded-full"></span> Articoli
+                </h2>
+                <button type="button" onclick="addRow()" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-slate-700 transition-all">
+                    <i class="fas fa-plus mr-2"></i> Aggiungi Articolo
+                </button>
             </div>
 
-            <button type="submit" id="submit-btn" class="w-full bg-m361-red text-white py-4 rounded-2xl font-bold uppercase tracking-widest hover:opacity-90 transition-all shadow-lg">
-                Salva Ordine
-            </button>
-        </form>
-    </main>
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs border-separate border-spacing-y-2">
+                    <thead>
+                        <tr class="text-[10px] text-gray-400 uppercase tracking-widest text-center">
+                            <th class="pb-2 text-left pl-2">Codice</th>
+                            <th class="pb-2 text-left">Descrizione</th>
+                            <th class="pb-2 w-24">Prezzo</th>
+                            <th class="pb-2 w-16">Qtà</th>
+                            <th class="pb-2 w-16 bg-green-50 text-green-700">In Sede</th>
+                            <th class="pb-2 w-16 bg-slate-50">Fornit.</th>
+                            <th class="pb-2 w-32 bg-slate-50">Empori</th>
+                            <th class="pb-2 w-16 bg-red-50 text-m361-red font-bold">Da Ord.</th>
+                            <th class="pb-2 w-24 text-right pr-4">Totale</th>
+                            <th class="pb-2 w-8"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="rows-container"></tbody>
+                </table>
+            </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const SUPABASE_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            <div class="mt-8 pt-6 border-t border-gray-100 flex flex-col items-end gap-2">
+                <div class="text-slate-400 text-sm">Totale Ordine: <span id="grand-total" class="text-slate-800 font-bold ml-2">€ 0.00</span></div>
+                <div class="text-xl font-black text-m361-red">DA PAGARE: <span id="total-to-pay">€ 0.00</span></div>
+            </div>
+        </div>
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const editId = urlParams.get('edit');
+        <button type="submit" id="save-btn" class="w-full bg-m361-red text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl hover:opacity-90 transition-all">
+            Salva Ordine nel Sistema
+        </button>
+    </form>
+</main>
 
-        // Caricamento dati se in modalità modifica
-        async function checkEditMode() {
-            if (editId) {
-                document.getElementById('header-title').innerText = "Modifica Ordine";
-                document.getElementById('form-title').innerText = "Modifica Ordine #" + editId;
-                document.getElementById('submit-btn').innerText = "Aggiorna Ordine";
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const SUPABASE_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-                const { data: ord, error } = await _supabase
-                    .from('ordini_incorso')
-                    .select('*')
-                    .eq('id', editId)
-                    .single();
+    let currentType = 'standard';
+    const OPERATORI = {
+        'Casalmaggiore': ['Operatore 1', 'Operatore 2'],
+        'Cremona': ['Elena', 'Marco', 'Giulia'],
+        'Reggio Emilia': ['Staff RE 1'],
+        'Viadana': ['Staff Viadana']
+    };
 
-                if (ord) {
-                    document.getElementById('cust-nome').value = ord.cliente_nome || '';
-                    document.getElementById('cust-cognome').value = ord.cliente_cognome || '';
-                    document.getElementById('cust-tel').value = ord.cliente_cellulare || '';
-                    document.getElementById('cust-email').value = ord.cliente_email || '';
-                    document.getElementById('totale-ordine').value = ord.totale_ordine || '';
-                    
-                    document.querySelectorAll('input[name="mod_consegna"]').forEach(r => {
-                        if(r.value === ord.modalita_consegna) r.checked = true;
-                    });
-                }
-            }
-        }
+    function initOrder(type) {
+        currentType = type;
+        document.getElementById('order-type-selection').classList.add('hidden');
+        document.getElementById('orderForm').classList.remove('hidden');
+        document.getElementById('header-title').innerText = type === 'standard' ? "Nuovo Ordine Standard" : "Nuovo Ordine Bomboniere";
+        document.getElementById('order-date').valueAsDate = new Date();
+        addRow();
+    }
 
-        // Salvataggio (Insert o Update)
-        document.getElementById('orderForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submit-btn');
-            btn.disabled = true;
-            btn.innerText = "Salvataggio...";
+    function handleCittaChange(select) {
+        const opSelect = document.getElementById('select-operatore');
+        opSelect.innerHTML = '<option value="">Operatore *</option>';
+        (OPERATORI[select.value] || []).forEach(op => {
+            const opt = document.createElement('option');
+            opt.value = op; opt.text = op;
+            opSelect.add(opt);
+        });
+    }
 
-            const payload = {
-                cliente_nome: document.getElementById('cust-nome').value,
-                cliente_cognome: document.getElementById('cust-cognome').value,
-                cliente_cellulare: document.getElementById('cust-tel').value,
-                cliente_email: document.getElementById('cust-email').value,
-                totale_ordine: parseFloat(document.getElementById('totale-ordine').value) || 0,
-                modalita_consegna: document.querySelector('input[name="mod_consegna"]:checked').value,
-                stato: 'Nuovo'
-            };
+    function addRow() {
+        const id = Date.now();
+        const tr = document.createElement('tr');
+        tr.id = `row-${id}`;
+        tr.className = "group border-b border-gray-50";
+        tr.innerHTML = `
+            <td class="p-1"><input type="text" placeholder="Cod" required class="w-full border-gray-200 border rounded-lg p-2 uppercase"></td>
+            <td class="p-1"><input type="text" placeholder="Descrizione" required class="w-full border-gray-200 border rounded-lg p-2"></td>
+            <td class="p-1"><input type="number" step="0.01" value="0.00" oninput="calculate()" class="price w-full border-gray-200 border rounded-lg p-2 text-right"></td>
+            <td class="p-1"><input type="number" value="1" oninput="calculate()" class="qty w-full border-gray-200 border rounded-lg p-2 text-center font-bold"></td>
+            <td class="p-1 bg-green-50"><input type="number" value="0" oninput="calculate()" class="sede w-full border-green-100 border rounded-lg p-2 text-center"></td>
+            <td class="p-1 bg-slate-50"><input type="number" value="0" oninput="calculate()" class="forn w-full border-slate-200 border rounded-lg p-2 text-center"></td>
+            <td class="p-1 bg-slate-50"><input type="number" value="0" oninput="calculate()" class="emp w-full border-slate-200 border rounded-lg p-2 text-center"></td>
+            <td class="p-1 bg-red-50 text-center font-bold text-m361-red da-ord">0</td>
+            <td class="p-1 text-right pr-4 font-bold row-total">€ 0.00</td>
+            <td class="p-1"><button type="button" onclick="this.closest('tr').remove(); calculate()" class="text-gray-300 hover:text-red-500 transition-colors">✕</button></td>
+        `;
+        document.getElementById('rows-container').appendChild(tr);
+    }
 
-            try {
-                let res;
-                if (editId) {
-                    res = await _supabase.from('ordini_incorso').update(payload).eq('id', editId);
-                } else {
-                    payload.merce_pronta = false;
-                    payload.cliente_avvisato = false;
-                    res = await _supabase.from('ordini_incorso').insert([payload]);
-                }
+    function calculate() {
+        let grandTotal = 0;
+        document.querySelectorAll('#rows-container tr').forEach(row => {
+            const q = +row.querySelector('.qty').value || 0;
+            const p = +row.querySelector('.price').value || 0;
+            const sede = +row.querySelector('.sede').value || 0;
+            const forn = +row.querySelector('.forn').value || 0;
+            const emp = +row.querySelector('.emp').value || 0;
 
-                if (res.error) throw res.error;
-                
-                alert(editId ? "Ordine aggiornato!" : "Ordine creato!");
-                window.location.href = "ordini_incorso.html";
-            } catch (err) {
-                alert("Errore: " + err.message);
-                btn.disabled = false;
-                btn.innerText = editId ? "Aggiorna Ordine" : "Salva Ordine";
-            }
+            const daOrd = Math.max(0, q - (sede + forn + emp));
+            row.querySelector('.da-ord').innerText = daOrd;
+            
+            const total = q * p;
+            row.querySelector('.row-total').innerText = `€ ${total.toFixed(2)}`;
+            grandTotal += total;
+
+            // Evidenzia errore se la disponibilità supera la quantità ordinata
+            row.classList.toggle('row-error', (sede + forn + emp) > q);
+        });
+
+        document.getElementById('grand-total').innerText = `€ ${grandTotal.toFixed(2)}`;
+        document.getElementById('total-to-pay').innerText = `€ ${grandTotal.toFixed(2)}`;
+    }
+
+    async function saveToSupabase(e) {
+        e.preventDefault();
+        const btn = document.getElementById('save-btn');
+        btn.disabled = true;
+        btn.innerText = "Salvataggio...";
+
+        const orderData = {
+            cliente_nome: document.getElementById('cust-nome').value,
+            cliente_cognome: document.getElementById('cust-cognome').value,
+            cliente_cellulare: document.getElementById('cust-tel').value,
+            cliente_email: document.getElementById('cust-email').value,
+            citta: document.getElementById('select-emporio').value,
+            operatore: document.getElementById('select-operatore').value,
+            data_ordine: document.getElementById('order-date').value,
+            modalita_consegna: document.querySelector('input[name="mod_consegna"]:checked').value,
+            totale_ordine: parseFloat(document.getElementById('total-to-pay').innerText.replace('€', '').trim()),
+            stato: 'Nuovo',
+            tipo_ordine: currentType
         };
 
-        window.onload = checkEditMode;
-    </script>
+        const { error } = await _supabase.from('ordini_incorso').insert([orderData]);
+
+        if (error) {
+            alert("Errore: " + error.message);
+            btn.disabled = false;
+            btn.innerText = "Salva Ordine";
+        } else {
+            alert("Ordine salvato!");
+            window.location.href = 'ordini_incorso.html';
+        }
+    }
+</script>
 </body>
 </html>
