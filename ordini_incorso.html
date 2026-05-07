@@ -164,7 +164,7 @@ async function caricaOrdini() {
     const container = document.getElementById('orders-container');
     
     const { data: ordini, error } = await _supabase
-        .from('ordini_in_corso')
+        .from('ordini_incorso')
         .select('*')
         .order('created_at', { ascending: false });
 
