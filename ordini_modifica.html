@@ -3,36 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M361 - Modifica Ordine</title>
+    <title>M361 - Modifica Completa Ordine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .input-field { 
-            width: 100%; padding: 1rem; background-color: #f8fafc; 
-            border: 1px solid #e2e8f0; border-radius: 1.5rem; 
-            outline: none; transition: all 0.2s;
-        }
-        .input-field:focus { border-color: #b75252; ring: 2px; ring-color: #b75252/20; }
-        label { display: block; text-transform: uppercase; font-size: 10px; font-weight: 900; color: #94a3b8; letter-spacing: 0.1em; margin-bottom: 0.5rem; margin-left: 0.5rem; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .input-field { width: 100%; padding: 0.8rem 1rem; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem; outline: none; transition: all 0.2s; font-size: 14px; }
+        .input-field:focus { border-color: #b75252; box-shadow: 0 0 0 3px rgba(183, 82, 82, 0.1); }
+        label { display: block; text-transform: uppercase; font-size: 10px; font-weight: 900; color: #64748b; letter-spacing: 0.05em; margin-bottom: 0.4rem; margin-left: 0.2rem; }
+        .product-row { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="p-4 md:p-8">
 
-    <div class="max-w-3xl w-full bg-white rounded-[3rem] p-10 shadow-2xl border border-slate-100 relative">
-        <div class="flex justify-between items-center mb-10">
+    <div class="max-w-4xl mx-auto bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-200">
+        <div class="bg-white border-b p-8 flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <a href="ordini_incorso.html" class="text-slate-400 hover:text-[#b75252] transition-colors">
-                    <i class="fas fa-arrow-left text-xl"></i>
+                <a href="ordini_incorso.html" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-[#b75252] hover:text-white transition-all">
+                    <i class="fas fa-arrow-left"></i>
                 </a>
-                <h1 class="text-3xl font-[900] text-slate-800 uppercase tracking-tight">Modifica Ordine</h1>
+                <div>
+                    <h1 class="text-2xl font-[900] text-slate-800 uppercase tracking-tight leading-none">Modifica Ordine</h1>
+                    <p id="order-id-label" class="text-[10px] font-mono text-slate-400 mt-1 uppercase tracking-widest">Caricamento ID...</p>
+                </div>
             </div>
-            <span id="order-id-display" class="text-xs font-mono text-slate-300 bg-slate-50 px-3 py-1 rounded-full"></span>
+            <div id="emporio-badge" class="bg-slate-800 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter">--</div>
         </div>
 
-        <form id="edit-form" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form id="edit-form" class="p-8 space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                     <label>Nome</label>
                     <input type="text" id="nome" class="input-field" required>
@@ -41,45 +42,46 @@
                     <label>Cognome</label>
                     <input type="text" id="cognome" class="input-field" required>
                 </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label>Telefono</label>
                     <input type="text" id="telefono" class="input-field">
                 </div>
+            </div>
+
+            <hr class="border-slate-100">
+
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest">Articoli in Ordine</h3>
+                    <button type="button" onclick="aggiungiRigaProdotto()" class="text-[10px] bg-emerald-500 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-emerald-600 transition-colors">
+                        + AGGIUNGI PRODOTTO
+                    </button>
+                </div>
+                
+                <div id="prodotti-container" class="space-y-3">
+                    </div>
+            </div>
+
+            <hr class="border-slate-100">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
                 <div>
-                    <label>Emporio di Riferimento</label>
+                    <label>Emporio</label>
                     <select id="emporio" class="input-field">
                         <option value="CREMONA - CANALE">CREMONA - CANALE</option>
                         <option value="REGGIO EMILIA">REGGIO EMILIA</option>
                         <option value="MANTOVA">MANTOVA</option>
                     </select>
                 </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label>Modalità Consegna</label>
-                    <select id="modalita_consegna" class="input-field">
-                        <option value="Ritiro in sede">Ritiro in sede</option>
-                        <option value="Spedizione">Spedizione</option>
-                    </select>
-                </div>
                 <div>
                     <label>Totale da Incassare (€)</label>
-                    <input type="number" step="0.01" id="totale_incassare" class="input-field font-bold text-[#b75252]" placeholder="0.00">
+                    <input type="number" step="0.01" id="totale_incassare" class="input-field font-black text-[#b75252] text-xl" readonly>
+                    <p class="text-[9px] text-slate-400 mt-1 ml-2 italic">* Calcolato automaticamente</p>
                 </div>
+                <button type="submit" class="bg-[#b75252] text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-lg hover:opacity-90 active:scale-95 transition-all w-full">
+                    Salva Modifiche
+                </button>
             </div>
-
-            <div>
-                <label>Note / Articoli da ordinare</label>
-                <textarea id="note" rows="4" class="input-field resize-none"></textarea>
-            </div>
-
-            <button type="submit" class="w-full bg-[#b75252] text-white py-6 rounded-[2rem] font-black uppercase tracking-widest shadow-lg shadow-[#b75252]/30 hover:opacity-90 active:scale-[0.98] transition-all text-lg">
-                Salva Modifiche
-            </button>
         </form>
     </div>
 
@@ -92,34 +94,80 @@
         const params = new URLSearchParams(window.location.search);
         const ordineId = params.get('id');
 
+        // Funzione per aggiungere una riga prodotto vuota o con dati
+        function aggiungiRigaProdotto(nome = '', qta = 1, prezzo = 0) {
+            const container = document.getElementById('prodotti-container');
+            const div = document.createElement('div');
+            div.className = "product-row flex gap-3 items-center bg-slate-50 p-3 rounded-2xl border border-slate-100";
+            div.innerHTML = `
+                <input type="text" placeholder="Nome prodotto" value="${nome}" class="p-name flex-1 bg-transparent border-none outline-none font-semibold text-slate-700 text-sm">
+                <div class="flex items-center gap-2 bg-white px-3 py-1 rounded-xl border">
+                    <label class="m-0! lowercase text-[9px]">Q.tà</label>
+                    <input type="number" value="${qta}" oninput="calcolaTotale()" class="p-qta w-12 text-center font-bold text-slate-800 outline-none">
+                </div>
+                <div class="flex items-center gap-2 bg-white px-3 py-1 rounded-xl border">
+                    <label class="m-0! lowercase text-[9px]">€</label>
+                    <input type="number" step="0.01" value="${prezzo}" oninput="calcolaTotale()" class="p-prezzo w-20 text-right font-bold text-slate-800 outline-none">
+                </div>
+                <button type="button" onclick="this.parentElement.remove(); calcolaTotale();" class="text-slate-300 hover:text-red-500 transition-colors p-2">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(div);
+            calcolaTotale();
+        }
+
+        function calcolaTotale() {
+            let totale = 0;
+            document.querySelectorAll('.product-row').forEach(row => {
+                const qta = parseFloat(row.querySelector('.p-qta').value) || 0;
+                const prezzo = parseFloat(row.querySelector('.p-prezzo').value) || 0;
+                totale += (qta * prezzo);
+            });
+            document.getElementById('totale_incassare').value = totale.toFixed(2);
+        }
+
         async function caricaDati() {
             if (!ordineId) return;
-            
             const { data, error } = await _supabase.from('ordini_incorso').select('*').eq('id', ordineId).single();
             
             if (data) {
-                document.getElementById('order-id-display').innerText = `#${data.id.toString().slice(-6)}`;
+                document.getElementById('order-id-label').innerText = `ID ORDINE: #${data.id.toString().slice(-6)}`;
                 document.getElementById('nome').value = data.cliente_nome || '';
                 document.getElementById('cognome').value = data.cliente_cognome || '';
                 document.getElementById('telefono').value = data.cliente_telefono || '';
                 document.getElementById('emporio').value = data.emporio || 'CREMONA - CANALE';
-                document.getElementById('modalita_consegna').value = data.modalita_consegna || 'Ritiro in sede';
-                document.getElementById('totale_incassare').value = data.totale_incassare || '';
-                document.getElementById('note').value = data.note || '';
+                document.getElementById('emporio-badge').innerText = data.emporio || '--';
+
+                // Carica i prodotti salvati (assumendo che la colonna si chiami 'articoli' e sia JSON o Testo)
+                const articoli = data.articoli ? (typeof data.articoli === 'string' ? JSON.parse(data.articoli) : data.articoli) : [];
+                if (articoli.length > 0) {
+                    articoli.forEach(art => aggiungiRigaProdotto(art.nome, art.qta, art.prezzo));
+                } else {
+                    aggiungiRigaProdotto(); // Una riga vuota di default
+                }
             }
         }
 
         document.getElementById('edit-form').onsubmit = async (e) => {
             e.preventDefault();
             
+            const listaArticoli = [];
+            document.querySelectorAll('.product-row').forEach(row => {
+                listaArticoli.push({
+                    nome: row.querySelector('.p-name').value,
+                    qta: parseFloat(row.querySelector('.p-qta').value),
+                    prezzo: parseFloat(row.querySelector('.p-prezzo').value)
+                });
+            });
+
             const updates = {
                 cliente_nome: document.getElementById('nome').value,
                 cliente_cognome: document.getElementById('cognome').value,
                 cliente_telefono: document.getElementById('telefono').value,
                 emporio: document.getElementById('emporio').value,
-                modalita_consegna: document.getElementById('modalita_consegna').value,
                 totale_incassare: parseFloat(document.getElementById('totale_incassare').value),
-                note: document.getElementById('note').value
+                articoli: listaArticoli // Salviamo la nuova lista prodotti
             };
 
             const { error } = await _supabase.from('ordini_incorso').update(updates).eq('id', ordineId);
@@ -127,7 +175,7 @@
             if (!error) {
                 window.location.href = 'ordini_incorso.html';
             } else {
-                alert("Errore: " + error.message);
+                alert("Errore nel salvataggio: " + error.message);
             }
         };
 
