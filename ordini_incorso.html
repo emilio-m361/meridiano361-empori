@@ -13,6 +13,14 @@
         .bg-m361-red { background-color: #b75252; }
         .status-badge { padding: 4px 12px; border-radius: 99px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
         .active-filter { background-color: #1e293b !important; color: white !important; }
+        
+        /* Animazione notifica "Da Avvisare" */
+        .ping-notify {
+            animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        @keyframes ping {
+            75%, 100% { transform: scale(2); opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -62,12 +70,9 @@
             }
 
             const container = document.getElementById('orders-container');
-            // Partiamo dalla query base
             let query = _supabase.from('ordini_incorso').select('*').order('created_at', { ascending: false });
 
-            // APPLICAZIONE FILTRI LOGICI
             if (filtro === 'da_ordinare') {
-                // Filtra solo dove merce_pronta è FALSE o NULL
                 query = query.or('merce_pronta.eq.false,merce_pronta.is.null');
             } else if (filtro === 'merce_pronta') {
                 query = query.eq('merce_pronta', true);
@@ -86,17 +91,24 @@
                 const cardId = `card-${ord.id}`;
                 const nomeCliente = `${ord.cliente_nome || ''} ${ord.cliente_cognome || ''}`.trim().toUpperCase();
                 const testoAzione = (ord.modalita_consegna === 'Spedizione' || ord.modalita_consegna === 'Sped.') ? 'SPEDITO' : 'RITIRATO';
-
-                // Stato Merce (Boolean check)
+                
                 const isPronta = ord.merce_pronta === true;
+                const isAvvisato = ord.cliente_avvisato === true;
+                
+                // Logica Notifica: Merce Pronta MA Cliente NON avvisato
+                const daAvvisare = isPronta && !isAvvisato;
 
                 container.insertAdjacentHTML('beforeend', `
-                    <div class="ordine-card bg-white border border-slate-200 rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between shadow-sm hover:shadow-md transition-shadow" id="${cardId}" data-cliente="${nomeCliente}">
+                    <div class="ordine-card bg-white border border-slate-200 rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden" id="${cardId}" data-cliente="${nomeCliente}">
                         
+                        ${daAvvisare ? `
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-orange-500"></div>
+                        ` : ''}
+
                         <div class="w-full md:w-1/3 mb-4 md:mb-0">
                             <div class="flex items-center gap-3 mb-3">
                                 <span class="status-badge ${isPronta ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
-                                    ${isPronta ? 'Merce Arrivata / Pronta' : 'Merce da Ordinare'}
+                                    ${isPronta ? 'Merce Pronta' : 'Merce da Ordinare'}
                                 </span>
                                 <span class="text-[10px] text-slate-300 font-mono tracking-tighter">#${ord.id.toString().slice(-5)}</span>
                                 
@@ -106,16 +118,27 @@
                                     </button>
                                 </div>
                             </div>
-                            <h2 class="text-2xl font-[900] text-slate-800 tracking-tight leading-tight">${nomeCliente || 'CLIENTE ANONIMO'}</h2>
+                            <div class="flex items-center gap-2">
+                                <h2 class="text-2xl font-[900] text-slate-800 tracking-tight leading-tight">${nomeCliente || 'CLIENTE ANONIMO'}</h2>
+                                ${daAvvisare ? `
+                                    <div class="flex items-center gap-1.5 bg-orange-50 px-2 py-1 rounded-md border border-orange-100">
+                                        <span class="relative flex h-2 w-2">
+                                            <span class="ping-notify absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                                            <span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                                        </span>
+                                        <span class="text-[9px] font-bold text-orange-600 uppercase">Da Avvisare</span>
+                                    </div>
+                                ` : ''}
+                            </div>
                         </div>
 
                         <div class="w-full md:w-1/3 flex flex-col gap-3 justify-center border-l border-r border-slate-50 px-8">
                             <label class="flex items-center gap-4 cursor-pointer group">
                                 <input type="checkbox" ${isPronta ? 'checked' : ''} onchange="aggiornaStato('${ord.id}', 'merce_pronta', this.checked)" class="w-6 h-6 rounded-lg border-slate-300 accent-emerald-600 transition-all">
-                                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-800">Merce Arrivata / Pronta</span>
+                                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-800">Merce Pronta</span>
                             </label>
                             <label class="flex items-center gap-4 cursor-pointer group">
-                                <input type="checkbox" ${ord.cliente_avvisato ? 'checked' : ''} onchange="aggiornaStato('${ord.id}', 'cliente_avvisato', this.checked)" class="w-6 h-6 rounded-lg border-slate-300 accent-blue-600 transition-all">
+                                <input type="checkbox" ${isAvvisato ? 'checked' : ''} onchange="aggiornaStato('${ord.id}', 'cliente_avvisato', this.checked)" class="w-6 h-6 rounded-lg border-slate-300 accent-blue-600 transition-all">
                                 <span class="text-[11px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-800">Cliente Avvisato</span>
                             </label>
                         </div>
@@ -135,12 +158,12 @@
             if (error) {
                 console.error("Errore aggiornamento:", error);
             } else {
-                // Ricarica la vista attuale per aggiornare i badge grafici
                 const activeBtn = document.querySelector('.active-filter');
-                const filtroAttuale = activeBtn.innerText.toLowerCase().includes('tutti') ? 'tutti' : 
-                                     activeBtn.innerText.toLowerCase().includes('ordinare') ? 'da_ordinare' :
-                                     activeBtn.innerText.toLowerCase().includes('pronta') ? 'merce_pronta' :
-                                     activeBtn.innerText.toLowerCase().includes('avvisare') ? 'da_avvisare' : 'avvisati';
+                const testo = activeBtn.innerText.toLowerCase();
+                const filtroAttuale = testo.includes('tutti') ? 'tutti' : 
+                                     testo.includes('ordinare') ? 'da_ordinare' :
+                                     testo.includes('merce pronta') ? 'merce_pronta' :
+                                     testo.includes('avvisare') ? 'da_avvisare' : 'avvisati';
                 caricaOrdini(filtroAttuale);
             }
         }
