@@ -11,11 +11,9 @@
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; padding-bottom: 50px; }
         .text-m361-red { color: #b75252; }
         .bg-m361-red { background-color: #b75252; }
-        .border-m361-red { border-color: #b75252; }
         .status-badge { padding: 4px 12px; border-radius: 99px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
         .active-filter { background-color: #1e293b !important; color: white !important; }
         
-        /* Animazione notifica "Da Avvisare" in rosso M361 */
         .ping-notify {
             animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
             background-color: #b75252;
@@ -23,6 +21,10 @@
         @keyframes ping {
             75%, 100% { transform: scale(2); opacity: 0; }
         }
+
+        /* Stile per card completata */
+        .card-completata { background-color: #f1f5f9 !important; border-color: #e2e8f0 !important; opacity: 0.8; }
+        .card-completata h2 { color: #64748b !important; }
     </style>
 </head>
 <body>
@@ -32,7 +34,7 @@
             <img src="logom361_rosso.jpg" alt="Logo" class="h-10">
             <h1 class="font-bold text-xl border-l pl-4 ml-2 text-slate-700 uppercase tracking-tight">Ordini in Corso</h1>
         </div>
-        <a href="ordini_nuovi.html" class="bg-m361-red text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase shadow-md hover:opacity-90 transition-all">
+        <a href="ordini_nuovi.html" class="bg-[#b75252] text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase shadow-md hover:opacity-90 transition-all">
             + NUOVO ORDINE
         </a>
     </header>
@@ -92,16 +94,14 @@
             ordini.forEach(ord => {
                 const cardId = `card-${ord.id}`;
                 const nomeCliente = `${ord.cliente_nome || ''} ${ord.cliente_cognome || ''}`.trim().toUpperCase();
-                const testoAzione = (ord.modalita_consegna === 'Spedizione' || ord.modalita_consegna === 'Sped.') ? 'SPEDITO' : 'RITIRATO';
                 
                 const isPronta = ord.merce_pronta === true;
                 const isAvvisato = ord.cliente_avvisato === true;
-                
-                // Notifica se Merce Pronta MA Cliente NON avvisato
                 const daAvvisare = isPronta && !isAvvisato;
+                const completato = isPronta && isAvvisato;
 
                 container.insertAdjacentHTML('beforeend', `
-                    <div class="ordine-card bg-white border border-slate-200 rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden" id="${cardId}" data-cliente="${nomeCliente}">
+                    <div class="ordine-card bg-white border border-slate-200 rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between shadow-sm hover:shadow-md transition-all relative overflow-hidden ${completato ? 'card-completata' : ''}" id="${cardId}" data-cliente="${nomeCliente}">
                         
                         ${daAvvisare ? `
                             <div class="absolute top-0 left-0 w-1.5 h-full bg-[#b75252]"></div>
@@ -146,8 +146,8 @@
                         </div>
 
                         <div class="w-full md:w-1/3 text-right flex items-center justify-end">
-                            <button onclick="evadiOrdine('${ord.id}', '${cardId}', '${ord.modalita_consegna}')" class="bg-[#2d3748] text-white px-10 py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-900 shadow-lg active:scale-95 transition-all">
-                                ${testoAzione}
+                            <button onclick="evadiOrdine('${ord.id}', '${cardId}')" class="bg-[#2d3748] text-white px-10 py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-900 shadow-lg active:scale-95 transition-all">
+                                RITIRATO / SPEDITO
                             </button>
                         </div>
                     </div>
@@ -161,11 +161,10 @@
                 console.error("Errore aggiornamento:", error);
             } else {
                 const activeBtn = document.querySelector('.active-filter');
-                const testo = activeBtn.innerText.toLowerCase();
-                const filtroAttuale = testo.includes('tutti') ? 'tutti' : 
-                                     testo.includes('ordinare') ? 'da_ordinare' :
-                                     testo.includes('merce pronta') ? 'merce_pronta' :
-                                     testo.includes('avvisare') ? 'da_avvisare' : 'avvisati';
+                const filtroAttuale = activeBtn.innerText.toLowerCase().includes('tutti') ? 'tutti' : 
+                                     activeBtn.innerText.toLowerCase().includes('ordinare') ? 'da_ordinare' :
+                                     activeBtn.innerText.toLowerCase().includes('pronta') ? 'merce_pronta' :
+                                     activeBtn.innerText.toLowerCase().includes('avvisare') ? 'da_avvisare' : 'avvisati';
                 caricaOrdini(filtroAttuale);
             }
         }
@@ -177,9 +176,8 @@
             }
         }
 
-        async function evadiOrdine(id, elementId, modConsegna) {
-            const azione = (modConsegna === 'Spedizione' || modConsegna === 'Sped.') ? 'SPEDITO' : 'RITIRATO';
-            if (confirm(`Confermi che l'ordine è stato ${azione}? Sarà spostato in archivio.`)) {
+        async function evadiOrdine(id, elementId) {
+            if (confirm(`Confermi che l'ordine è stato consegnato? Sarà spostato in archivio.`)) {
                 const { data: ordine } = await _supabase.from('ordini_incorso').select('*').eq('id', id).single();
                 const { error: errInsert } = await _supabase.from('ordini_archiviati').insert([{ ...ordine, id: undefined, stato: 'Evaso', data_evasione: new Date() }]);
                 if (!errInsert) {
