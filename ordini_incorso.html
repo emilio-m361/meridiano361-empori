@@ -274,6 +274,50 @@ const card = `
     }
 // Avvia al caricamento
 window.onload = caricaOrdini;
+    // Funzione per eliminare l'ordine con conferma
+async function eliminaOrdine(id, elementId) {
+    if (confirm("Sei sicuro di voler eliminare definitivamente questo ordine?")) {
+        const { error } = await _supabase.from('ordini_incorso').delete().eq('id', id);
+        if (!error) {
+            const el = document.getElementById(elementId);
+            el.style.transform = "scale(0.9)";
+            el.style.opacity = "0";
+            setTimeout(() => el.remove(), 300);
+        } else {
+            alert("Errore durante l'eliminazione: " + error.message);
+        }
+    }
+}
+
+// Funzione per reindirizzare alla pagina di modifica
+function modificaOrdine(id) {
+    // Reindirizza a ordini_nuovi.html passando l'ID come parametro per caricare i dati
+    window.location.href = `ordini_nuovi.html?edit=${id}`;
+}
+
+// Funzione Archiviazione aggiornata (Ritirato/Spedito)
+async function archiviaOrdine(id, elementId, metodo) {
+    const { data: ordine } = await _supabase.from('ordini_incorso').select('*').eq('id', id).single();
+
+    const { error: errInsert } = await _supabase
+        .from('ordini_archiviati')
+        .insert([{ 
+            ...ordine, 
+            id: undefined, 
+            stato: 'Evaso', 
+            metodo_evasione: metodo, // "Ritirato" o "Spedito"
+            data_evasione: new Date() 
+        }]);
+
+    if (!errInsert) {
+        await _supabase.from('ordini_incorso').delete().eq('id', id);
+        const el = document.getElementById(elementId);
+        el.classList.add('archive-anim');
+        setTimeout(() => el.remove(), 500);
+    } else {
+        alert("Errore archiviazione: " + errInsert.message);
+    }
+}
 </script>
 </body>
 </html>
