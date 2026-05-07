@@ -22,8 +22,7 @@
             75%, 100% { transform: scale(2); opacity: 0; }
         }
 
-        /* Stile per card completata */
-        .card-completata { background-color: #f1f5f9 !important; border-color: #e2e8f0 !important; opacity: 0.8; }
+        .card-completata { background-color: #f1f5f9 !important; border-color: #e2e8f0 !important; }
         .card-completata h2 { color: #64748b !important; }
     </style>
 </head>
@@ -44,15 +43,15 @@
         <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
             <div class="flex flex-wrap gap-2" id="filter-group">
                 <button onclick="caricaOrdini('tutti', this)" class="active-filter bg-white border border-slate-200 text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase transition-all">Tutti</button>
-                <button onclick="caricaOrdini('da_ordinare', this)" class="bg-white border border-slate-200 text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase hover:border-slate-400">Merce da ordinare</button>
+                <button onclick="caricaOrdini('da_ordinare', this)" class="bg-white border border-slate-200 text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase hover:border-slate-400">Da ordinare</button>
                 <button onclick="caricaOrdini('merce_pronta', this)" class="bg-white border border-slate-200 text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase hover:border-slate-400">Merce Pronta</button>
-                <button onclick="caricaOrdini('da_avvisare', this)" class="bg-white border border-slate-200 text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase hover:border-slate-400">Clienti da Avvisare</button>
-                <button onclick="caricaOrdini('avvisati', this)" class="bg-white border border-slate-200 text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase hover:border-slate-400">Clienti Avvisati</button>
+                <button onclick="caricaOrdini('da_avvisare', this)" class="bg-white border border-slate-200 text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase hover:border-slate-400">Da Avvisare</button>
+                <button onclick="caricaOrdini('avvisati', this)" class="bg-white border border-slate-200 text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase hover:border-slate-400">Avvisati</button>
             </div>
             
             <div class="relative w-full md:w-96">
                 <span class="absolute left-4 top-3 text-slate-400"><i class="fas fa-search"></i></span>
-                <input type="text" oninput="filtraPerNome(this.value)" placeholder="Cerca cliente..." class="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-slate-100 transition-all">
+                <input type="text" oninput="filtraPerNome(this.value)" placeholder="Cerca cliente o emporio..." class="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-slate-100 transition-all">
             </div>
         </div>
 
@@ -76,24 +75,20 @@
             const container = document.getElementById('orders-container');
             let query = _supabase.from('ordini_incorso').select('*').order('created_at', { ascending: false });
 
-            if (filtro === 'da_ordinare') {
-                query = query.or('merce_pronta.eq.false,merce_pronta.is.null');
-            } else if (filtro === 'merce_pronta') {
-                query = query.eq('merce_pronta', true);
-            } else if (filtro === 'da_avvisare') {
-                query = query.eq('merce_pronta', true).eq('cliente_avvisato', false);
-            } else if (filtro === 'avvisati') {
-                query = query.eq('cliente_avvisato', true);
-            }
+            if (filtro === 'da_ordinare') query = query.or('merce_pronta.eq.false,merce_pronta.is.null');
+            else if (filtro === 'merce_pronta') query = query.eq('merce_pronta', true);
+            else if (filtro === 'da_avvisare') query = query.eq('merce_pronta', true).eq('cliente_avvisato', false);
+            else if (filtro === 'avvisati') query = query.eq('cliente_avvisato', true);
 
             const { data: ordini, error } = await query;
-            if (error) { container.innerHTML = "Errore nel caricamento."; return; }
+            if (error) { container.innerHTML = "Errore."; return; }
 
-            container.innerHTML = ordini.length === 0 ? `<p class="text-center text-slate-400 py-20">Nessun ordine trovato.</p>` : "";
+            container.innerHTML = ordini.length === 0 ? `<p class="text-center text-slate-400 py-20">Nessun ordine.</p>` : "";
 
             ordini.forEach(ord => {
                 const cardId = `card-${ord.id}`;
                 const nomeCliente = `${ord.cliente_nome || ''} ${ord.cliente_cognome || ''}`.trim().toUpperCase();
+                const emporio = (ord.emporio || 'Emporio non specificato').toUpperCase();
                 
                 const isPronta = ord.merce_pronta === true;
                 const isAvvisato = ord.cliente_avvisato === true;
@@ -101,33 +96,32 @@
                 const completato = isPronta && isAvvisato;
 
                 container.insertAdjacentHTML('beforeend', `
-                    <div class="ordine-card bg-white border border-slate-200 rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between shadow-sm hover:shadow-md transition-all relative overflow-hidden ${completato ? 'card-completata' : ''}" id="${cardId}" data-cliente="${nomeCliente}">
+                    <div class="ordine-card bg-white border border-slate-200 rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between shadow-sm hover:shadow-md transition-all relative overflow-hidden ${completato ? 'card-completata' : ''}" id="${cardId}" data-search="${nomeCliente} ${emporio}">
                         
-                        ${daAvvisare ? `
-                            <div class="absolute top-0 left-0 w-1.5 h-full bg-[#b75252]"></div>
-                        ` : ''}
+                        ${daAvvisare ? `<div class="absolute top-0 left-0 w-1.5 h-full bg-[#b75252]"></div>` : ''}
 
                         <div class="w-full md:w-1/3 mb-4 md:mb-0">
-                            <div class="flex items-center gap-3 mb-3">
+                            <div class="flex items-center gap-3 mb-2">
                                 <span class="status-badge ${isPronta ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
-                                    ${isPronta ? 'Merce Pronta' : 'Merce da Ordinare'}
+                                    ${isPronta ? 'Merce Pronta' : 'Da Ordinare'}
                                 </span>
-                                <span class="text-[10px] text-slate-300 font-mono tracking-tighter">#${ord.id.toString().slice(-5)}</span>
+                                <span class="text-[10px] text-slate-300 font-mono">#${ord.id.toString().slice(-5)}</span>
                                 
-                                <div class="flex gap-3 ml-2">
-                                    <button onclick="eliminaOrdine('${ord.id}', '${cardId}')" class="text-red-300 hover:text-red-500 transition-colors">
+                                <div class="flex gap-4 ml-2 items-center">
+                                    <a href="ordini_modifica.html?id=${ord.id}" class="text-slate-400 hover:text-blue-500 transition-colors">
+                                        <i class="fas fa-edit text-lg"></i>
+                                    </a>
+                                    <button onclick="eliminaOrdine('${ord.id}', '${cardId}')" class="text-red-200 hover:text-red-500 transition-colors">
                                         <i class="fas fa-trash-alt text-lg"></i>
                                     </button>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <h2 class="text-2xl font-[900] text-slate-800 tracking-tight leading-tight">${nomeCliente || 'CLIENTE ANONIMO'}</h2>
+                            <div>
+                                <h2 class="text-2xl font-[900] text-slate-800 tracking-tight leading-none">${nomeCliente || 'CLIENTE ANONIMO'}</h2>
+                                <p class="text-[11px] font-bold text-[#b75252] mt-1 tracking-wider italic">${emporio}</p>
                                 ${daAvvisare ? `
-                                    <div class="flex items-center gap-1.5 bg-red-50 px-2 py-1 rounded-md border border-red-100">
-                                        <span class="relative flex h-2 w-2">
-                                            <span class="ping-notify absolute inline-flex h-full w-full rounded-full opacity-75"></span>
-                                            <span class="relative inline-flex rounded-full h-2 w-2 bg-[#b75252]"></span>
-                                        </span>
+                                    <div class="flex items-center gap-1.5 bg-red-50 px-2 py-1 rounded-md border border-red-100 mt-2 w-fit">
+                                        <span class="relative flex h-2 w-2"><span class="ping-notify absolute inline-flex h-full w-full rounded-full opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-[#b75252]"></span></span>
                                         <span class="text-[9px] font-bold text-[#b75252] uppercase">Da Avvisare</span>
                                     </div>
                                 ` : ''}
@@ -136,11 +130,11 @@
 
                         <div class="w-full md:w-1/3 flex flex-col gap-3 justify-center border-l border-r border-slate-50 px-8">
                             <label class="flex items-center gap-4 cursor-pointer group">
-                                <input type="checkbox" ${isPronta ? 'checked' : ''} onchange="aggiornaStato('${ord.id}', 'merce_pronta', this.checked)" class="w-6 h-6 rounded-lg border-slate-300 accent-emerald-600 transition-all">
+                                <input type="checkbox" ${isPronta ? 'checked' : ''} onchange="aggiornaStato('${ord.id}', 'merce_pronta', this.checked)" class="w-6 h-6 rounded-lg border-slate-300 accent-emerald-600">
                                 <span class="text-[11px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-800">Merce Pronta</span>
                             </label>
                             <label class="flex items-center gap-4 cursor-pointer group">
-                                <input type="checkbox" ${isAvvisato ? 'checked' : ''} onchange="aggiornaStato('${ord.id}', 'cliente_avvisato', this.checked)" class="w-6 h-6 rounded-lg border-slate-300 accent-blue-600 transition-all">
+                                <input type="checkbox" ${isAvvisato ? 'checked' : ''} onchange="aggiornaStato('${ord.id}', 'cliente_avvisato', this.checked)" class="w-6 h-6 rounded-lg border-slate-300 accent-blue-600">
                                 <span class="text-[11px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-800">Cliente Avvisato</span>
                             </label>
                         </div>
@@ -156,28 +150,20 @@
         }
 
         async function aggiornaStato(id, campo, valore) {
-            const { error } = await _supabase.from('ordini_incorso').update({ [campo]: valore }).eq('id', id);
-            if (error) {
-                console.error("Errore aggiornamento:", error);
-            } else {
-                const activeBtn = document.querySelector('.active-filter');
-                const filtroAttuale = activeBtn.innerText.toLowerCase().includes('tutti') ? 'tutti' : 
-                                     activeBtn.innerText.toLowerCase().includes('ordinare') ? 'da_ordinare' :
-                                     activeBtn.innerText.toLowerCase().includes('pronta') ? 'merce_pronta' :
-                                     activeBtn.innerText.toLowerCase().includes('avvisare') ? 'da_avvisare' : 'avvisati';
-                caricaOrdini(filtroAttuale);
-            }
+            await _supabase.from('ordini_incorso').update({ [campo]: valore }).eq('id', id);
+            const activeBtn = document.querySelector('.active-filter');
+            caricaOrdini(activeBtn.innerText.toLowerCase().includes('tutti') ? 'tutti' : activeBtn.innerText.toLowerCase().includes('ordinare') ? 'da_ordinare' : activeBtn.innerText.toLowerCase().includes('pronta') ? 'merce_pronta' : activeBtn.innerText.toLowerCase().includes('avvisare') ? 'da_avvisare' : 'avvisati');
         }
 
         async function eliminaOrdine(id, elementId) {
-            if (confirm("Eliminare definitivamente l'ordine?")) {
+            if (confirm("Eliminare definitivamente?")) {
                 const { error } = await _supabase.from('ordini_incorso').delete().eq('id', id);
                 if (!error) document.getElementById(elementId).remove();
             }
         }
 
         async function evadiOrdine(id, elementId) {
-            if (confirm(`Confermi che l'ordine è stato consegnato? Sarà spostato in archivio.`)) {
+            if (confirm(`Spostare in archivio come consegnato?`)) {
                 const { data: ordine } = await _supabase.from('ordini_incorso').select('*').eq('id', id).single();
                 const { error: errInsert } = await _supabase.from('ordini_archiviati').insert([{ ...ordine, id: undefined, stato: 'Evaso', data_evasione: new Date() }]);
                 if (!errInsert) {
@@ -190,8 +176,8 @@
         function filtraPerNome(testo) {
             const query = testo.toLowerCase();
             document.querySelectorAll('.ordine-card').forEach(card => {
-                const nome = card.getAttribute('data-cliente').toLowerCase();
-                card.style.display = nome.includes(query) ? 'flex' : 'none';
+                const content = card.getAttribute('data-search').toLowerCase();
+                card.style.display = content.includes(query) ? 'flex' : 'none';
             });
         }
 
