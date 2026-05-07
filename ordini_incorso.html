@@ -1,44 +1,170 @@
-<div class="ordine-card bg-white border border-slate-200 rounded-3xl p-8 flex items-center justify-between shadow-sm mb-4" id="card-${ord.id}" data-cliente="${nomeCliente}">
-    
-    <div class="w-1/3">
-        <div class="flex items-center gap-3 mb-2">
-            <span class="status-badge ${ord.merce_pronta ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
-                ${ord.merce_pronta ? 'Merce Pronta' : 'Da Ordinare'}
-            </span>
-            <span class="text-[10px] text-slate-300 font-mono">#${ord.id.toString().slice(-5)}</span>
-            
-            <button onclick="window.location.href='ordini_nuovi.html?edit=${ord.id}'" class="text-blue-500 hover:text-blue-700 transition-colors" title="Modifica">
-                <i class="fas fa-edit text-lg"></i>
-            </button>
-            
-            <button onclick="eliminaOrdine('${ord.id}', 'card-${ord.id}')" class="text-red-400 hover:text-red-600 transition-colors" title="Elimina">
-                <i class="fas fa-trash-alt text-lg"></i>
-            </button>
-        </div>
-        <h2 class="text-2xl font-black text-slate-800 uppercase tracking-tight">${nomeCliente}</h2>
-    </div>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M361 - Logistica Ordini</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; padding-bottom: 50px; }
+        .text-m361-red { color: #b75252; }
+        .bg-m361-red { background-color: #b75252; }
+        .status-badge { padding: 4px 12px; border-radius: 99px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .active-filter { background-color: #1e293b !important; color: white !important; }
+    </style>
+</head>
+<body>
 
-    <div class="w-1/3 flex flex-col justify-center">
-        <label class="flex items-center gap-3 cursor-pointer group">
-            <input type="checkbox" 
-                   ${ord.cliente_avvisato ? 'checked' : ''} 
-                   onchange="aggiornaStato('${ord.id}', 'cliente_avvisato', this.checked)" 
-                   class="w-6 h-6 border-slate-300 rounded-lg accent-blue-600 transition-all">
-            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-800">
-                Cliente Avvisato
-            </span>
-        </label>
-    </div>
-
-    <div class="w-1/3 text-right flex items-center justify-end gap-8">
-        <div>
-            <p class="text-[10px] font-bold text-slate-400 uppercase">Da Incassare</p>
-            <p class="text-3xl font-black text-[#b75252]">€ ${ord.totale_ordine || '1.00'}</p>
+    <header class="bg-white border-b p-4 px-8 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+            <img src="logom361_rosso.jpg" alt="Logo" class="h-10">
+            <h1 class="font-bold text-xl border-l pl-4 ml-2 text-slate-700 uppercase tracking-tight">Ordini in Corso</h1>
         </div>
+        <a href="ordini_nuovi.html" class="bg-[#b75252] text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase shadow-md hover:opacity-90 transition-all">
+            + NUOVO ORDINE
+        </a>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-8">
         
-        <button onclick="evadiOrdine('${ord.id}', 'card-${ord.id}', '${ord.modalita_consegna}')" 
-                class="bg-slate-700 text-white px-8 py-4 rounded-xl text-xs font-black uppercase hover:bg-slate-900 shadow-md transition-all active:scale-95">
-            ${(ord.modalita_consegna === 'Spedizione' || ord.modalita_consegna === 'Sped.') ? 'SPEDITO' : 'RITIRATO'}
-        </button>
-    </div>
-</div>
+        <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+            <div class="flex flex-wrap gap-2" id="filter-group">
+                <button onclick="caricaOrdini('tutti', this)" class="active-filter bg-white border border-slate-200 text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase transition-all">Tutti</button>
+                <button onclick="caricaOrdini('da_ordinare', this)" class="bg-white border border-slate-200 text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase hover:border-slate-400">Merce da ordinare</button>
+                <button onclick="caricaOrdini('da_avvisare', this)" class="bg-white border border-slate-200 text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase hover:border-slate-400">Clienti da Avvisare</button>
+                <button onclick="caricaOrdini('avvisati', this)" class="bg-white border border-slate-200 text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase hover:border-slate-400">Clienti Avvisati</button>
+            </div>
+            
+            <div class="relative w-full md:w-96">
+                <span class="absolute left-4 top-3 text-slate-400"><i class="fas fa-search"></i></span>
+                <input type="text" oninput="filtraPerNome(this.value)" placeholder="Cerca cliente..." class="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-slate-100 transition-all">
+            </div>
+        </div>
+
+        <div class="space-y-4" id="orders-container">
+            <p class="text-center text-slate-400 py-20 font-medium">Caricamento ordini...</p>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // FUNZIONE PRINCIPALE CARICAMENTO
+        async function caricaOrdini(filtro = 'tutti', btn = null) {
+            // Gestione estetica pulsanti filtri
+            if(btn) {
+                document.querySelectorAll('#filter-group button').forEach(b => b.classList.remove('active-filter'));
+                btn.classList.add('active-filter');
+            }
+
+            const container = document.getElementById('orders-container');
+            let query = _supabase.from('ordini_incorso').select('*').order('created_at', { ascending: false });
+
+            if (filtro === 'da_ordinare') query = query.eq('merce_pronta', false);
+            if (filtro === 'da_avvisare') query = query.eq('merce_pronta', true).eq('cliente_avvisato', false);
+            if (filtro === 'avvisati') query = query.eq('cliente_avvisato', true);
+
+            const { data: ordini, error } = await query;
+            if (error) { container.innerHTML = "Errore nel caricamento."; return; }
+
+            container.innerHTML = ordini.length === 0 ? `<p class="text-center text-slate-400 py-20">Nessun ordine trovato.</p>` : "";
+
+            ordini.forEach(ord => {
+                const cardId = `card-${ord.id}`;
+                const nomeCliente = `${ord.cliente_nome || ''} ${ord.cliente_cognome || ''}`.trim().toUpperCase();
+                
+                // Logica testo bottone destra
+                const testoAzione = (ord.modalita_consegna === 'Spedizione' || ord.modalita_consegna === 'Sped.') ? 'SPEDITO' : 'RITIRATO';
+
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="ordine-card bg-white border border-slate-200 rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between shadow-sm hover:shadow-md transition-shadow" id="${cardId}" data-cliente="${nomeCliente}">
+                        
+                        <div class="w-full md:w-1/3 mb-4 md:mb-0">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="status-badge ${ord.merce_pronta ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                                    ${ord.merce_pronta ? 'Merce Arrivata / Pronta' : 'Merce da Ordinare'}
+                                </span>
+                                <span class="text-[10px] text-slate-300 font-mono tracking-tighter">#${ord.id.toString().slice(-5)}</span>
+                                
+                                <div class="flex gap-3 ml-2">
+                                    <button onclick="window.location.href='ordini_nuovi.html?edit=${ord.id}'" class="text-blue-400 hover:text-blue-600 transition-colors">
+                                        <i class="fas fa-edit text-lg"></i>
+                                    </button>
+                                    <button onclick="eliminaOrdine('${ord.id}', '${cardId}')" class="text-red-300 hover:text-red-500 transition-colors">
+                                        <i class="fas fa-trash-alt text-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <h2 class="text-2xl font-[900] text-slate-800 tracking-tight leading-tight">${nomeCliente || 'CLIENTE ANONIMO'}</h2>
+                        </div>
+
+                        <div class="w-full md:w-1/3 flex flex-col gap-3 justify-center border-l border-r border-slate-50 px-8">
+                            <label class="flex items-center gap-4 cursor-pointer group">
+                                <input type="checkbox" ${ord.merce_pronta ? 'checked' : ''} onchange="aggiornaStato('${ord.id}', 'merce_pronta', this.checked)" class="w-6 h-6 rounded-lg border-slate-300 accent-emerald-600 transition-all">
+                                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-800">Merce Arrivata / Pronta</span>
+                            </label>
+                            <label class="flex items-center gap-4 cursor-pointer group">
+                                <input type="checkbox" ${ord.cliente_avvisato ? 'checked' : ''} onchange="aggiornaStato('${ord.id}', 'cliente_avvisato', this.checked)" class="w-6 h-6 rounded-lg border-slate-300 accent-blue-600 transition-all">
+                                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-800">Cliente Avvisato</span>
+                            </label>
+                        </div>
+
+                        <div class="w-full md:w-1/3 text-right flex items-center justify-end gap-10">
+                            <div class="text-right">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Da Incassare</p>
+                                <p class="text-3xl font-[900] text-[#b75252]">€ ${ord.totale_ordine || '1.00'}</p>
+                            </div>
+                            <button onclick="evadiOrdine('${ord.id}', '${cardId}', '${ord.modalita_consegna}')" class="bg-[#2d3748] text-white px-10 py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-900 shadow-lg active:scale-95 transition-all">
+                                ${testoAzione}
+                            </button>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        // AGGIORNA STATO (CHECKBOX)
+        async function aggiornaStato(id, campo, valore) {
+            const { error } = await _supabase.from('ordini_incorso').update({ [campo]: valore }).eq('id', id);
+            if (error) console.error("Errore:", error);
+        }
+
+        // ELIMINA DEFINITIVAMENTE
+        async function eliminaOrdine(id, elementId) {
+            if (confirm("Eliminare definitivamente l'ordine?")) {
+                const { error } = await _supabase.from('ordini_incorso').delete().eq('id', id);
+                if (!error) document.getElementById(elementId).remove();
+            }
+        }
+
+        // ARCHIVIA (RITIRATO/SPEDITO)
+        async function evadiOrdine(id, elementId, modConsegna) {
+            const azione = (modConsegna === 'Spedizione' || modConsegna === 'Sped.') ? 'SPEDITO' : 'RITIRATO';
+            if (confirm(`Confermi che l'ordine è stato ${azione}? Sarà spostato in archivio.`)) {
+                const { data: ordine } = await _supabase.from('ordini_incorso').select('*').eq('id', id).single();
+                const { error: errInsert } = await _supabase.from('ordini_archiviati').insert([{ ...ordine, id: undefined, stato: 'Evaso', data_evasione: new Date() }]);
+                if (!errInsert) {
+                    await _supabase.from('ordini_incorso').delete().eq('id', id);
+                    document.getElementById(elementId).remove();
+                }
+            }
+        }
+
+        // RICERCA FILTRO NOME
+        function filtraPerNome(testo) {
+            const query = testo.toLowerCase();
+            document.querySelectorAll('.ordine-card').forEach(card => {
+                const nome = card.getAttribute('data-cliente').toLowerCase();
+                card.style.display = nome.includes(query) ? 'flex' : 'none';
+            });
+        }
+
+        window.onload = () => caricaOrdini();
+    </script>
+</body>
+</html>
