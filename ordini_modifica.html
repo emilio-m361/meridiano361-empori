@@ -1,558 +1,291 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M361 - Gestione Ordini</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
-        .text-m361-red { color: #b75252; }
-        .bg-m361-red { background-color: #b75252; }
-        .border-m361-red { border-color: #b75252; }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
-        .wa-active { color: #25D366; }
-        .wa-inactive { color: #cbd5e1; }
-        .row-error { background-color: #fee2e2 !important; border: 2px solid #ef4444 !important; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M361 - Modifica Ordine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        .text-m361-red { color: #b75252; }
+        .bg-m361-red { background-color: #b75252; }
+        .border-m361-red { border-color: #b75252; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        .wa-active { color: #25D366; }
+        .wa-inactive { color: #cbd5e1; }
+        .card { background: white; border-radius: 1.5rem; border: 1px solid #e2e8f0; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    </style>
 </head>
 <body class="pb-20">
 
-    <header class="bg-white border-b p-4 px-6 md:px-8 flex justify-between items-center sticky top-0 z-50 shadow-sm">
-        <div class="flex items-center gap-4">
-            <img src="logom361_rosso.jpg" alt="Logo" class="h-8">
-                        <h1 id="header-title" class="font-bold text-lg border-l pl-4 text-slate-700 hidden md:block">Modifica Ordine</h1>
-        </div>
-                <button onclick="window.location.href='logistica.html'" class="flex items-center gap-2 text-slate-500 hover:text-m361-red transition-colors font-bold text-sm">
-            <i class="fas fa-arrow-left"></i> Annulla
-        </button>
-    </header>
+    <header class="bg-white border-b p-4 px-6 md:px-8 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+            <img src="logom361_rosso.jpg" alt="Logo" class="h-8">
+            <h1 class="font-bold text-lg border-l pl-4 text-slate-700">Modifica Ordine</h1>
+        </div>
+        <button onclick="window.location.href='logistica.html'" class="flex items-center gap-2 text-slate-500 hover:text-m361-red transition-colors font-bold text-sm">
+            <i class="fas fa-arrow-left"></i> Annulla
+        </button>
+    </header>
 
-    <main class="max-w-[1600px] mx-auto p-4 md:p-6">
-        
-                <form id="orderForm" class="hidden space-y-6" onsubmit="return validateSubmission(event)">
-            
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <h2 class="text-xs font-bold mb-6 tracking-widest uppercase flex items-center gap-2">
-                        <span class="w-1 h-4 bg-m361-red rounded-full"></span> Emporio
-                    </h2>
-                    <div class="space-y-4">
-                        <div id="citta-wrapper" class="space-y-2">
-                            <div class="flex gap-2">
-                                <select id="select-emporio" onchange="handleCittaChange(this)" required class="flex-1 border-gray-200 border rounded-xl p-3 text-sm bg-gray-50">
-                                    <option value="">Città *</option>
-                                    <option value="Casalmaggiore">Casalmaggiore</option>
-                                    <option value="Cremona">Cremona</option>
-                                    <option value="Reggio Emilia">Reggio Emilia</option>
-                                    <option value="Viadana">Viadana</option>
-                                </select>
-                                <button type="button" onclick="addNewCityPrompt()" class="bg-red-50 px-3 rounded-xl hover:bg-red-100 text-m361-red">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                                <button type="button" onclick="removeCurrentCity()" class="bg-red-50 px-3 rounded-xl hover:bg-red-200 text-m361-red">
-                                    <i class="fas fa-trash-can"></i>
-                                </button>
-                            </div>
-                        </div>
+    <main class="max-w-[1600px] mx-auto p-4 md:p-6">
+        <form id="orderForm" class="space-y-6" onsubmit="return handleUpdate(event)">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div class="card lg:col-span-1">
+                    <h2 class="text-xs font-bold mb-6 tracking-widest uppercase flex items-center gap-2">
+                        <span class="w-1 h-4 bg-m361-red rounded-full"></span> Emporio
+                    </h2>
+                    <div class="space-y-4">
+                        <select id="select-emporio" onchange="loadOperators(this.value)" required class="w-full border-gray-200 border rounded-xl p-3 text-sm bg-gray-50">
+                            <option value="">Città *</option>
+                            <option value="Casalmaggiore">Casalmaggiore</option>
+                            <option value="Cremona">Cremona</option>
+                            <option value="Reggio Emilia">Reggio Emilia</option>
+                            <option value="Viadana">Viadana</option>
+                        </select>
 
-                        <div id="canale-cremona-container" class="hidden">
-                            <select id="select-canale" class="w-full border-m361-red border-2 rounded-xl p-3 text-sm bg-red-50">
-                                <option value="">Seleziona Canale *</option>
-                                <option value="emporio">emporio</option>
-                                <option value="meridiano361.it">meridiano361.it</option>
-                                <option value="on-earth.it">on-earth.it</option>
-                            </select>
-                        </div>
+                        <div id="canale-cremona-container" class="hidden">
+                            <select id="select-canale" class="w-full border-m361-red border-2 rounded-xl p-3 text-sm bg-red-50">
+                                <option value="">Canale (Cremona) *</option>
+                                <option value="emporio">emporio</option>
+                                <option value="meridiano361.it">meridiano361.it</option>
+                                <option value="on-earth.it">on-earth.it</option>
+                            </select>
+                        </div>
 
-                        <div id="operatore-wrapper" class="space-y-2">
-                            <div class="flex gap-2">
-                                <select id="select-operatore" required class="flex-1 border-gray-200 border rounded-xl p-3 text-sm">
-                                    <option value="">Seleziona Operatore *</option>
-                                </select>
-                                <button type="button" onclick="addNewOperatorPrompt()" class="bg-red-50 px-3 rounded-xl hover:bg-red-100 text-m361-red">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                                <button type="button" onclick="removeCurrentOperator()" class="bg-red-50 px-3 rounded-xl hover:bg-red-200 text-m361-red">
-                                    <i class="fas fa-trash-can"></i>
-                                </button>
-                            </div>
-                        </div>
+                        <select id="select-operatore" required class="w-full border-gray-200 border rounded-xl p-3 text-sm">
+                            <option value="">Operatore *</option>
+                        </select>
 
-                        <input type="date" id="order-date" required class="w-full border-gray-200 border rounded-xl p-3 text-sm">
-                    </div>
-                </div>
+                        <input type="date" id="order-date" required class="w-full border-gray-200 border rounded-xl p-3 text-sm text-slate-500">
+                    </div>
+                </div>
 
-                <div class="lg:col-span-3 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <h2 class="text-xs font-bold mb-6 tracking-widest uppercase flex items-center gap-2">
-                        <span class="w-1 h-4 bg-m361-red rounded-full"></span> Cliente
-                    </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-                        <input type="text" id="cust-nome" placeholder="Nome *" required class="border-gray-200 border rounded-xl p-3 text-sm">
-                        <input type="text" id="cust-cognome" placeholder="Cognome *" required class="border-gray-200 border rounded-xl p-3 text-sm">
-                        <div class="relative">
-                            <input type="tel" id="cust-tel" placeholder="Cellulare *" required class="w-full border-gray-200 border rounded-xl p-3 text-sm pr-10">
-                            <button type="button" onclick="toggleWA(this)" class="absolute right-3 top-3 transition-colors wa-active"><i class="fab fa-whatsapp fa-lg"></i></button>
-                        </div>
-                        <input type="email" id="cust-email" placeholder="Email" class="border-gray-200 border rounded-xl p-3 text-sm">
-                        <div class="flex gap-2 p-1 bg-gray-100 rounded-xl h-[46px] items-center">
-                            <label class="flex-1 flex items-center justify-center text-xs font-bold cursor-pointer h-full rounded-lg has-[:checked]:bg-white transition-all">
-                                <input type="radio" name="mod_consegna" value="Ritiro" checked class="hidden"> Ritiro
-                            </label>
-                            <label class="flex-1 flex items-center justify-center text-xs font-bold cursor-pointer h-full rounded-lg has-[:checked]:bg-white transition-all">
-                                <input type="radio" name="mod_consegna" value="Spedizione" class="hidden"> Sped.
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <div class="card lg:col-span-3">
+                    <h2 class="text-xs font-bold mb-6 tracking-widest uppercase flex items-center gap-2">
+                        <span class="w-1 h-4 bg-m361-red rounded-full"></span> Cliente
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                        <input type="text" id="cust-nome" placeholder="Nome *" required class="border-gray-200 border rounded-xl p-3 text-sm">
+                        <input type="text" id="cust-cognome" placeholder="Cognome *" required class="border-gray-200 border rounded-xl p-3 text-sm">
+                        <div class="relative">
+                            <input type="tel" id="cust-tel" placeholder="Cellulare *" required class="w-full border-gray-200 border rounded-xl p-3 text-sm pr-10">
+                            <button type="button" onclick="toggleWA(this)" id="wa-toggle" class="absolute right-3 top-3 wa-active"><i class="fab fa-whatsapp fa-lg"></i></button>
+                        </div>
+                        <input type="email" id="cust-email" placeholder="Email" class="border-gray-200 border rounded-xl p-3 text-sm">
+                        <div class="flex gap-2 p-1 bg-gray-100 rounded-xl h-[46px] items-center">
+                            <label class="flex-1 flex items-center justify-center text-xs font-bold cursor-pointer h-full rounded-lg has-[:checked]:bg-white transition-all">
+                                <input type="radio" name="mod_consegna" value="Ritiro" checked class="hidden"> Ritiro
+                            </label>
+                            <label class="flex-1 flex items-center justify-center text-xs font-bold cursor-pointer h-full rounded-lg has-[:checked]:bg-white transition-all">
+                                <input type="radio" name="mod_consegna" value="Spedizione" class="hidden"> Sped.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <div id="groups-container" class="space-y-8"></div>
+            <div class="card">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-slate-700 uppercase text-sm flex items-center gap-2">
+                        <span class="w-1 h-4 bg-m361-red rounded-full"></span> Prodotti
+                    </h3>
+                    <button type="button" onclick="addRow()" class="bg-slate-800 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-slate-700 transition-all">
+                        <i class="fas fa-plus mr-1"></i> aggiungi riga
+                    </button>
+                </div>
+                
+                <div class="overflow-x-auto text-xs">
+                    <table class="w-full text-left border-separate border-spacing-y-2">
+                        <thead>
+                            <tr class="text-[10px] text-gray-400 uppercase tracking-widest text-center">
+                                <th class="pb-2 pl-4 text-left">Codice *</th>
+                                <th class="pb-2 text-left">Descrizione *</th>
+                                <th class="pb-2 w-24">Prezzo</th>
+                                <th class="pb-2 w-16">Qtà</th>
+                                <th class="pb-2 w-16 bg-green-50 text-green-700 rounded-t-lg">Parte</th>
+                                <th class="pb-2 w-16 bg-slate-50 text-slate-500 rounded-t-lg">Forn.</th>
+                                <th class="pb-2 w-16 bg-red-50 text-m361-red rounded-t-lg">Da Ord</th>
+                                <th class="pb-2 w-28 text-right pr-4">Totale</th>
+                                <th class="pb-2 w-8"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="rows-container"></tbody>
+                    </table>
+                </div>
+            </div>
 
-            <div id="add-group-container" class="hidden flex justify-center">
-                <button type="button" onclick="addGroup()" class="bg-slate-800 text-white px-8 py-4 rounded-2xl font-bold uppercase text-xs shadow-lg hover:bg-slate-700 transition-all">
-                    <i class="fas fa-layer-group mr-2"></i> aggiungi tipologia bomboniera
-                </button>
-            </div>
+            <div class="flex flex-col md:flex-row justify-end items-stretch gap-4">
+                <div class="bg-white border border-slate-200 p-4 rounded-2xl flex flex-col justify-center min-w-[180px] text-center">
+                    <span class="text-[9px] font-bold text-slate-400 uppercase">Totale Ordine</span>
+                    <span id="grand-total" class="text-2xl font-bold text-slate-800">€ 0.00</span>
+                </div>
+                <div class="bg-white border border-slate-200 p-4 rounded-2xl flex flex-col justify-center items-center min-w-[180px]">
+                    <span class="text-[9px] font-bold text-slate-400 uppercase">Acconto</span>
+                    <input type="number" step="0.01" id="acconto" oninput="calculateTotals()" class="w-full text-center text-slate-700 bg-transparent text-2xl font-bold outline-none" value="0.00">
+                </div>
+                <div class="bg-m361-red p-4 rounded-2xl flex flex-col justify-center min-w-[180px] text-center shadow-lg">
+                    <span class="text-[9px] font-bold text-white/80 uppercase">Da Pagare</span>
+                    <span id="saldo-finale" class="text-2xl font-bold text-white">€ 0.00</span>
+                </div>
+            </div>
 
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <div class="flex flex-col md:flex-row justify-end items-stretch gap-4">
-                    <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex flex-col justify-center min-w-[180px] text-center">
-                        <span class="text-[9px] font-bold text-slate-400 uppercase">Totale Ordine</span>
-                        <span id="grand-total" class="text-2xl font-bold text-slate-800">€ 0.00</span>
-                    </div>
-                    <div class="bg-white border border-slate-200 p-4 rounded-2xl flex flex-col justify-center items-center min-w-[180px]">
-                        <span class="text-[9px] font-bold text-slate-400 uppercase">Acconto</span>
-                        <input type="text" id="acconto" onfocus="clearCurrency(this)" onblur="formatCurrency(this)" oninput="calcGrandTotal()" class="w-full text-center text-slate-700 bg-transparent text-2xl outline-none" value="€ 0.00">
-                    </div>
-                    <div class="bg-m361-red p-4 rounded-2xl flex flex-col justify-center min-w-[180px] text-center shadow-lg">
-                        <span class="text-[9px] font-bold text-white/80 uppercase">Da Pagare</span>
-                        <span id="saldo-finale" class="text-2xl font-bold text-white">€ 0.00</span>
-                    </div>
-                </div>
-            </div>
+            <button type="submit" id="submit-btn" class="w-full bg-slate-800 text-white font-bold py-5 rounded-2xl uppercase tracking-widest shadow-xl hover:bg-slate-700 transition-all">
+                <i class="fas fa-sync-alt mr-2"></i> Aggiorna Ordine
+            </button>
+        </form>
+    </main>
 
-            <div class="bg-white p-6 rounded-2xl border border-gray-100">
-                <textarea id="order-notes" rows="2" class="w-full border-gray-200 border rounded-2xl p-4 text-sm" placeholder="Note..."></textarea>
-            </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-                        <button type="submit" id="submit-btn" class="w-full bg-m361-red text-white font-bold py-5 rounded-2xl uppercase tracking-widest shadow-xl hover:scale-[1.01] transition-all">
-                <i class="fas fa-save mr-2"></i> Aggiorna Ordine
-            </button>
-        </form>
-    </main>
+        const OPERATORI = {
+            "Cremona": ["Chiara Monteverdi", "Emilio Mazzolari", "Giulia Galelli"],
+            "Casalmaggiore": ["Alessandra Rivetti", "Barbara Araldi", "Carla Maffei", "Edoardo Pavesi"],
+            "Viadana": ["Alessia Rovina", "Ave Aroldi", "Claudio Mortini"],
+            "Reggio Emilia": ["Alessia Bartolomei", "Elsa Scarpa"]
+        };
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <script>
-        // 1. CONFIGURAZIONE SUPABASE (IDENTICA ALL'ORIGINALE)
-        const SUPABASE_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        // 2. VARIABILI E DATI (IDENTICA ALL'ORIGINALE)
-        let currentType = 'standard';
-        let groupCount = 0;
-        let ALL_EMPORI = ["Casalmaggiore", "Cremona", "Reggio Emilia", "Viadana"];
-
-        const OPERATORI_DATA = {
-            "Cremona": ["Chiara Monteverdi", "Emilio Mazzolari", "Giulia Galelli"],
-            "Casalmaggiore": ["Alessandra Rivetti", "Barbara Araldi", "Carla Maffei", "Chiara Monteverdi", "Edoardo Pavesi", "Emilio Mazzolari", "Erica Bossi", "Francesco Lunardini", "Giovanna Raineri", "Giulia Frigeri", "Giuseppe Lunardini", "Ileana Galli", "Maria Marcella Scaravonati", "Matilde Chiarini", "Michele Marchini", "Roberta Vezzosi", "Teyssir Mabrouk", "Vittoria Lunardini"],
-            "Viadana": ["Alessia Rovina", "Ave Aroldi", "Barbara Piotrowska", "Carla Bellelli", "Carla Chittolini", "Chiara Monteverdi", "Claudio Mortini", "Donatella Falugi", "Elena Ghelfi", "Emilio Mazzolari", "Franco Furlotti", "Giuseppina Amadini", "Manuela Scazza", "Marta Sanfelici", "Mariagrazia Bertolini", "Mirella Panato", "Roberta Alberini", "Sara Germani", "Tiziana Bortesi"],
-            "Reggio Emilia": ["Alessia Bartolomei", "Elsa Scarpa", "Manuela Capanni", "Marica Pioli"]
-        };
-
-        // 3. FUNZIONI LOGICA UI (ADATTATA PER IL CARICAMENTO DATI ESISTENTI)
-        function initOrder(type) {
-            currentType = type;
-            // Rimosso il selettore tipo ordine
-            document.getElementById('order-type-selection').classList.add('hidden');
-            document.getElementById('orderForm').classList.remove('hidden');
-            document.getElementById('header-title').innerText = 'Modifica Ordine (' + (type === 'bomboniere' ? 'Bomboniere' : 'Standard') + ')';
-            if(type === 'bomboniere') document.getElementById('add-group-container').classList.remove('hidden');
-            // addGroup(); -> Spostato nel caricamento dati
-        }
-
-        function handleCittaChange(select) {
-            const citta = select.value;
-            const canaleContainer = document.getElementById('canale-cremona-container');
-            const opSelect = document.getElementById('select-operatore');
-            
-            canaleContainer.classList.toggle('hidden', citta !== 'Cremona');
-            document.getElementById('select-canale').required = (citta === 'Cremona');
-            
-            opSelect.innerHTML = '<option value="">Seleziona Operatore *</option>';
-            const operatori = OPERATORI_DATA[citta] || [];
-            operatori.sort().forEach(op => {
-                const opt = document.createElement('option');
-                opt.value = op;
-                opt.text = op;
-                opSelect.add(opt);
-            });
-            updateAllEmporiDropdowns();
-        }
-
-        function getEmporioOptions() {
-            const mainCitta = document.getElementById('select-emporio').value;
-            let options = '<option value="">Dove?</option>';
-            ALL_EMPORI.forEach(e => { 
-                if(e !== mainCitta) options += `<option value="${e}">${e}</option>`; 
-            });
-            return options;
-        }
-
-        function updateAllEmporiDropdowns() {
-            document.querySelectorAll('.emporio-dropdown').forEach(select => {
-                const currentVal = select.value;
-                select.innerHTML = getEmporioOptions();
-                select.value = currentVal;
-            });
-        }
-
-        function addNewCityPrompt() {
-            const nuovaCitta = prompt("Inserisci il nome della nuova città:");
-            if (nuovaCitta && nuovaCitta.trim() !== "") {
-                const nome = nuovaCitta.trim();
-                if(!ALL_EMPORI.includes(nome)) {
-                    ALL_EMPORI.push(nome);
-                    const select = document.getElementById('select-emporio');
-                    const opt = document.createElement('option');
-                    opt.value = nome; opt.text = nome;
-                    select.add(opt); 
-                    select.value = nome;
-                    handleCittaChange(select);
-                }
-            }
-        }
-
-        function removeCurrentCity() {
-            const select = document.getElementById('select-emporio');
-            if (select.selectedIndex > 0) {
-                if (confirm("Rimuovere la città selezionata?")) {
-                    ALL_EMPORI = ALL_EMPORI.filter(c => c !== select.value);
-                    select.remove(select.selectedIndex);
-                    handleCittaChange(select);
-                }
-            }
-        }
-
-        function addNewOperatorPrompt() {
-            const nome = prompt("Nuovo operatore:");
-            if (nome && nome.trim() !== "") {
-                const opSelect = document.getElementById('select-operatore');
-                const opt = document.createElement('option');
-                opt.value = nome.trim(); opt.text = nome.trim();
-                opSelect.add(opt); 
-                opSelect.value = opt.value;
-            }
-        }
-
-        function removeCurrentOperator() {
-            const opSelect = document.getElementById('select-operatore');
-            if (opSelect.selectedIndex > 0 && confirm("Rimuovere operatore?")) opSelect.remove(opSelect.selectedIndex);
-        }
-
-        function toggleWA(btn) {
-            btn.classList.toggle('wa-active');
-            btn.classList.toggle('wa-inactive');
-        }
-
-        function addGroup() {
-            groupCount++;
-            const groupId = groupCount;
-            const container = document.getElementById('groups-container');
-            const groupTitle = currentType === 'bomboniere' ? `Bomboniera Tipologia ${groupId}` : 'Prodotti';
-            const subtotalSection = currentType === 'bomboniere' ? `<div class="mt-4 flex justify-end border-t pt-4"><div class="text-right"><span class="text-[10px] font-bold text-slate-400 uppercase block">Subtotale Tipologia</span><span id="subtotal-${groupId}" class="text-xl font-bold text-slate-600">€ 0.00</span></div></div>` : '';
-
-            const groupHtml = `
-                <div id="group-${groupId}" class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-bold text-slate-700 uppercase text-sm flex items-center gap-2"><span class="w-1 h-4 bg-m361-red rounded-full"></span> ${groupTitle}</h3>
-                        <button type="button" onclick="addRow(${groupId})" class="bg-slate-100 text-slate-700 px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-slate-200"><i class="fas fa-plus mr-1"></i> aggiungi</button>
-                    </div>
-                    <div class="overflow-x-auto text-xs">
-                        <table class="w-full text-left border-separate border-spacing-y-2 product-table">
-                            <thead>
-                                <tr class="text-[10px] text-gray-400 uppercase tracking-widest text-center">
-                                    <th class="pb-2 pl-4 text-left">Codice *</th>
-                                    <th class="pb-2 text-left">Descrizione *</th>
-                                    <th class="pb-2 w-24">Prezzo</th>
-                                    <th class="pb-2 w-16">Qtà</th>
-                                    <th class="pb-2 w-16 bg-green-50 text-green-700">Da parte</th>
-                                    <th class="pb-2 w-16 bg-slate-50">Da forn.</th>
-                                    <th class="pb-2 w-32 bg-slate-50">Da empori</th>
-                                    <th class="pb-2 w-32 bg-slate-50">Da altri</th>
-                                    <th class="pb-2 w-16 bg-red-50 text-m361-red">Da Ord</th>
-                                    <th class="pb-2 w-24 text-right pr-4">Totale</th>
-                                    <th class="pb-2 w-8"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="rows-container-${groupId}"></tbody>
-                        </table>
-                    </div>
-                    ${subtotalSection}
-                </div>`;
-            container.insertAdjacentHTML('beforeend', groupHtml);
-            // addRow(groupId); -> Gestito nel caricamento dati
-        }
-
-        // ADATTATA PER ACCETTARE DATI ESISTENTI
-        function addRow(groupId, datiRow = null) {
-            const tbody = document.getElementById(`rows-container-${groupId}`);
-            const rowId = Date.now() + Math.random();
-            const row = document.createElement('tr');
-            row.className = "product-row transition-all";
-            row.id = `row-${rowId}`;
-            row.innerHTML = `
-                <td class="p-1 pl-4"><input type="text" placeholder="Codice" required class="w-full border-gray-200 border rounded-lg p-2 text-xs p-codice" value="${datiRow?.codice || ''}"></td>
-                <td class="p-1"><input type="text" placeholder="Descrizione" required class="w-full border-gray-200 border rounded-lg p-2 text-xs p-desc" value="${datiRow?.descrizione || ''}"></td>
-                <td class="p-1"><input type="text" onfocus="clearCurrency(this)" onblur="formatCurrency(this)" oninput="calcRow('${rowId}', ${groupId})" class="price-input w-full border-gray-200 border rounded-lg p-2 text-right text-xs p-prezzo" value="${datiRow ? '€ ' + datiRow.prezzo.toFixed(2) : '€ 0.00'}"></td>
-                <td class="p-1"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="qty-input w-full border-gray-200 border rounded-lg p-2 text-center text-xs p-qta" value="${datiRow?.qta || 1}"></td>
-                <td class="p-1 bg-green-50"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="parte-input w-full border-green-200 border rounded-lg p-2 text-center text-xs p-parte" value="${datiRow?.da_parte || 0}"></td>
-                <td class="p-1 bg-slate-50"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="forn-input w-full border-slate-200 border rounded-lg p-2 text-center text-xs p-forn" value="${datiRow?.da_forn || 0}"></td>
-                <td class="p-1 bg-slate-50">
-                    <div class="flex flex-col gap-1">
-                        <input type="number" oninput="calcRow('${rowId}', ${groupId})" class="emp-q-input w-full border-slate-200 border rounded-lg p-1 text-center text-xs p-emp-q" value="${datiRow?.da_emp_q || 0}">
-                        <select class="emporio-dropdown w-full border-slate-200 border rounded-lg p-1 text-[9px] bg-white p-emp-dove">${getEmporioOptions()}</select>
-                    </div>
-                </td>
-                <td class="p-1 bg-slate-50">
-                    <div class="flex flex-col gap-1">
-                        <input type="number" oninput="calcRow('${rowId}', ${groupId})" class="altri-q-input w-full border-slate-200 border rounded-lg p-1 text-center text-xs p-altri-q" value="${datiRow?.da_altri_q || 0}">
-                        <input type="text" placeholder="Specifica..." class="w-full border-slate-200 border rounded-lg p-1 text-[9px] bg-white p-altri-spec" value="${datiRow?.da_altri_spec || ''}">
-                    </div>
-                </td>
-                <td class="p-1 bg-red-50 text-center font-bold text-m361-red text-xs p-do" id="do-${rowId}">0</td>
-                <td class="p-1 text-right pr-4 font-bold text-xs">€ <span class="row-total" id="tot-riga-${rowId}">0.00</span></td>
-                <td class="p-1 text-center"><button type="button" onclick="removeRow('${rowId}', ${groupId})" class="text-gray-300 hover:text-red-500">✕</button></td>
-            `;
-            tbody.appendChild(row);
-            // Gestione drop-down emporio esistente
-            if(datiRow?.da_emp_dove) row.querySelector('.p-emp-dove').value = datiRow.da_emp_dove;
-            calcRow(rowId);
-        }
-
-        function calcRow(rowId, groupId) {
-            const row = document.getElementById(`row-${rowId}`);
-            const qty = +row.querySelector('.qty-input').value || 0;
-            const price = parseFloat(row.querySelector('.price-input').value.replace('€', '').trim()) || 0;
-            const sumProv = (+row.querySelector('.parte-input').value || 0) + (+row.querySelector('.forn-input').value || 0) + (+row.querySelector('.emp-q-input').value || 0) + (+row.querySelector('.altri-q-input').value || 0);
-            
-            row.classList.toggle('row-error', sumProv > qty);
-            document.getElementById(`do-${rowId}`).innerText = (qty - sumProv) > 0 ? (qty - sumProv) : 0;
-            document.getElementById(`tot-riga-${rowId}`).innerText = (qty * price).toFixed(2);
-            
-            if(currentType === 'bomboniere') calcSubtotal(groupId);
-            calcGrandTotal();
-            validateGlobal();
-        }
-
-        function validateGlobal() {
-            const hasErrors = document.querySelectorAll('.row-error').length > 0;
-            const btn = document.getElementById('submit-btn');
-            btn.disabled = hasErrors;
-            btn.classList.toggle('opacity-50', hasErrors);
-        }
-
-        function calcSubtotal(groupId) {
-            let sub = 0;
-            const container = document.getElementById(`rows-container-${groupId}`);
-            if(container) {
-                container.querySelectorAll('.row-total').forEach(el => sub += parseFloat(el.innerText) || 0);
-                document.getElementById(`subtotal-${groupId}`).innerText = `€ ${sub.toFixed(2)}`;
-            }
-        }
-
-        function calcGrandTotal() {
-            let grand = 0;
-            document.querySelectorAll('.row-total').forEach(el => grand += parseFloat(el.innerText) || 0);
-            const accStr = document.getElementById('acconto').value.replace('€', '').trim();
-            const acc = parseFloat(accStr) || 0;
-            document.getElementById('grand-total').innerText = `€ ${grand.toFixed(2)}`;
-            document.getElementById('saldo-finale').innerText = `€ ${(grand - acc).toFixed(2)}`;
-        }
-
-        function formatCurrency(input) {
-            let val = parseFloat(input.value.replace('€', '').trim()) || 0;
-            input.value = "€ " + val.toFixed(2);
-        }
-
-        function clearCurrency(input) {
-            let val = input.value.replace('€', '').trim();
-            if(val == "0.00" || val == "0") input.value = "";
-        }
-
-        function removeRow(rowId, groupId) {
-            const row = document.getElementById(`row-${rowId}`);
-            if(row) {
-                row.remove();
-                if(currentType === 'bomboniere') calcSubtotal(groupId);
-                calcGrandTotal();
-                validateGlobal();
-            }
-        }
-
-        async function validateSubmission(e) {
-            e.preventDefault();
-            
-            const btn = document.getElementById('submit-btn');
-            btn.disabled = true;
-            // Testo bottone modificato
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Aggiornamento...';
-
-            try {
-                // Recupero articoli dalla tabella complessa
-                const listaArticoli = [];
-                document.querySelectorAll('.product-row').forEach(row => {
-                    listaArticoli.push({
-                        codice: row.querySelector('.p-codice').value,
-                        descrizione: row.querySelector('.p-desc').value,
-                        prezzo: parseFloat(row.querySelector('.p-prezzo').value.replace('€', '').trim()) || 0,
-                        qta: parseInt(row.querySelector('.p-qta').value) || 0,
-                        da_parte: parseInt(row.querySelector('.p-parte').value) || 0,
-                        da_forn: parseInt(row.querySelector('.p-forn').value) || 0,
-                        da_emp_q: parseInt(row.querySelector('.p-emp-q').value) || 0,
-                        da_emp_dove: row.querySelector('.p-emp-dove').value,
-                        da_altri_q: parseInt(row.querySelector('.p-altri-q').value) || 0,
-                        da_altri_spec: row.querySelector('.p-altri-spec').value,
-                        da_ord: parseInt(row.querySelector('.p-do').innerText) || 0,
-                        totale: parseFloat(row.querySelector('.row-total').innerText) || 0
-                    });
-                });
-
-                const updateOrdine = {
-                    citta: document.getElementById('select-emporio').value,
-                    operatore: document.getElementById('select-operatore').value,
-                    // Canale Cremona
-                    canale: document.getElementById('select-emporio').value === 'Cremona' ? document.getElementById('select-canale').value : null,
-                    data_ordine: document.getElementById('order-date').value,
-                    cliente_nome: document.getElementById('cust-nome').value,
-                    cliente_cognome: document.getElementById('cust-cognome').value,
-                    cliente_email: document.getElementById('cust-email').value,
-                    cliente_cellulare: document.getElementById('cust-tel').value,
-                    wa_attivo: document.getElementById('cust-tel').nextElementSibling.classList.contains('wa-active'),
-                    modalita_consegna: document.querySelector('input[name="mod_consegna"]:checked').value,
-                    // Articoli completi (JSON)
-                    articoli: listaArticoli,
-                    totale_ordine: parseFloat(document.getElementById('grand-total').innerText.replace('€', '').trim()) || 0,
-                    acconto: parseFloat(document.getElementById('acconto').value.replace('€', '').trim()) || 0,
-                    da_pagare: parseFloat(document.getElementById('saldo-finale').innerText.replace('€', '').trim()) || 0,
-                    note: document.getElementById('order-notes').value
-                };
-
-                // Esegui UPDATE invece di INSERT
-                const { error } = await _supabase
-                    .from('ordini_incorso')
-                    .update(updateOrdine)
-                    .eq('id', ordineId); // Identifica l'ordine corretto
-
-                if (error) throw error;
-
-                alert("Ordine aggiornato correttamente!");
-                window.location.href = "logistica.html"; // Torna alla lista
-
-            } catch (error) {
-                console.error("Errore Supabase:", error);
-                alert("Errore nell'aggiornamento: " + error.message);
-                btn.disabled = false;
-                // Testo bottone ripristinato
-                btn.innerHTML = '<i class="fas fa-save mr-2"></i> Aggiorna Ordine';
-            }
-            return false;
-        }
-
-        // --- LOGICA DI CARICAMENTO DATI ESISTENTI ---
         const urlParams = new URLSearchParams(window.location.search);
-        const ordineId = urlParams.get('id');
+        const orderId = urlParams.get('id');
 
-        window.onload = async () => {
-            if (!ordineId) {
-                alert("ID Ordine mancante nell'URL.");
-                window.location.href = "logistica.html";
-                return;
+        function loadOperators(citta, selectedOp = "") {
+            const opSelect = document.getElementById('select-operatore');
+            const canaleContainer = document.getElementById('canale-cremona-container');
+            
+            canaleContainer.classList.toggle('hidden', citta !== 'Cremona');
+            opSelect.innerHTML = '<option value="">Operatore *</option>';
+            
+            if (OPERATORI[citta]) {
+                OPERATORI[citta].forEach(op => {
+                    opSelect.innerHTML += `<option value="${op}" ${op === selectedOp ? 'selected' : ''}>${op}</option>`;
+                });
             }
+        }
 
-            // Caricamento dati da Supabase
-            const { data: ord, error } = await _supabase
-                .from('ordini_incorso')
-                .select('*')
-                .eq('id', ordineId)
-                .single();
+        function addRow(data = {}) {
+            const container = document.getElementById('rows-container');
+            const rowId = Date.now() + Math.random();
+            const html = `
+                <tr id="row-${rowId}" class="product-row group">
+                    <td class="p-1 pl-4"><input type="text" class="w-full border-gray-200 border rounded-lg p-2 text-xs p-codice" value="${data.codice || ''}" required placeholder="Codice"></td>
+                    <td class="p-1"><input type="text" class="w-full border-gray-200 border rounded-lg p-2 text-xs p-desc" value="${data.descrizione || ''}" required placeholder="Descrizione"></td>
+                    <td class="p-1"><input type="number" step="0.01" oninput="calculateTotals()" class="w-full border-gray-200 border rounded-lg p-2 text-right text-xs p-prezzo" value="${data.prezzo || '0.00'}"></td>
+                    <td class="p-1"><input type="number" oninput="calculateTotals()" class="w-full border-gray-200 border rounded-lg p-2 text-center text-xs p-qta" value="${data.qta || 1}"></td>
+                    <td class="p-1 bg-green-50"><input type="number" oninput="calculateTotals()" class="w-full border-green-100 border rounded-lg p-2 text-center text-xs p-parte" value="${data.da_parte || 0}"></td>
+                    <td class="p-1 bg-slate-50"><input type="number" oninput="calculateTotals()" class="w-full border-slate-100 border rounded-lg p-2 text-center text-xs p-forn" value="${data.da_forn || 0}"></td>
+                    <td class="p-1 bg-red-50 text-center font-bold text-m361-red text-xs p-da-ord">0</td>
+                    <td class="p-1 text-right pr-4 font-bold text-xs p-subtotal">€ 0.00</td>
+                    <td class="p-1 text-center"><button type="button" onclick="document.getElementById('row-${rowId}').remove(); calculateTotals();" class="text-gray-300 hover:text-red-500 transition-colors"><i class="fas fa-times"></i></button></td>
+                </tr>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+            calculateTotals();
+        }
 
-            if (error || !ord) {
-                alert("Impossibile caricare l'ordine.");
-                window.location.href = "logistica.html";
-                return;
-            }
+        function calculateTotals() {
+            let grandTotal = 0;
+            document.querySelectorAll('.product-row').forEach(row => {
+                const qta = parseFloat(row.querySelector('.p-qta').value) || 0;
+                const prezzo = parseFloat(row.querySelector('.p-prezzo').value) || 0;
+                const parte = parseFloat(row.querySelector('.p-parte').value) || 0;
+                const forn = parseFloat(row.querySelector('.p-forn').value) || 0;
+                
+                const daOrd = Math.max(0, qta - (parte + forn));
+                const subtotal = qta * prezzo;
+                
+                row.querySelector('.p-da-ord').innerText = daOrd;
+                row.querySelector('.p-subtotal').innerText = `€ ${subtotal.toFixed(2)}`;
+                grandTotal += subtotal;
+            });
 
-            // Inizializza l'interfaccia basata sul tipo
-            initOrder(ord.tipo_ordine || 'standard');
+            const acconto = parseFloat(document.getElementById('acconto').value) || 0;
+            document.getElementById('grand-total').innerText = `€ ${grandTotal.toFixed(2)}`;
+            document.getElementById('saldo-finale').innerText = `€ ${(grandTotal - acconto).toFixed(2)}`;
+        }
 
-            // 1. Popolamento Emporio
+        function toggleWA(btn) {
+            btn.classList.toggle('wa-active');
+            btn.classList.toggle('wa-inactive');
+        }
+
+        async function init() {
+            if (!orderId) return alert("Nessun ID ordine trovato");
+            
+            const { data: ord, error } = await _supabase.from('ordini_incorso').select('*').eq('id', orderId).single();
+            if (error) return alert("Errore caricamento dati");
+
             document.getElementById('select-emporio').value = ord.citta;
-            // Trigger cambio città per operatori e canale
-            handleCittaChange(document.getElementById('select-emporio'));
-            document.getElementById('select-operatore').value = ord.operatore;
+            loadOperators(ord.citta, ord.operatore);
             if(ord.citta === 'Cremona') document.getElementById('select-canale').value = ord.canale;
+            
             document.getElementById('order-date').value = ord.data_ordine;
-
-            // 2. Popolamento Cliente
             document.getElementById('cust-nome').value = ord.cliente_nome;
             document.getElementById('cust-cognome').value = ord.cliente_cognome;
             document.getElementById('cust-tel').value = ord.cliente_cellulare;
             document.getElementById('cust-email').value = ord.cliente_email;
-            // Radio Mod Consegna
+            document.getElementById('acconto').value = ord.acconto || 0;
+            
+            const waBtn = document.getElementById('wa-toggle');
+            if(!ord.wa_attivo) { waBtn.classList.replace('wa-active', 'wa-inactive'); }
+
             document.querySelector(`input[name="mod_consegna"][value="${ord.modalita_consegna}"]`).checked = true;
-            // Stato WA
-            const waBtn = document.getElementById('cust-tel').nextElementSibling;
-            if (ord.wa_attivo) {
-                waBtn.classList.add('wa-active');
-                waBtn.classList.remove('wa-inactive');
-            } else {
-                waBtn.classList.add('wa-inactive');
-                waBtn.classList.remove('wa-active');
-            }
 
-            // 3. Popolamento Articoli (JSON)
-            const container = document.getElementById('groups-container');
-            container.innerHTML = ''; // Svuota riga vuota di default
-            // Raggruppa per tipologia se bomboniere
-            if(ord.tipo_ordine === 'bomboniere') {
-                 // Gestione complessa bomboniere (omessa per brevità, assumiamo standard)
-                 // Se necessario, ricreare i gruppi basandosi sui dati
-                 // addGroup(); ...
-            } else {
-                // Ordine Standard -> 1 solo gruppo "Prodotti"
-                addGroup(); // Crea il gruppo ID 1
-                const tbody = document.getElementById(`rows-container-1`);
-                tbody.innerHTML = ''; // Svuota riga vuota del gruppo
-
-                if(ord.articoli && ord.articoli.length > 0) {
-                    ord.articoli.forEach(art => {
-                        addRow(1, art); // Passa i dati dell'articolo
-                    });
-                } else {
-                    addRow(1); // Almeno una riga vuota
-                }
-            }
-
-            // 4. Popolamento Totali, Acconto e Note
-            formatCurrencyValue(document.getElementById('grand-total'), ord.totale_ordine);
-            document.getElementById('acconto').value = '€ ' + ord.acconto.toFixed(2);
-            formatCurrencyValue(document.getElementById('saldo-finale'), ord.da_pagare);
-            document.getElementById('order-notes').value = ord.note || '';
-
-            calcGrandTotal(); // Ricalcola per sicurezza
-        };
-
-        // Funzione helper per formattare valuta nei nodi testo
-        function formatCurrencyValue(element, value) {
-            element.innerText = '€ ' + value.toFixed(2);
+            if (ord.articoli) ord.articoli.forEach(art => addRow(art));
+            else addRow();
         }
 
-    </script>
+        async function handleUpdate(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> AGGIORNAMENTO...';
+
+            const articoli = Array.from(document.querySelectorAll('.product-row')).map(row => ({
+                codice: row.querySelector('.p-codice').value,
+                descrizione: row.querySelector('.p-desc').value,
+                prezzo: parseFloat(row.querySelector('.p-prezzo').value),
+                qta: parseInt(row.querySelector('.p-qta').value),
+                da_parte: parseInt(row.querySelector('.p-parte').value),
+                da_forn: parseInt(row.querySelector('.p-forn').value)
+            }));
+
+            const updateData = {
+                citta: document.getElementById('select-emporio').value,
+                operatore: document.getElementById('select-operatore').value,
+                canale: document.getElementById('select-emporio').value === 'Cremona' ? document.getElementById('select-canale').value : null,
+                data_ordine: document.getElementById('order-date').value,
+                cliente_nome: document.getElementById('cust-nome').value,
+                cliente_cognome: document.getElementById('cust-cognome').value,
+                cliente_cellulare: document.getElementById('cust-tel').value,
+                cliente_email: document.getElementById('cust-email').value,
+                wa_attivo: document.getElementById('wa-toggle').classList.contains('wa-active'),
+                modalita_consegna: document.querySelector('input[name="mod_consegna"]:checked').value,
+                articoli: articoli,
+                totale_ordine: parseFloat(document.getElementById('grand-total').innerText.replace('€ ', '')),
+                acconto: parseFloat(document.getElementById('acconto').value),
+                da_pagare: parseFloat(document.getElementById('saldo-finale').innerText.replace('€ ', ''))
+            };
+
+            const { error } = await _supabase.from('ordini_incorso').update(updateData).eq('id', orderId);
+            
+            if (error) {
+                alert("Errore durante l'aggiornamento");
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i> RIPROVA';
+            } else {
+                window.location.href = 'logistica.html';
+            }
+        }
+
+        init();
+    </script>
 </body>
 </html>
