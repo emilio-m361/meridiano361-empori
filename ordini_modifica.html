@@ -5,106 +5,119 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M361 - Modifica Ordine</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
-        .text-m361-red { color: #b75252; }
-        .bg-m361-red { background-color: #b75252; }
-        .border-m361-red { border-color: #b75252; }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
-        .wa-active { color: #25D366; }
-        .wa-inactive { color: #cbd5e1; }
-        .row-error { background-color: #fee2e2 !important; border: 2px solid #ef4444 !important; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .input-field { border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 0.75rem; width: 100%; outline: none; transition: all 0.2s; font-size: 0.875rem; }
+        .input-field:focus { border-color: #b75252; ring: 2px; ring-color: #fee2e2; }
+        .label-style { font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: block; }
     </style>
 </head>
-<body class="pb-20">
+<body class="p-4 md:p-10">
 
-    <header class="bg-white border-b p-4 px-6 md:px-8 flex justify-between items-center sticky top-0 z-50 shadow-sm">
-        <div class="flex items-center gap-4">
-            <img src="logom361_rosso.jpg" alt="Logo" class="h-8">
-            <h1 id="header-title" class="font-bold text-lg border-l pl-4 text-slate-700">Modifica Ordine</h1>
+    <div class="max-w-6xl mx-auto bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-white">
+        <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-white">
+            <div class="flex items-center gap-4">
+                <a href="logistica.html" class="text-slate-400 hover:text-slate-600 transition-all">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </a>
+                <h1 class="text-3xl font-[900] text-slate-800 tracking-tighter uppercase">Modifica Ordine</h1>
+            </div>
+            <div id="ordine-id-badge" class="text-slate-300 font-mono text-sm">#------</div>
         </div>
-        <button onclick="window.location.href='ordini_incorso.html'" class="flex items-center gap-2 text-slate-500 hover:text-m361-red transition-colors font-bold text-sm">
-            <i class="fas fa-arrow-left"></i> Annulla
-        </button>
-    </header>
 
-    <main class="max-w-[1600px] mx-auto p-4 md:p-6">
-        <form id="orderForm" class="space-y-6" onsubmit="return handleUpdate(event)">
-            
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <h2 class="text-xs font-bold mb-6 tracking-widest uppercase flex items-center gap-2">
-                        <span class="w-1 h-4 bg-m361-red rounded-full"></span> Emporio
-                    </h2>
-                    <div class="space-y-4">
-                        <div id="citta-wrapper" class="space-y-2">
-                            <select id="select-emporio" onchange="handleCittaChange(this)" required class="w-full border-gray-200 border rounded-xl p-3 text-sm bg-gray-50">
-                                <option value="">Città *</option>
-                                <option value="Casalmaggiore">Casalmaggiore</option>
-                                <option value="Cremona">Cremona</option>
-                                <option value="Reggio Emilia">Reggio Emilia</option>
-                                <option value="Viadana">Viadana</option>
-                            </select>
-                        </div>
-                        <div id="operatore-wrapper">
-                            <select id="select-operatore" required class="w-full border-gray-200 border rounded-xl p-3 text-sm">
-                                <option value="">Seleziona Operatore *</option>
-                            </select>
-                        </div>
-                        <input type="date" id="order-date" required class="w-full border-gray-200 border rounded-xl p-3 text-sm">
+        <div class="p-8 space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="col-span-1 space-y-4 bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                    <h3 class="font-bold text-slate-700 mb-4 flex items-center gap-2">
+                        <span class="w-1.5 h-6 bg-[#b75252] rounded-full"></span> EMPORIO
+                    </h3>
+                    <div>
+                        <label class="label-style">Città</label>
+                        <select id="emporio" class="input-field">
+                            <option value="Cremona">Cremona</option>
+                            <option value="Parma">Parma</option>
+                            <option value="Piacenza">Piacenza</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="label-style">Operatore</label>
+                        <input type="text" id="operatore" class="input-field" placeholder="Nome operatore">
                     </div>
                 </div>
 
-                <div class="lg:col-span-3 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <h2 class="text-xs font-bold mb-6 tracking-widest uppercase flex items-center gap-2">
-                        <span class="w-1 h-4 bg-m361-red rounded-full"></span> Cliente
-                    </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-                        <input type="text" id="cust-nome" placeholder="Nome *" required class="border-gray-200 border rounded-xl p-3 text-sm">
-                        <input type="text" id="cust-cognome" placeholder="Cognome *" required class="border-gray-200 border rounded-xl p-3 text-sm">
-                        <div class="relative">
-                            <input type="tel" id="cust-tel" placeholder="Cellulare *" required class="w-full border-gray-200 border rounded-xl p-3 text-sm">
+                <div class="col-span-2 space-y-4 bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                    <h3 class="font-bold text-slate-700 mb-4 flex items-center gap-2">
+                        <span class="w-1.5 h-6 bg-[#b75252] rounded-full"></span> CLIENTE
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="label-style">Nome</label>
+                            <input type="text" id="cliente_nome" class="input-field">
                         </div>
-                        <input type="email" id="cust-email" placeholder="Email" class="border-gray-200 border rounded-xl p-3 text-sm">
-                        <div class="flex gap-2 p-1 bg-gray-100 rounded-xl h-[46px] items-center">
-                            <label class="flex-1 flex items-center justify-center text-xs font-bold cursor-pointer h-full rounded-lg has-[:checked]:bg-white transition-all">
-                                <input type="radio" name="mod_consegna" value="Ritiro" checked class="hidden"> Ritiro
-                            </label>
-                            <label class="flex-1 flex items-center justify-center text-xs font-bold cursor-pointer h-full rounded-lg has-[:checked]:bg-white transition-all">
-                                <input type="radio" name="mod_consegna" value="Spedizione" class="hidden"> Sped.
-                            </label>
+                        <div>
+                            <label class="label-style">Cognome</label>
+                            <input type="text" id="cliente_cognome" class="input-field">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="label-style">Cellulare</label>
+                            <input type="text" id="cliente_cellulare" class="input-field">
+                        </div>
+                        <div>
+                            <label class="label-style">Email</label>
+                            <input type="email" id="cliente_email" class="input-field">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div id="groups-container" class="space-y-8"></div>
-
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <div class="flex flex-col md:flex-row justify-end items-stretch gap-4">
-                    <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex flex-col justify-center min-w-[180px] text-center">
-                        <span class="text-[9px] font-bold text-slate-400 uppercase">Totale Ordine</span>
-                        <span id="grand-total" class="text-2xl font-bold text-slate-800">€ 0.00</span>
-                    </div>
-                    <div class="bg-white border border-slate-200 p-4 rounded-2xl flex flex-col justify-center items-center min-w-[180px]">
-                        <span class="text-[9px] font-bold text-slate-400 uppercase">Acconto</span>
-                        <input type="text" id="acconto" onfocus="clearCurrency(this)" onblur="formatCurrency(this)" oninput="calcGrandTotal()" class="w-full text-center text-slate-700 bg-transparent text-2xl outline-none" value="€ 0.00">
-                    </div>
-                    <div class="bg-m361-red p-4 rounded-2xl flex flex-col justify-center min-w-[180px] text-center shadow-lg">
-                        <span class="text-[9px] font-bold text-white/80 uppercase">Da Pagare</span>
-                        <span id="saldo-finale" class="text-2xl font-bold text-white">€ 0.00</span>
-                    </div>
+            <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden">
+                <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                    <h3 class="font-bold text-slate-700 flex items-center gap-2 uppercase text-sm tracking-widest">
+                        <span class="w-1.5 h-6 bg-[#b75252] rounded-full"></span> Prodotti
+                    </h3>
+                    <button onclick="aggiungiRigaProdotto()" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase hover:bg-black transition-all">
+                        + Aggiungi Riga
+                    </button>
                 </div>
+
+                <div class="grid grid-cols-12 gap-2 px-6 py-3 bg-white border-b border-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    <div class="col-span-2">Codice</div>
+                    <div class="col-span-3">Descrizione</div>
+                    <div class="col-span-1 text-center">Prezzo</div>
+                    <div class="col-span-1 text-center">Qtà</div>
+                    <div class="col-span-1 text-center text-emerald-600">Da Parte</div>
+                    <div class="col-span-1 text-center text-blue-600">Da Forn.</div>
+                    <div class="col-span-1 text-center text-red-600">Da Ord.</div>
+                    <div class="col-span-1 text-right">Totale</div>
+                    <div class="col-span-1"></div>
+                </div>
+
+                <div id="prodotti-container" class="p-4 space-y-2 max-h-[400px] overflow-y-auto">
+                    </div>
             </div>
 
-            <button type="submit" id="submit-btn" class="w-full bg-m361-red text-white font-bold py-5 rounded-2xl uppercase tracking-widest shadow-xl hover:scale-[1.01] transition-all">
-                <i class="fas fa-sync-alt mr-2"></i> Aggiorna Ordine
-            </button>
-        </form>
-    </main>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6 pt-6 border-t border-slate-100">
+                <div class="flex gap-4">
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 min-w-[150px]">
+                        <label class="label-style text-center">Totale Ordine</label>
+                        <div id="totale-ordine" class="text-2xl font-black text-slate-800 text-center">€ 0.00</div>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-2xl border border-red-100 min-w-[150px]">
+                        <label class="label-style text-center text-red-400">Da Pagare</label>
+                        <div id="da-pagare" class="text-2xl font-black text-red-600 text-center">€ 0.00</div>
+                    </div>
+                </div>
+
+                <button onclick="salvaModifiche()" class="bg-[#b75252] text-white px-12 py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all w-full md:w-auto">
+                    <i class="fas fa-sync-alt mr-2"></i> Aggiorna Ordine
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -112,171 +125,117 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let groupCount = 0;
-        let currentType = 'standard';
-        const params = new URLSearchParams(window.location.search);
-        const ordineId = params.get('id');
+        const urlParams = new URLSearchParams(window.location.search);
+        const ordineId = urlParams.get('id');
 
-        const OPERATORI_DATA = {
-            "Cremona": ["Chiara Monteverdi", "Emilio Mazzolari", "Giulia Galelli"],
-            "Casalmaggiore": ["Alessandra Rivetti", "Barbara Araldi", "Carla Maffei", "Chiara Monteverdi", "Edoardo Pavesi", "Emilio Mazzolari", "Erica Bossi", "Francesco Lunardini", "Giovanna Raineri", "Giulia Frigeri", "Giuseppe Lunardini", "Ileana Galli", "Maria Marcella Scaravonati", "Matilde Chiarini", "Michele Marchini", "Roberta Vezzosi", "Teyssir Mabrouk", "Vittoria Lunardini"],
-            "Viadana": ["Alessia Rovina", "Ave Aroldi", "Barbara Piotrowska", "Carla Bellelli", "Carla Chittolini", "Chiara Monteverdi", "Claudio Mortini", "Donatella Falugi", "Elena Ghelfi", "Emilio Mazzolari", "Franco Furlotti", "Giuseppina Amadini", "Manuela Scazza", "Marta Sanfelici", "Mariagrazia Bertolini", "Mirella Panato", "Roberta Alberini", "Sara Germani", "Tiziana Bortesi"],
-            "Reggio Emilia": ["Alessia Bartolomei", "Elsa Scarpa", "Manuela Capanni", "Marica Pioli"]
-        };
-
-        // Caricamento Dati Esistenti
-        window.onload = async () => {
-            if (!ordineId) {
-                alert("Nessun ID ordine trovato!");
-                return;
-            }
-
+        async function caricaDati() {
+            if (!ordineId) return;
+            
             const { data: ord, error } = await _supabase.from('ordini_incorso').select('*').eq('id', ordineId).single();
+            if (error) { alert("Errore caricamento dati"); return; }
 
-            if (ord) {
-                currentType = ord.tipo_ordine || 'standard';
-                document.getElementById('cust-nome').value = ord.cliente_nome || '';
-                document.getElementById('cust-cognome').value = ord.cliente_cognome || '';
-                document.getElementById('cust-tel').value = ord.cliente_cellulare || '';
-                document.getElementById('cust-email').value = ord.cliente_email || '';
-                document.getElementById('order-date').value = ord.data_ordine || '';
-                document.getElementById('select-emporio').value = ord.citta || '';
-                
-                // Trigger per caricare gli operatori della città
-                handleCittaChange(document.getElementById('select-emporio'));
-                document.getElementById('select-operatore').value = ord.operatore || '';
+            // Riempimento anagrafica
+            document.getElementById('ordine-id-badge').innerText = `#${ord.id.toString().slice(-6)}`;
+            document.getElementById('emporio').value = ord.emporio || '';
+            document.getElementById('operatore').value = ord.operatore || '';
+            document.getElementById('cliente_nome').value = ord.cliente_nome || '';
+            document.getElementById('cliente_cognome').value = ord.cliente_cognome || '';
+            document.getElementById('cliente_cellulare').value = ord.cliente_cellulare || '';
+            document.getElementById('cliente_email').value = ord.cliente_email || '';
 
-                // Carica prodotti (se salvati come JSON in 'articoli')
-                if (ord.articoli && Array.isArray(ord.articoli)) {
-                    addGroup(); // Crea il primo gruppo
-                    const tbody = document.getElementById(`rows-container-1`);
-                    tbody.innerHTML = ''; // Svuota riga vuota
-                    ord.articoli.forEach(art => aggiungiRigaConDati(1, art));
-                } else {
-                    addGroup();
-                }
-                
-                calcGrandTotal();
+            // Riempimento prodotti
+            const container = document.getElementById('prodotti-container');
+            container.innerHTML = '';
+            
+            if (ord.articoli && ord.articoli.length > 0) {
+                ord.articoli.forEach(art => aggiungiRigaProdotto(art));
+            } else {
+                aggiungiRigaProdotto();
             }
-        };
-
-        function handleCittaChange(select) {
-            const citta = select.value;
-            const opSelect = document.getElementById('select-operatore');
-            opSelect.innerHTML = '<option value="">Seleziona Operatore *</option>';
-            const operatori = OPERATORI_DATA[citta] || [];
-            operatori.forEach(op => {
-                const opt = document.createElement('option');
-                opt.value = op; opt.text = op;
-                opSelect.add(opt);
-            });
+            calcolaTotali();
         }
 
-        function addGroup() {
-            groupCount++;
-            const container = document.getElementById('groups-container');
-            const groupHtml = `
-                <div id="group-${groupCount}" class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-bold text-slate-700 uppercase text-sm">Prodotti</h3>
-                        <button type="button" onclick="aggiungiRigaVuota(${groupCount})" class="bg-slate-100 px-4 py-2 rounded-xl font-bold text-[10px] uppercase"> + aggiungi riga</button>
+        function aggiungiRigaProdotto(dati = null) {
+            const container = document.getElementById('prodotti-container');
+            const html = `
+                <div class="grid grid-cols-12 gap-2 items-center riga-prodotto bg-slate-50/50 p-3 rounded-2xl border border-slate-100 hover:border-slate-300 transition-all">
+                    <div class="col-span-2"><input type="text" class="codice input-field !p-2" placeholder="Cod" value="${dati ? dati.codice : ''}"></div>
+                    <div class="col-span-3"><input type="text" class="descrizione input-field !p-2" placeholder="Descrizione" value="${dati ? dati.descrizione : ''}"></div>
+                    <div class="col-span-1"><input type="number" step="0.01" class="prezzo input-field !p-2 text-right" value="${dati ? dati.prezzo : '0.00'}" oninput="calcolaTotali()"></div>
+                    <div class="col-span-1"><input type="number" class="qta input-field !p-2 text-center" value="${dati ? dati.qta : '1'}" oninput="calcolaTotali()"></div>
+                    <div class="col-span-1"><input type="number" class="da_parte input-field !p-2 text-center border-emerald-100 bg-emerald-50/30" value="${dati ? dati.da_parte : '0'}" oninput="calcolaTotali()"></div>
+                    <div class="col-span-1"><input type="number" class="da_forn input-field !p-2 text-center border-blue-100 bg-blue-50/30" value="${dati ? dati.da_forn : '0'}" oninput="calcolaTotali()"></div>
+                    <div class="col-span-1"><input type="number" class="da_ord input-field !p-2 text-center border-red-100 bg-red-50 font-bold text-red-600" value="0" readonly></div>
+                    <div class="col-span-1 text-right font-black text-slate-700 text-xs riga-totale">€ 0.00</div>
+                    <div class="col-span-1 text-center">
+                        <button onclick="this.closest('.riga-prodotto').remove(); calcolaTotali();" class="text-slate-300 hover:text-red-500 transition-colors">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
-                    <table class="w-full text-xs">
-                        <thead>
-                            <tr class="text-[10px] text-gray-400 uppercase text-center">
-                                <th class="pb-2 text-left">Codice</th><th class="pb-2 text-left">Descrizione</th><th class="pb-2 w-24">Prezzo</th><th class="pb-2 w-16">Qtà</th><th class="pb-2 w-24 text-right">Totale</th><th class="w-8"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="rows-container-${groupCount}"></tbody>
-                    </table>
-                </div>`;
-            container.insertAdjacentHTML('beforeend', groupHtml);
-        }
-
-        function aggiungiRigaConDati(gId, art) {
-            const tbody = document.getElementById(`rows-container-${gId}`);
-            const rId = Date.now() + Math.random();
-            const tr = document.createElement('tr');
-            tr.id = `row-${rId}`;
-            tr.innerHTML = `
-                <td class="p-1"><input type="text" value="${art.codice || ''}" class="p-codice w-full border border-gray-200 rounded-lg p-2"></td>
-                <td class="p-1"><input type="text" value="${art.descrizione || ''}" class="p-desc w-full border border-gray-200 rounded-lg p-2"></td>
-                <td class="p-1"><input type="text" value="€ ${(art.prezzo || 0).toFixed(2)}" oninput="calcRow('${rId}')" class="p-prezzo w-full border border-gray-200 rounded-lg p-2 text-right"></td>
-                <td class="p-1"><input type="number" value="${art.qta || 1}" oninput="calcRow('${rId}')" class="p-qta w-full border border-gray-200 rounded-lg p-2 text-center"></td>
-                <td class="p-1 text-right font-bold">€ <span class="row-total">0.00</span></td>
-                <td class="p-1 text-center"><button type="button" onclick="this.parentElement.parentElement.remove(); calcGrandTotal();">✕</button></td>
+                </div>
             `;
-            tbody.appendChild(tr);
-            calcRow(rId);
+            container.insertAdjacentHTML('beforeend', html);
+            calcolaTotali();
         }
 
-        function aggiungiRigaVuota(gId) {
-            aggiungiRigaConDati(gId, {codice:'', descrizione:'', prezzo:0, qta:1});
+        function calcolaTotali() {
+            let totaleGen = 0;
+            document.querySelectorAll('.riga-prodotto').forEach(riga => {
+                const qta = parseFloat(riga.querySelector('.qta').value) || 0;
+                const prezzo = parseFloat(riga.querySelector('.prezzo').value) || 0;
+                const dParte = parseFloat(riga.querySelector('.da_parte').value) || 0;
+                const dForn = parseFloat(riga.querySelector('.da_forn').value) || 0;
+                
+                // Calcolo Da Ordinare
+                const daOrd = qta - dParte - dForn;
+                riga.querySelector('.da_ord').value = daOrd > 0 ? daOrd : 0;
+                
+                // Calcolo Riga
+                const rTotale = qta * prezzo;
+                riga.querySelector('.riga-totale').innerText = `€ ${rTotale.toFixed(2)}`;
+                totaleGen += rTotale;
+            });
+            document.getElementById('totale-ordine').innerText = `€ ${totaleGen.toFixed(2)}`;
+            document.getElementById('da-pagare').innerText = `€ ${totaleGen.toFixed(2)}`;
         }
 
-        function calcRow(rId) {
-            const row = document.getElementById(`row-${rId}`);
-            const qta = parseFloat(row.querySelector('.p-qta').value) || 0;
-            const prezzo = parseFloat(row.querySelector('.p-prezzo').value.replace('€', '').trim()) || 0;
-            row.querySelector('.row-total').innerText = (qta * prezzo).toFixed(2);
-            calcGrandTotal();
-        }
-
-        function calcGrandTotal() {
-            let grand = 0;
-            document.querySelectorAll('.row-total').forEach(el => grand += parseFloat(el.innerText) || 0);
-            document.getElementById('grand-total').innerText = `€ ${grand.toFixed(2)}`;
-            const acc = parseFloat(document.getElementById('acconto').value.replace('€', '').trim()) || 0;
-            document.getElementById('saldo-finale').innerText = `€ ${(grand - acc).toFixed(2)}`;
-        }
-
-        // SALVATAGGIO MODIFICHE
-        async function handleUpdate(e) {
-            e.preventDefault();
-            const btn = document.getElementById('submit-btn');
-            btn.disabled = true;
-            btn.innerHTML = "Aggiornamento in corso...";
-
+        async function salvaModifiche() {
             const articoli = [];
-            document.querySelectorAll('tr[id^="row-"]').forEach(tr => {
+            document.querySelectorAll('.riga-prodotto').forEach(riga => {
                 articoli.push({
-                    codice: tr.querySelector('.p-codice').value,
-                    descrizione: tr.querySelector('.p-desc').value,
-                    prezzo: parseFloat(tr.querySelector('.p-prezzo').value.replace('€', '').trim()) || 0,
-                    qta: parseInt(tr.querySelector('.p-qta').value) || 0
+                    codice: riga.querySelector('.codice').value,
+                    descrizione: riga.querySelector('.descrizione').value,
+                    prezzo: parseFloat(riga.querySelector('.prezzo').value),
+                    qta: parseInt(riga.querySelector('.qta').value),
+                    da_parte: parseInt(riga.querySelector('.da_parte').value),
+                    da_forn: parseInt(riga.querySelector('.da_forn').value),
+                    da_ord: parseInt(riga.querySelector('.da_ord').value)
                 });
             });
 
-            const updates = {
-                citta: document.getElementById('select-emporio').value,
-                operatore: document.getElementById('select-operatore').value,
-                data_ordine: document.getElementById('order-date').value,
-                cliente_nome: document.getElementById('cust-nome').value,
-                cliente_cognome: document.getElementById('cust-cognome').value,
-                cliente_cellulare: document.getElementById('cust-tel').value,
-                cliente_email: document.getElementById('cust-email').value,
+            const updateData = {
+                emporio: document.getElementById('emporio').value,
+                operatore: document.getElementById('operatore').value,
+                cliente_nome: document.getElementById('cliente_nome').value,
+                cliente_cognome: document.getElementById('cliente_cognome').value,
+                cliente_cellulare: document.getElementById('cliente_cellulare').value,
+                cliente_email: document.getElementById('cliente_email').value,
                 articoli: articoli,
-                totale_ordine: parseFloat(document.getElementById('grand-total').innerText.replace('€', '').trim()),
-                da_pagare: parseFloat(document.getElementById('saldo-finale').innerText.replace('€', '').trim())
+                totale_ordine: parseFloat(document.getElementById('totale-ordine').innerText.replace('€ ', ''))
             };
 
-            const { error } = await _supabase.from('ordini_incorso').update(updates).eq('id', ordineId);
+            const { error } = await _supabase.from('ordini_incorso').update(updateData).eq('id', ordineId);
 
             if (!error) {
                 alert("Ordine aggiornato con successo!");
-                window.location.href = "ordini_incorso.html";
+                window.location.href = 'logistica.html';
             } else {
-                alert("Errore: " + error.message);
-                btn.disabled = false;
+                alert("Errore durante l'aggiornamento.");
+                console.error(error);
             }
         }
 
-        function formatCurrency(input) {
-            let val = parseFloat(input.value.replace('€', '').trim()) || 0;
-            input.value = "€ " + val.toFixed(2);
-        }
-        function clearCurrency(input) { input.value = input.value.replace('€', '').trim(); }
-
+        window.onload = caricaDati;
     </script>
 </body>
 </html>
