@@ -57,22 +57,26 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // FUNZIONE PRINCIPALE CARICAMENTO
-        async function caricaOrdini(filtro = 'tutti', btn = null) {
-            // Gestione estetica pulsanti filtri
-            if(btn) {
-                document.querySelectorAll('#filter-group button').forEach(b => b.classList.remove('active-filter'));
-                btn.classList.add('active-filter');
-            }
+async function caricaOrdini(filtro = 'tutti', btn = null) {
+    // ... (codice gestione estetica pulsanti resta uguale)
 
-            const container = document.getElementById('orders-container');
-            let query = _supabase.from('ordini_incorso').select('*').order('created_at', { ascending: false });
+    const container = document.getElementById('orders-container');
+    let query = _supabase.from('ordini_incorso').select('*').order('created_at', { ascending: false });
 
-            if (filtro === 'da_ordinare') query = query.eq('merce_pronta', false);
-            if (filtro === 'da_avvisare') query = query.eq('merce_pronta', true).eq('cliente_avvisato', false);
-            if (filtro === 'avvisati') query = query.eq('cliente_avvisato', true);
+    // AGGIUNTA LOGICA FILTRI
+    if (filtro === 'da_ordinare') {
+        query = query.eq('merce_pronta', false);
+    } else if (filtro === 'merce_pronta') {
+        query = query.eq('merce_pronta', true); // Mostra tutto ciò che è arrivato, a prescindere dall'avviso
+    } else if (filtro === 'da_avvisare') {
+        query = query.eq('merce_pronta', true).eq('cliente_avvisato', false);
+    } else if (filtro === 'avvisati') {
+        query = query.eq('cliente_avvisato', true);
+    }
 
-            const { data: ordini, error } = await query;
+    const { data: ordini, error } = await query;
+    // ... (resto della funzione resta uguale)
+}
             if (error) { container.innerHTML = "Errore nel caricamento."; return; }
 
             container.innerHTML = ordini.length === 0 ? `<p class="text-center text-slate-400 py-20">Nessun ordine trovato.</p>` : "";
