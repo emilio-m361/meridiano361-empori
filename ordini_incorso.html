@@ -98,37 +98,41 @@ const nomeCliente = `${ord.cliente_nome || ''} ${ord.cliente_cognome || ''}`.tri
                 const completato = isPronta && isAvvisato;
 
                 container.insertAdjacentHTML('beforeend', `
-                    <div class="ordine-card bg-white border border-slate-200 rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between shadow-sm hover:shadow-md transition-all relative overflow-hidden ${completato ? 'card-completata' : ''}" id="${cardId}" data-search="${nomeCliente} ${emporio}">
-                        
-                        ${daAvvisare ? `<div class="absolute top-0 left-0 w-1.5 h-full bg-[#b75252]"></div>` : ''}
+        <div class="ordine-card bg-white border border-slate-200 rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between shadow-sm hover:shadow-md transition-all relative overflow-hidden ${completato ? 'card-completata' : ''}" id="${cardId}" data-search="${nomeCliente} ${emporio}">
+            
+            ${daAvvisare ? `<div class="absolute top-0 left-0 w-1.5 h-full bg-[#b75252]"></div>` : ''}
 
                         <div class="w-full md:w-1/3 mb-4 md:mb-0">
-                            <div class="flex items-center gap-3 mb-2">
-                                <span class="status-badge ${isPronta ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
-                                    ${isPronta ? 'Merce Pronta' : 'Da Ordinare'}
-                                </span>
-                                <span class="text-[10px] text-slate-300 font-mono">#${ord.id.toString().slice(-5)}</span>
-                                
-                                <div class="flex gap-4 ml-2 items-center">
-                                    <a href="ordini_modifica.html?id=${ord.id}" class="text-slate-400 hover:text-blue-500 transition-colors">
-                                        <i class="fas fa-edit text-lg"></i>
-                                    </a>
-                                    <button onclick="eliminaOrdine('${ord.id}', '${cardId}')" class="text-red-200 hover:text-red-500 transition-colors">
-                                        <i class="fas fa-trash-alt text-lg"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div>
-                                <h2 class="text-2xl font-[900] text-slate-800 tracking-tight leading-none">${nomeCliente || 'CLIENTE ANONIMO'}</h2>
-                                <p class="text-[11px] font-bold text-[#b75252] mt-1 tracking-wider italic">${emporio}</p>
-                                ${daAvvisare ? `
-                                    <div class="flex items-center gap-1.5 bg-red-50 px-2 py-1 rounded-md border border-red-100 mt-2 w-fit">
-                                        <span class="relative flex h-2 w-2"><span class="ping-notify absolute inline-flex h-full w-full rounded-full opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-[#b75252]"></span></span>
-                                        <span class="text-[9px] font-bold text-[#b75252] uppercase">Da Avvisare</span>
-                                    </div>
-                                ` : ''}
-                            </div>
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="status-badge ${isPronta ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                        ${isPronta ? 'Merce Pronta' : 'Da Ordinare'}
+                    </span>
+                    <span class="text-[10px] text-slate-300 font-mono">#${ord.id.toString().slice(-5)}</span>
+                           <div class="flex gap-4 ml-2 items-center">
+                        <a href="ordini_modifica.html?id=${ord.id}" class="text-slate-400 hover:text-blue-500 transition-colors">
+                            <i class="fas fa-edit text-lg"></i>
+                        </a>
+                        <button onclick="eliminaOrdine('${ord.id}', '${cardId}')" class="text-red-200 hover:text-red-500 transition-colors">
+                            <i class="fas fa-trash-alt text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-[900] text-slate-800 tracking-tight leading-none">${nomeCliente || 'CLIENTE ANONIMO'}</h2>
+                    
+                    <p class="text-[11px] font-bold text-[#b75252] mt-1 tracking-wider italic">${emporio}</p>
+                    
+                    ${daAvvisare ? `
+                        <div class="flex items-center gap-1.5 bg-red-50 px-2 py-1 rounded-md border border-red-100 mt-2 w-fit">
+                            <span class="relative flex h-2 w-2"><span class="ping-notify absolute inline-flex h-full w-full rounded-full opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-[#b75252]"></span></span>
+                            <span class="text-[9px] font-bold text-[#b75252] uppercase">Da Avvisare</span>
                         </div>
+                    ` : ''}
+                </div>
+            </div>
+            
+            `);
+});
 
                         <div class="w-full md:w-1/3 flex flex-col gap-3 justify-center border-l border-r border-slate-50 px-8">
                             <label class="flex items-center gap-4 cursor-pointer group">
