@@ -102,13 +102,13 @@
                         <span class="w-1 h-4 bg-m361-red rounded-full"></span> Cliente
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-                        <input type="text" placeholder="Nome *" required class="border-gray-200 border rounded-xl p-3 text-sm">
-                        <input type="text" placeholder="Cognome *" required class="border-gray-200 border rounded-xl p-3 text-sm">
+                        <input type="text" id="cust-nome" placeholder="Nome *" required class="border-gray-200 border rounded-xl p-3 text-sm">
+                        <input type="text" id="cust-cognome" placeholder="Cognome *" required class="border-gray-200 border rounded-xl p-3 text-sm">
                         <div class="relative">
-                            <input type="tel" placeholder="Cellulare *" required class="w-full border-gray-200 border rounded-xl p-3 text-sm pr-10">
+                            <input type="tel" id="cust-tel" placeholder="Cellulare *" required class="w-full border-gray-200 border rounded-xl p-3 text-sm pr-10">
                             <button type="button" onclick="toggleWA(this)" class="absolute right-3 top-3 transition-colors wa-active"><i class="fab fa-whatsapp fa-lg"></i></button>
                         </div>
-                        <input type="email" placeholder="Email" class="border-gray-200 border rounded-xl p-3 text-sm">
+                        <input type="email" id="cust-email" placeholder="Email" class="border-gray-200 border rounded-xl p-3 text-sm">
                         <div class="flex gap-2 p-1 bg-gray-100 rounded-xl h-[46px] items-center">
                             <label class="flex-1 flex items-center justify-center text-xs font-bold cursor-pointer h-full rounded-lg has-[:checked]:bg-white transition-all">
                                 <input type="radio" name="mod_consegna" value="Ritiro" checked class="hidden"> Ritiro
@@ -190,8 +190,10 @@
             const citta = select.value;
             const canaleContainer = document.getElementById('canale-cremona-container');
             const opSelect = document.getElementById('select-operatore');
+            
             canaleContainer.classList.toggle('hidden', citta !== 'Cremona');
             document.getElementById('select-canale').required = (citta === 'Cremona');
+            
             opSelect.innerHTML = '<option value="">Seleziona Operatore *</option>';
             const operatori = OPERATORI_DATA[citta] || [];
             operatori.sort().forEach(op => {
@@ -203,6 +205,23 @@
             updateAllEmporiDropdowns();
         }
 
+        function getEmporioOptions() {
+            const mainCitta = document.getElementById('select-emporio').value;
+            let options = '<option value="">Dove?</option>';
+            ALL_EMPORI.forEach(e => { 
+                if(e !== mainCitta) options += `<option value="${e}">${e}</option>`; 
+            });
+            return options;
+        }
+
+        function updateAllEmporiDropdowns() {
+            document.querySelectorAll('.emporio-dropdown').forEach(select => {
+                const currentVal = select.value;
+                select.innerHTML = getEmporioOptions();
+                select.value = currentVal;
+            });
+        }
+
         function addNewCityPrompt() {
             const nuovaCitta = prompt("Inserisci il nome della nuova città:");
             if (nuovaCitta && nuovaCitta.trim() !== "") {
@@ -212,7 +231,8 @@
                     const select = document.getElementById('select-emporio');
                     const opt = document.createElement('option');
                     opt.value = nome; opt.text = nome;
-                    select.add(opt); select.value = nome;
+                    select.add(opt); 
+                    select.value = nome;
                     handleCittaChange(select);
                 }
             }
@@ -235,7 +255,8 @@
                 const opSelect = document.getElementById('select-operatore');
                 const opt = document.createElement('option');
                 opt.value = nome.trim(); opt.text = nome.trim();
-                opSelect.add(opt); opSelect.value = opt.value;
+                opSelect.add(opt); 
+                opSelect.value = opt.value;
             }
         }
 
@@ -247,21 +268,6 @@
         function toggleWA(btn) {
             btn.classList.toggle('wa-active');
             btn.classList.toggle('wa-inactive');
-        }
-
-        function getEmporioOptions() {
-            const mainCitta = document.getElementById('select-emporio').value;
-            let options = '<option value="">Dove?</option>';
-            ALL_EMPORI.forEach(e => { if(e !== mainCitta) options += `<option value="${e}">${e}</option>`; });
-            return options;
-        }
-
-        function updateAllEmporiDropdowns() {
-            document.querySelectorAll('.emporio-dropdown').forEach(select => {
-                const currentVal = select.value;
-                select.innerHTML = getEmporioOptions();
-                select.value = currentVal;
-            });
         }
 
         function addGroup() {
@@ -279,21 +285,21 @@
                     </div>
                     <div class="overflow-x-auto text-xs">
                         <table class="w-full text-left border-separate border-spacing-y-2 product-table">
-                       <thead>
-    <tr class="text-[10px] text-gray-400 uppercase tracking-widest text-center">
-        <th class="pb-2 pl-4 text-left">Codice *</th>
-        <th class="pb-2 text-left">Descrizione *</th>
-        <th class="pb-2 w-24">Prezzo</th>
-        <th class="pb-2 w-16">Qtà</th>
-        <th class="pb-2 w-16 bg-green-50 text-green-700">Da parte</th>
-        <th class="pb-2 w-16 bg-slate-50">Da forn.</th>
-        <th class="pb-2 w-32 bg-slate-50">Da empori</th>
-        <th class="pb-2 w-32 bg-slate-50">Da altri</th>
-        <th class="pb-2 w-16 bg-red-50 text-m361-red">Da Ord</th>
-        <th class="pb-2 w-24 text-right pr-4">Totale</th>
-        <th class="pb-2 w-8"></th>
-    </tr>
-</thead>
+                            <thead>
+                                <tr class="text-[10px] text-gray-400 uppercase tracking-widest text-center">
+                                    <th class="pb-2 pl-4 text-left">Codice *</th>
+                                    <th class="pb-2 text-left">Descrizione *</th>
+                                    <th class="pb-2 w-24">Prezzo</th>
+                                    <th class="pb-2 w-16">Qtà</th>
+                                    <th class="pb-2 w-16 bg-green-50 text-green-700">Da parte</th>
+                                    <th class="pb-2 w-16 bg-slate-50">Da forn.</th>
+                                    <th class="pb-2 w-32 bg-slate-50">Da empori</th>
+                                    <th class="pb-2 w-32 bg-slate-50">Da altri</th>
+                                    <th class="pb-2 w-16 bg-red-50 text-m361-red">Da Ord</th>
+                                    <th class="pb-2 w-24 text-right pr-4">Totale</th>
+                                    <th class="pb-2 w-8"></th>
+                                </tr>
+                            </thead>
                             <tbody id="rows-container-${groupId}"></tbody>
                         </table>
                     </div>
@@ -309,47 +315,23 @@
             const row = document.createElement('tr');
             row.className = "product-row transition-all";
             row.id = `row-${rowId}`;
-           row.innerHTML = `
-    <td class="p-1 pl-4"><input type="text" placeholder="Codice" required class="w-full border-gray-200 border rounded-lg p-2"></td>
-    <td class="p-1"><input type="text" placeholder="Descrizione" required class="w-full border-gray-200 border rounded-lg p-2"></td>
-    <td class="p-1"><input type="text" onfocus="clearCurrency(this)" onblur="formatCurrency(this)" oninput="calcRow('${rowId}', ${groupId})" class="price-input w-full border-gray-200 border rounded-lg p-2 text-right" value="€ 0.00"></td>
-    <td class="p-1"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="qty-input w-full border-gray-200 border rounded-lg p-2 text-center" value="1"></td>
-    <td class="p-1 bg-green-50"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="parte-input w-full border-green-200 border rounded-lg p-2 text-center" value="0"></td>
-    
-    <td class="p-1 bg-slate-50">
-        <input type="number" oninput="calcRow('${rowId}', ${groupId})" class="forn-input w-full border-slate-200 border rounded-lg p-2 text-center" value="0">
-    </td>
-    <td class="p-1 bg-slate-50">
-        <div class="flex flex-col gap-1">
-            <input type="number" oninput="calcRow('${rowId}', ${groupId})" class="emp-q-input w-full border-slate-200 border rounded-lg p-1 text-center" value="0">
-            <select class="emporio-dropdown w-full border-slate-200 border rounded-lg p-1 text-[9px] bg-white">${getEmporioOptions()}</select>
-        </div>
-    </td>
-    <td class="p-1 bg-slate-50">
-        <div class="flex flex-col gap-1">
-            <input type="number" oninput="calcRow('${rowId}', ${groupId})" class="altri-q-input w-full border-slate-200 border rounded-lg p-1 text-center" value="0">
-            <input type="text" placeholder="Specifica..." class="w-full border-slate-200 border rounded-lg p-1 text-[9px] bg-white">
-        </div>
-    </td>
-
-    <td class="p-1 bg-red-50 text-center font-bold text-m361-red" id="do-${rowId}">0</td>
-    <td class="p-1 text-right pr-4 font-bold">€ <span class="row-total" id="tot-riga-${rowId}">0.00</span></td>
-    <td class="p-1 text-center"><button type="button" onclick="removeRow('${rowId}', ${groupId})" class="text-gray-300 hover:text-red-500">✕</button></td>
-`;
-    <div class="flex flex-col gap-1">
-        <input type="number" oninput="calcRow('${rowId}', ${groupId})" class="altri-q-input w-full border-slate-200 border rounded-lg p-1 text-center" value="0">
-        <input type="text" placeholder="Specifica..." class="w-full border-slate-200 border rounded-lg p-1 text-[9px] bg-white">
-    </div>
-</td>
-    <div class="flex flex-col gap-1">
-        <input type="number" oninput="calcRow('${rowId}', ${groupId})" class="altri-q-input w-full border-gray-300 border rounded-lg p-1 text-center" value="0">
-        <input type="text" placeholder="Specifica..." class="w-full border-gray-300 border rounded-lg p-1 text-[9px] bg-white">
-    </div>
-</td>
-<td class="p-1 bg-red-50 text-center font-bold text-m361-red" id="do-${rowId}">0</td>
+            row.innerHTML = `
+                <td class="p-1 pl-4"><input type="text" placeholder="Codice" required class="w-full border-gray-200 border rounded-lg p-2"></td>
+                <td class="p-1"><input type="text" placeholder="Descrizione" required class="w-full border-gray-200 border rounded-lg p-2"></td>
+                <td class="p-1"><input type="text" onfocus="clearCurrency(this)" onblur="formatCurrency(this)" oninput="calcRow('${rowId}', ${groupId})" class="price-input w-full border-gray-200 border rounded-lg p-2 text-right" value="€ 0.00"></td>
+                <td class="p-1"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="qty-input w-full border-gray-200 border rounded-lg p-2 text-center" value="1"></td>
+                <td class="p-1 bg-green-50"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="parte-input w-full border-green-200 border rounded-lg p-2 text-center" value="0"></td>
+                <td class="p-1 bg-slate-50"><input type="number" oninput="calcRow('${rowId}', ${groupId})" class="forn-input w-full border-slate-200 border rounded-lg p-2 text-center" value="0"></td>
+                <td class="p-1 bg-slate-50">
                     <div class="flex flex-col gap-1">
-                        <input type="number" oninput="calcRow('${rowId}', ${groupId})" class="altri-q-input w-full border-gray-200 border rounded-lg p-1 text-center" value="0">
-                        <input type="text" placeholder="Specifica..." class="w-full border-gray-200 border rounded-lg p-1 text-[9px]">
+                        <input type="number" oninput="calcRow('${rowId}', ${groupId})" class="emp-q-input w-full border-slate-200 border rounded-lg p-1 text-center" value="0">
+                        <select class="emporio-dropdown w-full border-slate-200 border rounded-lg p-1 text-[9px] bg-white">${getEmporioOptions()}</select>
+                    </div>
+                </td>
+                <td class="p-1 bg-slate-50">
+                    <div class="flex flex-col gap-1">
+                        <input type="number" oninput="calcRow('${rowId}', ${groupId})" class="altri-q-input w-full border-slate-200 border rounded-lg p-1 text-center" value="0">
+                        <input type="text" placeholder="Specifica..." class="w-full border-slate-200 border rounded-lg p-1 text-[9px] bg-white">
                     </div>
                 </td>
                 <td class="p-1 bg-red-50 text-center font-bold text-m361-red" id="do-${rowId}">0</td>
@@ -364,9 +346,11 @@
             const qty = +row.querySelector('.qty-input').value || 0;
             const price = parseFloat(row.querySelector('.price-input').value.replace('€', '').trim()) || 0;
             const sumProv = (+row.querySelector('.parte-input').value || 0) + (+row.querySelector('.forn-input').value || 0) + (+row.querySelector('.emp-q-input').value || 0) + (+row.querySelector('.altri-q-input').value || 0);
+            
             row.classList.toggle('row-error', sumProv > qty);
             document.getElementById(`do-${rowId}`).innerText = (qty - sumProv) > 0 ? (qty - sumProv) : 0;
             document.getElementById(`tot-riga-${rowId}`).innerText = (qty * price).toFixed(2);
+            
             if(currentType === 'bomboniere') calcSubtotal(groupId);
             calcGrandTotal();
             validateGlobal();
@@ -417,7 +401,6 @@
             }
         }
 
-        // 4. FUNZIONE DI SALVATAGGIO FINALE (SUPABASE)
         async function validateSubmission(e) {
             e.preventDefault();
             
@@ -430,21 +413,22 @@
                     citta: document.getElementById('select-emporio').value,
                     operatore: document.getElementById('select-operatore').value,
                     data_ordine: document.getElementById('order-date').value,
-                    cliente_nome: document.querySelector('input[placeholder="Nome *"]').value,
-                    cliente_cognome: document.querySelector('input[placeholder="Cognome *"]').value,
-                    cliente_email: document.querySelector('input[placeholder="Email"]').value,
-                    cliente_cellulare: document.querySelector('input[placeholder="Cellulare *"]').value,
+                    cliente_nome: document.getElementById('cust-nome').value,
+                    cliente_cognome: document.getElementById('cust-cognome').value,
+                    cliente_email: document.getElementById('cust-email').value,
+                    cliente_cellulare: document.getElementById('cust-tel').value,
                     modalita_consegna: document.querySelector('input[name="mod_consegna"]:checked').value,
                     totale_ordine: parseFloat(document.getElementById('grand-total').innerText.replace('€', '').trim()) || 0,
                     da_pagare: parseFloat(document.getElementById('saldo-finale').innerText.replace('€', '').trim()) || 0,
-                    stato: 'Nuovo'
+                    stato: 'Nuovo',
+                    tipo_ordine: currentType
                 };
 
-                const { error } = await _supabase.from('ordini_incorso').insert([nuovoOrdine]);
+                const { data, error } = await _supabase.from('ordini_incorso').insert([nuovoOrdine]);
                 if (error) throw error;
 
                 alert("Ordine salvato correttamente!");
-                window.location.href = "ordini_incorso.html";
+                window.location.reload(); // Oppure reindirizza: window.location.href = "ordini_incorso.html";
 
             } catch (error) {
                 console.error("Errore Supabase:", error);
