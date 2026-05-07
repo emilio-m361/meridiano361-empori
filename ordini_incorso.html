@@ -85,8 +85,6 @@
 
             container.innerHTML = ordini.length === 0 ? `<p class="text-center text-slate-400 py-20">Nessun ordine.</p>` : "";
 
-// ... (resto del codice invariato fino alla funzione caricaOrdini)
-
         ordini.forEach(ord => {
             const cardId = `card-${ord.id}`;
             const nomeCliente = `${ord.cliente_nome || ''} ${ord.cliente_cognome || ''}`.trim().toUpperCase();
