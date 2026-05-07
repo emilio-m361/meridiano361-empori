@@ -11,12 +11,14 @@
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; padding-bottom: 50px; }
         .text-m361-red { color: #b75252; }
         .bg-m361-red { background-color: #b75252; }
+        .border-m361-red { border-color: #b75252; }
         .status-badge { padding: 4px 12px; border-radius: 99px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
         .active-filter { background-color: #1e293b !important; color: white !important; }
         
-        /* Animazione notifica "Da Avvisare" */
+        /* Animazione notifica "Da Avvisare" in rosso M361 */
         .ping-notify {
             animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+            background-color: #b75252;
         }
         @keyframes ping {
             75%, 100% { transform: scale(2); opacity: 0; }
@@ -30,7 +32,7 @@
             <img src="logom361_rosso.jpg" alt="Logo" class="h-10">
             <h1 class="font-bold text-xl border-l pl-4 ml-2 text-slate-700 uppercase tracking-tight">Ordini in Corso</h1>
         </div>
-        <a href="ordini_nuovi.html" class="bg-[#b75252] text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase shadow-md hover:opacity-90 transition-all">
+        <a href="ordini_nuovi.html" class="bg-m361-red text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase shadow-md hover:opacity-90 transition-all">
             + NUOVO ORDINE
         </a>
     </header>
@@ -95,14 +97,14 @@
                 const isPronta = ord.merce_pronta === true;
                 const isAvvisato = ord.cliente_avvisato === true;
                 
-                // Logica Notifica: Merce Pronta MA Cliente NON avvisato
+                // Notifica se Merce Pronta MA Cliente NON avvisato
                 const daAvvisare = isPronta && !isAvvisato;
 
                 container.insertAdjacentHTML('beforeend', `
                     <div class="ordine-card bg-white border border-slate-200 rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden" id="${cardId}" data-cliente="${nomeCliente}">
                         
                         ${daAvvisare ? `
-                            <div class="absolute top-0 left-0 w-1.5 h-full bg-orange-500"></div>
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-[#b75252]"></div>
                         ` : ''}
 
                         <div class="w-full md:w-1/3 mb-4 md:mb-0">
@@ -121,12 +123,12 @@
                             <div class="flex items-center gap-2">
                                 <h2 class="text-2xl font-[900] text-slate-800 tracking-tight leading-tight">${nomeCliente || 'CLIENTE ANONIMO'}</h2>
                                 ${daAvvisare ? `
-                                    <div class="flex items-center gap-1.5 bg-orange-50 px-2 py-1 rounded-md border border-orange-100">
+                                    <div class="flex items-center gap-1.5 bg-red-50 px-2 py-1 rounded-md border border-red-100">
                                         <span class="relative flex h-2 w-2">
-                                            <span class="ping-notify absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                                            <span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                                            <span class="ping-notify absolute inline-flex h-full w-full rounded-full opacity-75"></span>
+                                            <span class="relative inline-flex rounded-full h-2 w-2 bg-[#b75252]"></span>
                                         </span>
-                                        <span class="text-[9px] font-bold text-orange-600 uppercase">Da Avvisare</span>
+                                        <span class="text-[9px] font-bold text-[#b75252] uppercase">Da Avvisare</span>
                                     </div>
                                 ` : ''}
                             </div>
