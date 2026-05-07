@@ -63,8 +63,9 @@
             }
         }
 
-        async function evadiOrdine(id, elementId) {
-            if (confirm("L'ordine è stato evaso? Verrà spostato in archivio.")) {
+        async function evadiOrdine(id, elementId, tipo) {
+            const msg = tipo === 'Ritiro' ? "Confermi che l'ordine è stato RITIRATO?" : "Confermi che l'ordine è stato SPEDITO?";
+            if (confirm(msg)) {
                 const { data: ordine } = await _supabase.from('ordini_incorso').select('*').eq('id', id).single();
                 const datiArchivio = { ...ordine, id: undefined, stato: 'Evaso', data_evasione: new Date() };
                 const { error: errInsert } = await _supabase.from('ordini_archiviati').insert([datiArchivio]);
@@ -83,13 +84,12 @@
 
             let query = _supabase.from('ordini_incorso').select('*').order('created_at', { ascending: false });
 
-            // LOGICA FILTRI CORRETTA
             if (filtro === 'da_ordinare') {
-                query = query.eq('merce_pronta', false); // Mostra tutti quelli con badge giallo "Merce da ordinare"
+                query = query.eq('merce_pronta', false);
             } else if (filtro === 'da_avvisare') {
-                query = query.eq('merce_pronta', true).eq('cliente_avvisato', false); // Merce pronta ma non ancora avvisati
+                query = query.eq('merce_pronta', true).eq('cliente_avvisato', false);
             } else if (filtro === 'avvisati') {
-                query = query.eq('cliente_avvisato', true); // Solo quelli già avvisati
+                query = query.eq('cliente_avvisato', true);
             }
 
             const { data: ordini, error } = await query;
@@ -105,9 +105,9 @@
                 const nomeCliente = (ord.cliente_nome || "") + " " + (ord.cliente_cognome || "");
                 const badgeTesto = ord.merce_pronta ? 'Merce Pronta' : 'Merce da ordinare';
                 const badgeClasse = ord.merce_pronta ? 'status-ready' : 'status-waiting';
-                const merceHTML = (ord.merce_ordinata && ord.merce_ordinata !== "---") 
-                                  ? `<p class="text-xs text-slate-500 mt-2"><span class="font-bold text-slate-700 uppercase text-[10px]">Merce:</span> ${ord.merce_ordinata}</p>` 
-                                  : "";
+                
+                // Determina il testo del pulsante finale
+                const testoPulsanteEvasione = ord.metodo_consegna === 'Spedizione' ? 'SPEDITO' : 'RITIRATO';
 
                 container.insertAdjacentHTML('beforeend', `
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row gap-6 items-center mb-4" id="${cardId}">
@@ -118,16 +118,16 @@
                                 <span class="text-[10px] font-mono text-slate-400">#${ord.id.toString().slice(-5)}</span>
                             </div>
                             <div class="flex gap-4">
-                                <button onclick="window.location.href='ordini_nuovi.html?edit=${ord.id}'" class="text-[#6b8d53] p-1">
+                                <button onclick="window.location.href='ordini_nuovi.html?edit=${ord.id}'" class="text-[#6b8d53] p-1 hover:scale-110 transition-transform">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                 </button>
-                                <button onclick="eliminaOrdine('${ord.id}', '${cardId}')" class="text-[#b75252] p-1">
+                                <button onclick="eliminaOrdine('${ord.id}', '${cardId}')" class="text-[#b75252] p-1 hover:scale-110 transition-transform">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                 </button>
                             </div>
                         </div>
                         <h3 class="text-xl font-black text-slate-800 uppercase tracking-tight">${nomeCliente.trim() || 'Senza nome'}</h3>
-                        ${merceHTML}
+                        <p class="text-xs text-slate-500 mt-1 uppercase font-bold text-[10px]">${ord.metodo_consegna || 'Ritiro in sede'}</p>
                     </div>
                     <div class="flex-1 w-full flex flex-col gap-3 border-l border-r border-slate-100 px-6">
                         <label class="flex items-center gap-3 cursor-pointer">
@@ -142,7 +142,9 @@
                     <div class="flex-1 w-full text-right flex flex-col items-end justify-center">
                         <p class="text-[10px] font-bold text-slate-400 uppercase">Da incassare</p>
                         <p class="text-2xl font-black text-[#b75252] mb-4">€ ${parseFloat(ord.da_pagare || 0).toFixed(2)}</p>
-                        <button onclick="evadiOrdine('${ord.id}', '${cardId}')" class="bg-slate-700 text-white px-6 py-2 rounded-xl text-[10px] font-bold uppercase hover:bg-slate-900 shadow-sm">Ritirato / Spedito</button>
+                        <button onclick="evadiOrdine('${ord.id}', '${cardId}', '${ord.metodo_consegna}')" class="bg-slate-700 text-white px-6 py-2 rounded-xl text-[10px] font-bold uppercase hover:bg-slate-900 shadow-sm transition-colors">
+                            ${testoPulsanteEvasione}
+                        </button>
                     </div>
                 </div>`);
             });
