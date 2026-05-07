@@ -86,9 +86,11 @@
             container.innerHTML = ordini.length === 0 ? `<p class="text-center text-slate-400 py-20">Nessun ordine.</p>` : "";
 
             ordini.forEach(ord => {
-                const cardId = `card-${ord.id}`;
-                const nomeCliente = `${ord.cliente_nome || ''} ${ord.cliente_cognome || ''}`.trim().toUpperCase();
-                const emporio = (ord.emporio || 'Emporio non specificato').toUpperCase();
+const cardId = `card-${ord.id}`;
+const nomeCliente = `${ord.cliente_nome || ''} ${ord.cliente_cognome || ''}`.trim().toUpperCase();
+               const emporio = (ord.emporio && ord.emporio.trim() !== "") 
+                    ? ord.emporio.toUpperCase() 
+                    : "CITTÀ NON SPECIFICATA";
                 
                 const isPronta = ord.merce_pronta === true;
                 const isAvvisato = ord.cliente_avvisato === true;
