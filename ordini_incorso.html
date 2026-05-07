@@ -153,5 +153,64 @@
             }, 300);
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function caricaOrdini() {
+    const container = document.getElementById('orders-container');
+    
+    const { data: ordini, error } = await _supabase
+        .from('ordini_in_corso')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error("Errore caricamento:", error);
+        container.innerHTML = `<p class="text-center text-red-500">Errore nel caricamento dati.</p>`;
+        return;
+    }
+
+    // Svuota i "Mario Rossi" statici
+    container.innerHTML = "";
+
+    if (ordini.length === 0) {
+        container.innerHTML = `<p class="text-center text-slate-400 py-10">Nessun ordine in corso.</p>`;
+        return;
+    }
+
+    ordini.forEach(ord => {
+        const card = `
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row gap-6 items-center">
+            <div class="flex-1 w-full">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="status-badge ${ord.stato === 'Nuovo' ? 'status-waiting' : 'status-ready'}">${ord.stato}</span>
+                    <span class="text-[10px] font-mono text-slate-400">#${ord.id.toString().slice(0, 5)}</span>
+                </div>
+                <h3 class="text-xl font-black text-slate-800 uppercase tracking-tight">${ord.cliente_nome} ${ord.cliente_cognome}</h3>
+                <p class="text-sm text-slate-500 flex items-center gap-2">
+                    <i class="fas fa-location-dot"></i> ${ord.citta} | 
+                    <i class="fas fa-phone"></i> ${ord.cliente_cellulare}
+                </p>
+            </div>
+            
+            <div class="flex-1 w-full text-right flex flex-col items-end">
+                <p class="text-[10px] font-bold text-slate-400 uppercase">Da incassare</p>
+                <p class="text-2xl font-black text-m361-red mb-4">€ ${parseFloat(ord.da_pagare).toFixed(2)}</p>
+                <div class="flex gap-2">
+                    <button class="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-[10px] font-bold uppercase hover:bg-slate-200">Dettagli</button>
+                </div>
+            </div>
+        </div>`;
+        container.insertAdjacentHTML('beforeend', card);
+    });
+}
+
+// Avvia al caricamento
+window.onload = caricaOrdini;
+</script>
 </body>
 </html>
