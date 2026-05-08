@@ -1,12 +1,33 @@
-// Inietta la navbar in fondo al body
+// ── Rendi il logo cliccabile su tutte le pagine ──────────────
+(function() {
+  const header = document.querySelector('header');
+  if (!header) return;
+
+  // Cerca l'immagine del logo nell'header
+  const logo = header.querySelector('img[src*="logom361"]');
+  if (!logo) return;
+
+  // Se non è già dentro un <a>, wrappalo
+  if (logo.closest('a')) return;
+
+  const wrapper = document.createElement('a');
+  wrapper.href = '/index.html';
+  wrapper.style.cssText = 'display:flex;align-items:center;gap:inherit;opacity:1;transition:opacity .15s;text-decoration:none;';
+  wrapper.onmouseenter = () => wrapper.style.opacity = '.75';
+  wrapper.onmouseleave = () => wrapper.style.opacity = '1';
+
+  // Sposta logo (e eventuale h1 adiacente) dentro il wrapper
+  const parent = logo.parentElement;
+  const h1 = header.querySelector('h1');
+  logo.before(wrapper);
+  wrapper.appendChild(logo);
+  if (h1 && parent.contains(h1)) wrapper.appendChild(h1);
+})();
+
+// ── Inietta la navbar in fondo al body ───────────────────────
 const navHTML = `
 <nav class="bottom-nav">
-<!-- In ogni header delle altre pagine (turni.html, ordini.html, ecc.)
-     sostituisci il tag <img> del logo con questo: -->
-<a href="/index.html" class="flex items-center gap-4 hover:opacity-75 transition-opacity">
-    <img src="logom361_rosso.jpg" alt="M361" class="h-8" onerror="this.style.display='none'">
-    <h1 id="header-title" class="font-bold text-xl border-l pl-4 text-slate-700">Turni</h1>
-</a>
+
   <a href="/index.html" class="nav-item" id="nav-home">
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
       <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/>
@@ -54,15 +75,16 @@ const navHTML = `
 
 document.body.insertAdjacentHTML('beforeend', navHTML);
 
-// Evidenzia la voce attiva
+// ── Evidenzia la voce attiva ─────────────────────────────────
 (function() {
-  const path = window.location.pathname.split('/').pop();
+  const path = window.location.pathname.split('/').pop() || 'index.html';
   const map = {
     'index.html':             'nav-home',
+    '':                       'nav-home',
     'ordini.html':            'nav-ordini',
     'ordini_nuovi.html':      'nav-nuovo',
     'ordini_incorso.html':    'nav-incorso',
-    'ordini_archiviati.html': 'nav-archivio'
+    'ordini_archiviati.html': 'nav-archivio',
   };
   const activeId = map[path];
   if (activeId) {
