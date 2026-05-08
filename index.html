@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <link rel="stylesheet" href="/nav-style.css">
+    <link rel="stylesheet" href="assets/style/nav-style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M361 - Empori</title>
@@ -15,7 +15,6 @@
         .border-m361-gray { border-color: #e2e8f0; }
         .icon-container { background-color: #ffffff; border: 1px solid #f1f5f9; }
 
-        /* Card attiva */
         .card-active {
             background: white;
             border: 1px solid #e2e8f0;
@@ -30,7 +29,6 @@
         }
         .card-active:hover .icon-container { background-color: #fff5f5; }
 
-        /* Card WIP */
         .card-wip {
             background: linear-gradient(135deg, #fafafa, #f4f4f6);
             border: 2px dashed #d1d5db;
@@ -60,8 +58,8 @@
             .header-title { font-size: 0.7rem; line-height: 1rem; max-width: 120px; }
         }
     </style>
-    <link rel="icon" type="image/png" href="faviconm361.png">
-    <link rel="apple-touch-icon" href="faviconm361.png">
+    <link rel="icon" type="image/png" href="assets/images/faviconm361.png">
+    <link rel="apple-touch-icon" href="assets/images/faviconm361.png">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
@@ -69,7 +67,7 @@
 <header class="bg-white border-b border-m361-gray p-4 flex justify-between items-center px-4 md:px-8 sticky top-0 z-50">
     <div class="flex items-center gap-3 md:gap-6">
         <a href="/" class="flex items-center gap-3 md:gap-6 hover:opacity-80 transition-opacity">
-            <img src="logom361_rosso.jpg" alt="Meridiano 361" class="h-8 md:h-10 object-contain">
+            <img src="assets/images/logom361_rosso.jpg" alt="Meridiano 361" class="h-8 md:h-10 object-contain">
             <div class="h-6 w-px bg-gray-200 hidden xs:block"></div>
             <h1 class="font-bold text-xl border-l pl-4 ml-2 text-slate-700">Gestione Empori361</h1>
         </a>
@@ -92,7 +90,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
 
             <!-- Ordini — ATTIVO -->
-            <div onclick="location.href='ordini.html'" class="card-active p-6 rounded-2xl">
+            <div onclick="location.href='pages/ordini/ordini.html'" class="card-active p-6 rounded-2xl">
                 <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="#b75252" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
@@ -144,6 +142,26 @@
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
+            <!-- Turni — ATTIVO -->
+            <div onclick="location.href='pages/turni/turni.html'" class="card-active p-6 rounded-2xl">
+                <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="#b75252" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                    </svg>
+                </div>
+                <h3 class="font-bold text-m361-dark text-lg">Turni</h3>
+            </div>
+
+            <!-- Controllo Cassa — ATTIVO -->
+            <div onclick="location.href='pages/cassa/cassa.html'" class="card-active p-6 rounded-2xl">
+                <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="#b75252" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+                    </svg>
+                </div>
+                <h3 class="font-bold text-m361-dark text-lg">Controllo Cassa</h3>
+            </div>
+
             <!-- Calendario — WIP -->
             <div class="card-wip p-6 rounded-2xl">
                 <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center mb-4">
@@ -178,21 +196,11 @@
                 <span class="wip-label">In costruzione</span>
             </div>
 
-            <!-- Turni — ATTIVO -->
-            <div onclick="location.href='turni.html'" class="card-active p-6 rounded-2xl">
-                <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="#b75252" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-                    </svg>
-                </div>
-                <h3 class="font-bold text-m361-dark text-lg">Turni</h3>
-            </div>
-
         </div>
     </section>
 
 </main>
 
-<script src="/nav-script.js"></script>
+<script src="scripts/nav-script.js"></script>
 </body>
 </html>
