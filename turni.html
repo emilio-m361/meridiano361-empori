@@ -11,57 +11,47 @@
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
         .bg-m361-red { background-color: #b75252; }
         .text-m361-red { color: #b75252; }
+        .turno-bg-mat { background: linear-gradient(135deg,#fff5f5 0%,#fef2f2 100%); border-left: 3px solid #f0b8b8; }
+        .turno-bg-pom { background: linear-gradient(135deg,#f8fafc 0%,#f1f5f9 100%); border-left: 3px solid #cbd5e1; }
+        .chip { display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;
+                padding:5px 12px;border-radius:999px;cursor:pointer;transition:opacity 0.15s; }
+        .chip:hover { opacity:.75; }
+        .chip-mat-dip  { background:#fcd5d5;color:#7f1d1d; }
+        .chip-mat-vol  { background:#fde8e8;color:#9b2c2c; }
+        .chip-mat-sc   { background:#fce8e8;color:#b45252;border:1px solid #f0b8b8; }
+        .chip-pom-dip  { background:#e2e8f0;color:#1e293b; }
+        .chip-pom-vol  { background:#eef2f7;color:#334155; }
+        .chip-pom-sc   { background:#f1f5f9;color:#475569;border:1px solid #cbd5e1; }
+        .chip-ferie    { background:#dbeafe;color:#1e40af; }
+        .chip-malattia { background:#fef9c3;color:#854d0e; }
+        .turno-label-mat { font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#b75252; }
+        .turno-label-pom { font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#475569; }
+        .card-sel { transition:all .15s; }
+        .card-sel:hover { border-color:#b75252!important;transform:translateY(-2px);box-shadow:0 4px 20px rgba(183,82,82,.15); }
+        .btn-chiudi { display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;
+                      padding:4px 10px;border-radius:8px;border:1.5px solid #e2e8f0;
+                      color:#94a3b8;background:white;cursor:pointer;transition:all .15s; }
+        .btn-chiudi:hover { border-color:#f87171;color:#ef4444;background:#fff5f5; }
+        .btn-chiudi.attivo { border-color:#fca5a5;color:#dc2626;background:#fff1f1;font-weight:800; }
+        .add-link { font-size:14px;font-weight:700;color:#94a3b8;display:inline-flex;
+                    align-items:center;gap:5px;transition:color .15s;cursor:pointer; }
+        .add-link:hover { color:#b75252; }
+        .btn-default.active { background:#b75252;color:#fff;border-color:#b75252; }
+        .assenza-tipo { font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px; }
+        .assenza-ferie    { background:#dbeafe;color:#1e40af; }
+        .assenza-malattia { background:#fef9c3;color:#854d0e; }
 
-        /* Colori sezione turno */
-        .turno-bg-mat {
-            background: linear-gradient(135deg, #fff5f5 0%, #fef2f2 100%);
-            border-left: 3px solid #f0b8b8;
-        }
-        .turno-bg-pom {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border-left: 3px solid #cbd5e1;
-        }
-
-        /* Chip persona */
-        .chip { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600;
-                padding: 5px 12px; border-radius: 999px; cursor: pointer; transition: opacity 0.15s; }
-        .chip:hover { opacity: 0.75; }
-        /* Mattino: sfondo rosso tenue, pomeriggio: antracite tenue */
-        .chip-mat-dip  { background: #fcd5d5; color: #7f1d1d; }
-        .chip-mat-vol  { background: #fde8e8; color: #9b2c2c; }
-        .chip-mat-sc   { background: #fce8e8; color: #b45252; border: 1px solid #f0b8b8; }
-        .chip-pom-dip  { background: #e2e8f0; color: #1e293b; }
-        .chip-pom-vol  { background: #eef2f7; color: #334155; }
-        .chip-pom-sc   { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
-        .chip-ferie    { background: #dbeafe; color: #1e40af; }
-        .chip-malattia { background: #fef9c3; color: #854d0e; }
-
-        /* Label turno */
-        .turno-label-mat { font-size: 12px; font-weight: 800; letter-spacing: 0.07em;
-                           text-transform: uppercase; color: #b75252; }
-        .turno-label-pom { font-size: 12px; font-weight: 800; letter-spacing: 0.07em;
-                           text-transform: uppercase; color: #475569; }
-
-        .card-sel { transition: all 0.15s; }
-        .card-sel:hover { border-color: #b75252 !important; transform: translateY(-2px);
-                          box-shadow: 0 4px 20px rgba(183,82,82,0.15); }
-
-        /* Bottone chiuso */
-        .btn-chiudi { display: inline-flex; align-items: center; gap: 5px; font-size: 12px;
-                      font-weight: 700; padding: 4px 10px; border-radius: 8px; border: 1.5px solid #e2e8f0;
-                      color: #94a3b8; background: white; cursor: pointer; transition: all 0.15s; }
-        .btn-chiudi:hover { border-color: #f87171; color: #ef4444; background: #fff5f5; }
-        .btn-chiudi.attivo { border-color: #fca5a5; color: #dc2626; background: #fff1f1;
-                             font-weight: 800; }
-
-        .add-link { font-size: 14px; font-weight: 700; color: #94a3b8; display: inline-flex;
-                    align-items: center; gap: 5px; transition: color 0.15s; cursor: pointer; }
-        .add-link:hover { color: #b75252; }
-
-        .btn-default.active { background:#b75252; color:#fff; border-color:#b75252; }
-        .assenza-tipo { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
-        .assenza-ferie    { background:#dbeafe; color:#1e40af; }
-        .assenza-malattia { background:#fef9c3; color:#854d0e; }
+        /* Griglia giorni predefiniti */
+        .day-grid { display:grid;grid-template-columns:repeat(7,1fr);gap:3px; }
+        .day-cell { display:flex;flex-direction:column;align-items:center;gap:2px; }
+        .day-cell-label { font-size:9px;font-weight:800;text-transform:uppercase;
+                          letter-spacing:.05em;color:#94a3b8;text-align:center; }
+        .day-btn { width:28px;height:22px;border-radius:5px;border:1.5px solid #e2e8f0;
+                   font-size:9px;font-weight:700;color:#cbd5e1;background:white;
+                   cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center; }
+        .day-btn:hover { border-color:#f0b8b8;color:#b75252; }
+        .day-btn.on-mat { background:#fcd5d5;border-color:#f0b8b8;color:#991b1b; }
+        .day-btn.on-pom { background:#e2e8f0;border-color:#94a3b8;color:#1e293b; }
     </style>
 </head>
 <body class="pb-28">
@@ -111,13 +101,11 @@
             </button>
         </div>
         <button onclick="closeModal()"
-            class="w-full py-3 rounded-xl border border-gray-200 text-base font-bold text-slate-500 hover:bg-gray-50">
-            Annulla
-        </button>
+            class="w-full py-3 rounded-xl border border-gray-200 text-base font-bold text-slate-500 hover:bg-gray-50">Annulla</button>
     </div>
 </div>
 
-<!-- ── MODAL ORARI MESE ───────────────────────────────────── -->
+<!-- ── MODAL ORARI ────────────────────────────────────────── -->
 <div id="modal-orari" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-7 space-y-5">
         <h2 class="font-bold text-slate-800 text-lg" id="orari-title">Orari del mese</h2>
@@ -145,12 +133,33 @@
     </div>
 </div>
 
-<!-- ── MODAL PREDEFINITI ──────────────────────────────────── -->
+<!-- ── MODAL PREDEFINITI (nuova griglia giorni) ───────────── -->
 <div id="modal-default" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-7 space-y-4 max-h-[90vh] overflow-y-auto">
-        <h2 class="font-bold text-slate-800 text-lg">Turni predefiniti</h2>
-        <p class="text-sm text-slate-500">Imposta il turno fisso di default. Sarà pre-compilato ogni giorno e potrà essere rimosso manualmente giorno per giorno.</p>
-        <div id="default-list" class="space-y-1"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl p-7 space-y-5 max-h-[92vh] overflow-y-auto">
+        <div>
+            <h2 class="font-bold text-slate-800 text-lg mb-1">Turni predefiniti</h2>
+            <p class="text-sm text-slate-500">Per ogni persona clicca le celle per attivare il turno di Mattino (rosso) o Pomeriggio (grigio) nei singoli giorni della settimana. Doppio click per deselezionare.</p>
+        </div>
+        <!-- Legenda -->
+        <div class="flex items-center gap-4 text-xs font-bold">
+            <span class="flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-red-200 inline-block"></span> Mattino</span>
+            <span class="flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-slate-200 inline-block"></span> Pomeriggio</span>
+            <span class="flex items-center gap-1.5 text-slate-400"><span class="w-4 h-4 rounded border border-gray-200 inline-block"></span> Non presente</span>
+        </div>
+        <!-- Intestazione giorni -->
+        <div class="flex items-center gap-2">
+            <div class="w-40 shrink-0"></div>
+            <div class="day-grid flex-1">
+                <div class="day-cell"><span class="day-cell-label text-slate-400">Lun</span></div>
+                <div class="day-cell"><span class="day-cell-label text-slate-400">Mar</span></div>
+                <div class="day-cell"><span class="day-cell-label text-slate-400">Mer</span></div>
+                <div class="day-cell"><span class="day-cell-label text-slate-400">Gio</span></div>
+                <div class="day-cell"><span class="day-cell-label text-slate-400">Ven</span></div>
+                <div class="day-cell"><span class="day-cell-label text-red-400">Sab</span></div>
+                <div class="day-cell"><span class="day-cell-label text-red-300">Dom</span></div>
+            </div>
+        </div>
+        <div id="default-list" class="space-y-1.5 divide-y divide-gray-50"></div>
         <div class="flex gap-3 pt-2">
             <button onclick="closeDefault()" class="flex-1 py-3 rounded-xl border border-gray-200 text-sm font-bold text-slate-500">Annulla</button>
             <button onclick="applyDefault()" class="flex-1 py-3 rounded-xl bg-m361-red text-white text-sm font-bold">Applica al mese</button>
@@ -166,13 +175,9 @@
             <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Tipo</p>
             <div class="grid grid-cols-2 gap-3">
                 <button onclick="selectTipoAssenza('ferie')" id="btn-ass-ferie"
-                    class="py-4 rounded-2xl bg-blue-50 border-2 border-blue-200 text-blue-800 font-bold text-base hover:border-blue-400 transition-all">
-                    🏖️ Ferie
-                </button>
+                    class="py-4 rounded-2xl bg-blue-50 border-2 border-blue-200 text-blue-800 font-bold text-base hover:border-blue-400 transition-all">🏖️ Ferie</button>
                 <button onclick="selectTipoAssenza('malattia')" id="btn-ass-malattia"
-                    class="py-4 rounded-2xl bg-yellow-50 border-2 border-yellow-200 text-yellow-800 font-bold text-base hover:border-yellow-400 transition-all">
-                    🤒 Malattia
-                </button>
+                    class="py-4 rounded-2xl bg-yellow-50 border-2 border-yellow-200 text-yellow-800 font-bold text-base hover:border-yellow-400 transition-all">🤒 Malattia</button>
             </div>
         </div>
         <div id="assenza-ore-block" class="hidden">
@@ -180,7 +185,7 @@
             <div class="flex items-center gap-3">
                 <input type="number" id="assenza-ore" min="0" max="24" step="0.25" placeholder="es. 4"
                     class="flex-1 border border-gray-200 rounded-xl p-3 text-base font-bold text-slate-700">
-                <span class="text-slate-400 text-sm leading-tight">ore<br><span class="text-[10px]">(vuoto = intero)</span></span>
+                <span class="text-slate-400 text-sm leading-tight">ore<br><span class="text-[10px]">(vuoto=intero)</span></span>
             </div>
         </div>
         <div class="flex gap-3">
@@ -213,82 +218,85 @@
 </div>
 
 <script>
+// ── COSTANTI ──────────────────────────────────────────────────
 const EMPORI      = ['Cremona','Casalmaggiore','Viadana','Reggio Emilia'];
 const ANNI        = [2026,2027,2028,2029];
 const MESI_NOMI   = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
                      'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+// 0=Dom,1=Lun,...,6=Sab  →  griglia mostra Lun(1)..Dom(0)
 const GIORNI_SETT = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
+const GRID_ORDER  = [1,2,3,4,5,6,0]; // Lun→Dom
 
 let PERSONALE = {
     'Cremona': [
-        { nome: 'Chiara Monteverdi',  ruolo: 'dipendente' },
-        { nome: 'Emilio Mazzolari',   ruolo: 'dipendente' },
-        { nome: 'Jacopo Denti',       ruolo: 'servizio_civile' },
-        { nome: 'Noemi Capobianco',   ruolo: 'servizio_civile' },
-        { nome: 'Barbara Machetti',   ruolo: 'volontario' },
-        { nome: 'Elena Cattani',      ruolo: 'volontario' },
-        { nome: 'Giulia Galelli',     ruolo: 'volontario' },
-        { nome: 'Ileana Galli',       ruolo: 'volontario' },
+        { nome:'Chiara Monteverdi',  ruolo:'dipendente' },
+        { nome:'Emilio Mazzolari',   ruolo:'dipendente' },
+        { nome:'Jacopo Denti',       ruolo:'servizio_civile' },
+        { nome:'Noemi Capobianco',   ruolo:'servizio_civile' },
+        { nome:'Barbara Machetti',   ruolo:'volontario' },
+        { nome:'Elena Cattani',      ruolo:'volontario' },
+        { nome:'Giulia Galelli',     ruolo:'volontario' },
+        { nome:'Ileana Galli',       ruolo:'volontario' },
     ],
-    'Casalmaggiore': [
-        { nome: 'Alessandra Rivetti',        ruolo: 'volontario' },
-        { nome: 'Barbara Araldi',            ruolo: 'volontario' },
-        { nome: 'Carla Maffei',              ruolo: 'volontario' },
-        { nome: 'Edoardo Pavesi',            ruolo: 'volontario' },
-        { nome: 'Erica Bossi',               ruolo: 'volontario' },
-        { nome: 'Francesco Lunardini',       ruolo: 'volontario' },
-        { nome: 'Giovanna Raineri',          ruolo: 'volontario' },
-        { nome: 'Giulia Frigeri',            ruolo: 'volontario' },
-        { nome: 'Giuseppe Lunardini',        ruolo: 'volontario' },
-        { nome: 'Maria Marcella Scaravonati',ruolo: 'volontario' },
-        { nome: 'Matilde Chiarini',          ruolo: 'volontario' },
-        { nome: 'Michele Marchini',          ruolo: 'volontario' },
-        { nome: 'Miriam Federici',           ruolo: 'volontario' },
-        { nome: 'Piero Gatti',               ruolo: 'volontario' },
-        { nome: 'Roberta Vezzosi',           ruolo: 'volontario' },
-        { nome: 'Teyssir Mabrouk',           ruolo: 'volontario' },
-        { nome: 'Vittoria Lunardini',        ruolo: 'volontario' },
+    'Casalmaggiore':[
+        { nome:'Alessandra Rivetti',        ruolo:'volontario' },
+        { nome:'Barbara Araldi',            ruolo:'volontario' },
+        { nome:'Carla Maffei',              ruolo:'volontario' },
+        { nome:'Edoardo Pavesi',            ruolo:'volontario' },
+        { nome:'Erica Bossi',               ruolo:'volontario' },
+        { nome:'Francesco Lunardini',       ruolo:'volontario' },
+        { nome:'Giovanna Raineri',          ruolo:'volontario' },
+        { nome:'Giulia Frigeri',            ruolo:'volontario' },
+        { nome:'Giuseppe Lunardini',        ruolo:'volontario' },
+        { nome:'Maria Marcella Scaravonati',ruolo:'volontario' },
+        { nome:'Matilde Chiarini',          ruolo:'volontario' },
+        { nome:'Michele Marchini',          ruolo:'volontario' },
+        { nome:'Miriam Federici',           ruolo:'volontario' },
+        { nome:'Piero Gatti',               ruolo:'volontario' },
+        { nome:'Roberta Vezzosi',           ruolo:'volontario' },
+        { nome:'Teyssir Mabrouk',           ruolo:'volontario' },
+        { nome:'Vittoria Lunardini',        ruolo:'volontario' },
     ],
-    'Viadana': [
-        { nome: 'Alessia Rovina',        ruolo: 'volontario' },
-        { nome: 'Ave Aroldi',            ruolo: 'volontario' },
-        { nome: 'Barbara Piotrowska',    ruolo: 'volontario' },
-        { nome: 'Carla Bellelli',        ruolo: 'volontario' },
-        { nome: 'Carla Chittolini',      ruolo: 'volontario' },
-        { nome: 'Claudio Mortini',       ruolo: 'volontario' },
-        { nome: 'Donatella Falugi',      ruolo: 'volontario' },
-        { nome: 'Elena Ghelfi',          ruolo: 'volontario' },
-        { nome: 'Franco Furlotti',       ruolo: 'volontario' },
-        { nome: 'Giuseppina Amadini',    ruolo: 'volontario' },
-        { nome: 'Manuela Scazza',        ruolo: 'volontario' },
-        { nome: 'Mariagrazia Bertolini', ruolo: 'volontario' },
-        { nome: 'Marta Sanfelici',       ruolo: 'volontario' },
-        { nome: 'Mirella Panato',        ruolo: 'volontario' },
-        { nome: 'Roberta Alberini',      ruolo: 'volontario' },
-        { nome: 'Sara Germani',          ruolo: 'volontario' },
-        { nome: 'Tiziana Bortesi',       ruolo: 'volontario' },
+    'Viadana':[
+        { nome:'Alessia Rovina',        ruolo:'volontario' },
+        { nome:'Ave Aroldi',            ruolo:'volontario' },
+        { nome:'Barbara Piotrowska',    ruolo:'volontario' },
+        { nome:'Carla Bellelli',        ruolo:'volontario' },
+        { nome:'Carla Chittolini',      ruolo:'volontario' },
+        { nome:'Claudio Mortini',       ruolo:'volontario' },
+        { nome:'Donatella Falugi',      ruolo:'volontario' },
+        { nome:'Elena Ghelfi',          ruolo:'volontario' },
+        { nome:'Franco Furlotti',       ruolo:'volontario' },
+        { nome:'Giuseppina Amadini',    ruolo:'volontario' },
+        { nome:'Manuela Scazza',        ruolo:'volontario' },
+        { nome:'Mariagrazia Bertolini', ruolo:'volontario' },
+        { nome:'Marta Sanfelici',       ruolo:'volontario' },
+        { nome:'Mirella Panato',        ruolo:'volontario' },
+        { nome:'Roberta Alberini',      ruolo:'volontario' },
+        { nome:'Sara Germani',          ruolo:'volontario' },
+        { nome:'Tiziana Bortesi',       ruolo:'volontario' },
     ],
-    'Reggio Emilia': [
-        { nome: 'Alessia Bartolomei', ruolo: 'dipendente' },
-        { nome: 'Elsa Scarpa',        ruolo: 'dipendente' },
-        { nome: 'Manuela Capanni',    ruolo: 'dipendente' },
-        { nome: 'Marica Pioli',       ruolo: 'dipendente' },
+    'Reggio Emilia':[
+        { nome:'Alessia Bartolomei', ruolo:'dipendente' },
+        { nome:'Elsa Scarpa',        ruolo:'dipendente' },
+        { nome:'Manuela Capanni',    ruolo:'dipendente' },
+        { nome:'Marica Pioli',       ruolo:'dipendente' },
     ],
 };
 
-// chiusure[emp][dateStr] = { mat: bool, pom: bool }
-const chiusure  = {};
-const assenze   = {};
-const predefiniti = {};
-const orariMese = {};
-// turniData[emp][dateStr] = { mat:[], pom:[], nota:'', override:{} }
-const turniData = {};
+// predefiniti[emp][nome] = { 0:null|'mat'|'pom'|'entrambi', 1:..., ..., 6:... }
+// chiave: giorno della settimana JS (0=Dom,1=Lun,...,6=Sab)
+const predefiniti  = {};
+const chiusure     = {};
+const assenze      = {};
+const orariMese    = {};
+const turniData    = {};
 
-let ctx = { emporio:null, anno:null, mese:null };
-let modalCtx     = null;
-let assenzaCtx   = null;
-let assenzaTipo  = null;
-let editPersonaCtx = null; // { emp, nomeOld }
+let ctx             = { emporio:null,anno:null,mese:null };
+let modalCtx        = null;
+let assenzaCtx      = null;
+let assenzaTipo     = null;
+let editPersonaCtx  = null;
 
 window.onload = () => showEmpori();
 
@@ -310,9 +318,9 @@ function showEmpori() {
         </div>`;
 }
 
-function showAnni(emporio) {
-    ctx.emporio=emporio;
-    setHeader(emporio,backBtn('showEmpori()')); hideAll(); show('view-anni');
+function showAnni(emp) {
+    ctx.emporio=emp;
+    setHeader(emp,backBtn('showEmpori()')); hideAll(); show('view-anni');
     document.getElementById('view-anni').innerHTML=`
         <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mt-2">
         ${ANNI.map(a=>`
@@ -359,127 +367,110 @@ function showMese(mese) {
 // ── RENDER MESE ───────────────────────────────────────────────
 function renderMese() {
     const {emporio,anno,mese}=ctx;
-    const daysInMonth=new Date(anno,mese+1,0).getDate();
+    const days=new Date(anno,mese+1,0).getDate();
     const oggi=new Date().toISOString().split('T')[0];
-    const container=document.getElementById('view-mese');
-    container.innerHTML='';
-
-    for (let d=1;d<=daysInMonth;d++) {
-        const dateStr=`${anno}-${String(mese+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const date=new Date(dateStr+'T12:00:00');
-        const gSett=GIORNI_SETT[date.getDay()];
+    const cont=document.getElementById('view-mese');
+    cont.innerHTML='';
+    for (let d=1;d<=days;d++) {
+        const ds=`${anno}-${String(mese+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const date=new Date(ds+'T12:00:00');
+        const gS=GIORNI_SETT[date.getDay()];
         const isFest=date.getDay()===0;
-        const isOggi=dateStr===oggi;
-        const nota=turniData[emporio]?.[dateStr]?.nota||'';
-        const cl=chiusure[emporio]?.[dateStr]||{mat:false,pom:false};
-        const ed=getEffectiveDayData(emporio,dateStr);
-
+        const isOggi=ds===oggi;
+        const nota=turniData[emporio]?.[ds]?.nota||'';
+        const cl=chiusure[emporio]?.[ds]||{mat:false,pom:false};
+        const ed=getEffectiveDayData(emporio,ds);
         const row=document.createElement('div');
-        row.id=`row-${dateStr}`;
+        row.id=`row-${ds}`;
         row.className=`bg-white rounded-2xl border ${isOggi?'border-[#b75252] ring-1 ring-[#b75252]/30':'border-gray-100'} shadow-sm overflow-hidden`;
-
         row.innerHTML=`
         <div class="flex min-h-[100px]">
-            <!-- Colonna giorno: sfondo rosso sfumato -->
             <div class="flex flex-col items-center justify-center px-4 min-w-[76px] shrink-0
                 bg-gradient-to-b ${isFest?'from-red-200 to-red-100':'from-red-100 to-red-50'}
                 border-r border-red-100">
-                <span class="text-xs font-bold uppercase tracking-wider ${isFest?'text-red-700':'text-red-400'}">${gSett}</span>
+                <span class="text-xs font-bold uppercase tracking-wider ${isFest?'text-red-700':'text-red-400'}">${gS}</span>
                 <span class="text-4xl font-extrabold leading-tight ${isOggi?'text-[#b75252]':isFest?'text-red-600':'text-red-800'}">${d}</span>
                 ${isOggi?'<span class="text-[9px] font-bold text-[#b75252] uppercase">oggi</span>':''}
             </div>
-
-            <!-- Turni + note -->
             <div class="flex-1 min-w-0 divide-y divide-gray-100">
                 <div class="grid grid-cols-2 divide-x divide-gray-100 min-h-[80px]">
-                    ${renderTurnoCell(emporio,dateStr,'mat',ed.mat,cl.mat)}
-                    ${renderTurnoCell(emporio,dateStr,'pom',ed.pom,cl.pom)}
+                    ${renderTurnoCell(emporio,ds,'mat',ed.mat,cl.mat)}
+                    ${renderTurnoCell(emporio,ds,'pom',ed.pom,cl.pom)}
                 </div>
-                <!-- Barra note + bottoni chiusura -->
                 <div class="px-4 py-2 flex items-center gap-2 bg-white">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="#d97706" class="w-4 h-4 shrink-0">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/>
                     </svg>
                     <input type="text" placeholder="Note del giorno..."
                         value="${nota.replace(/"/g,'&quot;')}"
-                        onchange="saveNota('${dateStr}',this.value)"
+                        onchange="saveNota('${ds}',this.value)"
                         class="flex-1 text-sm outline-none bg-transparent placeholder-slate-300 ${nota?'font-semibold text-amber-800':'text-slate-500'}">
                     ${nota?'<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 shrink-0">nota</span>':''}
-                    <!-- Bottoni chiusura -->
                     <div class="flex items-center gap-1.5 ml-2 shrink-0">
-                        <button onclick="toggleChiuso('${dateStr}','mat')"
-                            class="btn-chiudi ${cl.mat?'attivo':''}" id="btn-chiudi-mat-${dateStr}">
+                        <button onclick="toggleChiuso('${ds}','mat')" id="btn-chiudi-mat-${ds}"
+                            class="btn-chiudi ${cl.mat?'attivo':''}">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
                             </svg>
-                            Mat
+                            Chiuso Mat
                         </button>
-                        <button onclick="toggleChiuso('${dateStr}','pom')"
-                            class="btn-chiudi ${cl.pom?'attivo':''}" id="btn-chiudi-pom-${dateStr}">
+                        <button onclick="toggleChiuso('${ds}','pom')" id="btn-chiudi-pom-${ds}"
+                            class="btn-chiudi ${cl.pom?'attivo':''}">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
                             </svg>
-                            Pom
+                            Chiuso Pom
                         </button>
                     </div>
                 </div>
             </div>
         </div>`;
-        container.appendChild(row);
+        cont.appendChild(row);
     }
-
-    // Riepilogo in fondo
     const wrap=document.createElement('div');
     wrap.id='riepilogo-wrap';
     wrap.innerHTML=buildRiepilogo();
-    container.appendChild(wrap);
+    cont.appendChild(wrap);
 }
 
 // ── TURNO CELL ────────────────────────────────────────────────
-function renderTurnoCell(emporio,dateStr,turno,list,chiuso) {
+function renderTurnoCell(emp,ds,turno,list,chiuso) {
     const isM=turno==='mat';
-    const orari=getOrari(emporio,ctx.anno,ctx.mese);
+    const orari=getOrari(emp,ctx.anno,ctx.mese);
     const orStr=orari?`<span class="text-[10px] font-semibold ml-1 ${isM?'text-red-300':'text-slate-400'}">${isM?orari.matIni+'–'+orari.matFin:orari.pomIni+'–'+orari.pomFin}</span>`:'';
-
-    if (chiuso) {
-        return `<div class="p-4 ${isM?'turno-bg-mat':'turno-bg-pom'} flex flex-col">
+    if (chiuso) return `
+        <div class="p-4 ${isM?'turno-bg-mat':'turno-bg-pom'} flex flex-col">
             <div class="flex items-center gap-1 mb-2">
                 <span class="${isM?'turno-label-mat':'turno-label-pom'}">${isM?'Mattino':'Pomeriggio'}</span>
             </div>
             <div class="flex-1 flex items-center justify-center">
-                <span class="text-xs font-bold uppercase tracking-widest ${isM?'text-red-300':'text-slate-400'}">
-                    Chiuso
-                </span>
+                <span class="text-xs font-bold uppercase tracking-widest ${isM?'text-red-300':'text-slate-400'}">Chiuso</span>
             </div>
         </div>`;
-    }
-
-    // Righe assenza dipendenti
-    const dipendenti=(PERSONALE[emporio]||[]).filter(p=>p.ruolo==='dipendente');
-    let assenzaRows='';
+    const dipendenti=(PERSONALE[emp]||[]).filter(p=>p.ruolo==='dipendente');
+    let assRows='';
     dipendenti.forEach(p=>{
-        const ass=getAssenza(emporio,dateStr,p.nome);
+        const ass=getAssenza(emp,ds,p.nome);
         if (!ass) return;
         const oreT=ass.ore!=null?`${formatOre(ass.ore)} h`:'(intero)';
-        assenzaRows+=`<div class="flex items-center gap-1.5 mb-1 flex-wrap">
+        assRows+=`<div class="flex items-center gap-1.5 mb-1 flex-wrap">
             <span class="text-xs font-semibold text-slate-600">${p.nome}</span>
             <span class="assenza-tipo ${ass.tipo==='ferie'?'assenza-ferie':'assenza-malattia'}">${ass.tipo==='ferie'?'🏖️':'🤒'} ${ass.tipo}</span>
             <span class="text-[10px] text-slate-400">${oreT}</span>
-            <button onclick="openAssenza(event,'${dateStr}','${turno}','${p.nome}')" class="text-[10px] text-slate-300 hover:text-m361-red ml-auto">modifica</button>
+            <button onclick="openAssenza(event,'${ds}','${turno}','${p.nome}')" class="text-[10px] text-slate-300 hover:text-m361-red ml-auto">modifica</button>
         </div>`;
     });
-
     return `
         <div class="p-4 ${isM?'turno-bg-mat':'turno-bg-pom'} flex flex-col">
             <div class="flex items-center gap-1 mb-3">
                 <span class="${isM?'turno-label-mat':'turno-label-pom'}">${isM?'Mattino':'Pomeriggio'}</span>
                 ${orStr}
             </div>
-            ${assenzaRows?`<div class="mb-2 pb-2 border-b ${isM?'border-red-100':'border-slate-100'}">${assenzaRows}</div>`:''}
-            <div class="flex flex-wrap gap-1.5 mb-3" id="${turno}-${dateStr}">
-                ${renderChips(list,dateStr,turno)}
+            ${assRows?`<div class="mb-2 pb-2 border-b ${isM?'border-red-100':'border-slate-100'}">${assRows}</div>`:''}
+            <div class="flex flex-wrap gap-1.5 mb-3" id="${turno}-${ds}">
+                ${renderChips(list,ds,turno)}
             </div>
-            <button onclick="openModal('${dateStr}','${turno}')" class="add-link ${isM?'':'hover:!text-slate-600'}">
+            <button onclick="openModal('${ds}','${turno}')" class="add-link">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-4 h-4">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
                 </svg>
@@ -489,22 +480,20 @@ function renderTurnoCell(emporio,dateStr,turno,list,chiuso) {
 }
 
 // ── CHIP ──────────────────────────────────────────────────────
-function renderChips(list,dateStr,turno) {
+function renderChips(list,ds,turno) {
     const pred=predefiniti[ctx.emporio]||{};
     return list.map(p=>{
-        const ass=getAssenza(ctx.emporio,dateStr,p.nome);
-        if (ass) {
-            return `<span class="chip ${ass.tipo==='ferie'?'chip-ferie':'chip-malattia'}"
-                onclick="removeChip('${dateStr}','${turno}','${p.nome}')">${ass.tipo==='ferie'?'🏖️':'🤒'} ${p.nome}<span class="opacity-40">×</span></span>`;
-        }
-        const isPred=!!pred[p.nome];
+        const ass=getAssenza(ctx.emporio,ds,p.nome);
+        if (ass) return `<span class="chip ${ass.tipo==='ferie'?'chip-ferie':'chip-malattia'}"
+            onclick="removeChip('${ds}','${turno}','${p.nome}')">${ass.tipo==='ferie'?'🏖️':'🤒'} ${p.nome}<span class="opacity-40">×</span></span>`;
+        const isPred=pred[p.nome]&&Object.values(pred[p.nome]).some(v=>v);
         const isDip=p.ruolo==='dipendente';
         const cls=turno==='mat'
-            ? (p.ruolo==='dipendente'?'chip-mat-dip':p.ruolo==='volontario'?'chip-mat-vol':'chip-mat-sc')
-            : (p.ruolo==='dipendente'?'chip-pom-dip':p.ruolo==='volontario'?'chip-pom-vol':'chip-pom-sc');
+            ?(p.ruolo==='dipendente'?'chip-mat-dip':p.ruolo==='volontario'?'chip-mat-vol':'chip-mat-sc')
+            :(p.ruolo==='dipendente'?'chip-pom-dip':p.ruolo==='volontario'?'chip-pom-vol':'chip-pom-sc');
         return `<span class="chip ${cls} ${isPred?'ring-1 ring-offset-1 ring-[#b75252]/20':''}"
-            onclick="removeChip('${dateStr}','${turno}','${p.nome}')"
-            ${isDip?`oncontextmenu="openAssenza(event,'${dateStr}','${turno}','${p.nome}')"`:''} 
+            onclick="removeChip('${ds}','${turno}','${p.nome}')"
+            ${isDip?`oncontextmenu="openAssenza(event,'${ds}','${turno}','${p.nome}')"`:''} 
             title="${isDip?'Click destro → assenza':'Click → rimuovi'}">
             ${p.nome}${isPred?'<span class="text-[8px] opacity-30 ml-0.5">★</span>':''}
             <span class="opacity-25 ml-0.5">×</span>
@@ -512,81 +501,153 @@ function renderChips(list,dateStr,turno) {
     }).join('');
 }
 
-// ── CHIUSURA PARZIALE ─────────────────────────────────────────
-function toggleChiuso(dateStr,turno) {
+function chipClass(r){ return r==='dipendente'?'chip-mat-dip':r==='volontario'?'chip-mat-vol':'chip-mat-sc'; }
+
+// ── PREDEFINITI — NUOVA GRIGLIA ───────────────────────────────
+// predefiniti[emp][nome][dowJS] = null | 'mat' | 'pom' | 'entrambi'
+function getPredGiorno(emp,nome,dow) {
+    return predefiniti[emp]?.[nome]?.[dow]||null;
+}
+
+function openDefault() {
+    if (!predefiniti[ctx.emporio]) predefiniti[ctx.emporio]={};
+    const persone=[...(PERSONALE[ctx.emporio]||[])].sort((a,b)=>a.nome.localeCompare(b.nome));
+    document.getElementById('default-list').innerHTML=persone.map(p=>{
+        const nk=p.nome.replace(/ /g,'_');
+        const cells=GRID_ORDER.map(dow=>{
+            const val=getPredGiorno(ctx.emporio,p.nome,dow);
+            const matOn=val==='mat'||val==='entrambi';
+            const pomOn=val==='pom'||val==='entrambi';
+            return `<div class="day-cell">
+                <button onclick="cyclePred('${p.nome}',${dow},'mat')"
+                    id="pd-${nk}-${dow}-mat"
+                    class="day-btn ${matOn?'on-mat':''}" title="Mattino">M</button>
+                <button onclick="cyclePred('${p.nome}',${dow},'pom')"
+                    id="pd-${nk}-${dow}-pom"
+                    class="day-btn ${pomOn?'on-pom':''}" title="Pomeriggio">P</button>
+            </div>`;
+        }).join('');
+        const roleLbl=p.ruolo==='dipendente'?'dip.':p.ruolo==='servizio_civile'?'SC':'vol.';
+        const roleCol=p.ruolo==='dipendente'?'text-red-400':p.ruolo==='servizio_civile'?'text-slate-400':'text-green-600';
+        return `
+        <div class="flex items-center gap-2 py-3">
+            <div class="w-40 shrink-0">
+                <span class="font-semibold text-sm text-slate-700 leading-tight">${p.nome}</span>
+                <span class="text-xs ml-1 ${roleCol}">${roleLbl}</span>
+            </div>
+            <div class="day-grid flex-1">${cells}</div>
+        </div>`;
+    }).join('');
+    document.getElementById('modal-default').classList.remove('hidden');
+}
+
+function cyclePred(nome,dow,turno) {
+    const emp=ctx.emporio;
+    if (!predefiniti[emp]) predefiniti[emp]={};
+    if (!predefiniti[emp][nome]) predefiniti[emp][nome]={};
+    const cur=predefiniti[emp][nome][dow]||null;
+    // Toggle: null → turno → null
+    let next;
+    if (turno==='mat') next = (cur==='mat'||cur==='entrambi')
+        ? (cur==='entrambi'?'pom':null)
+        : (cur==='pom'?'entrambi':'mat');
+    else next = (cur==='pom'||cur==='entrambi')
+        ? (cur==='entrambi'?'mat':null)
+        : (cur==='mat'?'entrambi':'pom');
+    predefiniti[emp][nome][dow]=next;
+    // Aggiorna bottoni
+    const nk=nome.replace(/ /g,'_');
+    const matOn=next==='mat'||next==='entrambi';
+    const pomOn=next==='pom'||next==='entrambi';
+    const bm=document.getElementById(`pd-${nk}-${dow}-mat`);
+    const bp=document.getElementById(`pd-${nk}-${dow}-pom`);
+    if (bm) { bm.className='day-btn'+(matOn?' on-mat':''); }
+    if (bp) { bp.className='day-btn'+(pomOn?' on-pom':''); }
+}
+
+function applyDefault() {
+    const {emporio,anno,mese}=ctx;
+    const n=new Date(anno,mese+1,0).getDate();
+    for (let d=1;d<=n;d++) {
+        const ds=`${anno}-${String(mese+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        if (turniData[emporio]?.[ds]) turniData[emporio][ds].override={};
+    }
+    closeDefault(); renderMese();
+}
+function closeDefault(){ document.getElementById('modal-default').classList.add('hidden'); }
+
+// ── EFFECTIVE DAY DATA (usa predefiniti per giorno settimana) ─
+function getEffectiveDayData(emp,ds) {
+    const stored=turniData[emp]?.[ds]||{};
+    const overrides=stored.override||{};
+    const pred=predefiniti[emp]||{};
+    const mat=[...(stored.mat||[])];
+    const pom=[...(stored.pom||[])];
+    const dow=new Date(ds+'T12:00:00').getDay(); // 0=Dom..6=Sab
+    (PERSONALE[emp]||[]).forEach(p=>{
+        if (overrides[p.nome]) return;
+        const val=pred[p.nome]?.[dow]||null;
+        if (!val) return;
+        if ((val==='mat'||val==='entrambi')&&!mat.find(x=>x.nome===p.nome)) mat.unshift(p);
+        if ((val==='pom'||val==='entrambi')&&!pom.find(x=>x.nome===p.nome)) pom.unshift(p);
+    });
+    return {mat,pom};
+}
+
+// ── CHIUSURA ──────────────────────────────────────────────────
+function toggleChiuso(ds,turno){
     if (!chiusure[ctx.emporio]) chiusure[ctx.emporio]={};
-    if (!chiusure[ctx.emporio][dateStr]) chiusure[ctx.emporio][dateStr]={mat:false,pom:false};
-    chiusure[ctx.emporio][dateStr][turno]=!chiusure[ctx.emporio][dateStr][turno];
-    // ri-renderizza solo la riga
-    const row=document.getElementById(`row-${dateStr}`);
+    if (!chiusure[ctx.emporio][ds]) chiusure[ctx.emporio][ds]={mat:false,pom:false};
+    chiusure[ctx.emporio][ds][turno]=!chiusure[ctx.emporio][ds][turno];
+    const cl=chiusure[ctx.emporio][ds];
+    const row=document.getElementById(`row-${ds}`);
     if (!row) return;
-    const cl=chiusure[ctx.emporio][dateStr];
-    const ed=getEffectiveDayData(ctx.emporio,dateStr);
+    const ed=getEffectiveDayData(ctx.emporio,ds);
     const grid=row.querySelector('.grid.grid-cols-2');
-    if (grid) grid.innerHTML=
-        renderTurnoCell(ctx.emporio,dateStr,'mat',ed.mat,cl.mat)+
-        renderTurnoCell(ctx.emporio,dateStr,'pom',ed.pom,cl.pom);
-    // aggiorna bottoni chiusura
+    if (grid) grid.innerHTML=renderTurnoCell(ctx.emporio,ds,'mat',ed.mat,cl.mat)+renderTurnoCell(ctx.emporio,ds,'pom',ed.pom,cl.pom);
     ['mat','pom'].forEach(t=>{
-        const btn=document.getElementById(`btn-chiudi-${t}-${dateStr}`);
+        const btn=document.getElementById(`btn-chiudi-${t}-${ds}`);
         if (btn) btn.classList.toggle('attivo',cl[t]);
     });
 }
 
 // ── CRUD ──────────────────────────────────────────────────────
-function initDay(emp,dateStr) {
+function initDay(emp,ds){
     if (!turniData[emp]) turniData[emp]={};
-    if (!turniData[emp][dateStr]) turniData[emp][dateStr]={mat:[],pom:[],nota:'',override:{}};
-    return turniData[emp][dateStr];
+    if (!turniData[emp][ds]) turniData[emp][ds]={mat:[],pom:[],nota:'',override:{}};
+    return turniData[emp][ds];
 }
-
-function getEffectiveDayData(emp,dateStr) {
-    const stored=turniData[emp]?.[dateStr]||{};
-    const overrides=stored.override||{};
-    const pred=predefiniti[emp]||{};
-    const mat=[...(stored.mat||[])];
-    const pom=[...(stored.pom||[])];
-    (PERSONALE[emp]||[]).forEach(p=>{
-        const t=pred[p.nome];
-        if (!t||overrides[p.nome]) return;
-        if ((t==='mat'||t==='entrambi')&&!mat.find(x=>x.nome===p.nome)) mat.unshift(p);
-        if ((t==='pom'||t==='entrambi')&&!pom.find(x=>x.nome===p.nome)) pom.unshift(p);
-    });
-    return {mat,pom};
-}
-
-function addPersona(emp,dateStr,turno,persona) {
-    const d=initDay(emp,dateStr);
+function addPersona(emp,ds,turno,persona){
+    const d=initDay(emp,ds);
     delete d.override[persona.nome];
     if (!d[turno].find(p=>p.nome===persona.nome)) d[turno].push(persona);
 }
-
-function removeChip(dateStr,turno,nome) {
-    const emp=ctx.emporio,pred=predefiniti[emp]||{};
-    const d=initDay(emp,dateStr);
-    if (pred[nome]) d.override[nome]=true;
+function removeChip(ds,turno,nome){
+    const emp=ctx.emporio;
+    const pred=predefiniti[emp]||{};
+    const dow=new Date(ds+'T12:00:00').getDay();
+    const isPredToday=pred[nome]?.[dow]&&(pred[nome][dow]==='mat'||pred[nome][dow]==='pom'||pred[nome][dow]==='entrambi');
+    const d=initDay(emp,ds);
+    if (isPredToday) d.override[nome]=true;
     else d[turno]=d[turno].filter(p=>p.nome!==nome);
-    refreshCell(dateStr,turno);
+    refreshCell(ds,turno);
 }
-
-function refreshCell(dateStr,turno) {
-    const el=document.getElementById(`${turno}-${dateStr}`);
-    if (el) el.innerHTML=renderChips(getEffectiveDayData(ctx.emporio,dateStr)[turno],dateStr,turno);
+function refreshCell(ds,turno){
+    const el=document.getElementById(`${turno}-${ds}`);
+    if (el) el.innerHTML=renderChips(getEffectiveDayData(ctx.emporio,ds)[turno],ds,turno);
 }
-
-function saveNota(dateStr,val) { initDay(ctx.emporio,dateStr).nota=val; }
+function saveNota(ds,val){ initDay(ctx.emporio,ds).nota=val; }
 
 // ── ASSENZE ───────────────────────────────────────────────────
-function getAssenza(emp,dateStr,nome) { return assenze[emp]?.[dateStr]?.[nome]||null; }
-function initAssenza(emp,dateStr) {
+function getAssenza(emp,ds,nome){ return assenze[emp]?.[ds]?.[nome]||null; }
+function initAssenza(emp,ds){
     if (!assenze[emp]) assenze[emp]={};
-    if (!assenze[emp][dateStr]) assenze[emp][dateStr]={};
+    if (!assenze[emp][ds]) assenze[emp][ds]={};
 }
-
-function openAssenza(e,dateStr,turno,nome) {
+function openAssenza(e,ds,turno,nome){
     e.preventDefault();
-    assenzaCtx={dateStr,turno,nome}; assenzaTipo=null;
-    const ex=getAssenza(ctx.emporio,dateStr,nome);
+    assenzaCtx={ds,turno,nome}; assenzaTipo=null;
+    const ex=getAssenza(ctx.emporio,ds,nome);
     document.getElementById('assenza-title').innerText=`Assenza — ${nome}`;
     document.getElementById('assenza-ore-block').classList.add('hidden');
     document.getElementById('assenza-ore').value=ex?.ore??'';
@@ -594,17 +655,16 @@ function openAssenza(e,dateStr,turno,nome) {
     document.getElementById('btn-remove-assenza').classList.toggle('hidden',!ex);
     ['ferie','malattia'].forEach(t=>{
         const btn=document.getElementById(`btn-ass-${t}`);
-        const isActive=ex?.tipo===t;
-        btn.classList.toggle('ring-2',isActive);
-        btn.classList.toggle('ring-offset-2',isActive);
-        btn.classList.toggle('ring-blue-400',isActive&&t==='ferie');
-        btn.classList.toggle('ring-yellow-400',isActive&&t==='malattia');
+        const isA=ex?.tipo===t;
+        btn.classList.toggle('ring-2',isA);
+        btn.classList.toggle('ring-offset-2',isA);
+        btn.classList.toggle('ring-blue-400',isA&&t==='ferie');
+        btn.classList.toggle('ring-yellow-400',isA&&t==='malattia');
     });
-    if (ex) { assenzaTipo=ex.tipo; document.getElementById('btn-conf-assenza').disabled=false; document.getElementById('assenza-ore-block').classList.remove('hidden'); }
+    if (ex){assenzaTipo=ex.tipo;document.getElementById('btn-conf-assenza').disabled=false;document.getElementById('assenza-ore-block').classList.remove('hidden');}
     document.getElementById('modal-assenza').classList.remove('hidden');
 }
-
-function selectTipoAssenza(tipo) {
+function selectTipoAssenza(tipo){
     assenzaTipo=tipo;
     document.getElementById('assenza-ore-block').classList.remove('hidden');
     document.getElementById('btn-conf-assenza').disabled=false;
@@ -616,117 +676,31 @@ function selectTipoAssenza(tipo) {
         btn.classList.toggle('ring-yellow-400',t==='malattia'&&tipo==='malattia');
     });
 }
-
-function confirmAssenza() {
+function confirmAssenza(){
     if (!assenzaCtx||!assenzaTipo) return;
     const oreVal=document.getElementById('assenza-ore').value;
     const ore=oreVal===''?null:parseFloat(oreVal);
-    initAssenza(ctx.emporio,assenzaCtx.dateStr);
-    assenze[ctx.emporio][assenzaCtx.dateStr][assenzaCtx.nome]={tipo:assenzaTipo,ore};
-    closeAssenza();
-    refreshTurnoArea(assenzaCtx.dateStr);
-    aggiornaMeseOrario();
+    initAssenza(ctx.emporio,assenzaCtx.ds);
+    assenze[ctx.emporio][assenzaCtx.ds][assenzaCtx.nome]={tipo:assenzaTipo,ore};
+    closeAssenza(); refreshTurnoArea(assenzaCtx.ds); aggiornaMeseOrario();
 }
-
-function removeAssenza() {
+function removeAssenza(){
     if (!assenzaCtx) return;
-    if (assenze[ctx.emporio]?.[assenzaCtx.dateStr]) delete assenze[ctx.emporio][assenzaCtx.dateStr][assenzaCtx.nome];
-    closeAssenza();
-    refreshTurnoArea(assenzaCtx.dateStr);
-    aggiornaMeseOrario();
+    if (assenze[ctx.emporio]?.[assenzaCtx.ds]) delete assenze[ctx.emporio][assenzaCtx.ds][assenzaCtx.nome];
+    closeAssenza(); refreshTurnoArea(assenzaCtx.ds); aggiornaMeseOrario();
 }
-
-function closeAssenza() { document.getElementById('modal-assenza').classList.add('hidden'); assenzaCtx=null; assenzaTipo=null; }
-
-function refreshTurnoArea(dateStr) {
-    const row=document.getElementById(`row-${dateStr}`);
+function closeAssenza(){ document.getElementById('modal-assenza').classList.add('hidden'); assenzaCtx=null; assenzaTipo=null; }
+function refreshTurnoArea(ds){
+    const row=document.getElementById(`row-${ds}`);
     if (!row) return;
-    const ed=getEffectiveDayData(ctx.emporio,dateStr);
-    const cl=chiusure[ctx.emporio]?.[dateStr]||{mat:false,pom:false};
+    const ed=getEffectiveDayData(ctx.emporio,ds);
+    const cl=chiusure[ctx.emporio]?.[ds]||{mat:false,pom:false};
     const grid=row.querySelector('.grid.grid-cols-2');
-    if (grid) grid.innerHTML=
-        renderTurnoCell(ctx.emporio,dateStr,'mat',ed.mat,cl.mat)+
-        renderTurnoCell(ctx.emporio,dateStr,'pom',ed.pom,cl.pom);
-}
-
-// ── MODIFICA PERSONA ──────────────────────────────────────────
-function openEditPersona(emp,nomeOld) {
-    editPersonaCtx={emp,nomeOld};
-    const p=(PERSONALE[emp]||[]).find(x=>x.nome===nomeOld);
-    if (!p) return;
-    const parti=nomeOld.split(' ');
-    document.getElementById('edit-nome').value=parti[0]||'';
-    document.getElementById('edit-cognome').value=parti.slice(1).join(' ')||'';
-    document.getElementById('edit-ruolo').value=p.ruolo;
-    document.getElementById('modal-edit-persona').classList.remove('hidden');
-}
-
-function closeEditPersona() {
-    document.getElementById('modal-edit-persona').classList.add('hidden');
-    editPersonaCtx=null;
-}
-
-function saveEditPersona() {
-    if (!editPersonaCtx) return;
-    const {emp,nomeOld}=editPersonaCtx;
-    const nome=document.getElementById('edit-nome').value.trim();
-    const cognome=document.getElementById('edit-cognome').value.trim();
-    const ruolo=document.getElementById('edit-ruolo').value;
-    if (!nome) { alert('Inserisci almeno il nome.'); return; }
-    const nomeNew=cognome?`${nome} ${cognome}`:nome;
-
-    // Aggiorna PERSONALE
-    const idx=(PERSONALE[emp]||[]).findIndex(p=>p.nome===nomeOld);
-    if (idx>=0) PERSONALE[emp][idx]={nome:nomeNew,ruolo};
-
-    // Aggiorna turniData
-    Object.keys(turniData[emp]||{}).forEach(ds=>{
-        ['mat','pom'].forEach(t=>{
-            const arr=turniData[emp][ds][t];
-            const pi=arr.findIndex(p=>p.nome===nomeOld);
-            if (pi>=0) arr[pi]={nome:nomeNew,ruolo};
-        });
-        if (turniData[emp][ds].override?.[nomeOld]) {
-            turniData[emp][ds].override[nomeNew]=true;
-            delete turniData[emp][ds].override[nomeOld];
-        }
-    });
-
-    // Aggiorna predefiniti
-    if (predefiniti[emp]?.[nomeOld]) {
-        predefiniti[emp][nomeNew]=predefiniti[emp][nomeOld];
-        delete predefiniti[emp][nomeOld];
-    }
-
-    // Aggiorna assenze
-    Object.keys(assenze[emp]||{}).forEach(ds=>{
-        if (assenze[emp][ds][nomeOld]) {
-            assenze[emp][ds][nomeNew]=assenze[emp][ds][nomeOld];
-            delete assenze[emp][ds][nomeOld];
-        }
-    });
-
-    closeEditPersona();
-    renderMese();
-}
-
-function deletePersona() {
-    if (!editPersonaCtx) return;
-    const {emp,nomeOld}=editPersonaCtx;
-    if (!confirm(`Rimuovere ${nomeOld} dall'emporio?`)) return;
-    PERSONALE[emp]=(PERSONALE[emp]||[]).filter(p=>p.nome!==nomeOld);
-    Object.keys(turniData[emp]||{}).forEach(ds=>{
-        ['mat','pom'].forEach(t=>{
-            turniData[emp][ds][t]=(turniData[emp][ds][t]||[]).filter(p=>p.nome!==nomeOld);
-        });
-    });
-    if (predefiniti[emp]) delete predefiniti[emp][nomeOld];
-    closeEditPersona();
-    renderMese();
+    if (grid) grid.innerHTML=renderTurnoCell(ctx.emporio,ds,'mat',ed.mat,cl.mat)+renderTurnoCell(ctx.emporio,ds,'pom',ed.pom,cl.pom);
 }
 
 // ── RIEPILOGO ─────────────────────────────────────────────────
-function buildRiepilogo() {
+function buildRiepilogo(){
     const {emporio,anno,mese}=ctx;
     const dip=(PERSONALE[emporio]||[]).filter(p=>p.ruolo==='dipendente');
     if (!dip.length) return '';
@@ -737,11 +711,8 @@ function buildRiepilogo() {
             <td class="py-3 pl-5 pr-4">
                 <div class="flex items-center gap-2">
                     <span class="font-semibold text-base text-slate-700">${p.nome}</span>
-                    <button onclick="openEditPersona('${emporio}','${p.nome}')"
-                        class="text-[10px] text-slate-300 hover:text-m361-red transition-colors" title="Modifica">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/>
-                        </svg>
+                    <button onclick="openEditPersona('${emporio}','${p.nome}')" class="text-[10px] text-slate-300 hover:text-m361-red transition-colors" title="Modifica">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg>
                     </button>
                 </div>
             </td>
@@ -751,7 +722,6 @@ function buildRiepilogo() {
             <td class="py-3 pl-3 pr-5 text-center"><span class="text-sm font-extrabold text-m361-red">${fmtMin(tot)}</span></td>
         </tr>`;
     }).join('');
-
     return `
     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mt-4">
         <div class="p-5 border-b border-gray-50 flex items-center gap-2">
@@ -773,118 +743,39 @@ function buildRiepilogo() {
                 <tbody>${rows}</tbody>
             </table>
         </div>
-        <p class="text-[11px] text-slate-300 px-5 py-3">Ogni turno = ore del turno + 15 min. Ferie/malattia senza ore specifiche = giornata intera.</p>
+        <p class="text-[11px] text-slate-300 px-5 py-3">Ogni turno = ore + 15 min. Ferie/malattia senza ore = giornata intera.</p>
     </div>`;
 }
+function aggiornaMeseOrario(){ const w=document.getElementById('riepilogo-wrap'); if(w) w.innerHTML=buildRiepilogo(); }
 
-function aggiornaMeseOrario() {
-    const w=document.getElementById('riepilogo-wrap');
-    if (w) w.innerHTML=buildRiepilogo();
-}
-
-function calcolaTotaleDettaglio(emp,anno,mese,nomeDip) {
-    const daysInMonth=new Date(anno,mese+1,0).getDate();
+function calcolaTotaleDettaglio(emp,anno,mese,nomeDip){
+    const n=new Date(anno,mese+1,0).getDate();
     const orari=getOrari(emp,anno,mese);
     let negozio=0,ferie=0,malattia=0;
-    for (let d=1;d<=daysInMonth;d++) {
+    for(let d=1;d<=n;d++){
         const ds=`${anno}-${String(mese+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
         const cl=chiusure[emp]?.[ds]||{mat:false,pom:false};
         const ass=getAssenza(emp,ds,nomeDip);
-        if (ass) {
-            let min=ass.ore!=null?Math.round(ass.ore*60)
-                :orari?(oraDiff(orari.matIni,orari.matFin)+oraDiff(orari.pomIni,orari.pomFin)+15):8*60;
-            if (ass.tipo==='ferie') ferie+=min; else malattia+=min;
+        if(ass){
+            let min=ass.ore!=null?Math.round(ass.ore*60):orari?(oraDiff(orari.matIni,orari.matFin)+oraDiff(orari.pomIni,orari.pomFin)+15):8*60;
+            if(ass.tipo==='ferie') ferie+=min; else malattia+=min;
             continue;
         }
         const ed=getEffectiveDayData(emp,ds);
         const nelMat=!cl.mat&&ed.mat.some(p=>p.nome===nomeDip);
         const nelPom=!cl.pom&&ed.pom.some(p=>p.nome===nomeDip);
-        if (orari) {
-            if (nelMat) negozio+=oraDiff(orari.matIni,orari.matFin)+15;
-            if (nelPom) negozio+=oraDiff(orari.pomIni,orari.pomFin)+15;
-        } else {
-            if (nelMat) negozio+=4*60+15;
-            if (nelPom) negozio+=4*60+15;
-        }
+        if(orari){if(nelMat)negozio+=oraDiff(orari.matIni,orari.matFin)+15;if(nelPom)negozio+=oraDiff(orari.pomIni,orari.pomFin)+15;}
+        else{if(nelMat)negozio+=4*60+15;if(nelPom)negozio+=4*60+15;}
     }
     return {negozio,ferie,malattia};
 }
-
-function oraDiff(ini,fin) {
-    if (!ini||!fin) return 0;
-    const [ih,im]=ini.split(':').map(Number);
-    const [fh,fm]=fin.split(':').map(Number);
-    return (fh*60+fm)-(ih*60+im);
-}
-function fmtMin(min) {
-    if (!min) return '—';
-    const h=Math.floor(min/60),m=min%60;
-    return m?`${h}h ${m}m`:`${h}h`;
-}
-function formatOre(ore) {
-    if (ore==null) return '';
-    const h=Math.floor(ore),m=Math.round((ore-h)*60);
-    return m?`${h}h ${m}m`:`${h}h`;
-}
-
-// ── PREDEFINITI ───────────────────────────────────────────────
-function openDefault() {
-    if (!predefiniti[ctx.emporio]) predefiniti[ctx.emporio]={};
-    const persone=[...(PERSONALE[ctx.emporio]||[])].sort((a,b)=>a.nome.localeCompare(b.nome));
-    document.getElementById('default-list').innerHTML=persone.map(p=>{
-        const cur=predefiniti[ctx.emporio][p.nome]||null;
-        return `
-        <div class="flex items-center gap-2 py-2 border-b border-gray-50 last:border-0">
-            <span class="flex-1 font-semibold text-base text-slate-700">${p.nome}
-                <span class="text-xs ml-1 ${p.ruolo==='dipendente'?'text-red-400':p.ruolo==='servizio_civile'?'text-slate-400':'text-green-600'}">
-                    ${p.ruolo==='dipendente'?'dip.':p.ruolo==='servizio_civile'?'SC':'vol.'}
-                </span>
-            </span>
-            <div class="flex gap-1">
-                ${['mat','pom','entrambi'].map(t=>`
-                    <button onclick="togglePred('${p.nome}','${t}')"
-                        id="pred-${p.nome.replace(/ /g,'_')}-${t}"
-                        class="btn-default px-2 py-1 rounded-lg border text-xs font-bold border-slate-200 text-slate-400 transition-all ${cur===t?'active':''}">
-                        ${t==='mat'?'Mat':t==='pom'?'Pom':'Ent'}
-                    </button>`).join('')}
-                <button onclick="clearPred('${p.nome}')" class="px-2 py-1 rounded-lg border border-slate-100 text-xs text-slate-300 hover:text-red-400">✕</button>
-            </div>
-        </div>`;
-    }).join('');
-    document.getElementById('modal-default').classList.remove('hidden');
-}
-
-function togglePred(nome,turno) {
-    if (!predefiniti[ctx.emporio]) predefiniti[ctx.emporio]={};
-    predefiniti[ctx.emporio][nome]=predefiniti[ctx.emporio][nome]===turno?null:turno;
-    ['mat','pom','entrambi'].forEach(t=>{
-        const btn=document.getElementById(`pred-${nome.replace(/ /g,'_')}-${t}`);
-        if (btn) btn.classList.toggle('active',predefiniti[ctx.emporio][nome]===t);
-    });
-}
-
-function clearPred(nome) {
-    if (predefiniti[ctx.emporio]) delete predefiniti[ctx.emporio][nome];
-    ['mat','pom','entrambi'].forEach(t=>{
-        const btn=document.getElementById(`pred-${nome.replace(/ /g,'_')}-${t}`);
-        if (btn) btn.classList.remove('active');
-    });
-}
-
-function applyDefault() {
-    const {emporio,anno,mese}=ctx;
-    const n=new Date(anno,mese+1,0).getDate();
-    for (let d=1;d<=n;d++) {
-        const ds=`${anno}-${String(mese+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        if (turniData[emporio]?.[ds]) turniData[emporio][ds].override={};
-    }
-    closeDefault(); renderMese();
-}
-function closeDefault() { document.getElementById('modal-default').classList.add('hidden'); }
+function oraDiff(i,f){if(!i||!f)return 0;const[ih,im]=i.split(':').map(Number);const[fh,fm]=f.split(':').map(Number);return(fh*60+fm)-(ih*60+im);}
+function fmtMin(m){if(!m)return '—';const h=Math.floor(m/60),r=m%60;return r?`${h}h ${r}m`:`${h}h`;}
+function formatOre(o){if(o==null)return '';const h=Math.floor(o),m=Math.round((o-h)*60);return m?`${h}h ${m}m`:`${h}h`;}
 
 // ── ORARI ─────────────────────────────────────────────────────
-function orariKeyFor(emp,anno,mese){return `${emp}|${anno}-${String(mese+1).padStart(2,'0')}`;}
-function getOrari(emp,anno,mese){return orariMese[orariKeyFor(emp,anno,mese)]||null;}
+function orariKeyFor(e,a,m){return `${e}|${a}-${String(m+1).padStart(2,'0')}`;}
+function getOrari(e,a,m){return orariMese[orariKeyFor(e,a,m)]||null;}
 function openOrari(){
     const o=getOrari(ctx.emporio,ctx.anno,ctx.mese);
     document.getElementById('ora-mat-ini').value=o?.matIni||'09:00';
@@ -906,11 +797,10 @@ function saveOrari(){
 }
 
 // ── MODAL PERSONA ─────────────────────────────────────────────
-function openModal(dateStr,turno){
-    modalCtx={dateStr,turno};
-    const date=new Date(dateStr+'T12:00:00');
-    document.getElementById('modal-title').innerText=
-        `${turno==='mat'?'Mattino':'Pomeriggio'}  —  ${GIORNI_SETT[date.getDay()]} ${date.getDate()} ${MESI_NOMI[date.getMonth()]}`;
+function openModal(ds,turno){
+    modalCtx={ds,turno};
+    const date=new Date(ds+'T12:00:00');
+    document.getElementById('modal-title').innerText=`${turno==='mat'?'Mattino':'Pomeriggio'}  —  ${GIORNI_SETT[date.getDay()]} ${date.getDate()} ${MESI_NOMI[date.getMonth()]}`;
     setModalTab('seleziona');
     document.getElementById('modal').classList.remove('hidden');
 }
@@ -921,54 +811,81 @@ function setModalTab(tab){
     document.getElementById('mtab-nuova').className=`flex-1 py-2 rounded-xl text-sm font-bold ${!isSel?'bg-m361-red text-white':'bg-slate-100 text-slate-600'}`;
     document.getElementById('mtab-body-sel').classList.toggle('hidden',!isSel);
     document.getElementById('mtab-body-nuova').classList.toggle('hidden',isSel);
-    if (isSel){document.getElementById('modal-search').value='';filterModalList();}
+    if(isSel){document.getElementById('modal-search').value='';filterModalList();}
 }
 function filterModalList(){
-    if (!modalCtx) return;
+    if(!modalCtx) return;
     const q=document.getElementById('modal-search').value.toLowerCase();
-    const ed=getEffectiveDayData(ctx.emporio,modalCtx.dateStr);
+    const ed=getEffectiveDayData(ctx.emporio,modalCtx.ds);
     const nel=ed[modalCtx.turno].map(p=>p.nome);
-    const lista=[...(PERSONALE[ctx.emporio]||[])].sort((a,b)=>a.nome.localeCompare(b.nome))
-        .filter(p=>p.nome.toLowerCase().includes(q)&&!nel.includes(p.nome));
+    const lista=[...(PERSONALE[ctx.emporio]||[])].sort((a,b)=>a.nome.localeCompare(b.nome)).filter(p=>p.nome.toLowerCase().includes(q)&&!nel.includes(p.nome));
     document.getElementById('modal-list').innerHTML=lista.length===0
         ?'<p class="text-sm text-slate-400 text-center py-4">Nessuno disponibile</p>'
-        :lista.map(p=>`
-            <button onclick="selectPersona('${p.nome}','${p.ruolo}')"
-                class="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 text-left">
-                <span class="chip ${p.ruolo==='dipendente'?'chip-mat-dip':p.ruolo==='volontario'?'chip-mat-vol':'chip-mat-sc'} pointer-events-none text-sm">${p.nome}</span>
-            </button>`).join('');
+        :lista.map(p=>`<button onclick="selectPersona('${p.nome}','${p.ruolo}')" class="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 text-left"><span class="chip ${chipClass(p.ruolo)} pointer-events-none text-sm">${p.nome}</span></button>`).join('');
 }
 function selectPersona(nome,ruolo){
-    addPersona(ctx.emporio,modalCtx.dateStr,modalCtx.turno,{nome,ruolo});
-    refreshCell(modalCtx.dateStr,modalCtx.turno);
+    addPersona(ctx.emporio,modalCtx.ds,modalCtx.turno,{nome,ruolo});
+    refreshCell(modalCtx.ds,modalCtx.turno);
     closeModal();
 }
 function addNuovaPersona(){
     const nome=document.getElementById('np-nome').value.trim();
     const cog=document.getElementById('np-cognome').value.trim();
     const ruolo=document.getElementById('np-ruolo').value;
-    if (!nome){alert('Inserisci almeno il nome.');return;}
+    if(!nome){alert('Inserisci almeno il nome.');return;}
     const nc=cog?`${nome} ${cog}`:nome;
-    if (!PERSONALE[ctx.emporio]) PERSONALE[ctx.emporio]=[];
-    if (!PERSONALE[ctx.emporio].find(p=>p.nome===nc)) PERSONALE[ctx.emporio].push({nome:nc,ruolo});
-    addPersona(ctx.emporio,modalCtx.dateStr,modalCtx.turno,{nome:nc,ruolo});
-    refreshCell(modalCtx.dateStr,modalCtx.turno);
+    if(!PERSONALE[ctx.emporio]) PERSONALE[ctx.emporio]=[];
+    if(!PERSONALE[ctx.emporio].find(p=>p.nome===nc)) PERSONALE[ctx.emporio].push({nome:nc,ruolo});
+    addPersona(ctx.emporio,modalCtx.ds,modalCtx.turno,{nome:nc,ruolo});
+    refreshCell(modalCtx.ds,modalCtx.turno);
     document.getElementById('np-nome').value='';
     document.getElementById('np-cognome').value='';
     closeModal();
 }
 
+// ── MODIFICA PERSONA ──────────────────────────────────────────
+function openEditPersona(emp,nomeOld){
+    editPersonaCtx={emp,nomeOld};
+    const p=(PERSONALE[emp]||[]).find(x=>x.nome===nomeOld);
+    if(!p) return;
+    const parti=nomeOld.split(' ');
+    document.getElementById('edit-nome').value=parti[0]||'';
+    document.getElementById('edit-cognome').value=parti.slice(1).join(' ')||'';
+    document.getElementById('edit-ruolo').value=p.ruolo;
+    document.getElementById('modal-edit-persona').classList.remove('hidden');
+}
+function closeEditPersona(){ document.getElementById('modal-edit-persona').classList.add('hidden'); editPersonaCtx=null; }
+function saveEditPersona(){
+    if(!editPersonaCtx) return;
+    const {emp,nomeOld}=editPersonaCtx;
+    const nome=document.getElementById('edit-nome').value.trim();
+    const cog=document.getElementById('edit-cognome').value.trim();
+    const ruolo=document.getElementById('edit-ruolo').value;
+    if(!nome){alert('Inserisci almeno il nome.');return;}
+    const nomeNew=cog?`${nome} ${cog}`:nome;
+    const idx=(PERSONALE[emp]||[]).findIndex(p=>p.nome===nomeOld);
+    if(idx>=0) PERSONALE[emp][idx]={nome:nomeNew,ruolo};
+    Object.keys(turniData[emp]||{}).forEach(ds=>{
+        ['mat','pom'].forEach(t=>{const arr=turniData[emp][ds][t];const pi=arr.findIndex(p=>p.nome===nomeOld);if(pi>=0)arr[pi]={nome:nomeNew,ruolo};});
+        if(turniData[emp][ds].override?.[nomeOld]){turniData[emp][ds].override[nomeNew]=true;delete turniData[emp][ds].override[nomeOld];}
+    });
+    if(predefiniti[emp]?.[nomeOld]){predefiniti[emp][nomeNew]=predefiniti[emp][nomeOld];delete predefiniti[emp][nomeOld];}
+    Object.keys(assenze[emp]||{}).forEach(ds=>{if(assenze[emp][ds][nomeOld]){assenze[emp][ds][nomeNew]=assenze[emp][ds][nomeOld];delete assenze[emp][ds][nomeOld];}});
+    closeEditPersona(); renderMese();
+}
+function deletePersona(){
+    if(!editPersonaCtx) return;
+    const {emp,nomeOld}=editPersonaCtx;
+    if(!confirm(`Rimuovere ${nomeOld} dall'emporio?`)) return;
+    PERSONALE[emp]=(PERSONALE[emp]||[]).filter(p=>p.nome!==nomeOld);
+    Object.keys(turniData[emp]||{}).forEach(ds=>['mat','pom'].forEach(t=>{turniData[emp][ds][t]=(turniData[emp][ds][t]||[]).filter(p=>p.nome!==nomeOld);}));
+    if(predefiniti[emp]) delete predefiniti[emp][nomeOld];
+    closeEditPersona(); renderMese();
+}
+
 // ── UTIL ──────────────────────────────────────────────────────
-function setHeader(title,controls){
-    document.getElementById('header-title').innerText=title;
-    document.getElementById('header-controls').innerHTML=controls;
-}
-function backBtn(fn){
-    return `<button onclick="${fn}" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
-        Indietro
-    </button>`;
-}
+function setHeader(t,c){document.getElementById('header-title').innerText=t;document.getElementById('header-controls').innerHTML=c;}
+function backBtn(fn){return `<button onclick="${fn}" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition-colors"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>Indietro</button>`;}
 function hideAll(){['view-empori','view-anni','view-mesi','view-mese'].forEach(id=>document.getElementById(id).classList.add('hidden'));}
 function show(id){document.getElementById(id).classList.remove('hidden');}
 ['modal','modal-orari','modal-assenza','modal-default','modal-edit-persona'].forEach(id=>{
