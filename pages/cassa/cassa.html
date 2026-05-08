@@ -1,445 +1,627 @@
-<!-- CORREZIONI PRINCIPALI:
-1. Fix onclick con apici rotti in buildPayments()
-2. Fix icona meteo non esistente "fa-cloud-drizzle"
-3. Fix fillForm() note dinamiche
-4. Fix autoWeather che sovrascrive dati già salvati
-5. Fix fondo residuo negativo
-6. Miglior parseEuro
-7. Miglior controllo IVA
-8. Miglior gestione null/undefined
--->
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <link rel="stylesheet" href="../../assets/style/nav-style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M361 - Controllo Cassa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #1e293b; }
+        .text-m361-red { color: #b75252; }
+        .bg-m361-red { background: #b75252; }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        .card { background: white; border: 1px solid #e5e7eb; border-radius: 24px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+        .section-title { font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #64748b; }
+        .turno-badge { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 800; text-transform: uppercase; }
+        .turno-mat { background: #fff1f1; color: #b75252; }
+        .turno-pom { background: #f4efe8; color: #7a4f2b; }
+        .coin-input, .money-input, .select-input, .note-input, .text-input {
+            width: 100%; border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px 15px; font-size: 14px; background: #fff;
+        }
+        .coin-input:focus, .money-input:focus, .select-input:focus, .note-input:focus, .text-input:focus { outline: 2px solid #b75252; border-color: transparent; }
+        .row-total { font-weight: 700; text-align: right; min-width: 100px; font-size: 15px; }
+        .small-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: #94a3b8; }
+        .muted-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; }
+        .iva-table th, .iva-table td { border: 1px solid #d1d5db; padding: 8px 10px; font-size: 13px; }
+        .iva-table th { background: #fff1f1; color: #b75252; font-weight: 800; text-transform: uppercase; font-size: 10px; letter-spacing: .08em; }
+        .iva-table td.auto { background: #f8fafc; color: #64748b; }
+        .input-mini { width: 100%; border: none; background: transparent; text-align: right; font-size: 13px; padding: 2px 0; font-weight: 600; }
+        .input-mini:focus { outline: none; }
+        .input-mini[readonly] { color: #64748b; font-weight: 400; }
+        .input-mini-editable { color: #1e293b; }
+        .arrivo-switch { width: 20px; height: 20px; accent-color: #b75252; }
+        .weather-icon { width: 20px; display: inline-flex; justify-content: center; }
+        .error-box { border: 1px solid #ef4444; background: #fef2f2; color: #b91c1c; border-radius: 14px; padding: 10px 14px; font-size: 13px; font-weight: 700; display: none; }
+        .pay-label { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #475569; }
+        .spese-row { background: rgba(183,82,82,0.06); border-radius: 12px; }
+        .note-btn-active { color: #b75252 !important; border-color: #b75252 !important; }
+        .note-field { border: 1px solid #b75252 !important; }
+    </style>
+</head>
+<body class="pb-28">
 
+<main class="max-w-7xl mx-auto p-4 md:p-6">
+
+    <div id="screen-select" class="card p-6 md:p-10">
+        <h2 class="section-title mb-6 flex items-center gap-2">
+            <span class="w-1 h-4 bg-m361-red rounded-full"></span> Seleziona giorno
+        </h2>
+        <div class="mb-6">
+            <label class="small-label block mb-2">Emporio</label>
+            <select id="emporio" class="select-input max-w-sm">
+                <option value="">Seleziona emporio...</option>
+                <option value="Cremona">Cremona</option>
+                <option value="Casalmaggiore">Casalmaggiore</option>
+                <option value="Reggio Emilia">Reggio Emilia</option>
+                <option value="Viadana">Viadana</option>
+            </select>
+        </div>
+        <p class="small-label mb-3 text-slate-400">Data — precompilata con oggi, modificabile</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-xl">
+            <div>
+                <label class="small-label block mb-2">Anno</label>
+                <select id="anno" class="select-input"></select>
+            </div>
+            <div>
+                <label class="small-label block mb-2">Mese</label>
+                <select id="mese" class="select-input"></select>
+            </div>
+            <div>
+                <label class="small-label block mb-2">Giorno</label>
+                <select id="giorno" class="select-input"></select>
+            </div>
+        </div>
+        <div class="mt-6">
+            <button onclick="openDay()" class="bg-m361-red text-white px-6 py-3 rounded-2xl font-bold text-xs uppercase tracking-widest shadow-md hover:opacity-90 transition-all">
+                <i class="fas fa-cash-register mr-2"></i> Apri giorno
+            </button>
+        </div>
+    </div>
+
+    <div id="screen-day" class="hidden space-y-6">
+
+        <div class="card p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <p id="day-label" class="text-2xl font-black text-slate-800"></p>
+                <p id="emporio-label" class="text-xs font-bold text-m361-red uppercase tracking-widest mt-1"></p>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 min-w-[200px]">
+                    <p class="text-[9px] font-bold text-slate-400 uppercase text-center">Meteo</p>
+                    <div class="mt-2 flex items-center justify-center gap-2">
+                        <span id="meteo-icona" class="weather-icon text-slate-500"><i class="fas fa-cloud-sun"></i></span>
+                        <select id="meteo-label" class="bg-transparent border-none text-sm font-bold text-slate-700 p-0 w-auto">
+                            <option value="sereno">sereno</option>
+                            <option value="prevalentemente sereno">prevalentemente sereno</option>
+                            <option value="parzialmente nuvoloso">parzialmente nuvoloso</option>
+                            <option value="coperto">coperto</option>
+                            <option value="nebbia">nebbia</option>
+                            <option value="pioggia">pioggia</option>
+                            <option value="pioviggine">pioviggine</option>
+                            <option value="temporale">temporale</option>
+                            <option value="neve">neve</option>
+                            <option value="grandine">grandine</option>
+                            <option value="variabile">variabile</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 min-w-[160px]">
+                    <p class="text-[9px] font-bold text-slate-400 uppercase text-center">Arrivo merci</p>
+                    <label class="inline-flex items-center justify-center gap-2 mt-2 w-full">
+                        <input id="arrivo-merci" type="checkbox" class="arrivo-switch">
+                        <span class="text-sm font-bold text-slate-700">Sì</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+            <section class="card p-6">
+                <div class="mb-5"><span class="turno-badge turno-mat"><i class="fas fa-sun"></i> Mattino</span></div>
+                <div id="mat-coin-list" class="space-y-2"></div>
+                <div class="mt-4 pt-4 border-t flex items-center justify-between">
+                    <span class="small-label">Contanti lordi</span>
+                    <span id="mat-lordi" class="row-total">€ 0,00</span>
+                </div>
+                <div class="mt-3 flex items-center justify-between muted-box px-4 py-3">
+                    <span class="small-label text-slate-500">Fondo cassa</span>
+                    <span id="fondo-cassa-inline-mat" class="row-total text-slate-700">€ 0,00</span>
+                </div>
+                <div id="mat-payments" class="mt-5 space-y-1"></div>
+                <div class="mt-4 pt-4 border-t space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="small-label text-slate-600">Contanti</span>
+                        <span id="mat-incassato" class="row-total">€ 0,00</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-3">
+                        <span class="small-label text-m361-red">Totale corrispettivi</span>
+                        <input id="mat-corrispettivi" oninput="calcAll()" onblur="formatMoney(this)" onfocus="clearMoney(this)" class="money-input max-w-[180px] text-right" value="€ 0,00">
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="small-label">Differenza</span>
+                        <span id="mat-diff" class="row-total">€ 0,00</span>
+                    </div>
+                </div>
+                <div class="mt-5 pt-4 border-t">
+                    <label class="small-label block mb-2">Chiusura effettuata da</label>
+                    <select id="chiuso-da-mat" class="select-input"></select>
+                </div>
+                <div class="mt-4">
+                    <label class="small-label block mb-2">Note mattino</label>
+                    <textarea id="nota-mattino" class="note-input" rows="2" placeholder="Note su pagamenti, anomalie, rimborsi..."></textarea>
+                </div>
+            </section>
+
+            <section class="card p-6">
+                <div class="mb-5"><span class="turno-badge turno-pom"><i class="fas fa-moon"></i> Pomeriggio</span></div>
+                <div id="pom-coin-list" class="space-y-2"></div>
+                <div class="mt-4 pt-4 border-t flex items-center justify-between">
+                    <span class="small-label">Contanti lordi</span>
+                    <span id="pom-lordi" class="row-total">€ 0,00</span>
+                </div>
+                <div class="mt-3 flex items-center justify-between muted-box px-4 py-3">
+                    <span class="small-label text-slate-500">Fondo cassa</span>
+                    <span id="fondo-cassa-inline-pom" class="row-total text-slate-700">€ 0,00</span>
+                </div>
+                <div id="pom-payments" class="mt-5 space-y-1"></div>
+                <div class="mt-4 pt-4 border-t space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="small-label text-slate-600">Contanti</span>
+                        <span id="pom-incassato" class="row-total">€ 0,00</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-3">
+                        <span class="small-label text-m361-red">Totale corrispettivi</span>
+                        <input id="pom-corrispettivi" oninput="calcAll()" onblur="formatMoney(this)" onfocus="clearMoney(this)" class="money-input max-w-[180px] text-right" value="€ 0,00">
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="small-label">Differenza</span>
+                        <span id="pom-diff" class="row-total">€ 0,00</span>
+                    </div>
+                    <div class="pt-3 border-t mt-3">
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="small-label text-m361-red">Contanti in cassaforte</span>
+                            <input id="cassaforte" oninput="calcAll()" onblur="formatMoney(this)" onfocus="clearMoney(this)" class="money-input max-w-[180px] text-right" value="€ 0,00">
+                        </div>
+                        <div class="flex items-center justify-between bg-slate-100 rounded-2xl px-4 py-3 mt-2">
+                            <span class="small-label text-slate-500">Fondo cassa residuo</span>
+                            <span id="fondo-residuo" class="row-total">€ 0,00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-5 pt-4 border-t">
+                    <label class="small-label block mb-2">Chiusura effettuata da</label>
+                    <select id="chiuso-da-pom" class="select-input"></select>
+                </div>
+                <div class="mt-4">
+                    <label class="small-label block mb-2">Note pomeriggio</label>
+                    <textarea id="nota-pomeriggio" class="note-input" rows="2" placeholder="Note su pagamenti, anomalie, rimborsi..."></textarea>
+                </div>
+            </section>
+        </div>
+
+        <section class="card p-6">
+            <h2 class="section-title mb-4 flex items-center gap-2">
+                <span class="w-1 h-4 bg-m361-red rounded-full"></span> IVA giornaliera
+            </h2>
+            <div id="iva-error" class="error-box mb-4">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                I dati IVA non tornano rispetto ai corrispettivi del pomeriggio. Correggi i campi prima di salvare.
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full iva-table border-collapse rounded-xl overflow-hidden">
+                    <thead>
+                        <tr>
+                            <th class="text-left w-24">Aliquota</th>
+                            <th>Importo <span class="text-[9px] text-[#b75252] font-black">✎ modifica</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-black text-slate-700 text-sm">22%</td>
+                            <td><input id="iva-22" class="input-mini input-mini-editable" oninput="calcIva()" onblur="formatMiniMoney(this)" onfocus="clearMiniMoney(this)" value="€ 0,00"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-black text-slate-700 text-sm">10%</td>
+                            <td><input id="iva-10" class="input-mini input-mini-editable" oninput="calcIva()" onblur="formatMiniMoney(this)" onfocus="clearMiniMoney(this)" value="€ 0,00"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-black text-slate-700 text-sm">4%</td>
+                            <td><input id="iva-4" class="input-mini input-mini-editable" oninput="calcIva()" onblur="formatMiniMoney(this)" onfocus="clearMiniMoney(this)" value="€ 0,00"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-black text-slate-700 text-sm">Esente</td>
+                            <td><input id="iva-esente" class="input-mini input-mini-editable" oninput="calcIva()" onblur="formatMiniMoney(this)" onfocus="clearMiniMoney(this)" value="€ 0,00"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-black text-slate-500 text-sm">Tipo esente</td>
+                            <td class="auto">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <select id="iva-esente-altro" class="input-mini text-left" style="color:#475569;font-weight:700;" onchange="toggleIvaAltro()">
+                                        <option value="">— nessuno —</option>
+                                        <option value="editoriali">editoriali</option>
+                                        <option value="gift card">gift card</option>
+                                        <option value="altro">altro</option>
+                                    </select>
+                                    <input id="iva-esente-altro-text" class="input-mini hidden" style="max-width:180px;" placeholder="specifica...">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="bg-[#fff8f8]">
+                            <td class="font-black text-slate-500 text-sm">Somma</td>
+                            <td class="auto"><input id="iva-somma" class="input-mini" readonly value="€ 0,00"></td>
+                        </tr>
+                        <tr class="bg-[#fff8f8]">
+                            <td class="font-black text-slate-500 text-sm">Netto esente</td>
+                            <td class="auto"><input id="iva-net-es" class="input-mini" readonly value="€ 0,00"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-black text-slate-500 text-sm">Verifica</td>
+                            <td class="auto text-center font-black text-lg" id="iva-ver-cell">—</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="mt-3 text-xs text-slate-400">Compila solo 22%, 10%, 4% ed esente. Somma, netto esente e verifica si aggiornano in automatico.</p>
+        </section>
+
+        <section class="card p-6">
+            <div class="flex items-center justify-end">
+                <button onclick="saveDay()" class="bg-slate-800 text-white px-8 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest shadow-md hover:bg-slate-900 transition-all">
+                    <i class="fas fa-save mr-2"></i> SALVA FOGLIO DI GIORNATA
+                </button>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
-const SUPABASE_KEY = 'LA_TUA_KEY';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const TAGLI = [50,20,10,5,2,1,0.5,0.2,0.1,0.05,0.02,0.01];
-
-const MESI = [
-    'Gennaio','Febbraio','Marzo','Aprile',
-    'Maggio','Giugno','Luglio','Agosto',
-    'Settembre','Ottobre','Novembre','Dicembre'
-];
-
+const MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
 const PAGAMENTI = [
-    { id:'bancomat',         label:'Bancomat',         sign: 1, spese:false },
-    { id:'carte',            label:'Carte',            sign: 1, spese:false },
-    { id:'satispay',         label:'Satispay',         sign: 1, spese:false },
-    { id:'satispay_online',  label:'Satispay online',  sign: 1, spese:false },
-    { id:'carte_online',     label:'Carte online',     sign: 1, spese:false },
-    { id:'paypal',           label:'Paypal',           sign: 1, spese:false },
-    { id:'bonifico',         label:'Bonifico',         sign: 1, spese:false },
-    { id:'gift_card',        label:'Gift card',        sign: 1, spese:false },
-    { id:'gift_card_online', label:'Gift card online', sign: 1, spese:false },
-    { id:'buoni',            label:'Buoni',            sign: 1, spese:false },
-    { id:'rimborsi_online',  label:'Rimborsi online',  sign:-1, spese:false },
-    { id:'spese',            label:'Spese',            sign: 1, spese:true  }
+    { id:'bancomat', label:'Bancomat', sign: 1, spese: false },
+    { id:'carte', label:'Carte', sign: 1, spese: false },
+    { id:'satispay', label:'Satispay', sign: 1, spese: false },
+    { id:'satispay_online', label:'Satispay online', sign: 1, spese: false },
+    { id:'carte_online', label:'Carte online', sign: 1, spese: false },
+    { id:'paypal', label:'Paypal', sign: 1, spese: false },
+    { id:'bonifico', label:'Bonifico', sign: 1, spese: false },
+    { id:'gift_card', label:'Gift card', sign: 1, spese: false },
+    { id:'gift_card_online', label:'Gift card online', sign: 1, spese: false },
+    { id:'buoni', label:'Buoni', sign: 1, spese: false },
+    { id:'rimborsi_online', label:'Rimborsi online', sign:-1, spese: false },
+    { id:'spese', label:'Spese', sign: 1, spese: true }
 ];
+const OPERATORI_DATA = {
+    'Cremona': ['Chiara Monteverdi','Emilio Mazzolari','Giulia Galelli'],
+    'Casalmaggiore': ['Alessandra Rivetti','Barbara Araldi','Carla Maffei','Chiara Monteverdi','Edoardo Pavesi','Emilio Mazzolari','Erica Bossi','Francesco Lunardini','Giovanna Raineri','Giulia Frigeri','Giuseppe Lunardini','Ileana Galli','Maria Marcella Scaravonati','Matilde Chiarini','Michele Marchini','Roberta Vezzosi','Teyssir Mabrouk','Vittoria Lunardini'],
+    'Viadana': ['Alessia Rovina','Ave Aroldi','Barbara Piotrowska','Carla Bellelli','Carla Chittolini','Chiara Monteverdi','Claudio Mortini','Donatella Falugi','Elena Ghelfi','Emilio Mazzolari','Franco Furlotti','Giuseppina Amadini','Manuela Scazza','Marta Sanfelici','Mariagrazia Bertolini','Mirella Panato','Roberta Alberini','Sara Germani','Tiziana Bortesi'],
+    'Reggio Emilia': ['Alessia Bartolomei','Elsa Scarpa','Manuela Capanni','Marica Pioli']
+};
+const CITY_COORDS = {
+    'Cremona': { lat: 45.1333, lon: 10.0227 },
+    'Casalmaggiore': { lat: 44.9916, lon: 10.4217 },
+    'Reggio Emilia': { lat: 44.6979, lon: 10.6297 },
+    'Viadana': { lat: 44.9269, lon: 10.5227 }
+};
 
 let currentKey = '';
 let fondoCassa = 0;
 let selectedEmporio = '';
 
-/* =========================================================
-   UTILITÀ
-========================================================= */
-
-function euro(n) {
-    return '€ ' + Number(n || 0).toLocaleString(
-        'it-IT',
-        {
-            minimumFractionDigits:2,
-            maximumFractionDigits:2
-        }
-    );
-}
-
+function euro(n) { return '€ ' + Number(n || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function parseEuro(v) {
-
-    if (v === null || v === undefined) return 0;
-
-    return Number(
-        String(v)
-            .replace(/€/g,'')
-            .replace(/\s/g,'')
-            .replace(/\./g,'')
-            .replace(',','.')
-            .trim()
-    ) || 0;
+    const s = String(v || '').replace(/\s/g, '').replace('€', '').replace(/\./g, '').replace(',', '.');
+    return Number(s) || 0;
 }
-
-function formatMoney(el) {
-    el.value = euro(parseEuro(el.value));
-}
-
-function clearMoney(el) {
-    if (parseEuro(el.value) === 0) {
-        el.value = '';
-    }
-}
-
-function formatMiniMoney(el) {
-    el.value = euro(parseEuro(el.value));
-}
-
-function clearMiniMoney(el) {
-    if (parseEuro(el.value) === 0) {
-        el.value = '';
-    }
-}
-
-function noteId(turno,id) {
-    return `${turno}_note_${id}`;
-}
-
-/* =========================================================
-   METEO
-========================================================= */
+function formatMoney(el) { el.value = euro(parseEuro(el.value)); }
+function clearMoney(el) { if (parseEuro(el.value) === 0) el.value = ''; }
+function formatMiniMoney(el) { el.value = euro(parseEuro(el.value)); }
+function clearMiniMoney(el) { if (parseEuro(el.value) === 0) el.value = ''; }
+function noteId(turno, id) { return turno + '_note_' + id; }
 
 const WEATHER_ICON = {
-    'sereno':'fa-sun',
-    'prevalentemente sereno':'fa-cloud-sun',
-    'parzialmente nuvoloso':'fa-cloud-sun',
-    'coperto':'fa-cloud',
-    'nebbia':'fa-smog',
-    'pioggia':'fa-cloud-rain',
-
-    /* FIX:
-       fa-cloud-drizzle NON ESISTE in FontAwesome 6
-    */
-    'pioviggine':'fa-cloud-rain',
-
-    'temporale':'fa-bolt',
-    'neve':'fa-snowflake',
-    'grandine':'fa-cloud-meatball',
-    'variabile':'fa-cloud-sun'
+    'sereno':'fa-sun','prevalentemente sereno':'fa-cloud-sun',
+    'parzialmente nuvoloso':'fa-cloud-sun','coperto':'fa-cloud',
+    'nebbia':'fa-smog','pioggia':'fa-cloud-rain','pioviggine':'fa-cloud-drizzle',
+    'temporale':'fa-bolt','neve':'fa-snowflake','grandine':'fa-cloud-meatball','variabile':'fa-cloud-sun'
 };
-
 function syncWeatherIcon() {
-
     const label = document.getElementById('meteo-label').value;
-
-    document.getElementById('meteo-icona').innerHTML =
-        `<i class="fas ${WEATHER_ICON[label] || 'fa-cloud-sun'}"></i>`;
+    document.getElementById('meteo-icona').innerHTML = '<i class="fas ' + (WEATHER_ICON[label] || 'fa-cloud-sun') + '"></i>';
 }
-
 function weatherCodeToLabel(code) {
-
-    const m = {
-        0:'sereno',
-        1:'prevalentemente sereno',
-        2:'parzialmente nuvoloso',
-        3:'coperto',
-        45:'nebbia',
-        48:'nebbia',
-        51:'pioviggine',
-        53:'pioviggine',
-        61:'pioggia',
-        63:'pioggia',
-        71:'neve',
-        75:'neve',
-        86:'grandine',
-        95:'temporale'
-    };
-
+    const m = {0:'sereno',1:'prevalentemente sereno',2:'parzialmente nuvoloso',3:'coperto',45:'nebbia',48:'nebbia',51:'pioviggine',53:'pioviggine',61:'pioggia',63:'pioggia',71:'neve',75:'neve',86:'grandine',95:'temporale'};
     return m[code] || 'variabile';
 }
-
 async function autoWeather(emp) {
-
-    const current = document.getElementById('meteo-label').value;
-
-    /* FIX:
-       se già presente da DB NON sovrascrivere
-    */
-    if (current && current !== 'sereno') {
-        syncWeatherIcon();
-        return;
-    }
-
-    const CITY_COORDS = {
-        'Cremona':       { lat:45.1333, lon:10.0227 },
-        'Casalmaggiore': { lat:44.9916, lon:10.4217 },
-        'Reggio Emilia': { lat:44.6979, lon:10.6297 },
-        'Viadana':       { lat:44.9269, lon:10.5227 }
-    };
-
     const c = CITY_COORDS[emp];
-
-    if (!c) return;
-
+    const el = document.getElementById('meteo-label');
+    if (!c) { el.value = 'variabile'; syncWeatherIcon(); return; }
     try {
-
-        const r = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lon}&current=weather_code&timezone=Europe%2FRome`
-        );
-
+        const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + c.lat + '&longitude=' + c.lon + '&current=weather_code&timezone=Europe%2FRome');
         const j = await r.json();
-
-        document.getElementById('meteo-label').value =
-            weatherCodeToLabel(j.current.weather_code);
-
-        syncWeatherIcon();
-
-    } catch(e) {
-
-        console.error(e);
-
+        el.value = weatherCodeToLabel(j.current && j.current.weather_code);
+    } catch (e) {
+        el.value = 'variabile';
     }
+    syncWeatherIcon();
 }
 
-/* =========================================================
-   BUILD PAGAMENTI
-========================================================= */
+function fillDays() {
+    const y = +document.getElementById('anno').value, m = +document.getElementById('mese').value;
+    const g = document.getElementById('giorno'); const prev = +g.value || 1; g.innerHTML = '';
+    const days = new Date(y, m, 0).getDate();
+    for (let d = 1; d <= days; d++) {
+        const o = document.createElement('option');
+        o.value = d; o.textContent = d; g.appendChild(o);
+    }
+    g.value = Math.min(prev, days);
+}
+function initSelectors() {
+    const a = document.getElementById('anno'), m = document.getElementById('mese'), now = new Date();
+    for (let y = now.getFullYear(); y >= 2024; y--) {
+        const o = document.createElement('option'); o.value = y; o.textContent = y; a.appendChild(o);
+    }
+    MESI.forEach((mm, idx) => { const o = document.createElement('option'); o.value = idx + 1; o.textContent = mm; m.appendChild(o); });
+    a.value = now.getFullYear(); m.value = now.getMonth() + 1; fillDays();
+    document.getElementById('giorno').value = now.getDate();
+    a.addEventListener('change', fillDays);
+    m.addEventListener('change', fillDays);
+    document.getElementById('emporio').addEventListener('change', syncOperators);
+    document.getElementById('meteo-label').addEventListener('change', syncWeatherIcon);
+}
+
+function syncOperators() {
+    selectedEmporio = document.getElementById('emporio').value;
+    ['chiuso-da-mat', 'chiuso-da-pom'].forEach(function(id) {
+        const sel = document.getElementById(id);
+        if (!sel) return;
+        sel.innerHTML = '<option value="">Seleziona operatore...</option>';
+        (OPERATORI_DATA[selectedEmporio] || []).sort().forEach(function(op) {
+            const o = document.createElement('option'); o.value = op; o.textContent = op; sel.appendChild(o);
+        });
+    });
+}
+
+function buildCoins(turno) {
+    const wrap = document.getElementById(turno + '-coin-list'); wrap.innerHTML = '';
+    TAGLI.forEach(function(t) {
+        const id = turno + '_coin_' + String(t).replace('.', '_');
+        const row = document.createElement('div');
+        row.className = 'grid grid-cols-[74px_1fr_84px] gap-2 items-center';
+        row.innerHTML = '<div class="small-label text-right">' + euro(t) + '</div>'
+            + '<input id="' + id + '" type="number" min="0" value="" oninput="calcAll()" class="coin-input h-10 px-3 text-sm" placeholder="0">'
+            + '<div class="row-total text-slate-500 text-sm" id="' + id + '_tot">' + euro(0) + '</div>';
+        wrap.appendChild(row);
+    });
+}
 
 function buildPayments(turno) {
-
-    const wrap = document.getElementById(turno+'-payments');
-
-    wrap.innerHTML = '';
-
-    PAGAMENTI.forEach(function(p){
-
+    const wrap = document.getElementById(turno + '-payments'); wrap.innerHTML = '';
+    PAGAMENTI.forEach(function(p) {
         const rowWrap = document.createElement('div');
-
-        rowWrap.className =
-            (p.spese ? 'spese-row px-2 py-1 rounded-xl ' : '');
-
+        rowWrap.className = (p.spese ? 'spese-row px-2 py-1 rounded-xl ' : '') + ' ';
         const row = document.createElement('div');
-
-        row.className =
-            'grid grid-cols-[1fr_130px_36px] gap-2 items-center py-1';
-
-        /* FIX GROSSO:
-           onclick aveva apici rotti
-        */
-
-        row.innerHTML = `
-            <div class="pay-label truncate">${p.label}</div>
-
-            <input
-                id="${turno}_pay_${p.id}"
-                type="text"
-                value=""
-                oninput="calcAll()"
-                onblur="formatMoney(this)"
-                onfocus="clearMoney(this)"
-                class="money-input text-right h-11 px-3 text-sm"
-                placeholder="€ 0,00"
-            >
-
-            <button
-                type="button"
-                id="${turno}_notebtn_${p.id}"
-                onclick="toggleNote('${turno}','${p.id}','${p.label}')"
-                class="h-9 w-9 rounded-xl border border-slate-200 bg-white text-slate-400 hover:text-[#b75252] hover:border-[#b75252] transition-all flex items-center justify-center"
-            >
-                <i class="fas fa-sticky-note text-sm"></i>
-            </button>
-        `;
-
+        row.className = 'grid grid-cols-[1fr_130px_36px] gap-2 items-center py-1';
+        row.innerHTML = '<div class="pay-label truncate">' + p.label + '</div>'
+            + '<input id="' + turno + '_pay_' + p.id + '" type="text" value="" oninput="calcAll()" onblur="formatMoney(this)" onfocus="clearMoney(this)" class="money-input text-right h-11 px-3 text-sm" placeholder="€ 0,00">'
+            + '<button type="button" id="' + turno + '_notebtn_' + p.id + '" onclick="toggleNote(\'' + turno + '\', \'' + p.id + '\', \'' + p.label.replace(/'/g, "\\'") + '\')" class="h-9 w-9 rounded-xl border border-slate-200 bg-white text-slate-400 hover:text-[#b75252] hover:border-[#b75252] transition-all flex items-center justify-center" title="Note"><i class="fas fa-sticky-note text-sm"></i></button>';
         rowWrap.appendChild(row);
-
         wrap.appendChild(rowWrap);
     });
 }
 
-/* =========================================================
-   CALCOLI
-========================================================= */
-
-function calcPayments(turno,lordi) {
-
-    let total = lordi - fondoCassa;
-
-    PAGAMENTI.forEach(function(p){
-
-        const raw = parseEuro(
-            document.getElementById(`${turno}_pay_${p.id}`)?.value
-        );
-
-        if (p.sign < 0) {
-            total -= Math.abs(raw);
-        } else {
-            total += raw;
-        }
+function toggleNote(turno, id, label) {
+    const nid = noteId(turno, id);
+    let el = document.getElementById(nid);
+    const btn = document.getElementById(turno + '_notebtn_' + id);
+    if (el) {
+        el.classList.toggle('hidden');
+        if (btn) btn.classList.toggle('note-btn-active', !el.classList.contains('hidden') && !!el.value.trim());
+        if (!el.classList.contains('hidden')) el.focus();
+        return;
+    }
+    const pay = document.getElementById(turno + '_pay_' + id);
+    if (!pay) return;
+    const rowWrap = pay.closest('.grid').parentElement;
+    el = document.createElement('input');
+    el.id = nid;
+    el.className = 'text-input mt-1 w-full text-sm note-field';
+    el.placeholder = 'Nota ' + label.toLowerCase() + '...';
+    el.addEventListener('input', function() {
+        if (btn) btn.classList.toggle('note-btn-active', !!el.value.trim());
     });
+    rowWrap.appendChild(el);
+    el.focus();
+    if (btn) btn.classList.add('note-btn-active');
+}
 
+async function loadPreviousFondo(emp, y, m, d) {
+    const dt = new Date(y, m - 1, d); dt.setDate(dt.getDate() - 1);
+    for (let i = 0; i < 60; i++) {
+        const key = emp + '_' + dt.getFullYear() + '_' + (dt.getMonth() + 1) + '_' + dt.getDate();
+        const { data } = await db.from('cassa_giorni').select('fondo_residuo').eq('chiave', key).maybeSingle();
+        if (data) return Number(data.fondo_residuo || 0);
+        dt.setDate(dt.getDate() - 1);
+    }
+    return 0;
+}
+
+async function openDay() {
+    const emp = document.getElementById('emporio').value;
+    const y = +document.getElementById('anno').value, m = +document.getElementById('mese').value, d = +document.getElementById('giorno').value;
+    if (!emp) return alert('Seleziona un emporio');
+    selectedEmporio = emp;
+    currentKey = emp + '_' + y + '_' + m + '_' + d;
+    fondoCassa = await loadPreviousFondo(emp, y, m, d);
+    buildCoins('mat'); buildCoins('pom');
+    buildPayments('mat'); buildPayments('pom');
+    syncOperators();
+    const { data } = await db.from('cassa_giorni').select('*').eq('chiave', currentKey).maybeSingle();
+    if (data) fillForm(data);
+    const weekday = ['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'][new Date(y, m - 1, d).getDay()];
+    document.getElementById('day-label').textContent = weekday + ' ' + d + ' ' + MESI[m - 1] + ' ' + y;
+    document.getElementById('emporio-label').textContent = emp;
+    document.getElementById('fondo-cassa-inline-mat').textContent = euro(fondoCassa);
+    document.getElementById('fondo-cassa-inline-pom').textContent = euro(fondoCassa);
+    document.getElementById('screen-select').classList.add('hidden');
+    document.getElementById('screen-day').classList.remove('hidden');
+    await autoWeather(emp);
+    calcAll();
+}
+
+function calcPayments(turno, lordi) {
+    let total = lordi - fondoCassa;
+    PAGAMENTI.forEach(function(p) {
+        const raw = parseEuro(document.getElementById(turno + '_pay_' + p.id)?.value);
+        total += (p.sign < 0 ? -Math.abs(raw) : raw);
+    });
     return total;
 }
 
 function calcAll() {
-
-    ['mat','pom'].forEach(function(turno){
-
+    ['mat', 'pom'].forEach(function(turno) {
         let lordi = 0;
-
-        TAGLI.forEach(function(t){
-
-            const id = `${turno}_coin_${String(t).replace('.','_')}`;
-
-            const qty = Number(
-                document.getElementById(id)?.value || 0
-            );
-
-            const tot = qty * t;
-
-            lordi += tot;
-
-            document.getElementById(id+'_tot').textContent = euro(tot);
+        TAGLI.forEach(function(t) {
+            const id = turno + '_coin_' + String(t).replace('.', '_');
+            const qty = Number(document.getElementById(id)?.value || 0);
+            const tot = qty * t; lordi += tot;
+            const el = document.getElementById(id + '_tot');
+            if (el) el.textContent = euro(tot);
         });
-
-        const incassato = calcPayments(turno,lordi);
-
-        document.getElementById(turno+'-lordi').textContent =
-            euro(lordi);
-
-        document.getElementById(turno+'-incassato').textContent =
-            euro(incassato);
-
-        const cor = parseEuro(
-            document.getElementById(turno+'-corrispettivi').value
-        );
-
+        const incassato = calcPayments(turno, lordi);
+        document.getElementById(turno + '-lordi').textContent = euro(lordi);
+        document.getElementById(turno + '-incassato').textContent = euro(incassato);
+        const cor = parseEuro(document.getElementById(turno + '-corrispettivi').value);
         const diff = incassato - cor;
-
-        const diffEl = document.getElementById(turno+'-diff');
-
+        const diffEl = document.getElementById(turno + '-diff');
         diffEl.textContent = euro(diff);
-
-        diffEl.className =
-            'row-total ' +
-            (Math.abs(diff) < 0.01
-                ? 'text-emerald-600'
-                : 'text-red-600');
+        diffEl.className = 'row-total ' + (diff >= 0 ? 'text-emerald-600' : 'text-red-600');
     });
-
-    const cv = parseEuro(
-        document.getElementById('cassaforte').value
-    );
-
-    const pl = parseEuro(
-        document.getElementById('pom-lordi').textContent
-    );
-
-    /* FIX:
-       evita negativo
-    */
-
-    const residuo = Math.max(0, pl - cv);
-
-    document.getElementById('fondo-residuo').textContent =
-        euro(residuo);
-
+    const cv = parseEuro(document.getElementById('cassaforte').value);
+    const pl = parseEuro(document.getElementById('pom-lordi').textContent);
+    document.getElementById('fondo-residuo').textContent = euro(Math.max(0, pl - cv));
     calcIva();
 }
 
-/* =========================================================
-   IVA
-========================================================= */
-
+function toggleIvaAltro() {
+    const v = document.getElementById('iva-esente-altro').value;
+    document.getElementById('iva-esente-altro-text').classList.toggle('hidden', v !== 'altro');
+}
 function calcIva() {
-
     const v22 = parseEuro(document.getElementById('iva-22').value);
     const v10 = parseEuro(document.getElementById('iva-10').value);
-    const v4  = parseEuro(document.getElementById('iva-4').value);
+    const v4 = parseEuro(document.getElementById('iva-4').value);
     const ves = parseEuro(document.getElementById('iva-esente').value);
-
-    const somma = v22 + v10 + v4 + ves;
-    const net   = v22 + v10 + v4;
-
+    const somma = v22 + v10 + v4 + ves, net = v22 + v10 + v4;
     document.getElementById('iva-somma').value = euro(somma);
     document.getElementById('iva-net-es').value = euro(net);
-
-    const pomCorr = parseEuro(
-        document.getElementById('pom-corrispettivi').value
-    );
-
-    /* FIX:
-       tolleranza migliore
-    */
-
-    const valid = Math.abs(somma - pomCorr) <= 0.009;
-
+    const pomCorr = parseEuro(document.getElementById('pom-corrispettivi').value);
+    const valid = Math.abs(somma - pomCorr) < 0.01;
     const ver = document.getElementById('iva-ver-cell');
-
     ver.textContent = valid ? '✓ OK' : '✗ ERR';
-
-    ver.className =
-        'text-center font-black text-lg ' +
-        (valid ? 'text-emerald-600' : 'text-red-600');
-
-    document.getElementById('iva-error').style.display =
-        valid ? 'none' : 'block';
+    ver.className = 'text-center font-black text-lg ' + (valid ? 'text-emerald-600' : 'text-red-600');
+    document.getElementById('iva-error').style.display = valid ? 'none' : 'block';
 }
-
-/* =========================================================
-   FILL FORM
-========================================================= */
 
 function fillForm(data) {
-
-    TAGLI.forEach(function(t){
-
-        const k = String(t).replace('.','_');
-
-        const em = document.getElementById('mat_coin_'+k);
-        const ep = document.getElementById('pom_coin_'+k);
-
-        if (em) em.value = data['mat_coin_'+k] ?? '';
-        if (ep) ep.value = data['pom_coin_'+k] ?? '';
+    TAGLI.forEach(function(t) {
+        const k = String(t).replace('.', '_');
+        const em = document.getElementById('mat_coin_' + k), ep = document.getElementById('pom_coin_' + k);
+        if (em) em.value = data['mat_coin_' + k] != null ? data['mat_coin_' + k] : '';
+        if (ep) ep.value = data['pom_coin_' + k] != null ? data['pom_coin_' + k] : '';
     });
-
-    PAGAMENTI.forEach(function(p){
-
-        const em = document.getElementById('mat_pay_'+p.id);
-        const ep = document.getElementById('pom_pay_'+p.id);
-
-        if (em) em.value = euro(data['mat_pay_'+p.id] || 0);
-        if (ep) ep.value = euro(data['pom_pay_'+p.id] || 0);
-
-        /* FIX:
-           crea nota se esiste
-        */
-
-        const matNote = data['mat_note_'+p.id];
-        const pomNote = data['pom_note_'+p.id];
-
-        if (matNote) {
-            toggleNote('mat',p.id,p.label);
-            document.getElementById(noteId('mat',p.id)).value = matNote;
-        }
-
-        if (pomNote) {
-            toggleNote('pom',p.id,p.label);
-            document.getElementById(noteId('pom',p.id)).value = pomNote;
-        }
+    PAGAMENTI.forEach(function(p) {
+        const em = document.getElementById('mat_pay_' + p.id), ep = document.getElementById('pom_pay_' + p.id);
+        if (em) em.value = data['mat_pay_' + p.id] != null ? euro(data['mat_pay_' + p.id]) : '';
+        if (ep) ep.value = data['pom_pay_' + p.id] != null ? euro(data['pom_pay_' + p.id]) : '';
+        const en = document.getElementById(noteId('mat', p.id)), epn = document.getElementById(noteId('pom', p.id));
+        if (en) en.value = data['mat_note_' + p.id] || '';
+        if (epn) epn.value = data['pom_note_' + p.id] || '';
     });
-
-    document.getElementById('mat-corrispettivi').value =
-        euro(data.mat_corrispettivi || 0);
-
-    document.getElementById('pom-corrispettivi').value =
-        euro(data.pom_corrispettivi || 0);
-
-    document.getElementById('cassaforte').value =
-        euro(data.cassaforte || 0);
-
-    document.getElementById('nota-mattino').value =
-        data.note_mattino || '';
-
-    document.getElementById('nota-pomeriggio').value =
-        data.note_pomeriggio || '';
-
-    document.getElementById('meteo-label').value =
-        data.meteo || 'variabile';
-
-    document.getElementById('arrivo-merci').checked =
-        !!data.arrivo_merci;
-
-    syncWeatherIcon();
-
-    calcAll();
+    if (data.mat_corrispettivi != null) document.getElementById('mat-corrispettivi').value = euro(data.mat_corrispettivi);
+    if (data.pom_corrispettivi != null) document.getElementById('pom-corrispettivi').value = euro(data.pom_corrispettivi);
+    if (data.cassaforte != null) document.getElementById('cassaforte').value = euro(data.cassaforte);
+    if (data.chiuso_da_mat) document.getElementById('chiuso-da-mat').value = data.chiuso_da_mat;
+    if (data.chiuso_da_pom) document.getElementById('chiuso-da-pom').value = data.chiuso_da_pom;
+    if (data.note_mattino) document.getElementById('nota-mattino').value = data.note_mattino;
+    if (data.note_pomeriggio) document.getElementById('nota-pomeriggio').value = data.note_pomeriggio;
+    if (data.meteo) document.getElementById('meteo-label').value = data.meteo;
+    if (data.arrivo_merci) document.getElementById('arrivo-merci').checked = true;
+    if (data.iva_22 != null) document.getElementById('iva-22').value = euro(data.iva_22);
+    if (data.iva_10 != null) document.getElementById('iva-10').value = euro(data.iva_10);
+    if (data.iva_4 != null) document.getElementById('iva-4').value = euro(data.iva_4);
+    if (data.iva_esente != null) document.getElementById('iva-esente').value = euro(data.iva_esente);
+    if (data.iva_esente_altro) document.getElementById('iva-esente-altro').value = data.iva_esente_altro;
+    if (data.iva_esente_altro_text) document.getElementById('iva-esente-altro-text').value = data.iva_esente_altro_text;
+    if (data.iva_net_es != null) document.getElementById('iva-net-es').value = euro(data.iva_net_es);
+    if (data.iva_somma != null) document.getElementById('iva-somma').value = euro(data.iva_somma);
+    toggleIvaAltro(); syncWeatherIcon(); calcIva();
 }
+
+async function saveDay() {
+    calcIva();
+    const pomCorr = parseEuro(document.getElementById('pom-corrispettivi').value);
+    const ivaSomma = parseEuro(document.getElementById('iva-somma').value);
+    if (Math.abs(ivaSomma - pomCorr) >= 0.01) return alert('I dati IVA non tornano. Correggi prima di salvare.');
+    const payload = {
+        chiave: currentKey,
+        fondo_cassa: fondoCassa,
+        emporio: selectedEmporio,
+        chiuso_da_mat: document.getElementById('chiuso-da-mat').value || null,
+        chiuso_da_pom: document.getElementById('chiuso-da-pom').value || null,
+        note_mattino: document.getElementById('nota-mattino').value || null,
+        note_pomeriggio: document.getElementById('nota-pomeriggio').value || null,
+        meteo: document.getElementById('meteo-label').value || null,
+        arrivo_merci: document.getElementById('arrivo-merci').checked,
+        iva_22: parseEuro(document.getElementById('iva-22').value),
+        iva_10: parseEuro(document.getElementById('iva-10').value),
+        iva_4: parseEuro(document.getElementById('iva-4').value),
+        iva_esente: parseEuro(document.getElementById('iva-esente').value),
+        iva_esente_altro: document.getElementById('iva-esente-altro').value || null,
+        iva_esente_altro_text: document.getElementById('iva-esente-altro-text').value || null,
+        iva_net_es: parseEuro(document.getElementById('iva-net-es').value),
+        iva_somma: parseEuro(document.getElementById('iva-somma').value),
+        mat_corrispettivi: parseEuro(document.getElementById('mat-corrispettivi').value),
+        pom_corrispettivi: parseEuro(document.getElementById('pom-corrispettivi').value),
+        cassaforte: parseEuro(document.getElementById('cassaforte').value),
+        fondo_residuo: parseEuro(document.getElementById('fondo-residuo').textContent)
+    };
+    TAGLI.forEach(function(t) {
+        const k = String(t).replace('.', '_');
+        payload['mat_coin_' + k] = Number(document.getElementById('mat_coin_' + k)?.value || 0);
+        payload['pom_coin_' + k] = Number(document.getElementById('pom_coin_' + k)?.value || 0);
+    });
+    PAGAMENTI.forEach(function(p) {
+        payload['mat_pay_' + p.id] = parseEuro(document.getElementById('mat_pay_' + p.id)?.value);
+        payload['pom_pay_' + p.id] = parseEuro(document.getElementById('pom_pay_' + p.id)?.value);
+        payload['mat_note_' + p.id] = document.getElementById(noteId('mat', p.id))?.value || null;
+        payload['pom_note_' + p.id] = document.getElementById(noteId('pom', p.id))?.value || null;
+    });
+    const { error } = await db.from('cassa_giorni').upsert(payload, { onConflict: 'chiave' });
+    if (error) return alert('Errore salvataggio: ' + error.message);
+    alert('Foglio di giornata salvato');
+}
+
+function goBack() {
+    document.getElementById('screen-day').classList.add('hidden');
+    document.getElementById('screen-select').classList.remove('hidden');
+}
+
+window.addEventListener('load', initSelectors);
 </script>
+<script src="../../scripts/nav-script.js"></script>
+</body>
+</html>
