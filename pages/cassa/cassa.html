@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="../../assets/style/nav-style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M361 - Controllo Cassa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -12,6 +13,7 @@
         body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #1e293b; }
         .text-m361-red { color: #b75252; }
         .bg-m361-red { background: #b75252; }
+        .border-m361-red { border-color: #b75252; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
         .card { background: white; border: 1px solid #e5e7eb; border-radius: 24px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
@@ -19,10 +21,10 @@
         .turno-badge { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; text-transform: uppercase; }
         .turno-mat { background: #fff1f1; color: #b75252; }
         .turno-pom { background: #f4efe8; color: #7a4f2b; }
-        .coin-input, .money-input, .select-input, .note-input {
+        .coin-input, .money-input, .select-input, .note-input, .text-input {
             width: 100%; border: 1px solid #e2e8f0; border-radius: 14px; padding: 13px 15px; font-size: 15px; background: #fff;
         }
-        .coin-input:focus, .money-input:focus, .select-input:focus, .note-input:focus {
+        .coin-input:focus, .money-input:focus, .select-input:focus, .note-input:focus, .text-input:focus {
             outline: 2px solid #b75252; border-color: transparent;
         }
         .row-total { font-weight: 700; text-align: right; min-width: 100px; font-size: 15px; }
@@ -34,6 +36,8 @@
         .input-mini { width: 100%; border: none; background: transparent; text-align: right; font-size: 13px; padding: 2px 0; }
         .input-mini:focus { outline: none; }
         .arrivo-switch { width: 20px; height: 20px; accent-color: #b75252; }
+        .status-pill { display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border-radius:999px; background:#f8fafc; border:1px solid #e2e8f0; font-size:12px; font-weight:700; color:#475569; }
+        .error-box { border: 1px solid #ef4444; background:#fef2f2; color:#b91c1c; border-radius: 14px; padding: 10px 12px; font-size: 13px; font-weight: 700; display:none; }
     </style>
 </head>
 <body class="pb-28">
@@ -43,19 +47,14 @@
         <img src="../../assets/images/logom361_rosso.jpg" alt="Logo" class="h-8" onerror="this.style.display='none'">
         <h1 id="header-title" class="font-bold text-lg border-l pl-4 text-slate-700">Controllo Cassa</h1>
     </a>
-
     <button id="back-btn" onclick="goBack()" class="hidden text-sm font-bold text-slate-500 hover:text-m361-red transition-colors flex items-center gap-2">
         <i class="fas fa-arrow-left"></i> Indietro
     </button>
 </header>
 
 <main class="max-w-7xl mx-auto p-4 md:p-6">
-
-    <!-- SCHERMATA SELEZIONE -->
     <div id="screen-select" class="card p-6 md:p-10">
-        <h2 class="section-title mb-6 flex items-center gap-2">
-            <span class="w-1 h-4 bg-m361-red rounded-full"></span> Seleziona giorno
-        </h2>
+        <h2 class="section-title mb-6 flex items-center gap-2"><span class="w-1 h-4 bg-m361-red rounded-full"></span> Seleziona giorno</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
                 <label class="small-label block mb-2">Emporio</label>
@@ -87,39 +86,35 @@
         </div>
     </div>
 
-    <!-- SCHERMATA GIORNO -->
     <div id="screen-day" class="hidden space-y-6">
-
-        <!-- INTESTAZIONE GIORNO -->
         <div class="card p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
                 <p id="day-label" class="text-2xl font-black text-slate-800"></p>
                 <p id="emporio-label" class="text-xs font-bold text-m361-red uppercase tracking-widest mt-1"></p>
             </div>
-            <div class="flex flex-wrap gap-3">
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 min-w-[180px]">
-    <p class="text-[9px] font-bold text-slate-400 uppercase text-center">Meteo</p>
-    <div class="mt-2 flex items-center justify-center gap-2">
-        <span class="text-slate-500 text-sm"><i class="fas fa-cloud-sun"></i></span>
-        <select id="meteo-label" class="bg-transparent border-none text-sm font-bold text-slate-700 p-0 w-auto">
-            <option value="sereno">sereno</option>
-            <option value="prevalentemente sereno">prevalentemente sereno</option>
-            <option value="parzialmente nuvoloso">parzialmente nuvoloso</option>
-            <option value="coperto">coperto</option>
-            <option value="nebbia">nebbia</option>
-            <option value="pioggia">pioggia</option>
-            <option value="pioviggine">pioviggine</option>
-            <option value="rovesci">rovesci</option>
-            <option value="temporale">temporale</option>
-            <option value="neve">neve</option>
-            <option value="variabile">variabile</option>
-        </select>
-    </div>
-</div>
+            <div class="flex items-center gap-3 flex-wrap">
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 min-w-[190px]">
+                    <p class="text-[9px] font-bold text-slate-400 uppercase text-center">Meteo</p>
+                    <div class="mt-2 flex items-center justify-center gap-2">
+                        <span class="text-slate-500 text-sm"><i class="fas fa-cloud-sun"></i></span>
+                        <select id="meteo-label" class="bg-transparent border-none text-sm font-bold text-slate-700 p-0 w-auto">
+                            <option value="sereno">sereno</option>
+                            <option value="prevalentemente sereno">prevalentemente sereno</option>
+                            <option value="parzialmente nuvoloso">parzialmente nuvoloso</option>
+                            <option value="coperto">coperto</option>
+                            <option value="nebbia">nebbia</option>
+                            <option value="pioggia">pioggia</option>
+                            <option value="pioviggine">pioviggine</option>
+                            <option value="rovesci">rovesci</option>
+                            <option value="temporale">temporale</option>
+                            <option value="neve">neve</option>
+                            <option value="variabile">variabile</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-center min-w-[160px]">
-                    <p class="text-[9px] font-bold text-slate-400 uppercase">Arrivo merci</p>
-                    <label class="inline-flex items-center gap-2 mt-2">
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 min-w-[180px]">
+                    <p class="text-[9px] font-bold text-slate-400 uppercase text-center">Arrivo merci</p>
+                    <label class="inline-flex items-center justify-center gap-2 mt-2 w-full">
                         <input id="arrivo-merci" type="checkbox" class="arrivo-switch">
                         <span class="text-sm font-bold text-slate-700">Sì</span>
                     </label>
@@ -127,10 +122,7 @@
             </div>
         </div>
 
-        <!-- TURNI -->
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-
-            <!-- MATTINO -->
             <section class="card p-6">
                 <div class="mb-5">
                     <span class="turno-badge turno-mat"><i class="fas fa-sun"></i> Mattino</span>
@@ -161,7 +153,6 @@
                 </div>
             </section>
 
-            <!-- POMERIGGIO -->
             <section class="card p-6">
                 <div class="mb-5">
                     <span class="turno-badge turno-pom"><i class="fas fa-moon"></i> Pomeriggio</span>
@@ -203,11 +194,10 @@
             </section>
         </div>
 
-        <!-- OPERATORE + NOTE -->
         <section class="card p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="small-label block mb-2">Operatore</label>
+                    <label class="small-label block mb-2">Operatore di chiusura</label>
                     <select id="chiuso-da" class="select-input"></select>
                 </div>
                 <div>
@@ -227,44 +217,46 @@
             </div>
         </section>
 
-        <!-- IVA GIORNALIERA -->
         <section class="card p-6">
-            <h2 class="section-title mb-4 flex items-center gap-2">
-                <span class="w-1 h-4 bg-m361-red rounded-full"></span> Riepilogo IVA giornaliera
-            </h2>
+            <h2 class="section-title mb-4 flex items-center gap-2"><span class="w-1 h-4 bg-m361-red rounded-full"></span> Riepilogo IVA giornaliera</h2>
+            <div id="iva-error" class="error-box mb-4">I dati IVA non tornano: correggi 22%, 10%, 4% ed esente per poter chiudere.</div>
             <div class="overflow-x-auto">
                 <table class="w-full iva-table border-collapse">
                     <thead>
                         <tr>
                             <th class="text-left">Voce</th>
-                            <th>Totale</th>
                             <th>22%</th>
                             <th>10%</th>
                             <th>4%</th>
                             <th>Esente</th>
-                            <th>Net es</th>
+                            <th>Altro esente</th>
                             <th>Somma</th>
+                            <th>Net es</th>
                             <th>Ver</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td class="font-semibold text-slate-700">IVA del giorno</td>
-                            <td><input id="iva-totale" class="input-mini" value="€ 0,00"></td>
-                            <td><input id="iva-22" class="input-mini" value="€ 0,00"></td>
-                            <td><input id="iva-10" class="input-mini" value="€ 0,00"></td>
-                            <td><input id="iva-4" class="input-mini" value="€ 0,00"></td>
-                            <td><input id="iva-esente" class="input-mini" value="€ 0,00"></td>
-                            <td><input id="iva-net-es" class="input-mini" value="€ 0,00"></td>
-                            <td><input id="iva-somma" class="input-mini" value="€ 0,00"></td>
-                            <td class="text-center font-bold text-emerald-600">OK</td>
+                            <td><input id="iva-22" class="input-mini money-iva" value="€ 0,00"></td>
+                            <td><input id="iva-10" class="input-mini money-iva" value="€ 0,00"></td>
+                            <td><input id="iva-4" class="input-mini money-iva" value="€ 0,00"></td>
+                            <td><input id="iva-esente" class="input-mini money-iva" value="€ 0,00"></td>
+                            <td>
+                                <input id="iva-esente-altro" class="input-mini text-left" value="" placeholder="editoriali / gift card / altro">
+                            </td>
+                            <td><input id="iva-somma" class="input-mini" value="€ 0,00" readonly></td>
+                            <td><input id="iva-net-es" class="input-mini" value="€ 0,00" readonly></td>
+                            <td class="text-center font-bold" id="iva-ver-cell">—</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+            <div class="mt-3 text-sm text-slate-500">
+                Compila solo 22%, 10%, 4% ed esente. Somma e netto esente si aggiornano in automatico.
+            </div>
         </section>
 
-        <!-- SALVA -->
         <section class="card p-6">
             <div class="flex items-center justify-end">
                 <button onclick="saveDay()" class="bg-slate-800 text-white px-8 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest shadow-md hover:bg-slate-900 transition-all">
@@ -272,55 +264,50 @@
                 </button>
             </div>
         </section>
-
     </div>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
+const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const TAGLI = [50, 20, 10, 5, 2, 1, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01];
+const TAGLI = [50,20,10,5,2,1,0.5,0.2,0.1,0.05,0.02,0.01];
 const MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
 const PAGAMENTI = [
-    { id:'bancomat',         label:'Bancomat',          note:false, sign:1  },
-    { id:'carte',            label:'Carte',             note:false, sign:1  },
-    { id:'satispay',         label:'Satispay',          note:true,  sign:1  },
-    { id:'satispay_online',  label:'Satispay online',   note:true,  sign:1  },
-    { id:'carte_online',     label:'Carte online',      note:true,  sign:1  },
-    { id:'paypal',           label:'Paypal',            note:true,  sign:1  },
-    { id:'bonifico',         label:'Bonifico',          note:true,  sign:1  },
-    { id:'gift_card',        label:'Gift card',         note:true,  sign:1  },
-    { id:'gift_card_online', label:'Gift card online',  note:true,  sign:1  },
-    { id:'buoni',            label:'Buoni',             note:true,  sign:1  },
-    { id:'rimborsi_online',  label:'Rimborsi online',   note:true,  sign:-1 },
-    { id:'spese',            label:'Spese',             note:true,  sign:1  }
+    { id:'bancomat', label:'Bancomat', note:false, sign:1 },
+    { id:'carte', label:'Carte', note:false, sign:1 },
+    { id:'satispay', label:'Satispay', note:true, sign:1 },
+    { id:'satispay_online', label:'Satispay online', note:true, sign:1 },
+    { id:'carte_online', label:'Carte online', note:true, sign:1 },
+    { id:'paypal', label:'Paypal', note:true, sign:1 },
+    { id:'bonifico', label:'Bonifico', note:true, sign:1 },
+    { id:'gift_card', label:'Gift card', note:true, sign:1 },
+    { id:'gift_card_online', label:'Gift card online', note:true, sign:1 },
+    { id:'buoni', label:'Buoni', note:true, sign:1 },
+    { id:'rimborsi_online', label:'Rimborsi online', note:true, sign:-1 },
+    { id:'spese', label:'Spese', note:true, sign:1 }
 ];
 const OPERATORI_DATA = {
-    'Cremona':        ['Chiara Monteverdi','Emilio Mazzolari','Giulia Galelli'],
-    'Casalmaggiore':  ['Alessandra Rivetti','Barbara Araldi','Carla Maffei','Chiara Monteverdi','Edoardo Pavesi','Emilio Mazzolari','Erica Bossi','Francesco Lunardini','Giovanna Raineri','Giulia Frigeri','Giuseppe Lunardini','Ileana Galli','Maria Marcella Scaravonati','Matilde Chiarini','Michele Marchini','Roberta Vezzosi','Teyssir Mabrouk','Vittoria Lunardini'],
-    'Viadana':        ['Alessia Rovina','Ave Aroldi','Barbara Piotrowska','Carla Bellelli','Carla Chittolini','Chiara Monteverdi','Claudio Mortini','Donatella Falugi','Elena Ghelfi','Emilio Mazzolari','Franco Furlotti','Giuseppina Amadini','Manuela Scazza','Marta Sanfelici','Mariagrazia Bertolini','Mirella Panato','Roberta Alberini','Sara Germani','Tiziana Bortesi'],
-    'Reggio Emilia':  ['Alessia Bartolomei','Elsa Scarpa','Manuela Capanni','Marica Pioli']
+    'Cremona': ['Chiara Monteverdi','Emilio Mazzolari','Giulia Galelli'],
+    'Casalmaggiore': ['Alessandra Rivetti','Barbara Araldi','Carla Maffei','Chiara Monteverdi','Edoardo Pavesi','Emilio Mazzolari','Erica Bossi','Francesco Lunardini','Giovanna Raineri','Giulia Frigeri','Giuseppe Lunardini','Ileana Galli','Maria Marcella Scaravonati','Matilde Chiarini','Michele Marchini','Roberta Vezzosi','Teyssir Mabrouk','Vittoria Lunardini'],
+    'Viadana': ['Alessia Rovina','Ave Aroldi','Barbara Piotrowska','Carla Bellelli','Carla Chittolini','Chiara Monteverdi','Claudio Mortini','Donatella Falugi','Elena Ghelfi','Emilio Mazzolari','Franco Furlotti','Giuseppina Amadini','Manuela Scazza','Marta Sanfelici','Mariagrazia Bertolini','Mirella Panato','Roberta Alberini','Sara Germani','Tiziana Bortesi'],
+    'Reggio Emilia': ['Alessia Bartolomei','Elsa Scarpa','Manuela Capanni','Marica Pioli']
 };
 const CITY_COORDS = {
-    'Cremona':       { lat: 45.1333, lon: 10.0227 },
+    'Cremona': { lat: 45.1333, lon: 10.0227 },
     'Casalmaggiore': { lat: 44.9916, lon: 10.4217 },
     'Reggio Emilia': { lat: 44.6979, lon: 10.6297 },
-    'Viadana':       { lat: 44.9269, lon: 10.5227 }
+    'Viadana': { lat: 44.9269, lon: 10.5227 }
 };
 
 let currentKey = '';
 let fondoCassa = 0;
 let selectedEmporio = '';
 
-function euro(n) {
-    return '€ ' + Number(n || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-function parseEuro(v) {
-    return Number(String(v || '').replace('€', '').replace(/\./g, '').replace(',', '.').trim()) || 0;
-}
+function euro(n) { return '€ ' + Number(n || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function parseEuro(v) { return Number(String(v || '').replace('€', '').replace(/\./g, '').replace(',', '.').trim()) || 0; }
 function formatMoney(el) { el.value = euro(parseEuro(el.value)); }
 function clearMoney(el) { if (parseEuro(el.value) === 0) el.value = ''; }
 
@@ -459,9 +446,6 @@ async function openDay() {
     const weekday = ['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'][dateObj.getDay()];
     document.getElementById('day-label').textContent = `${weekday} ${d} ${MESI[m - 1]} ${y}`;
     document.getElementById('emporio-label').textContent = emp;
-    document.getElementById('fondo-cassa-label').textContent = euro(fondoCassa);
-    document.getElementById('fondo-cassa-inline-mat').textContent = euro(fondoCassa);
-    document.getElementById('fondo-cassa-inline-pom').textContent = euro(fondoCassa);
     document.getElementById('header-title').textContent = 'Controllo Cassa';
     document.getElementById('back-btn').classList.remove('hidden');
     document.getElementById('screen-select').classList.add('hidden');
@@ -493,6 +477,8 @@ function calcAll() {
     const cassaforteVal = parseEuro(document.getElementById('cassaforte').value);
     const pomLordi = parseEuro(document.getElementById('pom-lordi').textContent);
     document.getElementById('fondo-residuo').textContent = euro(Math.max(0, pomLordi - cassaforteVal));
+
+    calcIva();
 }
 
 function calcPayments(turno, lordi) {
@@ -502,6 +488,25 @@ function calcPayments(turno, lordi) {
         total += (p.sign < 0 ? -Math.abs(raw) : raw);
     });
     return total;
+}
+
+function calcIva() {
+    const v22 = parseEuro(document.getElementById('iva-22').value);
+    const v10 = parseEuro(document.getElementById('iva-10').value);
+    const v4 = parseEuro(document.getElementById('iva-4').value);
+    const ves = parseEuro(document.getElementById('iva-esente').value);
+    const somma = v22 + v10 + v4 + ves;
+    const net = v22 + v10 + v4;
+    document.getElementById('iva-somma').value = euro(somma);
+    document.getElementById('iva-net-es').value = euro(net);
+
+    const pomCorr = parseEuro(document.getElementById('pom-corrispettivi').value);
+    const valid = Math.abs(somma - pomCorr) < 0.01;
+    const ver = document.getElementById('iva-ver-cell');
+    const err = document.getElementById('iva-error');
+    ver.textContent = valid ? 'OK' : 'ERR';
+    ver.className = 'text-center font-bold ' + (valid ? 'text-emerald-600' : 'text-red-600');
+    err.style.display = valid ? 'none' : 'block';
 }
 
 function fillForm(data) {
@@ -529,18 +534,28 @@ function fillForm(data) {
     if (data.note_mattino) document.getElementById('nota-mattino').value = data.note_mattino;
     if (data.note_pomeriggio) document.getElementById('nota-pomeriggio').value = data.note_pomeriggio;
     if (data.note_giornata) document.getElementById('nota-giornata').value = data.note_giornata;
-if (data.meteo) document.getElementById('meteo-label').value = data.meteo;
+    if (data.meteo) document.getElementById('meteo-label').value = data.meteo;
     if (data.arrivo_merci) document.getElementById('arrivo-merci').checked = true;
-    if (data.iva_totale != null) document.getElementById('iva-totale').value = euro(data.iva_totale);
     if (data.iva_22 != null) document.getElementById('iva-22').value = euro(data.iva_22);
     if (data.iva_10 != null) document.getElementById('iva-10').value = euro(data.iva_10);
     if (data.iva_4 != null) document.getElementById('iva-4').value = euro(data.iva_4);
     if (data.iva_esente != null) document.getElementById('iva-esente').value = euro(data.iva_esente);
     if (data.iva_net_es != null) document.getElementById('iva-net-es').value = euro(data.iva_net_es);
     if (data.iva_somma != null) document.getElementById('iva-somma').value = euro(data.iva_somma);
+    if (data.iva_totale != null) document.getElementById('iva-totale').value = euro(data.iva_totale);
+    calcIva();
 }
 
 async function saveDay() {
+    calcIva();
+
+    const pomCorr = parseEuro(document.getElementById('pom-corrispettivi').value);
+    const ivaSomma = parseEuro(document.getElementById('iva-somma').value);
+    if (Math.abs(ivaSomma - pomCorr) >= 0.01) {
+        alert('I dati IVA non tornano. Correggi 22%, 10%, 4% ed esente prima di salvare.');
+        return;
+    }
+
     const payload = {
         chiave: currentKey,
         fondo_cassa: fondoCassa,
@@ -549,7 +564,7 @@ async function saveDay() {
         note_mattino: document.getElementById('nota-mattino').value || null,
         note_pomeriggio: document.getElementById('nota-pomeriggio').value || null,
         note_giornata: document.getElementById('nota-giornata').value || null,
-meteo: document.getElementById('meteo-label').value || null,
+        meteo: document.getElementById('meteo-label').value || null,
         arrivo_merci: document.getElementById('arrivo-merci').checked,
         iva_totale: parseEuro(document.getElementById('iva-totale').value),
         iva_22: parseEuro(document.getElementById('iva-22').value),
@@ -563,17 +578,20 @@ meteo: document.getElementById('meteo-label').value || null,
         cassaforte: parseEuro(document.getElementById('cassaforte').value),
         fondo_residuo: parseEuro(document.getElementById('fondo-residuo').textContent)
     };
+
     TAGLI.forEach(t => {
         const k = String(t).replace('.', '_');
         payload[`mat_coin_${k}`] = Number(document.getElementById(`mat_coin_${k}`)?.value || 0);
         payload[`pom_coin_${k}`] = Number(document.getElementById(`pom_coin_${k}`)?.value || 0);
     });
+
     PAGAMENTI.forEach(p => {
         payload[`mat_pay_${p.id}`] = parseEuro(document.getElementById(`mat_pay_${p.id}`)?.value);
         payload[`pom_pay_${p.id}`] = parseEuro(document.getElementById(`pom_pay_${p.id}`)?.value);
         payload[`mat_note_${p.id}`] = document.getElementById(`mat_note_${p.id}`)?.value || null;
         payload[`pom_note_${p.id}`] = document.getElementById(`pom_note_${p.id}`)?.value || null;
     });
+
     const { error } = await db.from('cassa_giorni').upsert(payload, { onConflict: 'chiave' });
     if (error) return alert('Errore salvataggio: ' + error.message);
     alert('Foglio di giornata salvato');
