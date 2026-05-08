@@ -45,7 +45,22 @@
   padding: 0;
   justify-content: center;
 }
+/* Rimuovi o ignora il vecchio .nav-icon se c'è */
 
+.bottom-nav .nav-item svg {
+  margin-bottom: 3px;
+  color: #aaa;
+  transition: color 0.2s;
+}
+
+.bottom-nav .nav-item.active svg,
+.bottom-nav .nav-item:hover svg {
+  color: #b03a2e;
+}
+
+.bottom-nav .nav-new svg {
+  color: #fff !important;
+}
 /* Lascia spazio in fondo al contenuto per non coprirlo con la navbar */
 body {
   padding-bottom: 70px;
