@@ -32,10 +32,10 @@
     <header class="bg-white border-b p-4 px-8 flex justify-between items-center sticky top-0 z-50">
         <div class="flex items-center gap-4">
             <img src="../../assets/images/logom361_rosso.jpg" alt="Logo" class="h-10">
-                           <!-- ✅ CORRETTO --> <h1 class="font-bold text-xl border-l pl-4 ml-2 text-slate-700">Ordini in corso</h1>
+            <h1 class="font-bold text-xl border-l pl-4 ml-2 text-slate-700">Ordini in corso</h1>
         </div>
         <div class="flex gap-4">
-            <a href="index.html" class="text-slate-500 px-4 py-2.5 text-xs font-bold uppercase hover:text-slate-800 transition-all flex items-center">
+            <a href="../../index.html" class="text-slate-500 px-4 py-2.5 text-xs font-bold uppercase hover:text-slate-800 transition-all flex items-center">
                 <i class="fas fa-home mr-2"></i> Dashboard
             </a>
             <a href="ordini_nuovi.html" class="bg-[#b75252] text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase shadow-md hover:opacity-90 transition-all">
@@ -95,10 +95,9 @@
                 const cardId = `card-${ord.id}`;
                 const nomeCliente = `${ord.cliente_nome || ''} ${ord.cliente_cognome || ''}`.trim().toUpperCase();
                 
-                // Gestione emporio + canale
-const cittaLabel = ord.citta ? ord.citta.toUpperCase() : "EMPORIO NON SPECIFICATO";
-const canaleLabel = (ord.canale && ord.canale.trim() !== "") ? ` - ${ord.canale}` : "";
-const emporio = cittaLabel + canaleLabel;
+                const cittaLabel = ord.citta ? ord.citta.toUpperCase() : "EMPORIO NON SPECIFICATO";
+                const canaleLabel = (ord.canale && ord.canale.trim() !== "") ? ` - ${ord.canale}` : "";
+                const emporio = cittaLabel + canaleLabel;
                 
                 const isPronta = ord.merce_pronta === true;
                 const isAvvisato = ord.cliente_avvisato === true;
@@ -165,7 +164,6 @@ const emporio = cittaLabel + canaleLabel;
         async function aggiornaStato(id, campo, valore) {
             await _supabase.from('ordini_incorso').update({ [campo]: valore }).eq('id', id);
             const activeBtn = document.querySelector('.active-filter');
-            // Ricarica con il filtro corrente
             caricaOrdini(activeBtn.innerText.toLowerCase().includes('tutti') ? 'tutti' : activeBtn.innerText.toLowerCase().includes('ordinare') ? 'da_ordinare' : activeBtn.innerText.toLowerCase().includes('pronta') ? 'merce_pronta' : activeBtn.innerText.toLowerCase().includes('avvisare') ? 'da_avvisare' : 'avvisati');
         }
 
@@ -180,7 +178,6 @@ const emporio = cittaLabel + canaleLabel;
             if (confirm(`Spostare in archivio come consegnato?`)) {
                 const { data: ordine } = await _supabase.from('ordini_incorso').select('*').eq('id', id).single();
                 
-                // Rimuoviamo l'id originale per permettere a Supabase di generarne uno nuovo nell'archivio
                 const ordinePerArchivio = { ...ordine };
                 delete ordinePerArchivio.id;
                 
