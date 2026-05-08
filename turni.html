@@ -14,12 +14,15 @@
         .chip { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 600;
                 padding: 4px 10px; border-radius: 999px; cursor: pointer; transition: opacity 0.15s; }
         .chip:hover { opacity: 0.7; }
-        .chip-dip { background: #fee2e2; color: #991b1b; }
-        .chip-vol { background: #dcfce7; color: #166534; }
-        .chip-sc  { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+        .chip-dip  { background: #fee2e2; color: #991b1b; }
+        .chip-vol  { background: #dcfce7; color: #166534; }
+        .chip-sc   { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+        .chip-ferie    { background: #dbeafe; color: #1e40af; }
+        .chip-malattia { background: #fef9c3; color: #854d0e; }
         .card-sel { transition: all 0.15s; }
         .card-sel:hover { border-color: #b75252 !important; transform: translateY(-2px); box-shadow: 0 4px 20px rgba(183,82,82,0.15); }
-        .nota-badge { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+        .chiuso-banner { background: repeating-linear-gradient(45deg,#f8fafc,#f8fafc 8px,#f1f5f9 8px,#f1f5f9 16px); }
+        input[type=time] { font-size: 13px; }
     </style>
 </head>
 <body class="pb-28">
@@ -34,35 +37,29 @@
 
 <main class="max-w-5xl mx-auto p-4 md:p-6">
     <div id="view-empori"></div>
-    <div id="view-anni"   class="hidden"></div>
-    <div id="view-mesi"   class="hidden"></div>
-    <div id="view-mese"   class="hidden space-y-2"></div>
+    <div id="view-anni"  class="hidden"></div>
+    <div id="view-mesi"  class="hidden"></div>
+    <div id="view-mese"  class="hidden space-y-2"></div>
 </main>
 
-<!-- MODAL -->
+<!-- ── MODAL AGGIUNTA PERSONA ─────────────────────────────── -->
 <div id="modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-7 space-y-4">
-        <h2 class="font-bold text-slate-700 text-base" id="modal-title">Aggiungi al turno</h2>
-
-        <!-- Tab: seleziona / nuova persona -->
+        <h2 class="font-bold text-slate-800 text-base" id="modal-title"></h2>
         <div class="flex gap-2">
             <button onclick="setModalTab('seleziona')" id="mtab-sel"
                 class="flex-1 py-2 rounded-xl text-sm font-bold bg-m361-red text-white">Seleziona</button>
             <button onclick="setModalTab('nuova')" id="mtab-nuova"
                 class="flex-1 py-2 rounded-xl text-sm font-bold bg-slate-100 text-slate-600">+ Nuova persona</button>
         </div>
-
-        <!-- Seleziona -->
         <div id="mtab-body-sel" class="space-y-3">
             <input id="modal-search" type="text" placeholder="🔍 Cerca nome..."
                 oninput="filterModalList()"
                 class="w-full border border-gray-200 rounded-xl p-3 text-sm">
             <div id="modal-list" class="space-y-1 max-h-56 overflow-y-auto"></div>
         </div>
-
-        <!-- Nuova persona -->
         <div id="mtab-body-nuova" class="hidden space-y-3">
-            <input id="np-nome" type="text" placeholder="Nome *"
+            <input id="np-nome"    type="text" placeholder="Nome *"
                 class="w-full border border-gray-200 rounded-xl p-3 text-sm">
             <input id="np-cognome" type="text" placeholder="Cognome"
                 class="w-full border border-gray-200 rounded-xl p-3 text-sm">
@@ -76,7 +73,6 @@
                 Aggiungi e inserisci nel turno
             </button>
         </div>
-
         <button onclick="closeModal()"
             class="w-full py-3 rounded-xl border border-gray-200 text-sm font-bold text-slate-500 hover:bg-gray-50">
             Annulla
@@ -84,12 +80,71 @@
     </div>
 </div>
 
+<!-- ── MODAL ORARI MESE ───────────────────────────────────── -->
+<div id="modal-orari" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-7 space-y-5">
+        <h2 class="font-bold text-slate-800 text-base" id="orari-title">Orari del mese</h2>
+        <div class="space-y-4">
+            <div>
+                <label class="text-xs font-bold uppercase tracking-wider text-amber-500 mb-2 block">☀️ Turno Mattino</label>
+                <div class="flex items-center gap-3">
+                    <input type="time" id="ora-mat-ini" class="flex-1 border border-gray-200 rounded-xl p-2.5">
+                    <span class="text-slate-400 font-bold">→</span>
+                    <input type="time" id="ora-mat-fin" class="flex-1 border border-gray-200 rounded-xl p-2.5">
+                </div>
+            </div>
+            <div>
+                <label class="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2 block">🌙 Turno Pomeriggio</label>
+                <div class="flex items-center gap-3">
+                    <input type="time" id="ora-pom-ini" class="flex-1 border border-gray-200 rounded-xl p-2.5">
+                    <span class="text-slate-400 font-bold">→</span>
+                    <input type="time" id="ora-pom-fin" class="flex-1 border border-gray-200 rounded-xl p-2.5">
+                </div>
+            </div>
+            <div class="text-xs text-slate-400 bg-slate-50 rounded-xl p-3">
+                💡 Per i dipendenti vengono conteggiate le ore del turno + 15 min di pausa
+            </div>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="closeOrari()"
+                class="flex-1 py-3 rounded-xl border border-gray-200 text-sm font-bold text-slate-500 hover:bg-gray-50">
+                Annulla
+            </button>
+            <button onclick="saveOrari()"
+                class="flex-1 py-3 rounded-xl bg-m361-red text-white text-sm font-bold hover:opacity-90">
+                Salva
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL ASSENZA DIPENDENTE ───────────────────────────── -->
+<div id="modal-assenza" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xs p-7 space-y-4">
+        <h2 class="font-bold text-slate-800 text-base" id="assenza-title">Segna assenza</h2>
+        <div class="grid grid-cols-2 gap-3">
+            <button onclick="setAssenza('ferie')"
+                class="py-4 rounded-2xl bg-blue-50 border-2 border-blue-200 text-blue-800 font-bold text-sm hover:border-blue-400 transition-colors">
+                🏖️ Ferie
+            </button>
+            <button onclick="setAssenza('malattia')"
+                class="py-4 rounded-2xl bg-yellow-50 border-2 border-yellow-200 text-yellow-800 font-bold text-sm hover:border-yellow-400 transition-colors">
+                🤒 Malattia
+            </button>
+        </div>
+        <button onclick="closeAssenza()"
+            class="w-full py-3 rounded-xl border border-gray-200 text-sm font-bold text-slate-500 hover:bg-gray-50">
+            Annulla
+        </button>
+    </div>
+</div>
+
 <script>
-// ── DATI ──────────────────────────────────────────────────────
-const EMPORI = ['Cremona','Casalmaggiore','Viadana','Reggio Emilia'];
-const ANNI   = [2026, 2027, 2028, 2029];
-const MESI_NOMI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
-                   'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+// ── COSTANTI ──────────────────────────────────────────────────
+const EMPORI      = ['Cremona','Casalmaggiore','Viadana','Reggio Emilia'];
+const ANNI        = [2026, 2027, 2028, 2029];
+const MESI_NOMI   = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
+                     'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
 const GIORNI_SETT = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
 
 let PERSONALE = {
@@ -104,30 +159,30 @@ let PERSONALE = {
         { nome: 'Ileana Galli',       ruolo: 'volontario' },
     ],
     'Casalmaggiore': [
-        { nome: 'Barbara Araldi',          ruolo: 'volontario' },
-        { nome: 'Erica Bossi',             ruolo: 'volontario' },
-        { nome: 'Matilde Chiarini',        ruolo: 'volontario' },
-        { nome: 'Miriam Federici',         ruolo: 'volontario' },
-        { nome: 'Giulia Frigeri',          ruolo: 'volontario' },
-        { nome: 'Piero Gatti',             ruolo: 'volontario' },
-        { nome: 'Francesco Lunardini',     ruolo: 'volontario' },
-        { nome: 'Giuseppe Lunardini',      ruolo: 'volontario' },
-        { nome: 'Vittoria Lunardini',      ruolo: 'volontario' },
-        { nome: 'Teyssir Mabrouk',         ruolo: 'volontario' },
-        { nome: 'Carla Maffei',            ruolo: 'volontario' },
-        { nome: 'Michele Marchini',        ruolo: 'volontario' },
-        { nome: 'Edoardo Pavesi',          ruolo: 'volontario' },
-        { nome: 'Giovanna Raineri',        ruolo: 'volontario' },
-        { nome: 'Alessandra Rivetti',      ruolo: 'volontario' },
-        { nome: 'Maria Marcella Scaravonati', ruolo: 'volontario' },
-        { nome: 'Roberta Vezzosi',         ruolo: 'volontario' },
+        { nome: 'Barbara Araldi',            ruolo: 'volontario' },
+        { nome: 'Erica Bossi',               ruolo: 'volontario' },
+        { nome: 'Matilde Chiarini',          ruolo: 'volontario' },
+        { nome: 'Miriam Federici',           ruolo: 'volontario' },
+        { nome: 'Giulia Frigeri',            ruolo: 'volontario' },
+        { nome: 'Piero Gatti',               ruolo: 'volontario' },
+        { nome: 'Francesco Lunardini',       ruolo: 'volontario' },
+        { nome: 'Giuseppe Lunardini',        ruolo: 'volontario' },
+        { nome: 'Vittoria Lunardini',        ruolo: 'volontario' },
+        { nome: 'Teyssir Mabrouk',           ruolo: 'volontario' },
+        { nome: 'Carla Maffei',              ruolo: 'volontario' },
+        { nome: 'Michele Marchini',          ruolo: 'volontario' },
+        { nome: 'Edoardo Pavesi',            ruolo: 'volontario' },
+        { nome: 'Giovanna Raineri',          ruolo: 'volontario' },
+        { nome: 'Alessandra Rivetti',        ruolo: 'volontario' },
+        { nome: 'Maria Marcella Scaravonati',ruolo: 'volontario' },
+        { nome: 'Roberta Vezzosi',           ruolo: 'volontario' },
     ],
     'Viadana': [
         { nome: 'Roberta Alberini',    ruolo: 'volontario' },
         { nome: 'Giuseppina Amadini',  ruolo: 'volontario' },
         { nome: 'Ave Aroldi',          ruolo: 'volontario' },
         { nome: 'Carla Bellelli',      ruolo: 'volontario' },
-        { nome: 'Mariagrazia Bertolini', ruolo: 'volontario' },
+        { nome: 'Mariagrazia Bertolini',ruolo: 'volontario' },
         { nome: 'Tiziana Bortesi',     ruolo: 'volontario' },
         { nome: 'Carla Chittolini',    ruolo: 'volontario' },
         { nome: 'Donatella Falugi',    ruolo: 'volontario' },
@@ -142,33 +197,36 @@ let PERSONALE = {
         { nome: 'Manuela Scazza',      ruolo: 'volontario' },
     ],
     'Reggio Emilia': [
-        { nome: 'Elsa Scarpa',        ruolo: 'dipendente' },
-        { nome: 'Marica Pioli',       ruolo: 'dipendente' },
-        { nome: 'Manuela Capanni',    ruolo: 'dipendente' },
-        { nome: 'Alessia Bartolomei', ruolo: 'dipendente' },
+        { nome: 'Elsa Scarpa',         ruolo: 'dipendente' },
+        { nome: 'Marica Pioli',        ruolo: 'dipendente' },
+        { nome: 'Manuela Capanni',     ruolo: 'dipendente' },
+        { nome: 'Alessia Bartolomei',  ruolo: 'dipendente' },
     ],
 };
 
-// turniData[emporio][dateStr] = { mat:[], pom:[], nota:'' }
+// orariMese[emporio][anno-mese] = { matIni, matFin, pomIni, pomFin }
+const orariMese = {};
+// turniData[emporio][dateStr] = { mat:[{nome,ruolo}], pom:[{nome,ruolo}], nota:'', chiuso:false,
+//                                  assenze:{nome: 'ferie'|'malattia'} }
 const turniData = {};
 
 let ctx = { emporio: null, anno: null, mese: null };
-let modalCtx = null;
+let modalCtx  = null;
+let assenzaCtx = null;
 
-// ── NAVIGAZIONE ───────────────────────────────────────────────
+// ── INIT ──────────────────────────────────────────────────────
 window.onload = () => showEmpori();
 
+// ── NAVIGAZIONE ───────────────────────────────────────────────
 function showEmpori() {
     ctx = { emporio: null, anno: null, mese: null };
     setHeader('Turni', '');
-    hide(['view-anni','view-mesi','view-mese']);
-    show('view-empori');
-
+    hideAll(); show('view-empori');
     document.getElementById('view-empori').innerHTML = `
         <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mt-2">
         ${EMPORI.map(e => `
-            <div onclick="showAnni('${e}')" class="card-sel bg-white rounded-3xl border border-gray-100 shadow-sm p-8
-                flex flex-col items-center justify-center gap-3 cursor-pointer">
+            <div onclick="showAnni('${e}')" class="card-sel bg-white rounded-3xl border border-gray-100
+                shadow-sm p-8 flex flex-col items-center justify-center gap-3 cursor-pointer">
                 <div class="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                         stroke-width="1.8" stroke="#b75252" class="w-7 h-7">
@@ -181,51 +239,59 @@ function showEmpori() {
                     </svg>
                 </div>
                 <span class="font-bold text-slate-700 text-base text-center">${e}</span>
-            </div>
-        `).join('')}
+            </div>`).join('')}
         </div>`;
 }
 
 function showAnni(emporio) {
     ctx.emporio = emporio;
     setHeader(emporio, backBtn('showEmpori()'));
-    hide(['view-empori','view-mesi','view-mese']);
-    show('view-anni');
-
+    hideAll(); show('view-anni');
     document.getElementById('view-anni').innerHTML = `
         <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mt-2">
         ${ANNI.map(a => `
             <div onclick="showMesi(${a})" class="card-sel bg-white rounded-2xl border border-gray-100
                 shadow-sm p-8 text-center cursor-pointer">
                 <span class="text-3xl font-bold text-slate-700">${a}</span>
-            </div>
-        `).join('')}
+            </div>`).join('')}
         </div>`;
 }
 
 function showMesi(anno) {
     ctx.anno = anno;
     setHeader(`${ctx.emporio} — ${anno}`, backBtn(`showAnni('${ctx.emporio}')`));
-    hide(['view-empori','view-anni','view-mese']);
-    show('view-mesi');
-
+    hideAll(); show('view-mesi');
     document.getElementById('view-mesi').innerHTML = `
         <div class="grid grid-cols-3 md:grid-cols-4 gap-4 mt-2">
         ${MESI_NOMI.map((m, i) => `
             <div onclick="showMese(${i})" class="card-sel bg-white rounded-2xl border border-gray-100
                 shadow-sm p-6 text-center cursor-pointer">
                 <span class="text-base font-bold text-slate-700">${m}</span>
-            </div>
-        `).join('')}
+            </div>`).join('')}
         </div>`;
 }
 
 function showMese(mese) {
     ctx.mese = mese;
     const label = `${MESI_NOMI[mese]} ${ctx.anno}`;
-    setHeader(`${ctx.emporio} — ${label}`, backBtn(`showMesi(${ctx.anno})`));
-    hide(['view-empori','view-anni','view-mesi']);
-    show('view-mese');
+    const orariKey = orariKeyFor(ctx.emporio, ctx.anno, mese);
+    const orari = orariMese[orariKey];
+    const orariStr = orari
+        ? `<span class="text-xs text-slate-400 font-semibold">
+            ☀️ ${orari.matIni}–${orari.matFin} &nbsp; 🌙 ${orari.pomIni}–${orari.pomFin}
+           </span>`
+        : `<span class="text-xs text-slate-300">Orari non impostati</span>`;
+
+    setHeader(`${ctx.emporio} — ${label}`,
+        `<div class="flex items-center gap-2">
+            ${orariStr}
+            <button onclick="openOrari()"
+                class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs transition-colors">
+                ⏰ Orari
+            </button>
+            ${backBtn(`showMesi(${ctx.anno})`)}
+         </div>`);
+    hideAll(); show('view-mese');
     renderMese();
 }
 
@@ -237,93 +303,197 @@ function renderMese() {
     const container = document.getElementById('view-mese');
     container.innerHTML = '';
 
+    // Riepilogo ore dipendenti in cima
+    container.insertAdjacentHTML('beforeend', renderRiepilogo());
+
     for (let d = 1; d <= daysInMonth; d++) {
-        const date    = new Date(anno, mese, d);
-        const dateStr = date.toISOString().split('T')[0];
+        const dateStr = `${anno}-${String(mese+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const date    = new Date(dateStr + 'T12:00:00');
         const gSett   = GIORNI_SETT[date.getDay()];
         const isFest  = date.getDay() === 0;
         const isOggi  = dateStr === oggi;
-        const nota    = turniData[emporio]?.[dateStr]?.nota || '';
-        const matList = getT(emporio, dateStr, 'mat');
-        const pomList = getT(emporio, dateStr, 'pom');
+        const dayData = getDayData(emporio, dateStr);
+        const nota    = dayData.nota || '';
+        const chiuso  = dayData.chiuso || false;
+        const matList = dayData.mat || [];
+        const pomList = dayData.pom || [];
 
         const row = document.createElement('div');
-        row.className = `bg-white rounded-2xl border ${isOggi ? 'border-[#b75252] ring-1 ring-[#b75252]/30' : 'border-gray-100'} shadow-sm overflow-hidden`;
+        row.id = `row-${dateStr}`;
+        row.className = `bg-white rounded-2xl border ${isOggi
+            ? 'border-[#b75252] ring-1 ring-[#b75252]/30'
+            : 'border-gray-100'} shadow-sm overflow-hidden`;
+
         row.innerHTML = `
-            <div class="flex min-h-[80px]">
+            <div class="flex min-h-[80px] ${chiuso ? 'opacity-60' : ''}">
 
                 <!-- GIORNO -->
-                <div class="flex flex-col items-center justify-center px-4 min-w-[72px]
-                    ${isFest ? 'bg-red-50' : 'bg-slate-50'} border-r border-gray-100">
+                <div class="flex flex-col items-center justify-center px-4 min-w-[76px]
+                    ${isFest ? 'bg-red-50' : 'bg-slate-50'} border-r border-gray-100 shrink-0">
                     <span class="text-xs font-bold uppercase tracking-wider
                         ${isFest ? 'text-m361-red' : 'text-slate-400'}">${gSett}</span>
                     <span class="text-3xl font-bold leading-tight
                         ${isOggi ? 'text-m361-red' : isFest ? 'text-m361-red' : 'text-slate-700'}">${d}</span>
-                    ${isOggi ? '<span class="text-[8px] font-bold text-m361-red uppercase tracking-wider">oggi</span>' : ''}
+                    ${isOggi ? '<span class="text-[8px] font-bold text-m361-red uppercase">oggi</span>' : ''}
                 </div>
 
-                <!-- TURNI + NOTE -->
-                <div class="flex-1 divide-y divide-gray-50">
-
-                    <!-- Turni -->
-                    <div class="grid grid-cols-2 divide-x divide-gray-100">
-
-                        <!-- MATTINO -->
-                        <div class="p-3">
-                            <div class="text-[10px] font-bold uppercase tracking-widest text-amber-500 mb-2">
-                                ☀️ Mattino
-                            </div>
-                            <div class="flex flex-wrap gap-1.5 mb-2" id="mat-${dateStr}">
-                                ${renderChips(matList, dateStr, 'mat')}
-                            </div>
-                            <button onclick="openModal('${dateStr}','mat')"
-                                class="text-xs text-slate-400 hover:text-m361-red font-semibold
-                                flex items-center gap-1 transition-colors mt-1">
-                                <span class="text-lg leading-none font-light">+</span> aggiungi
-                            </button>
-                        </div>
-
-                        <!-- POMERIGGIO -->
-                        <div class="p-3">
-                            <div class="text-[10px] font-bold uppercase tracking-widest text-blue-400 mb-2">
-                                🌙 Pomeriggio
-                            </div>
-                            <div class="flex flex-wrap gap-1.5 mb-2" id="pom-${dateStr}">
-                                ${renderChips(pomList, dateStr, 'pom')}
-                            </div>
-                            <button onclick="openModal('${dateStr}','pom')"
-                                class="text-xs text-slate-400 hover:text-m361-red font-semibold
-                                flex items-center gap-1 transition-colors mt-1">
-                                <span class="text-lg leading-none font-light">+</span> aggiungi
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- NOTE -->
-                    <div class="px-3 py-2 flex items-center gap-2">
-                        <span class="text-[10px] text-amber-700 font-bold uppercase tracking-wider shrink-0">📝</span>
-                        <input type="text"
-                            placeholder="Note del giorno..."
-                            value="${nota.replace(/"/g,'&quot;')}"
-                            onchange="saveNota('${dateStr}', this.value)"
-                            class="flex-1 text-sm text-slate-600 bg-transparent outline-none placeholder-slate-300
-                            ${nota ? 'font-semibold text-amber-800' : ''}">
-                        ${nota ? `<span class="nota-badge text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0">nota</span>` : ''}
-                    </div>
-
+                <div class="flex-1 min-w-0">
+                    ${chiuso
+                        ? `<div class="chiuso-banner flex items-center justify-center h-full px-4 py-6">
+                                <span class="text-sm font-bold text-slate-400 uppercase tracking-widest">🔒 Negozio chiuso</span>
+                                <button onclick="toggleChiuso('${dateStr}')"
+                                    class="ml-4 text-xs text-slate-400 hover:text-m361-red underline">riapri</button>
+                           </div>`
+                        : `<div class="divide-y divide-gray-50">
+                                <!-- Turni -->
+                                <div class="grid grid-cols-2 divide-x divide-gray-100">
+                                    ${renderTurnoCell(emporio, dateStr, 'mat', matList)}
+                                    ${renderTurnoCell(emporio, dateStr, 'pom', pomList)}
+                                </div>
+                                <!-- Note + chiudi -->
+                                <div class="px-3 py-2 flex items-center gap-2">
+                                    <span class="text-[10px] text-amber-600 font-bold shrink-0">📝</span>
+                                    <input type="text"
+                                        placeholder="Note del giorno..."
+                                        value="${nota.replace(/"/g,'&quot;')}"
+                                        onchange="saveNota('${dateStr}', this.value)"
+                                        class="flex-1 text-sm outline-none bg-transparent placeholder-slate-300
+                                        ${nota ? 'font-semibold text-amber-800' : 'text-slate-600'}">
+                                    ${nota ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 shrink-0">nota</span>' : ''}
+                                    <button onclick="toggleChiuso('${dateStr}')"
+                                        class="text-[10px] text-slate-300 hover:text-red-400 font-semibold shrink-0 transition-colors ml-1">
+                                        🔒 chiudi
+                                    </button>
+                                </div>
+                           </div>`
+                    }
                 </div>
             </div>`;
         container.appendChild(row);
     }
 }
 
+function renderTurnoCell(emporio, dateStr, turno, list) {
+    const isM = turno === 'mat';
+    const orari = getOrari(emporio, ctx.anno, ctx.mese);
+    const orarioStr = orari
+        ? `<span class="text-[9px] text-slate-300 ml-1">${isM ? orari.matIni+'–'+orari.matFin : orari.pomIni+'–'+orari.pomFin}</span>`
+        : '';
+    return `
+        <div class="p-3">
+            <div class="flex items-center gap-1 mb-2">
+                <span class="text-[10px] font-bold uppercase tracking-widest ${isM ? 'text-amber-500' : 'text-blue-400'}">
+                    ${isM ? '☀️ Mattino' : '🌙 Pomeriggio'}
+                </span>
+                ${orarioStr}
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-2" id="${turno}-${dateStr}">
+                ${renderChips(list, dateStr, turno)}
+            </div>
+            <button onclick="openModal('${dateStr}','${turno}')"
+                class="text-xs text-slate-400 hover:text-m361-red font-semibold flex items-center gap-1 transition-colors">
+                <span class="text-lg leading-none font-light">+</span> aggiungi
+            </button>
+        </div>`;
+}
+
+// ── RIEPILOGO ORE DIPENDENTI ──────────────────────────────────
+function renderRiepilogo() {
+    const { emporio, anno, mese } = ctx;
+    const dipendenti = (PERSONALE[emporio] || []).filter(p => p.ruolo === 'dipendente');
+    if (dipendenti.length === 0) return '';
+
+    const rows = dipendenti.map(p => {
+        const totale = calcolaTotaleOre(emporio, anno, mese, p.nome);
+        return `<div class="flex items-center justify-between py-1.5">
+            <span class="text-sm font-semibold text-slate-700">${p.nome}</span>
+            <span class="font-bold text-m361-red text-sm">${totale}</span>
+        </div>`;
+    }).join('');
+
+    return `
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-2" id="riepilogo-ore">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400">
+                    📊 Ore dipendenti — ${MESI_NOMI[mese]} ${anno}
+                </h3>
+                <button onclick="renderMese()" class="text-[10px] text-slate-400 hover:text-m361-red">↻ aggiorna</button>
+            </div>
+            ${rows}
+        </div>`;
+}
+
+function calcolaTotaleOre(emporio, anno, mese, nomeDip) {
+    const daysInMonth = new Date(anno, mese + 1, 0).getDate();
+    const orari = getOrari(emporio, anno, mese);
+    let totMin = 0;
+
+    for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${anno}-${String(mese+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const dayData = turniData[emporio]?.[dateStr];
+        if (!dayData || dayData.chiuso) continue;
+
+        const assenza = dayData.assenze?.[nomeDip];
+        if (assenza) {
+            // Ferie e malattia contano come giornata intera
+            if (orari) {
+                const matMin = oraDiff(orari.matIni, orari.matFin);
+                const pomMin = oraDiff(orari.pomIni, orari.pomFin);
+                totMin += matMin + pomMin + 15; // +15 globale per la giornata
+            } else {
+                totMin += 8 * 60; // fallback 8h
+            }
+            continue;
+        }
+
+        const nelMat = (dayData.mat || []).some(p => p.nome === nomeDip);
+        const nelPom = (dayData.pom || []).some(p => p.nome === nomeDip);
+        if (!nelMat && !nelPom) continue;
+
+        if (orari) {
+            if (nelMat) totMin += oraDiff(orari.matIni, orari.matFin) + 15;
+            if (nelPom) totMin += oraDiff(orari.pomIni, orari.pomFin) + 15;
+        } else {
+            if (nelMat) totMin += 4 * 60 + 15;
+            if (nelPom) totMin += 4 * 60 + 15;
+        }
+    }
+
+    const h = Math.floor(totMin / 60);
+    const m = totMin % 60;
+    return m > 0 ? `${h}h ${m}m` : `${h}h`;
+}
+
+function oraDiff(ini, fin) {
+    if (!ini || !fin) return 0;
+    const [ih, im] = ini.split(':').map(Number);
+    const [fh, fm] = fin.split(':').map(Number);
+    return (fh * 60 + fm) - (ih * 60 + im);
+}
+
 // ── CHIP ──────────────────────────────────────────────────────
 function renderChips(list, dateStr, turno) {
-    return list.map((p, i) => `
-        <span class="chip ${chipClass(p.ruolo)}" onclick="removePersona('${dateStr}','${turno}',${i})"
-            title="Rimuovi ${p.nome}">
-            ${p.nome} <span class="opacity-40 ml-0.5">×</span>
-        </span>`).join('');
+    const dayData = turniData[ctx.emporio]?.[dateStr];
+    return list.map((p, i) => {
+        const assenza = dayData?.assenze?.[p.nome];
+        if (assenza) {
+            const cls = assenza === 'ferie' ? 'chip-ferie' : 'chip-malattia';
+            const ico = assenza === 'ferie' ? '🏖️' : '🤒';
+            return `<span class="chip ${cls}" onclick="removePersona('${dateStr}','${turno}',${i})"
+                title="Rimuovi">
+                ${ico} ${p.nome} <span class="opacity-40 ml-0.5">×</span>
+            </span>`;
+        }
+        const cls = chipClass(p.ruolo);
+        const isDip = p.ruolo === 'dipendente';
+        return `<span class="chip ${cls} group relative" title="${isDip ? 'Click destro: ferie/malattia' : 'Rimuovi'}"
+            onclick="removePersona('${dateStr}','${turno}',${i})"
+            oncontextmenu="openAssenza(event,'${dateStr}','${turno}',${i},'${p.nome}')">
+            ${p.nome}
+            ${isDip ? '<span class="opacity-30 text-[9px]">▾</span>' : ''}
+            <span class="opacity-40 ml-0.5">×</span>
+        </span>`;
+    }).join('');
 }
 
 function chipClass(r) {
@@ -334,66 +504,119 @@ function chipClass(r) {
 }
 
 // ── TURNI CRUD ────────────────────────────────────────────────
-function getT(emp, dateStr, turno) {
-    return turniData[emp]?.[dateStr]?.[turno] || [];
-}
-
-function initDay(emp, dateStr) {
+function getDayData(emp, dateStr) {
     if (!turniData[emp]) turniData[emp] = {};
-    if (!turniData[emp][dateStr]) turniData[emp][dateStr] = { mat: [], pom: [], nota: '' };
+    if (!turniData[emp][dateStr]) turniData[emp][dateStr] = { mat:[], pom:[], nota:'', chiuso:false, assenze:{} };
+    return turniData[emp][dateStr];
 }
 
 function addPersona(emp, dateStr, turno, persona) {
-    initDay(emp, dateStr);
-    const list = turniData[emp][dateStr][turno];
-    if (!list.find(p => p.nome === persona.nome)) list.push(persona);
+    const d = getDayData(emp, dateStr);
+    if (!d[turno].find(p => p.nome === persona.nome)) d[turno].push(persona);
 }
 
 function removePersona(dateStr, turno, idx) {
     const emp = ctx.emporio;
-    if (turniData[emp]?.[dateStr]?.[turno]) {
-        turniData[emp][dateStr][turno].splice(idx, 1);
+    const d = turniData[emp]?.[dateStr];
+    if (d?.[turno]) {
+        d[turno].splice(idx, 1);
         refreshCell(dateStr, turno);
     }
 }
 
-function saveNota(dateStr, val) {
-    initDay(ctx.emporio, dateStr);
-    turniData[ctx.emporio][dateStr].nota = val;
-    // aggiorna il badge senza re-render completo
-    const row = document.getElementById(`mat-${dateStr}`)?.closest('.bg-white');
+function toggleChiuso(dateStr) {
+    const d = getDayData(ctx.emporio, dateStr);
+    d.chiuso = !d.chiuso;
+    // ri-render solo la riga
+    const row = document.getElementById(`row-${dateStr}`);
     if (row) {
-        const badge = row.querySelector('.nota-badge');
-        const input = row.querySelector('input[type=text]');
-        if (val) {
-            input.classList.add('font-semibold','text-amber-800');
-            if (!badge) {
-                const span = document.createElement('span');
-                span.className = 'nota-badge text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0';
-                span.innerText = 'nota';
-                input.after(span);
-            }
-        } else {
-            input.classList.remove('font-semibold','text-amber-800');
-            if (badge) badge.remove();
-        }
+        const tmp = document.createElement('div');
+        tmp.id = `row-${dateStr}`;
+        tmp.className = row.className;
+        const date   = new Date(dateStr + 'T12:00:00');
+        const gSett  = GIORNI_SETT[date.getDay()];
+        const isFest = date.getDay() === 0;
+        const isOggi = dateStr === new Date().toISOString().split('T')[0];
+        const d2     = getDayData(ctx.emporio, dateStr);
+        tmp.innerHTML = row.innerHTML;
+        // più semplice: ri-render tutto il mese
+        renderMese();
     }
+}
+
+function saveNota(dateStr, val) {
+    getDayData(ctx.emporio, dateStr).nota = val;
 }
 
 function refreshCell(dateStr, turno) {
     const el = document.getElementById(`${turno}-${dateStr}`);
-    if (el) el.innerHTML = renderChips(getT(ctx.emporio, dateStr, turno), dateStr, turno);
+    if (el) el.innerHTML = renderChips(
+        turniData[ctx.emporio]?.[dateStr]?.[turno] || [], dateStr, turno);
 }
 
-// ── MODAL ─────────────────────────────────────────────────────
-let modalTab = 'seleziona';
+// ── ASSENZA ───────────────────────────────────────────────────
+function openAssenza(e, dateStr, turno, idx, nome) {
+    e.preventDefault();
+    assenzaCtx = { dateStr, turno, idx, nome };
+    document.getElementById('assenza-title').innerText = `Assenza — ${nome}`;
+    document.getElementById('modal-assenza').classList.remove('hidden');
+}
 
+function closeAssenza() {
+    document.getElementById('modal-assenza').classList.add('hidden');
+    assenzaCtx = null;
+}
+
+function setAssenza(tipo) {
+    if (!assenzaCtx) return;
+    const d = getDayData(ctx.emporio, assenzaCtx.dateStr);
+    if (!d.assenze) d.assenze = {};
+    d.assenze[assenzaCtx.nome] = tipo;
+    refreshCell(assenzaCtx.dateStr, assenzaCtx.turno);
+    closeAssenza();
+}
+
+// ── ORARI MESE ────────────────────────────────────────────────
+function orariKeyFor(emp, anno, mese) {
+    return `${emp}|${anno}-${String(mese+1).padStart(2,'0')}`;
+}
+
+function getOrari(emp, anno, mese) {
+    return orariMese[orariKeyFor(emp, anno, mese)] || null;
+}
+
+function openOrari() {
+    const orari = getOrari(ctx.emporio, ctx.anno, ctx.mese);
+    document.getElementById('ora-mat-ini').value = orari?.matIni || '09:00';
+    document.getElementById('ora-mat-fin').value = orari?.matFin || '13:00';
+    document.getElementById('ora-pom-ini').value = orari?.pomIni || '15:00';
+    document.getElementById('ora-pom-fin').value = orari?.pomFin || '19:00';
+    document.getElementById('orari-title').innerText =
+        `Orari — ${MESI_NOMI[ctx.mese]} ${ctx.anno}`;
+    document.getElementById('modal-orari').classList.remove('hidden');
+}
+
+function closeOrari() { document.getElementById('modal-orari').classList.add('hidden'); }
+
+function saveOrari() {
+    const key = orariKeyFor(ctx.emporio, ctx.anno, ctx.mese);
+    orariMese[key] = {
+        matIni: document.getElementById('ora-mat-ini').value,
+        matFin: document.getElementById('ora-mat-fin').value,
+        pomIni: document.getElementById('ora-pom-ini').value,
+        pomFin: document.getElementById('ora-pom-fin').value,
+    };
+    closeOrari();
+    showMese(ctx.mese); // ri-renderizza con nuovi orari
+}
+
+// ── MODAL PERSONA ─────────────────────────────────────────────
 function openModal(dateStr, turno) {
     modalCtx = { dateStr, turno };
-    const turnoLabel = turno === 'mat' ? '☀️ Mattino' : '🌙 Pomeriggio';
-    const d = new Date(dateStr + 'T12:00:00');
+    const date = new Date(dateStr + 'T12:00:00'); // ← FIX timezone
+    const isM = turno === 'mat';
     document.getElementById('modal-title').innerText =
-        `${turnoLabel}  —  ${GIORNI_SETT[d.getDay()]} ${d.getDate()} ${MESI_NOMI[d.getMonth()]}`;
+        `${isM ? '☀️ Mattino' : '🌙 Pomeriggio'}  —  ${GIORNI_SETT[date.getDay()]} ${date.getDate()} ${MESI_NOMI[date.getMonth()]}`;
     setModalTab('seleziona');
     document.getElementById('modal').classList.remove('hidden');
 }
@@ -404,7 +627,6 @@ function closeModal() {
 }
 
 function setModalTab(tab) {
-    modalTab = tab;
     const isSel = tab === 'seleziona';
     document.getElementById('mtab-sel').className =
         `flex-1 py-2 rounded-xl text-sm font-bold ${isSel ? 'bg-m361-red text-white' : 'bg-slate-100 text-slate-600'}`;
@@ -412,10 +634,7 @@ function setModalTab(tab) {
         `flex-1 py-2 rounded-xl text-sm font-bold ${!isSel ? 'bg-m361-red text-white' : 'bg-slate-100 text-slate-600'}`;
     document.getElementById('mtab-body-sel').classList.toggle('hidden', !isSel);
     document.getElementById('mtab-body-nuova').classList.toggle('hidden', isSel);
-    if (isSel) {
-        document.getElementById('modal-search').value = '';
-        renderModalList('');
-    }
+    if (isSel) { document.getElementById('modal-search').value = ''; renderModalList(''); }
 }
 
 function filterModalList() {
@@ -424,11 +643,10 @@ function filterModalList() {
 
 function renderModalList(query) {
     if (!modalCtx) return;
-    const persone   = PERSONALE[ctx.emporio] || [];
-    const nelTurno  = getT(ctx.emporio, modalCtx.dateStr, modalCtx.turno).map(p => p.nome);
-    const filtrati  = persone.filter(p =>
+    const persone  = PERSONALE[ctx.emporio] || [];
+    const nelTurno = (turniData[ctx.emporio]?.[modalCtx.dateStr]?.[modalCtx.turno] || []).map(p => p.nome);
+    const filtrati = persone.filter(p =>
         p.nome.toLowerCase().includes(query) && !nelTurno.includes(p.nome));
-
     document.getElementById('modal-list').innerHTML = filtrati.length === 0
         ? '<p class="text-sm text-slate-400 text-center py-4">Nessuno disponibile</p>'
         : filtrati.map(p => `
@@ -449,11 +667,10 @@ function addNuovaPersona() {
     const cognome = document.getElementById('np-cognome').value.trim();
     const ruolo   = document.getElementById('np-ruolo').value;
     if (!nome) { alert('Inserisci almeno il nome.'); return; }
-    const nomeCompleto = cognome ? nome + ' ' + cognome : nome;
+    const nomeCompleto = cognome ? `${nome} ${cognome}` : nome;
     if (!PERSONALE[ctx.emporio]) PERSONALE[ctx.emporio] = [];
-    if (!PERSONALE[ctx.emporio].find(p => p.nome === nomeCompleto)) {
+    if (!PERSONALE[ctx.emporio].find(p => p.nome === nomeCompleto))
         PERSONALE[ctx.emporio].push({ nome: nomeCompleto, ruolo });
-    }
     addPersona(ctx.emporio, modalCtx.dateStr, modalCtx.turno, { nome: nomeCompleto, ruolo });
     refreshCell(modalCtx.dateStr, modalCtx.turno);
     document.getElementById('np-nome').value = '';
@@ -469,20 +686,24 @@ function setHeader(title, controls) {
 
 function backBtn(fn) {
     return `<button onclick="${fn}"
-        class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100
-        hover:bg-slate-200 text-slate-600 font-bold text-sm transition-colors">
+        class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200
+        text-slate-600 font-bold text-sm transition-colors">
         <span class="text-base">←</span> Indietro
     </button>`;
 }
 
+function hideAll() {
+    ['view-empori','view-anni','view-mesi','view-mese'].forEach(id =>
+        document.getElementById(id).classList.add('hidden'));
+}
 function show(id) { document.getElementById(id).classList.remove('hidden'); }
-function hide(ids) { ids.forEach(id => document.getElementById(id).classList.add('hidden')); }
 
-document.getElementById('modal').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
+['modal','modal-orari','modal-assenza'].forEach(id => {
+    document.getElementById(id).addEventListener('click', function(e) {
+        if (e.target === this) this.classList.add('hidden');
+    });
 });
 </script>
-
 <script src="/nav-script.js"></script>
 </body>
 </html>
