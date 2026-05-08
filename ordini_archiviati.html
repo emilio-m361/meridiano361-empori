@@ -200,18 +200,25 @@
             const ord = tuttiOrdini.find(o => o.id == id);
             if (!ord) return;
             const nome = `${ord.cliente_nome || ''} ${ord.cliente_cognome || ''}`.trim();
-            const articoli = ord.articoli && ord.articoli.length > 0
+            let articoliData = ord.articoli;
+            if (typeof articoliData === 'string') {
+                try { articoliData = JSON.parse(articoliData); } catch(e) { articoliData = []; }
+            }
+            const articoli = articoliData && articoliData.length > 0
                 ? `<table class="w-full text-xs mt-2 border-collapse">
-                    <thead><tr class="bg-slate-50 text-[10px] uppercase text-slate-400">
-                        <th class="p-2 text-left">Codice</th><th class="p-2 text-left">Descrizione</th>
-                        <th class="p-2 text-center">Qtà</th><th class="p-2 text-right">Prezzo</th><th class="p-2 text-right">Totale</th>
-                    </tr></thead><tbody class="divide-y">${ord.articoli.map(a => `
-                        <tr><td class="p-2">${a.codice||''}</td><td class="p-2">${a.descrizione||''}</td>
-                        <td class="p-2 text-center">${a.qta||0}</td>
-                        <td class="p-2 text-right">€ ${parseFloat(a.prezzo||0).toFixed(2)}</td>
-                        <td class="p-2 text-right font-bold">€ ${((a.qta||0)*(a.prezzo||0)).toFixed(2)}</td></tr>`
+                    <thead><tr class="bg-slate-50 text-[10px] uppercase text-slate-400 border-b">
+                        <th class="p-2 text-left">Codice</th>
+                        <th class="p-2 text-left">Descrizione</th>
+                        <th class="p-2 text-center">Qtà</th>
+                    </tr></thead>
+                    <tbody class="divide-y">${articoliData.map(a => `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-2 font-mono text-slate-500">${a.codice||a.sku||'-'}</td>
+                            <td class="p-2 font-medium text-slate-800">${a.descrizione||a.nome||a.name||a.title||'-'}</td>
+                            <td class="p-2 text-center font-bold text-slate-700">${a.qta||a.quantita||a.quantity||0}</td>
+                        </tr>`
                     ).join('')}</tbody></table>`
-                : '<p class="text-slate-400 text-xs mt-2">Nessun articolo registrato.</p>';
+                : '<p class="text-slate-400 text-xs mt-2 italic">Nessun articolo registrato.</p>';
 
             document.getElementById('modal-content').innerHTML = `
                 <div class="space-y-3 text-sm">
