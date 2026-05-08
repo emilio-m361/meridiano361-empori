@@ -1,1 +1,506 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <link rel="stylesheet" href="../../assets/style/nav-style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M361 - Controllo Cassa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        .text-m361-red { color: #b75252; }
+        .bg-m361-red { background-color: #b75252; }
+        input[type=number] { -moz-appearance: textfield; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; }
+        .coin-input { width: 64px; text-align: right; border: 1px solid #e2e8f0; border-radius: 8px; padding: 4px 8px; font-size: 13px; background: #fff; }
+        .coin-input:focus { outline: 2px solid #b75252; border-color: transparent; }
+        .total-cell { font-weight: 700; font-size: 13px; text-align: right; min-width: 80px; }
+        .section-label { font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+        .pagamento-input { width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; font-size: 13px; text-align: right; background: #fff; }
+        .pagamento-input:focus { outline: 2px solid #b75252; border-color: transparent; }
+        .row-label { font-size: 13px; font-style: italic; color: #475569; }
+        .turno-header { font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; padding: 8px 16px; border-radius: 10px; }
+        .turno-mat { background: #fff5f5; color: #b75252; }
+        .turno-pom { background: #f0f4ff; color: #3b5bdb; }
+        .differenza-pos { color: #16a34a; }
+        .differenza-neg { color: #dc2626; }
+        .note-tag { font-size: 10px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; padding: 2px 7px; color: #64748b; cursor: pointer; transition: all .15s; }
+        .note-tag:hover { background: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
+    </style>
+</head>
+<body class="pb-28">
 
+<header class="bg-white border-b p-4 px-6 md:px-8 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+    <div class="flex items-center gap-4">
+        <img src="../../assets/images/logom361_rosso.jpg" alt="Logo" class="h-8" onerror="this.style.display='none'">
+        <h1 id="header-title" class="font-bold text-lg border-l pl-4 text-slate-700">Controllo Cassa</h1>
+    </div>
+    <button onclick="goBack()" id="back-btn" class="hidden text-sm font-bold text-slate-500 hover:text-m361-red transition-colors flex items-center gap-2">
+        <i class="fas fa-arrow-left"></i> Indietro
+    </button>
+</header>
+
+<main class="max-w-6xl mx-auto p-4 md:p-6">
+
+    <!-- SELEZIONE EMPORIO / DATA -->
+    <div id="screen-selezione" class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-12">
+        <h2 class="text-xs font-bold tracking-widest uppercase text-slate-400 mb-8 flex items-center gap-2">
+            <span class="w-1 h-4 bg-m361-red rounded-full"></span> Seleziona Emporio e Data
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div>
+                <label class="section-label text-slate-400 block mb-2">Emporio</label>
+                <select id="sel-emporio" class="w-full border border-gray-200 rounded-xl p-3 text-sm bg-gray-50">
+                    <option value="">Seleziona...</option>
+                    <option value="Cremona">Cremona</option>
+                    <option value="Casalmaggiore">Casalmaggiore</option>
+                    <option value="Reggio Emilia">Reggio Emilia</option>
+                    <option value="Viadana">Viadana</option>
+                </select>
+            </div>
+            <div>
+                <label class="section-label text-slate-400 block mb-2">Anno</label>
+                <select id="sel-anno" class="w-full border border-gray-200 rounded-xl p-3 text-sm bg-gray-50"></select>
+            </div>
+            <div>
+                <label class="section-label text-slate-400 block mb-2">Mese</label>
+                <select id="sel-mese" class="w-full border border-gray-200 rounded-xl p-3 text-sm bg-gray-50"></select>
+            </div>
+            <div>
+                <label class="section-label text-slate-400 block mb-2">Giorno</label>
+                <select id="sel-giorno" class="w-full border border-gray-200 rounded-xl p-3 text-sm bg-gray-50"></select>
+            </div>
+        </div>
+        <div class="flex gap-4">
+            <button onclick="apriGiorno()" class="bg-m361-red text-white px-8 py-3 rounded-xl font-bold text-sm uppercase tracking-widest hover:opacity-90 transition-all shadow-md">
+                <i class="fas fa-cash-register mr-2"></i> Apri giorno
+            </button>
+        </div>
+    </div>
+
+    <!-- SCHEDA GIORNO -->
+    <div id="screen-cassa" class="hidden space-y-6">
+
+        <!-- Info giorno -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-wrap justify-between items-center gap-4">
+            <div>
+                <p id="info-data" class="text-2xl font-black text-slate-800"></p>
+                <p id="info-emporio" class="text-xs font-bold text-m361-red uppercase tracking-widest mt-1"></p>
+            </div>
+            <div class="flex gap-3 flex-wrap">
+                <div class="bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-center">
+                    <p class="text-[9px] font-bold text-slate-400 uppercase">Fondo cassa</p>
+                    <p id="info-fondo" class="text-lg font-bold text-slate-700">€ 0,00</p>
+                </div>
+                <div id="box-chiusura" class="hidden bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-center">
+                    <p class="text-[9px] font-bold text-slate-400 uppercase">Chiuso da</p>
+                    <p id="info-chiuso-da" class="text-lg font-bold text-slate-700">—</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MATTINO + POMERIGGIO -->
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+            <!-- MATTINO -->
+            <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="turno-header turno-mat"><i class="fas fa-sun mr-2"></i>Mattino</span>
+                </div>
+                <div id="monete-mat" class="space-y-1 mb-4"></div>
+                <div class="flex justify-between items-center border-t pt-3 mb-6">
+                    <span class="text-xs font-bold text-slate-400 uppercase">Contanti Lordi</span>
+                    <span id="lordi-mat" class="total-cell text-slate-700">€ 0,00</span>
+                </div>
+
+                <!-- Pagamenti mat -->
+                <div id="pagamenti-mat" class="space-y-2 mb-4"></div>
+
+                <div class="flex justify-between items-center border-t pt-3 mt-4 mb-1">
+                    <span class="text-xs font-bold text-slate-600 uppercase">Totale incassato</span>
+                    <span id="totale-mat" class="total-cell text-slate-800 text-base">€ 0,00</span>
+                </div>
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-xs font-bold text-m361-red uppercase">Totale Corrispettivi</span>
+                    <input type="text" id="corrispettivi-mat" oninput="ricalcola()" onblur="formatEuro(this)" onfocus="clearEuro(this)"
+                        class="pagamento-input max-w-[130px] border-m361-red border-2" placeholder="€ 0,00" value="€ 0,00">
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-slate-400 uppercase">Differenza</span>
+                    <span id="diff-mat" class="total-cell text-sm">€ 0,00</span>
+                </div>
+            </div>
+
+            <!-- POMERIGGIO -->
+            <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="turno-header turno-pom"><i class="fas fa-moon mr-2"></i>Pomeriggio</span>
+                </div>
+                <div id="monete-pom" class="space-y-1 mb-4"></div>
+                <div class="flex justify-between items-center border-t pt-3 mb-6">
+                    <span class="text-xs font-bold text-slate-400 uppercase">Contanti Lordi</span>
+                    <span id="lordi-pom" class="total-cell text-slate-700">€ 0,00</span>
+                </div>
+
+                <!-- Pagamenti pom -->
+                <div id="pagamenti-pom" class="space-y-2 mb-4"></div>
+
+                <div class="flex justify-between items-center border-t pt-3 mt-4 mb-1">
+                    <span class="text-xs font-bold text-slate-600 uppercase">Totale incassato</span>
+                    <span id="totale-pom" class="total-cell text-slate-800 text-base">€ 0,00</span>
+                </div>
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-xs font-bold text-m361-red uppercase">Totale Corrispettivi</span>
+                    <input type="text" id="corrispettivi-pom" oninput="ricalcola()" onblur="formatEuro(this)" onfocus="clearEuro(this)"
+                        class="pagamento-input max-w-[130px] border-m361-red border-2" placeholder="€ 0,00" value="€ 0,00">
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xs font-bold text-slate-400 uppercase">Differenza</span>
+                    <span id="diff-pom" class="total-cell text-sm">€ 0,00</span>
+                </div>
+
+                <!-- Cassaforte e fondo residuo — solo pomeriggio -->
+                <div class="border-t pt-4 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-blue-500 uppercase">Contanti in cassaforte</span>
+                        <input type="text" id="cassaforte" oninput="ricalcola()" onblur="formatEuro(this)" onfocus="clearEuro(this)"
+                            class="pagamento-input max-w-[130px] border-blue-200 border" placeholder="€ 0,00" value="€ 0,00">
+                    </div>
+                    <div class="flex justify-between items-center bg-slate-100 rounded-xl px-4 py-2">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Fondo cassa residuo</span>
+                        <span id="fondo-residuo" class="total-cell text-slate-700">€ 0,00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chiusura effettuata da -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-wrap gap-6 items-end">
+            <div class="flex-1 min-w-[200px]">
+                <label class="section-label text-slate-400 block mb-2">Chiusura effettuata da</label>
+                <input type="text" id="chiuso-da-mat" placeholder="Operatore mattino..." class="w-full border border-gray-200 rounded-xl p-3 text-sm">
+            </div>
+            <div class="flex-1 min-w-[200px]">
+                <label class="section-label text-slate-400 block mb-2">Chiusura effettuata da (pomeriggio)</label>
+                <input type="text" id="chiuso-da-pom" placeholder="Operatore pomeriggio..." class="w-full border border-gray-200 rounded-xl p-3 text-sm">
+            </div>
+            <button onclick="salvaGiorno()" class="bg-slate-800 text-white px-8 py-3 rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-slate-900 transition-all shadow-md">
+                <i class="fas fa-save mr-2"></i> Salva giorno
+            </button>
+        </div>
+
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const TAGLI = [50, 20, 10, 5, 2, 1, 0.50, 0.20, 0.10, 0.05, 0.02, 0.01];
+const MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+
+// Pagamenti con nota: quelli che si sommano (al pom si somma al mat)
+const PAGAMENTI = [
+    { id: 'bancomat',        label: 'Bancomat',        somma: false, negabile: false },
+    { id: 'carte',           label: 'Carte',           somma: false, negabile: false },
+    { id: 'satispay',        label: 'Satispay',        somma: true,  negabile: false },
+    { id: 'satispay_online', label: 'Satispay online', somma: true,  negabile: false },
+    { id: 'carte_online',    label: 'Carte online',    somma: true,  negabile: false },
+    { id: 'paypal',          label: 'Paypal',          somma: true,  negabile: false },
+    { id: 'bonifico',        label: 'Bonifico',        somma: true,  negabile: false },
+    { id: 'gift_card',       label: 'Gift card',       somma: true,  negabile: false },
+    { id: 'gift_card_online',label: 'Gift card online',somma: true,  negabile: false },
+    { id: 'buoni',           label: 'Buoni',           somma: true,  negabile: false },
+    { id: 'rimborsi_online', label: 'Rimborsi online', somma: true,  negabile: true  },
+    { id: 'spese',           label: 'Spese',           somma: false, negabile: false },
+];
+
+let fondoCassa = 0;
+let currentKey = null; // "emporio_anno_mese_giorno"
+
+// ── INIT SELETTORI ────────────────────────────────────────────
+window.onload = () => {
+    const annoSel = document.getElementById('sel-anno');
+    const meseSel = document.getElementById('sel-mese');
+    const giornoSel = document.getElementById('sel-giorno');
+    const now = new Date();
+
+    for (let a = now.getFullYear(); a >= 2024; a--) {
+        const o = document.createElement('option');
+        o.value = a; o.text = a;
+        annoSel.add(o);
+    }
+    MESI.forEach((m, i) => {
+        const o = document.createElement('option');
+        o.value = i + 1; o.text = m;
+        if (i + 1 === now.getMonth() + 1) o.selected = true;
+        meseSel.add(o);
+    });
+
+    annoSel.value = now.getFullYear();
+    aggiornaGiorni();
+    meseSel.addEventListener('change', aggiornaGiorni);
+    annoSel.addEventListener('change', aggiornaGiorni);
+    giornoSel.value = now.getDate();
+};
+
+function aggiornaGiorni() {
+    const anno = +document.getElementById('sel-anno').value;
+    const mese = +document.getElementById('sel-mese').value;
+    const sel = document.getElementById('sel-giorno');
+    const prev = sel.value;
+    sel.innerHTML = '';
+    const giorni = new Date(anno, mese, 0).getDate();
+    for (let g = 1; g <= giorni; g++) {
+        const o = document.createElement('option');
+        o.value = g; o.text = g;
+        sel.add(o);
+    }
+    sel.value = prev <= giorni ? prev : 1;
+}
+
+// ── APRI GIORNO ───────────────────────────────────────────────
+async function apriGiorno() {
+    const emporio = document.getElementById('sel-emporio').value;
+    const anno    = +document.getElementById('sel-anno').value;
+    const mese    = +document.getElementById('sel-mese').value;
+    const giorno  = +document.getElementById('sel-giorno').value;
+
+    if (!emporio) { alert('Seleziona un emporio'); return; }
+
+    currentKey = `${emporio}_${anno}_${mese}_${giorno}`;
+
+    // Recupera fondo cassa = fondo residuo del giorno precedente
+    fondoCassa = await getFondoPrecedente(emporio, anno, mese, giorno);
+
+    // Costruisci UI
+    buildMonete('mat');
+    buildMonete('pom');
+    buildPagamenti('mat');
+    buildPagamenti('pom');
+
+    // Carica dati esistenti se già salvati
+    const { data } = await _supabase.from('cassa_giorni').select('*')
+        .eq('chiave', currentKey).maybeSingle();
+
+    if (data) popolaDati(data);
+
+    // Mostra
+    const dataLabel = new Date(anno, mese - 1, giorno);
+    const giorni = ['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
+    document.getElementById('info-data').innerText = `${giorni[dataLabel.getDay()]} ${giorno} ${MESI[mese-1]} ${anno}`;
+    document.getElementById('info-emporio').innerText = emporio;
+    document.getElementById('info-fondo').innerText = fmtEuro(fondoCassa);
+    document.getElementById('header-title').innerText = `Cassa — ${giorno} ${MESI[mese-1].slice(0,3)} ${anno}`;
+    document.getElementById('back-btn').classList.remove('hidden');
+    document.getElementById('screen-selezione').classList.add('hidden');
+    document.getElementById('screen-cassa').classList.remove('hidden');
+
+    ricalcola();
+}
+
+async function getFondoPrecedente(emporio, anno, mese, giorno) {
+    // cerca il giorno precedente più recente
+    const d = new Date(anno, mese - 1, giorno);
+    d.setDate(d.getDate() - 1);
+
+    for (let i = 0; i < 60; i++) {
+        const key = `${emporio}_${d.getFullYear()}_${d.getMonth()+1}_${d.getDate()}`;
+        const { data } = await _supabase.from('cassa_giorni').select('fondo_residuo')
+            .eq('chiave', key).maybeSingle();
+        if (data && data.fondo_residuo != null) return +data.fondo_residuo;
+        d.setDate(d.getDate() - 1);
+        if (i > 30) break;
+    }
+    return 0;
+}
+
+// ── BUILD UI ──────────────────────────────────────────────────
+function buildMonete(turno) {
+    const container = document.getElementById(`monete-${turno}`);
+    container.innerHTML = '';
+    TAGLI.forEach(t => {
+        const id = `${turno}_moneta_${t.toString().replace('.', '_')}`;
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between gap-2';
+        row.innerHTML = `
+            <span class="text-xs text-slate-400 w-14 text-right">${fmtEuro(t)}</span>
+            <input type="number" id="${id}" min="0" value=""
+                oninput="ricalcola()"
+                class="coin-input" placeholder="0">
+            <span class="total-cell text-slate-500 text-xs" id="${id}_tot">€ 0,00</span>`;
+        container.appendChild(row);
+    });
+}
+
+function buildPagamenti(turno) {
+    const container = document.getElementById(`pagamenti-${turno}`);
+    container.innerHTML = '';
+    PAGAMENTI.forEach(p => {
+        const id = `${turno}_pag_${p.id}`;
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between gap-2';
+
+        let labelHtml = `<span class="row-label flex-1">${p.label}</span>`;
+        // per il pomeriggio, se somma, mostra etichetta con badge "+ mat"
+        if (turno === 'pom' && p.somma) {
+            labelHtml = `<span class="row-label flex-1">${p.label} <span class="note-tag ml-1">+ mat</span></span>`;
+        }
+        if (p.negabile) {
+            labelHtml = `<span class="row-label flex-1 text-red-400">${p.label} <span class="text-[9px] text-red-300">(negativo)</span></span>`;
+        }
+
+        row.innerHTML = `
+            ${labelHtml}
+            <input type="text" id="${id}"
+                oninput="ricalcola()" onblur="formatEuro(this)" onfocus="clearEuro(this)"
+                class="pagamento-input max-w-[120px]" placeholder="€ 0,00" value="">`;
+        container.appendChild(row);
+    });
+}
+
+// ── RICALCOLA ─────────────────────────────────────────────────
+function ricalcola() {
+    ['mat', 'pom'].forEach(turno => {
+        // Contanti
+        let lordi = 0;
+        TAGLI.forEach(t => {
+            const id = `${turno}_moneta_${t.toString().replace('.', '_')}`;
+            const qty = +document.getElementById(id).value || 0;
+            const tot = qty * t;
+            lordi += tot;
+            document.getElementById(`${id}_tot`).innerText = fmtEuro(tot);
+        });
+        const contantiNetti = lordi - fondoCassa;
+        document.getElementById(`lordi-${turno}`).innerText = fmtEuro(lordi);
+
+        // Pagamenti
+        let totalePagamenti = contantiNetti;
+        PAGAMENTI.forEach(p => {
+            const id = `${turno}_pag_${p.id}`;
+            let val = parseEuro(document.getElementById(id).value);
+
+            // Se pomeriggio e somma → aggiungi valore mattino
+            if (turno === 'pom' && p.somma) {
+                const valMat = parseEuro(document.getElementById(`mat_pag_${p.id}`).value);
+                // Il totale pomeriggio mostrato è la SOMMA cumulativa
+                // ma per il calcolo del totale incassato usiamo solo il pomeriggio (delta)
+                // In realtà nel foglio Excel il pom mostra il cumulativo
+                // quindi mettiamo in readonly la cella pom e la calcoliamo
+                // NO: l'utente inserisce il cumulativo già sommato (come da excel)
+                // quindi usiamo il valore così com'è
+            }
+
+            if (p.negabile) val = -Math.abs(val);
+            totalePagamenti += val;
+        });
+
+        document.getElementById(`totale-${turno}`).innerText = fmtEuro(totalePagamenti);
+
+        // Differenza
+        const corrispettivi = parseEuro(document.getElementById(`corrispettivi-${turno}`).value);
+        const diff = totalePagamenti - corrispettivi;
+        const diffEl = document.getElementById(`diff-${turno}`);
+        diffEl.innerText = fmtEuro(diff);
+        diffEl.className = 'total-cell text-sm ' + (Math.abs(diff) < 0.005 ? 'text-emerald-600' : diff > 0 ? 'differenza-pos' : 'differenza-neg');
+    });
+
+    // Fondo residuo pomeriggio
+    const lordiPom = parseEuro(document.getElementById('lordi-pom').innerText);
+    const cassaforte = parseEuro(document.getElementById('cassaforte').value);
+    const residuo = lordiPom - cassaforte;
+    document.getElementById('fondo-residuo').innerText = fmtEuro(residuo > 0 ? residuo : 0);
+}
+
+// ── SALVA ─────────────────────────────────────────────────────
+async function salvaGiorno() {
+    const payload = { chiave: currentKey, fondo_cassa: fondoCassa };
+
+    // Monete
+    TAGLI.forEach(t => {
+        const k = t.toString().replace('.', '_');
+        payload[`mat_moneta_${k}`] = +document.getElementById(`mat_moneta_${k}`).value || 0;
+        payload[`pom_moneta_${k}`] = +document.getElementById(`pom_moneta_${k}`).value || 0;
+    });
+
+    // Pagamenti
+    PAGAMENTI.forEach(p => {
+        payload[`mat_pag_${p.id}`] = parseEuro(document.getElementById(`mat_pag_${p.id}`).value);
+        payload[`pom_pag_${p.id}`] = parseEuro(document.getElementById(`pom_pag_${p.id}`).value);
+    });
+
+    payload.corrispettivi_mat = parseEuro(document.getElementById('corrispettivi-mat').value);
+    payload.corrispettivi_pom = parseEuro(document.getElementById('corrispettivi-pom').value);
+    payload.cassaforte        = parseEuro(document.getElementById('cassaforte').value);
+    payload.fondo_residuo     = parseEuro(document.getElementById('fondo-residuo').innerText);
+    payload.chiuso_da_mat     = document.getElementById('chiuso-da-mat').value;
+    payload.chiuso_da_pom     = document.getElementById('chiuso-da-pom').value;
+
+    const { error } = await _supabase.from('cassa_giorni').upsert([payload], { onConflict: 'chiave' });
+
+    if (error) {
+        alert('Errore salvataggio: ' + error.message);
+    } else {
+        const btn = document.querySelector('button[onclick="salvaGiorno()"]');
+        btn.innerHTML = '<i class="fas fa-check mr-2"></i> Salvato!';
+        btn.classList.replace('bg-slate-800', 'bg-emerald-600');
+        setTimeout(() => {
+            btn.innerHTML = '<i class="fas fa-save mr-2"></i> Salva giorno';
+            btn.classList.replace('bg-emerald-600', 'bg-slate-800');
+        }, 2000);
+    }
+}
+
+// ── POPOLA DATI ESISTENTI ─────────────────────────────────────
+function popolaDati(data) {
+    TAGLI.forEach(t => {
+        const k = t.toString().replace('.', '_');
+        setVal(`mat_moneta_${k}`, data[`mat_moneta_${k}`]);
+        setVal(`pom_moneta_${k}`, data[`pom_moneta_${k}`]);
+    });
+    PAGAMENTI.forEach(p => {
+        setEuro(`mat_pag_${p.id}`, data[`mat_pag_${p.id}`]);
+        setEuro(`pom_pag_${p.id}`, data[`pom_pag_${p.id}`]);
+    });
+    setEuro('corrispettivi-mat', data.corrispettivi_mat);
+    setEuro('corrispettivi-pom', data.corrispettivi_pom);
+    setEuro('cassaforte', data.cassaforte);
+    if (data.chiuso_da_mat) document.getElementById('chiuso-da-mat').value = data.chiuso_da_mat;
+    if (data.chiuso_da_pom) document.getElementById('chiuso-da-pom').value = data.chiuso_da_pom;
+}
+
+function setVal(id, v) { const el = document.getElementById(id); if (el && v != null) el.value = v; }
+function setEuro(id, v) { const el = document.getElementById(id); if (el && v != null) el.value = fmtEuro(+v); }
+
+// ── UTILS ─────────────────────────────────────────────────────
+function fmtEuro(v) {
+    return '€ ' + (+(Math.round(v + 'e+2') + 'e-2') || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function parseEuro(s) {
+    if (!s) return 0;
+    return parseFloat((s + '').replace('€', '').replace(/\./g, '').replace(',', '.').trim()) || 0;
+}
+function formatEuro(input) {
+    const v = parseEuro(input.value);
+    input.value = v !== 0 ? fmtEuro(v) : '';
+}
+function clearEuro(input) {
+    const v = parseEuro(input.value);
+    if (v === 0) input.value = '';
+}
+
+function goBack() {
+    document.getElementById('screen-cassa').classList.add('hidden');
+    document.getElementById('screen-selezione').classList.remove('hidden');
+    document.getElementById('back-btn').classList.add('hidden');
+    document.getElementById('header-title').innerText = 'Controllo Cassa';
+}
+</script>
+
+<script src="../../scripts/nav-script.js"></script>
+</body>
+</html>
