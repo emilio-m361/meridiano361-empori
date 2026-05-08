@@ -1,0 +1,11 @@
+index.html (Home)
+    ├── Ordini → ordini.html
+    │       ├── Nuovo ordine → ordini_nuovi.html
+    │       │       ├── Ordine Standard → (form, salva → ordini_incorso.html)
+    │       │       └── Ordine Bomboniere → (form, salva → ordini_incorso.html)
+    │       ├── In corso → ordini_incorso.html
+    │       │       └── Modifica → ordini_modifica.html → torna a ordini_incorso.html
+    │       └── Archiviati → ordini_archiviati.html
+    ├── Prenotazioni
+    ├── Tessere fedeltà
+    └── Richieste info
