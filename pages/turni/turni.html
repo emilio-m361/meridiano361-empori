@@ -1,63 +1,327 @@
-// ... (continua dalla tua funzione renderTurnoCell)
-function renderTurnoCell(emp, ds, turno, list, chiuso) {
-    const isM = turno === 'mat';
-    const orari = getOrari(emp, ctx.anno, ctx.mese);
-    const orStr = orari ? `<span class="text-[10px] font-semibold ml-1 ${isM ? 'text-red-300' : 'text-slate-400'}">${isM ? orari.matIni + '–' + orari.matFin : orari.pomIni + '–' + orari.pomFin}</span>` : '';
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gestione Turni - Emporio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../assets/nav-style.css">
+    <style>
+        /* Override e integrazioni CSS per i turni */
+        :root {
+            --bg-main: #f8fafc;
+            --accent: #2563eb;
+        }
+        body { background: var(--bg-main); font-family: 'Inter', system-ui, sans-serif; }
+        
+        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); }
+        
+        .turno-mat-bg { background-color: #fffbeb; border-left: 4px solid #f59e0b; }
+        .turno-pom-bg { background-color: #f0f9ff; border-left: 4px solid #0ea5e9; }
+        .turno-chiuso-bg { background-color: #f1f5f9; border-left: 4px solid #94a3b8; }
 
-    if (chiuso) {
-        return `
-        <div class="flex-1 p-4 turno-chiuso-bg flex items-center justify-center opacity-50">
-            <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Chiuso</span>
-        </div>`;
-    }
+        .turno-lbl { font-size: 0.65rem; font-weight: 800; uppercase; padding: 2px 8px; border-radius: 999px; }
+        .turno-lbl-mat { background: #fef3c7; color: #92400e; }
+        .turno-lbl-pom { background: #e0f2fe; color: #075985; }
 
-    return `
-    <div class="flex-1 p-4 ${isM ? 'turno-mat-bg' : 'turno-pom-bg'}">
-        <div class="flex justify-between items-start mb-3">
-            <span class="turno-lbl ${isM ? 'turno-lbl-mat' : 'turno-lbl-pom'}">${isM ? '☀ Mattino' : '◑ Pomeriggio'} ${orStr}</span>
-        </div>
-        <div class="flex flex-wrap gap-2">
-            ${list.map(p => {
-                const rClass = getChipClass(p.ruolo, turno);
-                const ass = getAssenza(p.nome, ds);
-                return `
-                <div class="chip ${rClass} relative" onclick="openAssenza('${p.nome}', '${ds}')">
-                    ${p.nome}
-                    ${ass ? `<span class="absolute -top-2 -right-1 text-[8px] px-1 bg-white border border-blue-200 rounded-full">!</span>` : ''}
-                </div>`;
-            }).join('')}
-            <div class="add-link" onclick="openModal('${ds}', '${turno}')">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                Aggiungi
+        .chip {
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        /* Colori Chip */
+        .chip-mat-dip { background: #fbbf24; color: #78350f; }
+        .chip-mat-sc  { background: #fcd34d; color: #78350f; }
+        .chip-mat-vol { background: #fef3c7; color: #b45309; }
+        
+        .chip-pom-dip { background: #38bdf8; color: #075985; }
+        .chip-pom-sc  { background: #7dd3fc; color: #075985; }
+        .chip-pom-vol { background: #e0f2fe; color: #0369a1; }
+
+        .add-link {
+            color: #64748b;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .add-link:hover { color: var(--accent); }
+
+        .btn-toggle {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+    </style>
+</head>
+<body class="pb-20">
+
+    <!-- Header Dinamico -->
+    <header id="main-header" class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 py-3 flex justify-between items-center">
+        <div id="header-title" class="font-black text-slate-800 tracking-tight">TURNI</div>
+        <div id="header-actions" class="flex gap-2"></div>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-4">
+        <!-- VISTA 1: SELEZIONE EMPORIO -->
+        <div id="view-empori" class="grid grid-cols-1 gap-4">
+            <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Seleziona Emporio</h2>
+            <div onclick="selectEmporio('A')" class="bg-white p-6 rounded-2xl card-shadow border border-slate-100 flex justify-between items-center cursor-pointer active:scale-95 transition-transform">
+                <span class="font-bold text-slate-700">Emporio A</span>
+                <span class="text-slate-300">→</span>
+            </div>
+            <div onclick="selectEmporio('B')" class="bg-white p-6 rounded-2xl card-shadow border border-slate-100 flex justify-between items-center cursor-pointer active:scale-95 transition-transform">
+                <span class="font-bold text-slate-700">Emporio B</span>
+                <span class="text-slate-300">→</span>
             </div>
         </div>
-    </div>`;
-}
 
-// FUNZIONI DI UTILITÀ MANCANTI PER FAR FUNZIONARE IL CODICE
-function getOrari(emp, anno, mese) { return orariMese[`${emp}-${anno}-${mese}`] || { matIni: '09:00', matFin: '12:30', pomIni: '15:30', pomFin: '19:00', closedDow: [0] }; }
-function getEffectiveDayData(emp, ds) { if (!turniData[emp]) turniData[emp] = {}; if (!turniData[emp][ds]) turniData[emp][ds] = { mat: [], pom: [], nota: '' }; return turniData[emp][ds]; }
-function hideAll() { ['view-empori', 'view-anni', 'view-mesi', 'view-mese'].forEach(id => document.getElementById(id).classList.add('hidden')); }
-function show(id) { document.getElementById(id).classList.remove('hidden'); }
-function setHeader(title, actions) { /* Logica per aggiornare l'header se necessario */ }
-function backBtn(fn) { return `<button onclick="${fn}" class="px-3 py-2 bg-slate-100 rounded-xl text-sm font-bold">Indietro</button>`; }
-function getChipClass(ruolo, turno) {
-    const prefix = turno === 'mat' ? 'chip-mat-' : 'chip-pom-';
-    if (ruolo === 'dipendente') return prefix + 'dip';
-    if (ruolo === 'servizio_civile') return prefix + 'sc';
-    return prefix + 'vol';
-}
-function getAssenza(nome, ds) { return assenze[`${nome}-${ds}`]; }
-function saveNota(ds, val) { turniData[ctx.emporio][ds].nota = val; renderMese(); }
-function toggleChiuso(ds, turno) { 
-    if (!chiusure[ctx.emporio]) chiusure[ctx.emporio] = {};
-    if (!chiusure[ctx.emporio][ds]) chiusure[ctx.emporio][ds] = { mat: false, pom: false };
-    chiusure[ctx.emporio][ds][turno] = !chiusure[ctx.emporio][ds][turno];
-    renderMese();
-}
-function buildRiepilogo() { return `<div class="p-8 text-center text-slate-400 text-xs font-bold uppercase tracking-widest">Fine Turni Mese</div>`; }
+        <!-- VISTA 2: SELEZIONE ANNO -->
+        <div id="view-anni" class="hidden grid grid-cols-2 gap-4"></div>
 
-// CHIUSURA TAG
-</script>
+        <!-- VISTA 3: SELEZIONE MESE -->
+        <div id="view-mesi" class="hidden grid grid-cols-3 gap-3"></div>
+
+        <!-- VISTA 4: CALENDARIO TURNI -->
+        <div id="view-mese" class="hidden space-y-4">
+            <div id="calendar-container" class="space-y-4"></div>
+            <div id="riepilogo-container"></div>
+        </div>
+    </main>
+
+    <!-- Navigazione Inferiore -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-3 flex justify-around items-center z-50">
+        <a href="dashboard.html" class="nav-item"><span>Dashboard</span></a>
+        <a href="turni.html" class="nav-item active"><span>Turni</span></a>
+        <a href="ordini.html" class="nav-item"><span>Ordini</span></a>
+    </nav>
+
+    <script src="../../assets/nav-script.js"></script>
+    <script>
+        // DATI DI ESEMPIO E STATO
+        let ctx = { emporio: null, anno: null, mese: null };
+        const empori = ['A', 'B'];
+        const anni = [2024, 2025, 2026];
+        const mesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+        
+        let turniData = {}; // Struttura: { 'A': { '2024-05-01': { mat: [], pom: [], nota: '' } } }
+        let chiusure = {};  // Struttura: { 'A': { '2024-05-01': { mat: true, pom: false } } }
+        let assenze = {};   // Struttura: { 'Nome-2024-05-01': 'Malattia' }
+        let orariMese = {}; // Orari specifici
+
+        // NAVIGAZIONE
+        function selectEmporio(emp) {
+            ctx.emporio = emp;
+            hideAll();
+            renderAnni();
+            show('view-anni');
+            updateHeader(`Emporio ${emp}`, backBtn('init()'));
+        }
+
+        function renderAnni() {
+            const container = document.getElementById('view-anni');
+            container.innerHTML = anni.map(a => `
+                <div onclick="selectAnno(${a})" class="bg-white p-8 rounded-2xl card-shadow border border-slate-100 text-center cursor-pointer active:scale-95 transition-transform">
+                    <span class="text-2xl font-black text-slate-700">${a}</span>
+                </div>
+            `).join('');
+        }
+
+        function selectAnno(a) {
+            ctx.anno = a;
+            hideAll();
+            renderMesi();
+            show('view-mesi');
+            updateHeader(`${ctx.emporio} • ${a}`, backBtn('selectEmporio("'+ctx.emporio+'")'));
+        }
+
+        function renderMesi() {
+            const container = document.getElementById('view-mesi');
+            container.innerHTML = mesi.map((m, i) => `
+                <div onclick="selectMese(${i})" class="bg-white p-4 rounded-xl card-shadow border border-slate-100 text-center cursor-pointer active:scale-95 transition-transform">
+                    <span class="text-sm font-bold text-slate-600">${m}</span>
+                </div>
+            `).join('');
+        }
+
+        function selectMese(mIdx) {
+            ctx.mese = mIdx;
+            hideAll();
+            renderMese();
+            show('view-mese');
+            updateHeader(`${mesi[mIdx].toUpperCase()} ${ctx.anno}`, backBtn('selectAnno('+ctx.anno+')'));
+        }
+
+        function renderMese() {
+            const container = document.getElementById('calendar-container');
+            const daysInMonth = new Date(ctx.anno, ctx.mese + 1, 0).getDate();
+            let html = '';
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const date = new Date(ctx.anno, ctx.mese, d);
+                const ds = `${ctx.anno}-${String(ctx.mese + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const dayName = date.toLocaleDateString('it-IT', { weekday: 'long' });
+                const isDomenica = date.getDay() === 0;
+
+                const data = getEffectiveDayData(ctx.emporio, ds);
+                const isChiusoM = isChiusure(ctx.emporio, ds, 'mat') || isDomenica;
+                const isChiusoP = isChiusure(ctx.emporio, ds, 'pom') || isDomenica;
+
+                html += `
+                <div class="bg-white rounded-3xl card-shadow border border-slate-100 overflow-hidden mb-4">
+                    <div class="px-4 py-3 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+                        <div>
+                            <span class="text-lg font-black text-slate-800">${d}</span>
+                            <span class="text-xs font-bold text-slate-400 uppercase ml-1">${dayName}</span>
+                        </div>
+                        <input type="text" placeholder="Nota del giorno..." 
+                               class="text-[10px] bg-transparent border-none focus:ring-0 text-right font-medium text-slate-500"
+                               value="${data.nota || ''}" onchange="saveNota('${ds}', this.value)">
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+                        <!-- Mattina -->
+                        ${renderTurnoCell(ctx.emporio, ds, 'mat', data.mat, isChiusoM)}
+                        <!-- Pomeriggio -->
+                        ${renderTurnoCell(ctx.emporio, ds, 'pom', data.pom, isChiusoP)}
+                    </div>
+                </div>`;
+            }
+            container.innerHTML = html;
+            document.getElementById('riepilogo-container').innerHTML = buildRiepilogo();
+        }
+
+        function renderTurnoCell(emp, ds, turno, list, chiuso) {
+            const isM = turno === 'mat';
+            const orari = getOrari(emp, ctx.anno, ctx.mese);
+            const orStr = orari ? `<span class="text-[10px] font-semibold ml-1 ${isM ? 'text-amber-600' : 'text-sky-600'}">${isM ? orari.matIni + '–' + orari.matFin : orari.pomIni + '–' + orari.pomFin}</span>` : '';
+
+            if (chiuso) {
+                return `
+                <div class="flex-1 p-4 turno-chiuso-bg flex items-center justify-between opacity-60">
+                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">CHIUSO</span>
+                    <button onclick="toggleChiuso('${ds}', '${turno}')" class="btn-toggle bg-slate-200 text-slate-500">Apri</button>
+                </div>`;
+            }
+
+            return `
+            <div class="flex-1 p-4 ${isM ? 'turno-mat-bg' : 'turno-pom-bg'}">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="turno-lbl ${isM ? 'turno-lbl-mat' : 'turno-lbl-pom'}">${isM ? '☀ Mattino' : '◑ Pomeriggio'} ${orStr}</span>
+                    <button onclick="toggleChiuso('${ds}', '${turno}')" class="btn-toggle bg-white/50 text-slate-400 hover:text-red-500">Chiudi</button>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    ${list.map(p => {
+                        const rClass = getChipClass(p.ruolo, turno);
+                        const ass = getAssenza(p.nome, ds);
+                        return `
+                        <div class="chip ${rClass} relative" onclick="openAssenza('${p.nome}', '${ds}')">
+                            ${p.nome}
+                            ${ass ? `<span class="absolute -top-2 -right-1 flex h-4 w-4 items-center justify-center bg-red-500 text-white text-[8px] rounded-full ring-2 ring-white">!</span>` : ''}
+                        </div>`;
+                    }).join('')}
+                    <div class="add-link" onclick="openModal('${ds}', '${turno}')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Aggiungi
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // --- UTILITY FUNCTIONS ---
+        function getEffectiveDayData(emp, ds) {
+            if (!turniData[emp]) turniData[emp] = {};
+            if (!turniData[emp][ds]) turniData[emp][ds] = { mat: [], pom: [], nota: '' };
+            return turniData[emp][ds];
+        }
+
+        function isChiusure(emp, ds, turno) {
+            return chiusure[emp] && chiusure[emp][ds] && chiusure[emp][ds][turno];
+        }
+
+        function toggleChiuso(ds, turno) {
+            if (!chiusure[ctx.emporio]) chiusure[ctx.emporio] = {};
+            if (!chiusure[ctx.emporio][ds]) chiusure[ctx.emporio][ds] = { mat: false, pom: false };
+            chiusure[ctx.emporio][ds][turno] = !chiusure[ctx.emporio][ds][turno];
+            renderMese();
+        }
+
+        function getOrari(emp, a, m) {
+            return { matIni: '09:00', matFin: '12:30', pomIni: '15:30', pomFin: '19:00' };
+        }
+
+        function getChipClass(ruolo, turno) {
+            const prefix = turno === 'mat' ? 'chip-mat-' : 'chip-pom-';
+            if (ruolo === 'dipendente') return prefix + 'dip';
+            if (ruolo === 'servizio_civile') return prefix + 'sc';
+            return prefix + 'vol';
+        }
+
+        function getAssenza(nome, ds) { return assenze[`${nome}-${ds}`]; }
+        
+        function saveNota(ds, val) { 
+            turniData[ctx.emporio][ds].nota = val; 
+        }
+
+        function hideAll() {
+            ['view-empori', 'view-anni', 'view-mesi', 'view-mese'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+        }
+
+        function show(id) { document.getElementById(id).classList.remove('hidden'); }
+
+        function updateHeader(title, actionsHtml) {
+            document.getElementById('header-title').innerText = title;
+            document.getElementById('header-actions').innerHTML = actionsHtml || '';
+        }
+
+        function backBtn(fn) {
+            return `<button onclick="${fn}" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-bold text-slate-600 transition-colors">Indietro</button>`;
+        }
+
+        function buildRiepilogo() {
+            return `<div class="p-8 text-center text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">Fine Elenco Turni</div>`;
+        }
+
+        function openModal(ds, turno) {
+            const nome = prompt("Nome volontario:");
+            if (nome) {
+                const ruolo = prompt("Ruolo (volontario/dipendente/servizio_civile):", "volontario");
+                turniData[ctx.emporio][ds][turno].push({ nome, ruolo });
+                renderMese();
+            }
+        }
+
+        function openAssenza(nome, ds) {
+            const motivazione = prompt(`Segnala assenza per ${nome}:`, getAssenza(nome, ds) || "");
+            if (motivazione !== null) {
+                if (motivazione === "") delete assenze[`${nome}-${ds}`];
+                else assenze[`${nome}-${ds}`] = motivazione;
+                renderMese();
+            }
+        }
+
+        function init() {
+            ctx = { emporio: null, anno: null, mese: null };
+            hideAll();
+            show('view-empori');
+            updateHeader('TURNI');
+        }
+
+        // Avvio
+        window.onload = init;
+
+    </script>
 </body>
 </html>
