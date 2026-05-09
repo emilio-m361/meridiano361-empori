@@ -4,185 +4,765 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M361 - Nuovo Ordine</title>
-    
-    <!-- CSS Standard dell'App -->
-    <link rel="stylesheet" href="../../assets/style/nav-style.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Stili specifici per la logica del form ordini */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f1f5f9; 
+            color: #1e293b; 
+        }
+        .text-m361-red { color: #b75252; }
+        .bg-m361-red { background-color: #b75252; }
+        .border-m361-red { border-color: #b75252; }
+        
+        input::-webkit-outer-spin-button, 
+        input::-webkit-inner-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] { -moz-appearance: textfield; }
+        
         .wa-active { color: #25D366; }
         .wa-inactive { color: #cbd5e1; }
-        .row-error { background-color: #fee2e2 !important; border: 2px solid #ef4444 !important; }
-        
-        /* Personalizzazione input per uniformarli a nav-style.css */
-        input::-webkit-outer-spin-button, 
-        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        
-        /* Sovrascrittura per gli stati della selezione iniziale */
-        .order-type-card {
-            transition: all 0.2s ease;
+        .row-error { 
+            background-color: #fee2e2 !important; 
+            border: 2px solid #ef4444 !important; 
+        }
+
+        /* RED BUTTON DESIGN FROM OLD VERSION */
+        .btn-red-big {
+            padding: 24px 40px;
+            background-color: #b75252;
+            color: white;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 10px 25px rgba(183, 82, 82, 0.3);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-red-big:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(183, 82, 82, 0.4);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 20px;
+            background-color: #b75252;
+            color: white;
+            border-radius: 16px;
+            font-weight: 800;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 0 8px 20px rgba(183, 82, 82, 0.3);
+            transition: all 0.2s;
+            border: none;
             cursor: pointer;
         }
-        .order-type-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
-            border-color: var(--red);
+        .btn-submit:hover {
+            transform: scale(1.01);
+        }
+
+        /* Card styling */
+        .section-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+            border: 1px solid #f1f5f9;
+        }
+
+        .section-title {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 3px;
+            height: 14px;
+            background: #b75252;
+            border-radius: 2px;
+        }
+
+        .form-input {
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 13px;
+            color: #334155;
+            background: #fff;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #b75252;
+        }
+
+        .form-select {
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 13px;
+            color: #334155;
+            background: #fff;
+        }
+        .form-select:focus {
+            outline: none;
+            border-color: #b75252;
+        }
+
+        .total-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 16px;
+            border-radius: 16px;
+            text-align: center;
+            min-width: 180px;
+        }
+        .total-box-label {
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .total-box-value {
+            font-size: 24px;
+            font-weight: 900;
+            color: #1e293b;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .saldo-box {
+            background: #b75252;
+            padding: 16px;
+            border-radius: 16px;
+            text-align: center;
+            min-width: 180px;
+            box-shadow: 0 8px 20px rgba(183, 82, 82, 0.3);
+        }
+        .saldo-box-label {
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.8);
+            display: block;
+            margin-bottom: 8px;
+        }
+        .saldo-box-value {
+            font-size: 24px;
+            font-weight: 900;
+            color: white;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .add-row-btn {
+            background: #f1f5f9;
+            color: #64748b;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .add-row-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .add-group-btn {
+            background: #1e293b;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(30, 41, 59, 0.3);
+            transition: all 0.15s;
+        }
+        .add-group-btn:hover {
+            background: #334155;
+        }
+
+        .delete-btn {
+            color: #ef4444;
+            background: #fef2f2;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .delete-btn:hover {
+            background: #fee2e2;
         }
     </style>
-    
-    <link rel="icon" type="image/png" href="../../assets/images/faviconm361.png">
 </head>
-<body>
+<body class="pb-28">
 
-    <!-- Il tag <header> e <nav> verranno iniettati automaticamente da nav-script.js -->
+    <header class="bg-white border-b p-4 px-6 md:px-8 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+        <div class="flex items-center gap-4">
+            <img src="../../assets/images/logom361_rosso.jpg" alt="Logo" class="h-8" onerror="this.style.display='none'">
+            <h1 id="header-title" class="font-bold text-lg border-l pl-4 text-slate-700">Nuovo Ordine</h1>
+        </div>
+        <button onclick="goBack()" id="back-btn" class="hidden text-sm font-bold text-slate-500 hover:text-m361-red transition-colors flex items-center gap-2">
+            <i class="fas fa-arrow-left"></i> Indietro
+        </button>
+    </header>
 
-    <main class="page-main">
+    <main class="max-w-[1600px] mx-auto p-4 md:p-6">
         
-        <!-- SELEZIONE INIZIALE (Stile Cards come Index) -->
-        <div id="order-type-selection" class="py-12">
-            <h2 class="m361-sec-title">Cosa vuoi creare oggi?</h2>
-            <div class="grid-2">
-                <div onclick="initOrder('standard')" class="m361-card card-pad flex flex-col items-center gap-4 text-center order-type-card">
-                    <div class="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-m361-red text-3xl">
-                        <i class="fas fa-shopping-bag"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold">Ordine Standard</h3>
-                        <p class="text-xs text-slate-400 mt-1 uppercase tracking-wider">Vendita prodotti emporio</p>
-                    </div>
-                </div>
-
-                <div onclick="initOrder('bomboniere')" class="m361-card card-pad flex flex-col items-center gap-4 text-center order-type-card">
-                    <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-700 text-3xl">
-                        <i class="fas fa-gift"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold">Ordine Bomboniere</h3>
-                        <p class="text-xs text-slate-400 mt-1 uppercase tracking-wider">Gestione cerimonie e gruppi</p>
-                    </div>
-                </div>
+        <!-- ORDER TYPE SELECTION -->
+        <div id="order-type-selection" class="mb-8 text-center bg-white p-8 md:p-16 rounded-3xl shadow-sm border border-gray-100">
+            <h2 class="text-2xl font-bold text-slate-800 mb-8">Seleziona Tipo di Ordine</h2>
+            <div class="flex flex-col md:flex-row justify-center gap-6">
+                <button onclick="initOrder('standard')" class="btn-red-big">
+                    <i class="fas fa-shopping-bag"></i> Ordine Standard
+                </button>
+                <button onclick="initOrder('bomboniere')" class="btn-red-big">
+                    <i class="fas fa-gift"></i> Ordine Bomboniere
+                </button>
             </div>
         </div>
 
-        <!-- FORM ORDINE (Nascosto inizialmente) -->
-        <form id="orderForm" class="hidden space-y" onsubmit="return validateSubmission(event)">
+        <!-- ORDER FORM -->
+        <form id="orderForm" class="hidden space-y-6" onsubmit="return validateSubmission(event)">
             
-            <div class="grid-2">
-                <!-- Sezione Emporio -->
-                <section class="card card-pad">
-                    <h2 class="group-label">Emporio</h2>
-                    <div class="space-y">
-                        <div>
-                            <label class="field-label">Città *</label>
-                            <div class="flex gap-2">
-                                <select id="select-emporio" onchange="handleCittaChange(this)" required class="select-input">
-                                    <option value="">Seleziona...</option>
-                                    <option value="Casalmaggiore">Casalmaggiore</option>
-                                    <option value="Cremona">Cremona</option>
-                                    <option value="Reggio Emilia">Reggio Emilia</option>
-                                    <option value="Viadana">Viadana</option>
-                                </select>
-                            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                
+                <!-- EMPORIO SECTION -->
+                <div class="lg:col-span-1 section-card">
+                    <h2 class="section-title">Emporio</h2>
+                    <div class="space-y-4">
+                        <div class="flex gap-2">
+                            <select id="select-emporio" onchange="handleCittaChange(this)" required class="form-select flex-1">
+                                <option value="">Città *</option>
+                                <option value="Casalmaggiore">Casalmaggiore</option>
+                                <option value="Cremona">Cremona</option>
+                                <option value="Reggio Emilia">Reggio Emilia</option>
+                                <option value="Viadana">Viadana</option>
+                            </select>
+                            <button type="button" onclick="addNewCityPrompt()" class="bg-red-50 px-3 rounded-xl hover:bg-red-100 text-m361-red">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button type="button" onclick="removeCurrentCity()" class="bg-red-50 px-3 rounded-xl hover:bg-red-200 text-m361-red">
+                                <i class="fas fa-trash-can"></i>
+                            </button>
                         </div>
-                        
+
                         <div id="canale-cremona-container" class="hidden">
-                            <label class="field-label">Canale Vendita *</label>
-                            <select id="select-canale" onchange="refreshNumeroOrdinePreview()" class="select-input border-2 border-m361-red bg-red-50">
-                                <option value="">Scegli canale...</option>
-                                <option value="emporio">Emporio</option>
+                            <select id="select-canale" onchange="refreshNumeroOrdinePreview()" class="form-select border-2 border-m361-red bg-red-50">
+                                <option value="">Seleziona Canale *</option>
+                                <option value="emporio">emporio</option>
                                 <option value="meridiano361.it">meridiano361.it</option>
                                 <option value="on-earth.it">on-earth.it</option>
                             </select>
                         </div>
 
-                        <div>
-                            <label class="field-label">Operatore e Data</label>
-                            <div class="grid-2">
-                                <select id="select-operatore" onchange="refreshNumeroOrdinePreview()" required class="select-input"></select>
-                                <input type="date" id="order-date" onchange="refreshNumeroOrdinePreview()" required class="input">
-                            </div>
+                        <div class="flex gap-2">
+                            <select id="select-operatore" onchange="refreshNumeroOrdinePreview()" required class="form-select flex-1">
+                                <option value="">Seleziona Operatore *</option>
+                            </select>
+                            <button type="button" onclick="addNewOperatorPrompt()" class="bg-red-50 px-3 rounded-xl hover:bg-red-100 text-m361-red">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button type="button" onclick="removeCurrentOperator()" class="bg-red-50 px-3 rounded-xl hover:bg-red-200 text-m361-red">
+                                <i class="fas fa-trash-can"></i>
+                            </button>
                         </div>
-                        
-                        <input type="text" id="numero-ordine-preview" readonly class="input input-mono bg-slate-50 text-[11px]" placeholder="ID ORDINE GENERATO">
-                    </div>
-                </section>
 
-                <!-- Sezione Cliente -->
-                <section class="card card-pad">
-                    <h2 class="group-label">Dati Cliente</h2>
-                    <div class="space-y">
-                        <div class="grid-2">
-                            <input type="text" id="cust-nome" placeholder="Nome *" oninput="refreshNumeroOrdinePreview()" required class="input">
-                            <input type="text" id="cust-cognome" placeholder="Cognome *" oninput="refreshNumeroOrdinePreview()" required class="input">
-                        </div>
+                        <input type="date" id="order-date" onchange="refreshNumeroOrdinePreview()" required class="form-input">
+                        <input type="text" id="numero-ordine-preview" readonly class="form-input bg-slate-50 text-slate-500 font-mono text-xs" placeholder="Numero ordine">
+                    </div>
+                </div>
+
+                <!-- CLIENTE SECTION -->
+                <div class="lg:col-span-3 section-card">
+                    <h2 class="section-title">Cliente</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                        <input type="text" id="cust-nome" placeholder="Nome *" oninput="refreshNumeroOrdinePreview()" required class="form-input">
+                        <input type="text" id="cust-cognome" placeholder="Cognome *" oninput="refreshNumeroOrdinePreview()" required class="form-input">
                         <div class="relative">
-                            <input type="tel" id="cust-tel" placeholder="Cellulare *" required class="input pr-12">
-                            <button type="button" id="wa-btn" onclick="toggleWA(this)" class="absolute right-3 top-2.5 wa-active">
+                            <input type="tel" id="cust-tel" placeholder="Cellulare *" required class="form-input pr-10">
+                            <button type="button" onclick="toggleWA(this)" class="absolute right-3 top-3 transition-colors wa-active">
                                 <i class="fab fa-whatsapp fa-lg"></i>
                             </button>
                         </div>
-                        <input type="email" id="cust-email" placeholder="Email" class="input">
-                        
-                        <div>
-                            <label class="field-label">Modalità Consegna</label>
-                            <div class="flex gap-4">
-                                <label class="flex items-center gap-2 text-xs font-bold uppercase cursor-pointer">
-                                    <input type="radio" name="mod_consegna" value="Ritiro" checked class="accent-m361-red"> Ritiro
-                                </label>
-                                <label class="flex items-center gap-2 text-xs font-bold uppercase cursor-pointer">
-                                    <input type="radio" name="mod_consegna" value="Spedizione" class="accent-m361-red"> Spedizione
-                                </label>
-                            </div>
+                        <input type="email" id="cust-email" placeholder="Email" class="form-input">
+                        <div class="flex gap-2 p-1 bg-gray-100 rounded-xl h-[46px] items-center">
+                            <label class="flex-1 flex items-center justify-center text-xs font-bold cursor-pointer h-full rounded-lg has-[:checked]:bg-white transition-all">
+                                <input type="radio" name="mod_consegna" value="Ritiro" checked class="hidden"> Ritiro
+                            </label>
+                            <label class="flex-1 flex items-center justify-center text-xs font-bold cursor-pointer h-full rounded-lg has-[:checked]:bg-white transition-all">
+                                <input type="radio" name="mod_consegna" value="Spedizione" class="hidden"> Sped.
+                            </label>
                         </div>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Contenitore Righe Ordine -->
-            <div id="groups-container" class="space-y"></div>
-
-            <div id="add-group-container" class="hidden flex justify-center py-4">
-                <button type="button" onclick="addGroup()" class="btn btn-secondary">
-                    <i class="fas fa-plus"></i> Aggiungi Tipologia
-                </button>
-            </div>
-
-            <!-- Riepilogo Totali -->
-            <div class="card card-pad">
-                <div class="flex flex-col md:flex-row justify-end items-center gap-6">
-                    <div class="text-right">
-                        <span class="field-label">Totale Prodotti</span>
-                        <span id="grand-total" class="text-2xl font-mono font-bold">€ 0,00</span>
-                    </div>
-                    <div class="text-right">
-                        <span class="field-label">Acconto</span>
-                        <input type="text" id="acconto" onfocus="clearCurrency(this)" onblur="formatCurrency(this)" oninput="calcGrandTotal()" class="input input-mono text-xl w-32" value="€ 0,00">
-                    </div>
-                    <div class="bg-m361-red text-white p-4 rounded-xl text-right min-w-[160px]">
-                        <span class="text-[9px] font-black uppercase opacity-80">Saldo da Versare</span>
-                        <div id="saldo-finale" class="text-2xl font-mono font-bold">€ 0,00</div>
                     </div>
                 </div>
             </div>
 
-            <textarea id="order-notes" class="textarea-input" placeholder="Note interne o istruzioni speciali..."></textarea>
+            <!-- GROUPS CONTAINER -->
+            <div id="groups-container" class="space-y-8"></div>
 
-            <button type="submit" id="submit-btn" class="btn btn-primary w-full justify-center text-sm py-5 shadow-lg">
-                <i class="fas fa-save"></i> Registra Ordine nel Sistema
+            <!-- ADD GROUP BUTTON -->
+            <div id="add-group-container" class="hidden flex justify-center">
+                <button type="button" onclick="addGroup()" class="add-group-btn">
+                    <i class="fas fa-layer-group mr-2"></i> Aggiungi Tipologia Bomboniera
+                </button>
+            </div>
+
+            <!-- TOTALS -->
+            <div class="section-card">
+                <div class="flex flex-col md:flex-row justify-end items-stretch gap-4">
+                    <div class="total-box">
+                        <span class="total-box-label">Totale Ordine</span>
+                        <span id="grand-total" class="total-box-value">€ 0,00</span>
+                    </div>
+                    <div class="total-box">
+                        <span class="total-box-label">Acconto</span>
+                        <input type="text" id="acconto" onfocus="clearCurrency(this)" onblur="formatCurrency(this)" oninput="calcGrandTotal()" 
+                            class="w-full text-center text-slate-700 bg-transparent text-2xl outline-none font-bold" value="€ 0,00">
+                    </div>
+                    <div class="saldo-box">
+                        <span class="saldo-box-label">Da Pagare</span>
+                        <span id="saldo-finale" class="saldo-box-value">€ 0,00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOTES -->
+            <div class="section-card">
+                <textarea id="order-notes" rows="2" class="form-input" placeholder="Note..."></textarea>
+            </div>
+
+            <!-- SUBMIT BUTTON -->
+            <button type="submit" id="submit-btn" class="btn-submit">
+                <i class="fas fa-save mr-2"></i> Salva Ordine
             </button>
         </form>
 
     </main>
 
-    <!-- Script di Navigazione (Gestisce Header e Nav) -->
-    <script src="../../scripts/nav-script.js"></script>
-    
-    <!-- Supabase e Logica -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // La tua logica JS rimane qui (initOrder, buildNumeroOrdine, Supabase config, ecc.)
-        // Ricorda di usare le classi CSS di nav-style dove possibile (es. btn, card, input)
+        const SUPABASE_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentType = 'standard';
+        let groupCount = 0;
+        let ALL_EMPORI = ["Casalmaggiore", "Cremona", "Reggio Emilia", "Viadana"];
+
+        const OPERATORI_DATA = {
+            "Cremona": ["Chiara Monteverdi", "Emilio Mazzolari", "Giulia Galelli"],
+            "Casalmaggiore": ["Alessandra Rivetti", "Barbara Araldi", "Carla Maffei", "Chiara Monteverdi", "Edoardo Pavesi", "Emilio Mazzolari", "Erica Bossi", "Francesco Lunardini", "Giovanna Raineri", "Giulia Frigeri", "Giuseppe Lunardini", "Ileana Galli", "Maria Marcella Scaravonati", "Matilde Chiarini", "Michele Marchini", "Roberta Vezzosi", "Teyssir Mabrouk", "Vittoria Lunardini"],
+            "Viadana": ["Alessia Rovina", "Ave Aroldi", "Barbara Piotrowska", "Carla Bellelli", "Carla Chittolini", "Chiara Monteverdi", "Claudio Mortini", "Donatella Falugi", "Elena Ghelfi", "Emilio Mazzolari", "Franco Furlotti", "Giuseppina Amadini", "Manuela Scazza", "Marta Sanfelici", "Mariagrazia Bertolini", "Mirella Panato", "Roberta Alberini", "Sara Germani", "Tiziana Bortesi"],
+            "Reggio Emilia": ["Alessia Bartolomei", "Elsa Scarpa", "Manuela Capanni", "Marica Pioli"]
+        };
+
+        // NEW ORDER NUMBER FORMAT: YYYYMMDDXX#NN
+        // XX = emporio code (CR, CA, RE, VI)
+        // NN = progressive number for that emporio on that date
+        function emporioCode(citta) {
+            const codes = {
+                'Cremona': 'CR',
+                'Casalmaggiore': 'CA',
+                'Reggio Emilia': 'RE',
+                'Viadana': 'VI'
+            };
+            return codes[citta] || 'XX';
+        }
+
+        function buildNumeroOrdine(dateStr, citta, progressivo) {
+            const d = (dateStr || '').replace(/-/g, '');
+            const empCode = emporioCode(citta);
+            const prog = String(progressivo).padStart(2, '0');
+            return `${d}${empCode}#${prog}`;
+        }
+
+        async function getProgressivoOrdine(dateStr, citta) {
+            if (!dateStr || !citta) return 1;
+            
+            const dateFormatted = dateStr.replace(/-/g, '');
+            const empCode = emporioCode(citta);
+            
+            try {
+                const { data, error } = await _supabase
+                    .from('ordini_incorso')
+                    .select('numero_ordine')
+                    .ilike('numero_ordine', `${dateFormatted}${empCode}#%`);
+                
+                if (error) throw error;
+                
+                return (data?.length || 0) + 1;
+            } catch (error) {
+                console.error('Error getting progressivo:', error);
+                return 1;
+            }
+        }
+
+        async function refreshNumeroOrdinePreview() {
+            const date = document.getElementById('order-date')?.value;
+            const citta = document.getElementById('select-emporio')?.value;
+            
+            if (date && citta) {
+                const progressivo = await getProgressivoOrdine(date, citta);
+                document.getElementById('numero-ordine-preview').value = buildNumeroOrdine(date, citta, progressivo);
+            } else {
+                document.getElementById('numero-ordine-preview').value = '';
+            }
+        }
+
+        function goBack() {
+            if (!document.getElementById('orderForm').classList.contains('hidden')) {
+                document.getElementById('orderForm').classList.add('hidden');
+                document.getElementById('order-type-selection').classList.remove('hidden');
+                document.getElementById('header-title').innerText = 'Nuovo Ordine';
+                document.getElementById('back-btn').classList.add('hidden');
+                groupCount = 0;
+                document.getElementById('groups-container').innerHTML = '';
+            } else {
+                window.location.href = 'ordini_incorso.html';
+            }
+        }
+
+        function initOrder(type) {
+            currentType = type;
+            document.getElementById('order-type-selection').classList.add('hidden');
+            document.getElementById('orderForm').classList.remove('hidden');
+            document.getElementById('header-title').innerText = type === 'bomboniere' ? 'Ordine Bomboniere' : 'Ordine Standard';
+            document.getElementById('back-btn').classList.remove('hidden');
+            
+            if (type === 'bomboniere') {
+                document.getElementById('add-group-container').classList.remove('hidden');
+            }
+            
+            addGroup();
+            
+            // Set today's date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('order-date').value = today;
+            
+            refreshNumeroOrdinePreview();
+        }
+
+        function handleCittaChange(select) {
+            const citta = select.value;
+            const canaleContainer = document.getElementById('canale-cremona-container');
+            const opSelect = document.getElementById('select-operatore');
+            
+            canaleContainer.classList.toggle('hidden', citta !== 'Cremona');
+            document.getElementById('select-canale').required = (citta === 'Cremona');
+            
+            opSelect.innerHTML = '<option value="">Seleziona Operatore *</option>';
+            (OPERATORI_DATA[citta] || []).sort().forEach(op => {
+                const opt = document.createElement('option');
+                opt.value = op;
+                opt.text = op;
+                opSelect.add(opt);
+            });
+            
+            updateAllEmporiDropdowns();
+            refreshNumeroOrdinePreview();
+        }
+
+        function getEmporioOptions() {
+            const mainCitta = document.getElementById('select-emporio').value;
+            let options = '<option value="">Dove?</option>';
+            ALL_EMPORI.forEach(e => {
+                if (e !== mainCitta) {
+                    options += `<option value="${e}">${e}</option>`;
+                }
+            });
+            return options;
+        }
+
+        function updateAllEmporiDropdowns() {
+            document.querySelectorAll('.emporio-dropdown').forEach(select => {
+                const currentVal = select.value;
+                select.innerHTML = getEmporioOptions();
+                select.value = currentVal;
+            });
+        }
+
+        function addNewCityPrompt() {
+            const nuovaCitta = prompt("Inserisci il nome della nuova città:");
+            if (nuovaCitta && nuovaCitta.trim() !== "") {
+                const nome = nuovaCitta.trim();
+                if (!ALL_EMPORI.includes(nome)) {
+                    ALL_EMPORI.push(nome);
+                    const select = document.getElementById('select-emporio');
+                    const opt = document.createElement('option');
+                    opt.value = nome;
+                    opt.text = nome;
+                    select.add(opt);
+                    select.value = nome;
+                    handleCittaChange(select);
+                }
+            }
+        }
+
+        function removeCurrentCity() {
+            const select = document.getElementById('select-emporio');
+            if (select.selectedIndex > 0 && confirm("Rimuovere la città selezionata?")) {
+                ALL_EMPORI = ALL_EMPORI.filter(c => c !== select.value);
+                select.remove(select.selectedIndex);
+                handleCittaChange(select);
+            }
+        }
+
+        function addNewOperatorPrompt() {
+            const nome = prompt("Nuovo operatore:");
+            if (nome && nome.trim() !== "") {
+                const opSelect = document.getElementById('select-operatore');
+                const opt = document.createElement('option');
+                opt.value = nome.trim();
+                opt.text = nome.trim();
+                opSelect.add(opt);
+                opSelect.value = opt.value;
+                refreshNumeroOrdinePreview();
+            }
+        }
+
+        function removeCurrentOperator() {
+            const opSelect = document.getElementById('select-operatore');
+            if (opSelect.selectedIndex > 0 && confirm("Rimuovere operatore?")) {
+                opSelect.remove(opSelect.selectedIndex);
+            }
+            refreshNumeroOrdinePreview();
+        }
+
+        function toggleWA(btn) {
+            btn.classList.toggle('wa-active');
+            btn.classList.toggle('wa-inactive');
+        }
+
+        function addGroup() {
+            groupCount++;
+            const groupId = groupCount;
+            const container = document.getElementById('groups-container');
+            const groupTitle = currentType === 'bomboniere' ? `Bomboniera Tipologia ${groupId}` : 'Prodotti';
+            const subtotalSection = currentType === 'bomboniere' ? `
+                <div class="mt-4 flex justify-end border-t pt-4">
+                    <div class="text-right">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase block">Subtotale Tipologia</span>
+                        <span id="subtotal-${groupId}" class="text-xl font-bold text-slate-600">€ 0,00</span>
+                    </div>
+                </div>
+            ` : '';
+
+            const groupHtml = `
+                <div id="group-${groupId}" class="section-card">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="section-title">${groupTitle}</h3>
+                        <button type="button" onclick="addRow(${groupId})" class="add-row-btn">
+                            <i class="fas fa-plus mr-1"></i> Aggiungi
+                        </button>
+                    </div>
+                    <div id="rows-${groupId}" class="space-y-3"></div>
+                    ${subtotalSection}
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', groupHtml);
+            addRow(groupId);
+        }
+
+        function addRow(groupId) {
+            const rowsContainer = document.getElementById(`rows-${groupId}`);
+            const rowId = Date.now();
+            
+            const rowHtml = `
+                <div id="row-${rowId}" class="grid grid-cols-12 gap-3 items-center p-3 bg-slate-50 rounded-xl">
+                    <input type="number" placeholder="Q.tà" min="1" oninput="calcSubtotal(${groupId})" class="col-span-2 form-input">
+                    <input type="text" placeholder="Prodotto" class="col-span-4 form-input">
+                    <input type="number" step="0.01" placeholder="Prezzo" oninput="calcSubtotal(${groupId})" class="col-span-2 form-input">
+                    <select class="col-span-2 form-select emporio-dropdown">
+                        ${getEmporioOptions()}
+                    </select>
+                    <span class="col-span-1 text-center font-bold text-slate-600">€ <span class="row-total">0,00</span></span>
+                    <button type="button" onclick="deleteRow(${rowId}, ${groupId})" class="col-span-1 delete-btn">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            
+            rowsContainer.insertAdjacentHTML('beforeend', rowHtml);
+        }
+
+        function deleteRow(rowId, groupId) {
+            document.getElementById(`row-${rowId}`)?.remove();
+            calcSubtotal(groupId);
+        }
+
+        function calcSubtotal(groupId) {
+            const rows = document.querySelectorAll(`#rows-${groupId} > div`);
+            let subtotal = 0;
+            
+            rows.forEach(row => {
+                const qty = parseFloat(row.querySelector('input[type="number"]').value) || 0;
+                const price = parseFloat(row.querySelectorAll('input[type="number"]')[1].value) || 0;
+                const rowTotal = qty * price;
+                row.querySelector('.row-total').textContent = rowTotal.toFixed(2).replace('.', ',');
+                subtotal += rowTotal;
+            });
+            
+            const subtotalEl = document.getElementById(`subtotal-${groupId}`);
+            if (subtotalEl) {
+                subtotalEl.textContent = '€ ' + subtotal.toFixed(2).replace('.', ',');
+            }
+            
+            calcGrandTotal();
+        }
+
+        function calcGrandTotal() {
+            let total = 0;
+            document.querySelectorAll('[id^="subtotal-"], .row-total').forEach(el => {
+                const text = el.textContent.replace('€', '').replace(',', '.').trim();
+                total += parseFloat(text) || 0;
+            });
+            
+            document.getElementById('grand-total').textContent = '€ ' + total.toFixed(2).replace('.', ',');
+            
+            const accontoText = document.getElementById('acconto').value.replace('€', '').replace(',', '.').trim();
+            const acconto = parseFloat(accontoText) || 0;
+            const saldo = Math.max(0, total - acconto);
+            
+            document.getElementById('saldo-finale').textContent = '€ ' + saldo.toFixed(2).replace('.', ',');
+        }
+
+        function clearCurrency(input) {
+            input.value = input.value.replace('€', '').replace(',', '.').trim();
+        }
+
+        function formatCurrency(input) {
+            const val = parseFloat(input.value) || 0;
+            input.value = '€ ' + val.toFixed(2).replace('.', ',');
+            calcGrandTotal();
+        }
+
+        async function validateSubmission(event) {
+            event.preventDefault();
+            
+            // Validate all rows
+            const rows = document.querySelectorAll('[id^="rows-"] > div');
+            let hasError = false;
+            
+            rows.forEach(row => {
+                const qty = row.querySelector('input[type="number"]').value;
+                const product = row.querySelectorAll('input[type="text"]')[0].value;
+                const price = row.querySelectorAll('input[type="number"]')[1].value;
+                
+                if (!qty || !product || !price) {
+                    row.classList.add('row-error');
+                    hasError = true;
+                } else {
+                    row.classList.remove('row-error');
+                }
+            });
+            
+            if (hasError) {
+                alert('Completa tutti i campi evidenziati in rosso');
+                return false;
+            }
+            
+            // Collect data
+            const orderData = {
+                numero_ordine: document.getElementById('numero-ordine-preview').value,
+                tipo_ordine: currentType,
+                emporio: document.getElementById('select-emporio').value,
+                canale: document.getElementById('select-canale')?.value || null,
+                operatore: document.getElementById('select-operatore').value,
+                data_ordine: document.getElementById('order-date').value,
+                cliente_nome: document.getElementById('cust-nome').value,
+                cliente_cognome: document.getElementById('cust-cognome').value,
+                cliente_telefono: document.getElementById('cust-tel').value,
+                cliente_email: document.getElementById('cust-email').value,
+                cliente_whatsapp: document.querySelector('.wa-active') ? true : false,
+                modalita_consegna: document.querySelector('input[name="mod_consegna"]:checked').value,
+                totale: parseFloat(document.getElementById('grand-total').textContent.replace('€', '').replace(',', '.').trim()),
+                acconto: parseFloat(document.getElementById('acconto').value.replace('€', '').replace(',', '.').trim()) || 0,
+                saldo: parseFloat(document.getElementById('saldo-finale').textContent.replace('€', '').replace(',', '.').trim()),
+                note: document.getElementById('order-notes').value,
+                stato: 'in_corso',
+                data_creazione: new Date().toISOString()
+            };
+            
+            // Collect products
+            const products = [];
+            rows.forEach(row => {
+                const qty = parseFloat(row.querySelector('input[type="number"]').value);
+                const product = row.querySelectorAll('input[type="text"]')[0].value;
+                const price = parseFloat(row.querySelectorAll('input[type="number"]')[1].value);
+                const emporio = row.querySelector('.emporio-dropdown').value || orderData.emporio;
+                
+                products.push({
+                    quantita: qty,
+                    prodotto: product,
+                    prezzo_unitario: price,
+                    totale: qty * price,
+                    emporio: emporio
+                });
+            });
+            
+            orderData.prodotti = products;
+            
+            // Save to Supabase
+            try {
+                const { data, error } = await _supabase
+                    .from('ordini_incorso')
+                    .insert([orderData]);
+                
+                if (error) throw error;
+                
+                alert('Ordine salvato con successo!');
+                window.location.href = 'ordini_incorso.html';
+            } catch (error) {
+                console.error('Error saving order:', error);
+                alert('Errore nel salvataggio: ' + error.message);
+            }
+            
+            return false;
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('order-date').value = today;
+        });
     </script>
+
+    <script src="../../scripts/nav-script.js"></script>
 </body>
 </html>
