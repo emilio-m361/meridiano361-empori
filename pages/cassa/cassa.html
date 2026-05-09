@@ -237,23 +237,21 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 </head>
 <body>
 
-<div class="card card-pad" style="margin-top: 40px; text-align: center; border: 2px dashed #e2e8f0; background: #f8fafc; border-radius: 16px; padding: 30px;">
-    <div class="sec-title" style="justify-content: center; font-weight: 800; color: #1e293b; margin-bottom: 8px;">
-        Riepilogo Amministrativo
-    </div>
-    <p style="font-size: 13px; color: #64748b; margin-bottom: 24px; max-width: 400px; margin-left: auto; margin-right: auto;">
-        Visualizza il riepilogo mensile, i corrispettivi e il dettaglio delle forme di pagamento per l'amministrazione.
-    </p>
-    
-    <div class="flex justify-center">
-        <a href="amministrazione.html" class="flex items-center gap-2 px-6 py-3 bg-slate-800 text-white rounded-xl text-sm font-bold hover:bg-slate-700 transition-all shadow-md hover:shadow-lg active:scale-95">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
+<div class="card card-pad" style="margin-top: 40px; text-align: center; border: 2px dashed #e2e8f0; background: #f8fafc;">
+        <div class="sec-title" style="justify-content: center;">Riepilogo Amministrativo</div>
+        <p style="font-size: 12px; color: #64748b; margin-bottom: 20px;">Dopo aver salvato la cassa, puoi visualizzare il riepilogo per l'amministrazione.</p>
+        
+        <a href="cassa_amministrazione.html" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; border-color: #1e293b; color: #1e293b;">
+            <i class="fas fa-chart-line"></i>
             Vai ad Amministrazione
+                <a href="amministrazione.html" class="flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-bold hover:bg-slate-700 transition-all shadow-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="Button 9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+    </svg>
+    Amministrazione
+</a>
         </a>
     </div>
-</div>
 
 </main> ```
 
@@ -1343,4 +1341,3 @@ window.addEventListener('load', init);
 <script src="../../scripts/nav-script.js"></script>
 </body>
 </html>
-
