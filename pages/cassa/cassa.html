@@ -10,17 +10,6 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:100vh;padding-bottom:100px;}
 
-/* ── HEADER ── */
-.top-bar{background:#fff;border-bottom:1px solid #e5e7eb;padding:0 20px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.05);}
-.top-bar-logo{height:30px;object-fit:contain;}
-.top-bar-title{font-size:16px;font-weight:700;color:#334155;border-left:1px solid #e5e7eb;padding-left:14px;margin-left:2px;}
-
-/* ── BOTTOM NAV ── */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e5e7eb;display:flex;z-index:200;box-shadow:0 -2px 12px rgba(0,0,0,.06);}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;gap:3px;text-decoration:none;color:#94a3b8;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;transition:color .15s;background:none;border:none;font-family:'Inter',sans-serif;cursor:pointer;}
-.nav-item i{font-size:18px;}
-.nav-item.active,.nav-item:hover{color:#b75252;}
-
 /* ── LAYOUT ── */
 .main{max-width:1100px;margin:0 auto;padding:24px 16px;}
 .space-y>*+*{margin-top:18px;}
@@ -33,7 +22,7 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .sec-title{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#94a3b8;display:flex;align-items:center;gap:10px;margin-bottom:20px;}
 .sec-title::before{content:'';display:block;width:3px;height:16px;background:#b75252;border-radius:2px;flex-shrink:0;}
 
-/* ══ STEP 1: EMPORI ══ */
+/* ══ EMPORI ══ */
 .emp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;}
 .emp-card{background:#fff;border-radius:24px;border:1px solid #f1f5f9;box-shadow:0 1px 4px rgba(0,0,0,.07);padding:32px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;cursor:pointer;transition:all .15s;text-align:center;}
 .emp-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(183,82,82,.15);}
@@ -41,7 +30,7 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .emp-icon svg{width:28px;height:28px;}
 .emp-name{font-weight:700;font-size:16px;color:#334155;}
 
-/* ══ STEP 2: CALENDARIO ══ */
+/* ══ CALENDARIO ══ */
 .calendar-wrap{max-width:480px;}
 .month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
 .month-label{font-size:18px;font-weight:800;color:#1e293b;}
@@ -78,12 +67,31 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .meta-chip input[type=checkbox]{accent-color:#b75252;width:16px;height:16px;}
 .meta-chip-val{font-size:13px;font-weight:700;color:#475569;}
 
+/* scontrini chip */
+.scontrini-chip{background:#fff1f1;border:1px solid #f0c0c0;}
+.scontrini-chip input{background:transparent;border:none;font-size:20px;font-weight:900;color:#b75252;width:80px;text-align:center;font-family:monospace;}
+.scontrini-chip input:focus{outline:none;}
+.scontrini-chip input::placeholder{color:#f0c0c0;}
+
 /* ── TURNO COLUMNS ── */
 .turno-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
 @media(max-width:820px){.turno-grid{grid-template-columns:1fr;}}
 .turno-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px;}
 .badge-mat{background:#fff1f1;color:#b75252;}
 .badge-pom{background:#f4efe8;color:#7a4f2b;}
+
+/* ── CONTA CONTANTI (opzionale inizio turno) ── */
+.conta-toggle{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .15s;}
+.conta-toggle:hover{background:#fff1f1;border-color:#b75252;}
+.conta-toggle-lbl{font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.08em;}
+.conta-toggle-icon{font-size:13px;color:#94a3b8;transition:transform .2s;}
+.conta-toggle.open .conta-toggle-icon{transform:rotate(180deg);}
+.conta-section{display:none;margin-bottom:14px;background:#fffcf8;border:1px solid #fde68a;border-radius:12px;padding:14px;}
+.conta-section.open{display:block;}
+.conta-result{margin-top:10px;padding:10px;background:#fff;border-radius:10px;border:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;}
+.conta-result-lbl{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;}
+.conta-result-val{font-size:18px;font-weight:900;color:#334155;font-family:monospace;}
+.conta-ok{color:#059669;} .conta-err{color:#e11d48;}
 
 /* ── COIN ── */
 .coin-section-lbl{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:8px;}
@@ -98,20 +106,14 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .sum-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;}
 .sum-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
 .sum-val{font-size:14px;font-weight:800;font-family:monospace;}
-.lbl-gray{color:#94a3b8;}
-.lbl-red{color:#b75252;}
-.lbl-dark{color:#475569;}
+.lbl-gray{color:#94a3b8;} .lbl-red{color:#b75252;} .lbl-dark{color:#475569;}
 .fondo-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;margin:8px 0;}
 
 /* ── PAYMENT ROWS ── */
 .pay-section-lbl{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin:16px 0 8px;}
 .pay-row{display:grid;grid-template-columns:1fr 130px 34px;align-items:center;gap:8px;margin-bottom:4px;}
 .pay-label{font-size:13px;font-weight:700;letter-spacing:.02em;}
-.lbl-cash{color:#334155;}
-.lbl-digital{color:#475569;}
-.lbl-online{color:#4c5d88;}
-.lbl-neg{color:#e11d48;}
-.lbl-spese{color:#7a4f2b;}
+.lbl-cash{color:#334155;} .lbl-digital{color:#475569;} .lbl-online{color:#4c5d88;} .lbl-neg{color:#e11d48;} .lbl-spese{color:#7a4f2b;}
 .money-input{border:1px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;font-family:monospace;color:#334155;width:100%;text-align:right;transition:border-color .15s;}
 .money-input:focus{outline:none;border-color:#b75252;}
 
@@ -133,8 +135,7 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .corrispettivi-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;}
 .corrispettivi-input{border:1.5px solid #b75252;border-radius:10px;padding:9px 12px;font-size:13px;font-family:monospace;color:#1e293b;width:160px;text-align:right;transition:border-color .15s;}
 .corrispettivi-input:focus{outline:none;border-color:#8f3d3d;}
-.diff-ok{color:#059669;}
-.diff-err{color:#e11d48;}
+.diff-ok{color:#059669;} .diff-err{color:#e11d48;}
 .cassaforte-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin-top:14px;}
 
 /* ── FORM INPUTS ── */
@@ -151,7 +152,6 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .op-wrap .select-input{flex:1;}
 .op-add-btn{height:42px;padding:0 14px;background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;font-size:12px;font-weight:700;color:#64748b;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px;}
 .op-add-btn:hover{border-color:#b75252;color:#b75252;background:#fff1f1;}
-/* mini modal aggiungi operatore */
 .op-mini-modal{display:none;margin-top:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;gap:8px;flex-direction:column;}
 .op-mini-modal.open{display:flex;}
 .op-mini-row{display:flex;gap:8px;}
@@ -161,14 +161,13 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .op-mini-save:hover{background:#8f3d3d;}
 .op-mini-cancel{padding:9px 12px;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;color:#64748b;}
 
-/* ── SCONTRINI ── */
-.scontrini-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px;margin-top:0;}
-.scontrini-icon{width:40px;height:40px;background:#fff1f1;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.scontrini-icon i{font-size:18px;color:#b75252;}
-.scontrini-label{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
-.scontrini-input{border:none;background:transparent;font-size:24px;font-weight:900;color:#1e293b;font-family:monospace;width:100%;padding:0;}
-.scontrini-input:focus{outline:none;color:#b75252;}
-.scontrini-input::placeholder{color:#cbd5e1;font-weight:700;}
+/* ── TIPO TURNO ── */
+.turno-type-wrap{background:#fff1f1;border:1px solid #f0c0c0;border-radius:14px;padding:12px;margin-bottom:16px;}
+.turno-type-lbl{font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
+.turno-type-opts{display:flex;gap:8px;flex-wrap:wrap;}
+.turno-type-opts label{flex:1;min-width:120px;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 14px;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;color:#64748b;transition:all .15s;}
+.turno-type-opts label:has(input:checked){background:#b75252;color:#fff;border-color:#b75252;}
+.turno-type-opts input{display:none;}
 
 /* ══ IVA GIORNALIERA ══ */
 .iva-err-banner{background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:10px 14px;font-size:12px;font-weight:700;color:#e11d48;margin-bottom:14px;display:none;}
@@ -183,14 +182,12 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .iva-amount-inp{border:none;background:transparent;font-size:20px;font-weight:800;font-family:monospace;color:#1e293b;width:100%;padding:4px 0;border-bottom:2px solid #f1f5f9;transition:border-color .15s;}
 .iva-amount-inp:focus{outline:none;border-bottom-color:#b75252;color:#b75252;}
 .iva-amount-inp::placeholder{color:#cbd5e1;}
-
 .iva-esente-row{margin-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .iva-esente-lbl{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;}
 .iva-esente-sel{border:1px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;font-family:'Inter',sans-serif;color:#64748b;background:#fff;}
 .iva-esente-sel:focus{outline:none;border-color:#b75252;}
 .iva-esente-txt{border:1px solid #b75252;border-radius:10px;padding:9px 12px;font-size:13px;font-family:'Inter',sans-serif;color:#64748b;background:#fff1f1;}
 .iva-esente-txt:focus{outline:none;}
-
 .iva-summary{background:#fff1f1;border-radius:16px;padding:20px 24px;margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
 @media(max-width:500px){.iva-summary{grid-template-columns:1fr;gap:14px;}}
 .iva-sum-block{display:flex;flex-direction:column;gap:4px;border-right:1px solid #f0c0c0;padding:0 20px;}
@@ -199,8 +196,7 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 @media(max-width:500px){.iva-sum-block{border-right:none;padding:0;}}
 .iva-sum-lbl{font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;}
 .iva-sum-val{font-size:22px;font-weight:900;font-family:monospace;color:#b75252;}
-.iva-ver-ok{color:#059669;}
-.iva-ver-err{color:#e11d48;}
+.iva-ver-ok{color:#059669;} .iva-ver-err{color:#e11d48;}
 
 /* ── SAVE BAR ── */
 .save-bar{position:fixed;bottom:58px;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;padding:12px 20px;display:flex;align-items:center;justify-content:center;z-index:150;}
@@ -211,8 +207,6 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 </style>
 </head>
 <body>
-
-<script src="../../scripts/nav-script.js"></script>
 
 <main class="main space-y">
 
@@ -284,13 +278,38 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
               <option value="variabile">variabile</option>
             </select>
           </div>
+          <div class="meta-chip scontrini-chip">
+            <div class="meta-chip-lbl"><i class="fas fa-receipt"></i> Scontrini emessi</div>
+            <input id="global-scontrini" type="number" min="0" step="1" placeholder="0">
+          </div>
           <div class="meta-chip">
             <div class="meta-chip-lbl">Arrivo merci</div>
             <label>
-              <input id="arrivo-merci" type="checkbox" style="accent-color:#b75252;width:16px;height:16px;">
+              <input id="arrivo-merci" type="checkbox">
               <span class="meta-chip-val">Sì</span>
             </label>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TIPO TURNO ── -->
+    <div class="card card-pad">
+      <div class="turno-type-wrap">
+        <div class="turno-type-lbl">Giornata di lavoro</div>
+        <div class="turno-type-opts">
+          <label>
+            <input type="radio" name="turno_type" value="entrambi" checked onchange="updateTurnoVisibility()">
+            <i class="fas fa-sun"></i> + <i class="fas fa-moon"></i> Entrambi i turni
+          </label>
+          <label>
+            <input type="radio" name="turno_type" value="solo_mattino" onchange="updateTurnoVisibility()">
+            <i class="fas fa-sun"></i> Solo mattino
+          </label>
+          <label>
+            <input type="radio" name="turno_type" value="solo_pomeriggio" onchange="updateTurnoVisibility()">
+            <i class="fas fa-moon"></i> Solo pomeriggio
+          </label>
         </div>
       </div>
     </div>
@@ -301,8 +320,30 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
       <div class="turno-grid">
 
         <!-- MATTINO -->
-        <div>
+        <div id="turno-mat">
           <span class="turno-badge badge-mat"><i class="fas fa-sun"></i> Mattino</span>
+
+          <!-- Conta contanti opzionale -->
+          <div class="conta-toggle" id="conta-toggle-mat" onclick="toggleContaContanti('mat')">
+            <span class="conta-toggle-lbl"><i class="fas fa-calculator"></i> Conta contanti inizio turno</span>
+            <i class="fas fa-chevron-down conta-toggle-icon"></i>
+          </div>
+          <div class="conta-section" id="conta-section-mat">
+            <div class="coin-section-lbl">Conteggio monete e banconote</div>
+            <div id="conta-mat-coin-list"></div>
+            <div class="conta-result">
+              <span class="conta-result-lbl">Totale contato</span>
+              <span class="conta-result-val" id="conta-mat-total">€ 0,00</span>
+            </div>
+            <div class="conta-result">
+              <span class="conta-result-lbl">Fondo cassa atteso</span>
+              <span class="conta-result-val" id="conta-mat-expected">€ 0,00</span>
+            </div>
+            <div class="conta-result">
+              <span class="conta-result-lbl">Differenza</span>
+              <span class="conta-result-val" id="conta-mat-diff">€ 0,00</span>
+            </div>
+          </div>
 
           <div class="coin-section-lbl">Conteggio contanti</div>
           <div id="mat-coin-list"></div>
@@ -340,18 +381,7 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 
           <hr class="sum-divider">
 
-          <!-- Numero scontrini mattino -->
-          <div class="scontrini-box" style="margin-bottom:16px;">
-            <div class="scontrini-icon"><i class="fas fa-receipt"></i></div>
-            <div style="flex:1">
-              <div class="scontrini-label">Scontrini emessi</div>
-              <input id="mat-scontrini" type="number" min="0" step="1"
-                class="scontrini-input" placeholder="0">
-            </div>
-          </div>
-
           <label class="field-label">Chiusura effettuata da</label>
-          <!-- operatore mattino con pulsante aggiungi -->
           <div class="op-wrap">
             <select id="chiuso-da-mat" class="select-input"></select>
             <button class="op-add-btn" onclick="toggleOpModal('mat')">
@@ -374,8 +404,30 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
         </div>
 
         <!-- POMERIGGIO -->
-        <div>
+        <div id="turno-pom">
           <span class="turno-badge badge-pom"><i class="fas fa-moon"></i> Pomeriggio</span>
+
+          <!-- Conta contanti opzionale -->
+          <div class="conta-toggle" id="conta-toggle-pom" onclick="toggleContaContanti('pom')">
+            <span class="conta-toggle-lbl"><i class="fas fa-calculator"></i> Conta contanti inizio turno</span>
+            <i class="fas fa-chevron-down conta-toggle-icon"></i>
+          </div>
+          <div class="conta-section" id="conta-section-pom">
+            <div class="coin-section-lbl">Conteggio monete e banconote</div>
+            <div id="conta-pom-coin-list"></div>
+            <div class="conta-result">
+              <span class="conta-result-lbl">Totale contato</span>
+              <span class="conta-result-val" id="conta-pom-total">€ 0,00</span>
+            </div>
+            <div class="conta-result">
+              <span class="conta-result-lbl">Fondo cassa atteso</span>
+              <span class="conta-result-val" id="conta-pom-expected">€ 0,00</span>
+            </div>
+            <div class="conta-result">
+              <span class="conta-result-lbl">Differenza</span>
+              <span class="conta-result-val" id="conta-pom-diff">€ 0,00</span>
+            </div>
+          </div>
 
           <div class="coin-section-lbl">Conteggio contanti</div>
           <div id="pom-coin-list"></div>
@@ -425,18 +477,7 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 
           <hr class="sum-divider">
 
-          <!-- Numero scontrini pomeriggio -->
-          <div class="scontrini-box" style="margin-bottom:16px;">
-            <div class="scontrini-icon"><i class="fas fa-receipt"></i></div>
-            <div style="flex:1">
-              <div class="scontrini-label">Scontrini emessi</div>
-              <input id="pom-scontrini" type="number" min="0" step="1"
-                class="scontrini-input" placeholder="0">
-            </div>
-          </div>
-
           <label class="field-label">Chiusura effettuata da</label>
-          <!-- operatore pomeriggio con pulsante aggiungi -->
           <div class="op-wrap">
             <select id="chiuso-da-pom" class="select-input"></select>
             <button class="op-add-btn" onclick="toggleOpModal('pom')">
@@ -525,21 +566,12 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
   </div><!-- /screen-day -->
 </main>
 
-<!-- ── SAVE BAR (centrata) ── -->
+<!-- ── SAVE BAR ── -->
 <div class="save-bar hidden" id="save-bar">
   <button class="btn-save" onclick="saveDay()">
     <i class="fas fa-save"></i> Salva giornata
   </button>
 </div>
-
-<!-- ── BOTTOM NAV ── -->
-<nav class="bottom-nav">
-  <a href="turni.html"         class="nav-item"><i class="fas fa-calendar-alt"></i>Turni</a>
-  <a href="cassa.html"         class="nav-item active"><i class="fas fa-cash-register"></i>Cassa</a>
-  <a href="magazzino.html"     class="nav-item"><i class="fas fa-boxes-stacked"></i>Magazzino</a>
-  <a href="comunicazioni.html" class="nav-item"><i class="fas fa-bell"></i>Avvisi</a>
-  <a href="index.html"         class="nav-item"><i class="fas fa-home"></i>Home</a>
-</nav>
 
 <!-- ════════════════════════════ SCRIPT ════════════════════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -583,7 +615,6 @@ const PAGAMENTI = [
   {id:'spese',           label:'Spese',            sign:1,  spese:true,  cls:'lbl-spese'}
 ];
 
-/* operatori per emporio — modificabili a runtime */
 const OPERATORI = {
   'Cremona':       ['Chiara Monteverdi','Emilio Mazzolari','Giulia Galelli'],
   'Casalmaggiore': ['Alessandra Rivetti','Barbara Araldi','Carla Maffei','Chiara Monteverdi','Edoardo Pavesi','Emilio Mazzolari','Erica Bossi','Francesco Lunardini','Giovanna Raineri','Giulia Frigeri','Giuseppe Lunardini','Ileana Galli','Maria Marcella Scaravonati','Matilde Chiarini','Michele Marchini','Roberta Vezzosi','Teyssir Mabrouk','Vittoria Lunardini'],
@@ -604,7 +635,7 @@ let currentEmp = '';
 let currentKey = '';
 let fondoCassa = 0;
 let calYear, calMonth, selectedDate;
-const noteMap = {}; // key: 'turno_payid' → testo nota
+const noteMap = {};
 
 /* ── FORMATTERS ── */
 const euro = n => '€ ' + Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -669,7 +700,7 @@ function renderCalendar() {
   for(let i=1;i<=rem;i++){ const d=document.createElement('div'); d.className='cal-day other-month'; d.textContent=i; grid.appendChild(d); }
 }
 
-/* ── BUILD COINS ── */
+/* ── BUILD COINS (main) ── */
 function buildCoins(turno) {
   const wrap=document.getElementById(turno+'-coin-list'); wrap.innerHTML='';
   TAGLI.forEach(t=>{
@@ -680,11 +711,49 @@ function buildCoins(turno) {
   });
 }
 
+/* ── BUILD CONTA COINS (opzionale inizio turno) ── */
+function buildContaCoins(turno) {
+  const wrap=document.getElementById('conta-'+turno+'-coin-list'); wrap.innerHTML='';
+  TAGLI.forEach(t=>{
+    const id='conta_'+turno+'_coin_'+String(t).replace('.','_');
+    const row=document.createElement('div'); row.className='coin-row';
+    row.innerHTML=`<div class="coin-label">${euro(t)}</div><input id="${id}" type="number" min="0" step="1" oninput="calcConta('${turno}')" class="coin-input" placeholder="0"><div class="coin-total" id="${id}_tot">€ 0,00</div>`;
+    wrap.appendChild(row);
+  });
+}
+
+function toggleContaContanti(turno) {
+  const toggle = document.getElementById('conta-toggle-'+turno);
+  const section = document.getElementById('conta-section-'+turno);
+  toggle.classList.toggle('open');
+  section.classList.toggle('open');
+  if (section.classList.contains('open') && !section.dataset.built) {
+    buildContaCoins(turno);
+    section.dataset.built = 'true';
+  }
+}
+
+function calcConta(turno) {
+  let total = 0;
+  TAGLI.forEach(t => {
+    const id = 'conta_'+turno+'_coin_'+String(t).replace('.','_');
+    const qty = parseFloat(document.getElementById(id)?.value || 0) || 0;
+    const tot = qty * t;
+    total += tot;
+    const el = document.getElementById(id+'_tot');
+    if (el) el.textContent = euro(tot);
+  });
+  document.getElementById('conta-'+turno+'-total').textContent = euro(total);
+  document.getElementById('conta-'+turno+'-expected').textContent = euro(fondoCassa);
+  const diff = total - fondoCassa;
+  const diffEl = document.getElementById('conta-'+turno+'-diff');
+  diffEl.textContent = euro(diff);
+  diffEl.className = 'conta-result-val ' + (Math.abs(diff) < 0.01 ? 'conta-ok' : 'conta-err');
+}
+
 /* ── BUILD PAYMENTS ── */
 function buildPayments(turno) {
   const wrap=document.getElementById(turno+'-payments'); wrap.innerHTML='';
-
-  // Contanti netti read-only
   const cRow=document.createElement('div'); cRow.className='pay-row';
   cRow.innerHTML=`<div class="pay-label lbl-cash">Contanti</div><div id="${turno}_pay_contanti_display" style="display:flex;align-items:center;justify-content:flex-end;background:#f8fafc;color:#64748b;font-family:monospace;font-size:13px;font-weight:700;border-radius:10px;padding:9px 12px;border:1px solid #e2e8f0;">€ 0,00</div><div></div>`;
   wrap.appendChild(cRow);
@@ -692,8 +761,6 @@ function buildPayments(turno) {
   PAGAMENTI.forEach(p=>{
     const rowWrap=document.createElement('div');
     if(p.spese) rowWrap.className='spese-row-wrap';
-
-    // riga importo
     const row=document.createElement('div'); row.className='pay-row';
     const label=document.createElement('div'); label.className='pay-label '+p.cls;
     if(p.sign<0) label.innerHTML=p.label+' <span style="font-size:10px;color:#e11d48;font-family:monospace">(−)</span>';
@@ -712,12 +779,9 @@ function buildPayments(turno) {
 
     row.append(label, input, noteBtn);
     rowWrap.appendChild(row);
-
-    // area nota (nascosta)
     const noteArea=document.createElement('div');
     noteArea.id=turno+'_notearea_'+p.id; noteArea.className='hidden';
     rowWrap.appendChild(noteArea);
-
     wrap.appendChild(rowWrap);
   });
 }
@@ -750,7 +814,6 @@ function commitNote(turno, id, inp, area, btn) {
   noteMap[turno+'_'+id]=val;
   area.innerHTML='';
   if(val){
-    // mostra tag nota salvata
     const wrap=document.createElement('div'); wrap.className='note-saved-wrap';
     const txt=document.createElement('span'); txt.className='note-saved-text'; txt.innerHTML='<i class="fas fa-sticky-note" style="margin-right:5px;font-size:11px;"></i>'+val;
     const editBtn=document.createElement('button'); editBtn.className='note-edit-btn'; editBtn.textContent='modifica';
@@ -764,7 +827,7 @@ function commitNote(turno, id, inp, area, btn) {
   }
 }
 
-/* ── OPERATORI: aggiungi dinamicamente ── */
+/* ── OPERATORI ── */
 function toggleOpModal(turno) {
   const modal=document.getElementById('op-mini-'+turno);
   modal.classList.toggle('open');
@@ -774,12 +837,9 @@ function addOperatore(turno) {
   const inp=document.getElementById('op-new-'+turno);
   const nome=inp.value.trim();
   if(!nome) return;
-  // aggiungi alla lista locale se non esiste
   if(!OPERATORI[currentEmp]) OPERATORI[currentEmp]=[];
   if(!OPERATORI[currentEmp].includes(nome)) OPERATORI[currentEmp].push(nome);
-  // rebuild selects
   syncOperators();
-  // seleziona il nuovo operatore
   document.getElementById('chiuso-da-'+turno).value=nome;
   inp.value='';
   toggleOpModal(turno);
@@ -807,6 +867,32 @@ async function loadPreviousFondo(emp, y, m1, d) {
     if(data&&data.fondo_residuo!=null) return Number(data.fondo_residuo);
   }
   return 0;
+}
+
+/* ── TIPO TURNO ── */
+function updateTurnoVisibility() {
+  const tipo = document.querySelector('input[name="turno_type"]:checked').value;
+  const matDiv = document.getElementById('turno-mat');
+  const pomDiv = document.getElementById('turno-pom');
+  
+  if (tipo === 'solo_mattino') {
+    matDiv.style.display = 'block';
+    pomDiv.style.display = 'none';
+  } else if (tipo === 'solo_pomeriggio') {
+    matDiv.style.display = 'none';
+    pomDiv.style.display = 'block';
+  } else {
+    matDiv.style.display = 'block';
+    pomDiv.style.display = 'block';
+  }
+  
+  // fix grid layout
+  const grid = document.querySelector('.turno-grid');
+  if (tipo === 'entrambi') {
+    grid.style.gridTemplateColumns = '1fr 1fr';
+  } else {
+    grid.style.gridTemplateColumns = '1fr';
+  }
 }
 
 /* ── CALCOLO ── */
@@ -874,7 +960,6 @@ function fillForm(data) {
     const em=document.getElementById('mat_pay_'+p.id), ep=document.getElementById('pom_pay_'+p.id);
     if(em) em.value=data['mat_pay_'+p.id]!=null?euro(data['mat_pay_'+p.id]):'';
     if(ep) ep.value=data['pom_pay_'+p.id]!=null?euro(data['pom_pay_'+p.id]):'';
-    // ripristina note
     ['mat','pom'].forEach(t=>{
       const nk='note_'+t+'_pay_'+p.id;
       if(data[nk]){
@@ -895,8 +980,7 @@ function fillForm(data) {
   if(data.mat_corrispettivi!=null) document.getElementById('mat-corrispettivi').value=euro(data.mat_corrispettivi);
   if(data.pom_corrispettivi!=null) document.getElementById('pom-corrispettivi').value=euro(data.pom_corrispettivi);
   if(data.cassaforte!=null)        document.getElementById('cassaforte').value=euro(data.cassaforte);
-  if(data.mat_scontrini!=null)     document.getElementById('mat-scontrini').value=data.mat_scontrini;
-  if(data.pom_scontrini!=null)     document.getElementById('pom-scontrini').value=data.pom_scontrini;
+  if(data.global_scontrini!=null)  document.getElementById('global-scontrini').value=data.global_scontrini;
   if(data.chiuso_da_mat)  document.getElementById('chiuso-da-mat').value=data.chiuso_da_mat;
   if(data.chiuso_da_pom)  document.getElementById('chiuso-da-pom').value=data.chiuso_da_pom;
   if(data.note_mattino)   document.getElementById('nota-mattino').value=data.note_mattino;
@@ -909,37 +993,47 @@ function fillForm(data) {
   if(data.iva_esente!=null) document.getElementById('iva-esente').value=euro(data.iva_esente);
   if(data.iva_esente_altro)      document.getElementById('iva-esente-altro').value=data.iva_esente_altro;
   if(data.iva_esente_altro_text) document.getElementById('iva-esente-altro-text').value=data.iva_esente_altro_text;
+  if(data.turno_type) {
+    const radio = document.querySelector(`input[name="turno_type"][value="${data.turno_type}"]`);
+    if(radio) { radio.checked = true; updateTurnoVisibility(); }
+  }
   toggleIvaAltro(); syncWeatherIcon(); calcIva();
 }
 
-/* ── OPEN DAY ── (bug fix: selectedDate.m è 0-based) ── */
+/* ── OPEN DAY (OTTIMIZZATO) ── */
 async function openDay() {
   if(!selectedDate) return alert('Seleziona una data dal calendario');
-  const {y, m, d} = selectedDate; // m è 0-based
-  const m1 = m + 1;               // m1 è 1-based
-
+  const {y, m, d} = selectedDate;
+  const m1 = m + 1;
   currentKey  = currentEmp+'_'+y+'_'+m1+'_'+d;
-  fondoCassa  = await loadPreviousFondo(currentEmp, y, m1, d);
 
+  // mostra UI immeditamente (non aspettare fondo e meteo)
   buildCoins('mat'); buildCoins('pom');
   buildPayments('mat'); buildPayments('pom');
   syncOperators();
 
-  const data = await dbGet(currentKey);
-  if(data) fillForm(data);
-
-  const dateObj = new Date(y, m, d); // m 0-based → corretto
+  const dateObj = new Date(y, m, d);
   document.getElementById('day-label').textContent     = GIORNI[dateObj.getDay()]+' '+d+' '+MESI[m]+' '+y;
   document.getElementById('emporio-label').textContent = currentEmp;
-  document.getElementById('fondo-cassa-inline-mat').textContent = euro(fondoCassa);
-  document.getElementById('fondo-cassa-inline-pom').textContent = euro(fondoCassa);
 
   document.getElementById('step-date').classList.add('hidden');
   document.getElementById('screen-day').classList.remove('hidden');
   document.getElementById('save-bar').classList.remove('hidden');
 
-  await autoWeather(currentEmp);
-  calcAll();
+  // carica dati in background (parallelo)
+  Promise.all([
+    loadPreviousFondo(currentEmp, y, m1, d).then(fondo => {
+      fondoCassa = fondo;
+      document.getElementById('fondo-cassa-inline-mat').textContent = euro(fondoCassa);
+      document.getElementById('fondo-cassa-inline-pom').textContent = euro(fondoCassa);
+      document.getElementById('conta-mat-expected').textContent = euro(fondoCassa);
+      document.getElementById('conta-pom-expected').textContent = euro(fondoCassa);
+    }),
+    autoWeather(currentEmp),
+    dbGet(currentKey).then(data => { if(data) fillForm(data); })
+  ]).then(() => {
+    calcAll();
+  });
 }
 
 /* ── SAVE ── */
@@ -959,8 +1053,8 @@ async function saveDay() {
     note_pomeriggio: getVal('nota-pomeriggio')||null,
     meteo:           getVal('meteo-label')||null,
     arrivo_merci:    document.getElementById('arrivo-merci').checked,
-    mat_scontrini:   parseInt(document.getElementById('mat-scontrini').value)||null,
-    pom_scontrini:   parseInt(document.getElementById('pom-scontrini').value)||null,
+    global_scontrini: parseInt(document.getElementById('global-scontrini').value)||null,
+    turno_type:      document.querySelector('input[name="turno_type"]:checked').value,
     iva_22:  getNum('iva-22'), iva_10: getNum('iva-10'), iva_4: getNum('iva-4'),
     iva_esente: getNum('iva-esente'),
     iva_esente_altro:      getVal('iva-esente-altro')||null,
@@ -1012,5 +1106,6 @@ function init() {
 
 window.addEventListener('load', init);
 </script>
+<script src="../../scripts/nav-script.js"></script>
 </body>
 </html>
