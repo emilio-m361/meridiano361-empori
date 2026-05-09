@@ -10,102 +10,67 @@
     <style>
         body { 
             font-family: 'Inter', sans-serif; 
-            background-color: #f1f5f9; 
+            background-color: #f8fafb; 
             color: #1e293b; 
         }
-        .text-m361-red { color: #b75252; }
-        .bg-m361-red { background-color: #b75252; }
-
-        .order-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
-            border: 1px solid #f1f5f9;
-            transition: all 0.2s;
-            cursor: pointer;
+        
+        .logo {
+            height: 32px;
         }
-        .order-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .order-number {
-            font-family: 'DM Mono', monospace;
-            font-size: 14px;
+        
+        .header-title {
+            font-size: 22px;
             font-weight: 700;
-            color: #b75252;
-            background: #fff1f1;
-            padding: 6px 12px;
-            border-radius: 8px;
-            display: inline-block;
+            color: #1e293b;
         }
-
-        .order-status {
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-        }
-        .status-in-corso {
-            background: #fff9ed;
-            color: #d97706;
-        }
-        .status-completato {
-            background: #dcfce7;
-            color: #16a34a;
-        }
-
+        
         .btn-new-order {
             background: #b75252;
             color: white;
-            padding: 14px 28px;
+            padding: 12px 24px;
             border-radius: 12px;
-            font-weight: 800;
-            font-size: 12px;
+            font-weight: 700;
+            font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.04em;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             text-decoration: none;
-            box-shadow: 0 4px 12px rgba(183, 82, 82, 0.3);
+            box-shadow: 0 2px 8px rgba(183, 82, 82, 0.3);
             transition: all 0.2s;
+            border: none;
+            cursor: pointer;
         }
         .btn-new-order:hover {
             opacity: 0.9;
-            transform: translateY(-1px);
         }
-
+        
         .filter-btn {
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-size: 11px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 12px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
-            border: 1.5px solid #e2e8f0;
-            background: white;
-            color: #64748b;
+            letter-spacing: 0.04em;
+            border: none;
             cursor: pointer;
             transition: all 0.15s;
+            background: #e8ecf0;
+            color: #64748b;
         }
         .filter-btn:hover {
-            border-color: #b75252;
-            color: #b75252;
+            background: #dce1e6;
         }
         .filter-btn.active {
-            background: #b75252;
+            background: #2d3748;
             color: white;
-            border-color: #b75252;
         }
-
+        
         .search-input {
             border: 1px solid #e2e8f0;
             border-radius: 12px;
-            padding: 10px 14px;
+            padding: 10px 16px 10px 40px;
             font-size: 13px;
             width: 100%;
             max-width: 300px;
@@ -114,74 +79,184 @@
             outline: none;
             border-color: #b75252;
         }
-
-        .info-row {
+        
+        .order-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            transition: all 0.2s;
+            margin-bottom: 16px;
+            position: relative;
+            border-left: 4px solid transparent;
+        }
+        .order-card.da-avvisare {
+            border-left-color: #ef4444;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .status-da-ordinare {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .status-merce-pronta {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .order-number {
+            font-family: 'DM Mono', monospace;
+            font-size: 13px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+        
+        .customer-name {
+            font-size: 20px;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 8px 0;
+            text-transform: uppercase;
+        }
+        
+        .emporio-name {
+            font-size: 13px;
+            color: #b75252;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .checkbox-label {
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.15s;
+        }
+        .checkbox-label:hover {
+            background: #f8fafc;
+        }
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #059669;
+        }
+        
+        .btn-action {
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-ritirato {
+            background: #2d3748;
+            color: white;
+            padding: 12px 20px;
+            font-size: 13px;
+        }
+        .btn-ritirato:hover {
+            background: #1a202c;
+        }
+        .btn-edit {
+            background: transparent;
+            color: #64748b;
+            padding: 8px;
+        }
+        .btn-edit:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+        .btn-delete {
+            background: transparent;
+            color: #64748b;
+            padding: 8px;
+        }
+        .btn-delete:hover {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+        
+        .info-text {
             font-size: 12px;
             color: #64748b;
-        }
-        .info-label {
-            font-weight: 700;
-            color: #94a3b8;
-            text-transform: uppercase;
-            font-size: 10px;
-            letter-spacing: 0.06em;
-        }
-
-        .total-badge {
-            background: #f1f5f9;
-            padding: 8px 14px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 900;
-            color: #1e293b;
-            font-family: 'DM Mono', monospace;
+            margin: 4px 0;
         }
     </style>
 </head>
-<body class="pb-28">
+<body class="pb-20">
 
     <header class="bg-white border-b p-4 px-6 md:px-8 flex justify-between items-center sticky top-0 z-50 shadow-sm">
-        <div class="flex items-center gap-4">
-            <img src="../../assets/images/logom361_rosso.jpg" alt="Logo" class="h-8" onerror="this.style.display='none'">
-            <h1 class="font-bold text-lg border-l pl-4 text-slate-700">Ordini in Corso</h1>
+        <div class="flex items-center gap-6">
+            <img src="../../assets/images/logom361_rosso.jpg" alt="Logo" class="logo" onerror="this.style.display='none'">
+            <h1 class="header-title">Ordini in corso</h1>
         </div>
-        <a href="ordini_nuovi.html" class="btn-new-order">
-            <i class="fas fa-plus"></i> Nuovo Ordine
-        </a>
+        <div class="flex items-center gap-4">
+            <button class="btn-new-order" onclick="location.href='ordini_nuovi.html'">
+                <i class="fas fa-plus"></i> Nuovo Ordine
+            </button>
+        </div>
     </header>
 
-    <main class="max-w-[1600px] mx-auto p-4 md:p-6">
+    <main class="max-w-[1600px] mx-auto p-6">
         
-        <!-- FILTERS -->
-        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-6">
+        <!-- FILTERS AND SEARCH -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
             <div class="flex flex-wrap gap-4 items-center justify-between">
+                <!-- Filters -->
                 <div class="flex flex-wrap gap-2">
-                    <button class="filter-btn active" onclick="filterOrders('tutti')" data-filter="tutti">Tutti</button>
-                    <button class="filter-btn" onclick="filterOrders('in_corso')" data-filter="in_corso">In Corso</button>
-                    <button class="filter-btn" onclick="filterOrders('completato')" data-filter="completato">Completati</button>
+                    <button class="filter-btn active" data-filter="tutti">Tutti</button>
+                    <button class="filter-btn" data-filter="da_ordinare">Da ordinare</button>
+                    <button class="filter-btn" data-filter="merce_pronta">Merce pronta</button>
+                    <button class="filter-btn" data-filter="da_avvisare">Da avvisare</button>
+                    <button class="filter-btn" data-filter="avvisati">Avvisati</button>
                 </div>
-                <input type="text" id="search-input" class="search-input" placeholder="Cerca ordine, cliente..." oninput="searchOrders()">
+                
+                <!-- Search -->
+                <div class="flex gap-3">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-3 text-slate-400"></i>
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca cliente, emporio, numero...">
+                    </div>
+                    <input type="date" id="filter-date" class="search-input" style="max-width: 180px;">
+                </div>
             </div>
         </div>
 
         <!-- ORDERS LIST -->
-        <div id="orders-container" class="space-y-4">
+        <div id="orders-container">
             <!-- Loading state -->
-            <div id="loading" class="text-center py-12">
+            <div id="loading" class="text-center py-16">
                 <i class="fas fa-circle-notch fa-spin text-4xl text-slate-300 mb-4"></i>
                 <p class="text-slate-400">Caricamento ordini...</p>
             </div>
 
             <!-- Empty state -->
-            <div id="empty-state" class="hidden text-center py-12">
+            <div id="empty-state" class="hidden text-center py-16">
                 <i class="fas fa-inbox text-5xl text-slate-300 mb-4"></i>
                 <p class="text-slate-400 mb-6">Nessun ordine trovato</p>
-                <a href="ordini_nuovi.html" class="btn-new-order">
+                <button class="btn-new-order" onclick="location.href='ordini_nuovi.html'">
                     <i class="fas fa-plus"></i> Crea il primo ordine
-                </a>
+                </button>
             </div>
         </div>
 
@@ -189,11 +264,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const { createClient } = supabase; // Estrae la funzione corretta dalla libreria v2
-const SUPABASE_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
-
-const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SUPABASE_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let allOrders = [];
         let currentFilter = 'tutti';
@@ -203,12 +276,11 @@ const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
                 document.getElementById('loading').classList.remove('hidden');
                 document.getElementById('empty-state').classList.add('hidden');
 
-               const { data, error } = await _supabase
-    .from('ordini_incorso')
-    .select('*')
-    .order('data_creazione', { ascending: false });
-console.log(error);
-alert(JSON.stringify(error));
+                const { data, error } = await _supabase
+                    .from('ordini_incorso')
+                    .select('*')
+                    .order('data_creazione', { ascending: true }); // Oldest first
+
                 if (error) throw error;
 
                 allOrders = data || [];
@@ -229,19 +301,19 @@ alert(JSON.stringify(error));
 
         function renderOrders(orders) {
             const container = document.getElementById('orders-container');
-            
-            // Keep loading and empty state divs
             const loading = document.getElementById('loading');
             const emptyState = document.getElementById('empty-state');
             
-            // Clear only order cards
-            const cards = container.querySelectorAll('.order-card');
-            cards.forEach(card => card.remove());
+            // Clear existing order cards
+            const existingCards = container.querySelectorAll('.order-card');
+            existingCards.forEach(card => card.remove());
 
-            if (orders.length === 0 && currentFilter === 'tutti') {
+            if (orders.length === 0) {
                 emptyState.classList.remove('hidden');
                 return;
             }
+
+            emptyState.classList.add('hidden');
 
             orders.forEach(order => {
                 const card = createOrderCard(order);
@@ -251,77 +323,143 @@ alert(JSON.stringify(error));
 
         function createOrderCard(order) {
             const card = document.createElement('div');
-            card.className = 'order-card';
-            card.onclick = () => viewOrderDetail(order.id);
-
-            const dataOrdine = new Date(order.data_ordine).toLocaleDateString('it-IT');
-            const statusClass = order.stato === 'completato' ? 'status-completato' : 'status-in-corso';
-            const statusText = order.stato === 'completato' ? 'Completato' : 'In Corso';
+            
+            // Determine status
+            const merce_pronta = order.merce_pronta || false;
+            const cliente_avvisato = order.cliente_avvisato || false;
+            const da_avvisare = merce_pronta && !cliente_avvisato;
+            
+            const statusClass = merce_pronta ? 'status-merce-pronta' : 'status-da-ordinare';
+            const statusText = merce_pronta ? 'Merce pronta' : 'Da ordinare';
+            
+            card.className = `order-card ${da_avvisare ? 'da-avvisare' : ''}`;
+            
+            const dataCreazione = new Date(order.data_creazione).toLocaleDateString('it-IT');
 
             card.innerHTML = `
-                <div class="flex flex-col md:flex-row justify-between gap-4">
-                    <div class="flex-1 space-y-3">
-                        <div class="flex items-center gap-3 flex-wrap">
-                            <span class="order-number">${order.numero_ordine}</span>
-                            <span class="order-status ${statusClass}">${statusText}</span>
-                            ${order.tipo_ordine === 'bomboniere' ? '<span class="order-status" style="background:#fce7f3;color:#be185d;"><i class="fas fa-gift mr-1"></i>Bomboniere</span>' : ''}
+                <div class="grid grid-cols-12 gap-4 items-center">
+                    
+                    <!-- LEFT SECTION -->
+                    <div class="col-span-12 md:col-span-4">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                            <span class="order-number">#${order.numero_ordine}</span>
                         </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                            <div class="info-row">
-                                <i class="fas fa-user text-slate-400"></i>
-                                <span><span class="info-label">Cliente:</span> ${order.cliente_nome} ${order.cliente_cognome}</span>
-                            </div>
-                            <div class="info-row">
-                                <i class="fas fa-calendar text-slate-400"></i>
-                                <span><span class="info-label">Data:</span> ${dataOrdine}</span>
-                            </div>
-                            <div class="info-row">
-                                <i class="fas fa-store text-slate-400"></i>
-                                <span><span class="info-label">Emporio:</span> ${order.emporio}</span>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                            <div class="info-row">
-                                <i class="fas fa-phone text-slate-400"></i>
-                                <span>${order.cliente_telefono}</span>
-                                ${order.cliente_whatsapp ? '<i class="fab fa-whatsapp text-green-500"></i>' : ''}
-                            </div>
-                            <div class="info-row">
-                                <i class="fas fa-user-tie text-slate-400"></i>
-                                <span><span class="info-label">Operatore:</span> ${order.operatore}</span>
-                            </div>
-                            <div class="info-row">
-                                <i class="fas fa-truck text-slate-400"></i>
-                                <span><span class="info-label">Modalità:</span> ${order.modalita_consegna}</span>
-                            </div>
-                        </div>
-
-                        ${order.note ? `
-                            <div class="info-row">
-                                <i class="fas fa-note-sticky text-slate-400"></i>
-                                <span class="text-xs italic">${order.note}</span>
-                            </div>
-                        ` : ''}
+                        <div class="customer-name">${order.cliente_nome} ${order.cliente_cognome}</div>
+                        <div class="info-text">Data: ${dataCreazione}</div>
+                        <div class="emporio-name">${order.emporio}</div>
                     </div>
-
-                    <div class="flex flex-col items-end justify-between gap-2">
-                        <div class="text-right">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Totale</div>
-                            <div class="total-badge">€ ${Number(order.totale || 0).toFixed(2).replace('.', ',')}</div>
-                        </div>
-                        ${Number(order.saldo || 0) > 0 ? `
-                            <div class="text-right">
-                                <div class="text-[10px] font-bold text-red-400 uppercase mb-1">Da Pagare</div>
-                                <div class="text-lg font-bold text-m361-red font-mono">€ ${Number(order.saldo || 0).toFixed(2).replace('.', ',')}</div>
-                            </div>
-                        ` : '<div class="text-xs font-bold text-green-600"><i class="fas fa-check-circle mr-1"></i>Pagato</div>'}
+                    
+                    <!-- MIDDLE SECTION - CHECKBOXES -->
+                    <div class="col-span-12 md:col-span-4 flex flex-col gap-2">
+                        <label class="checkbox-label">
+                            <input type="checkbox" ${merce_pronta ? 'checked' : ''} onchange="toggleMercePronta('${order.id}', this.checked)">
+                            <span>Merce pronta</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" ${cliente_avvisato ? 'checked' : ''} onchange="toggleClienteAvvisato('${order.id}', this.checked)">
+                            <span>Cliente avvisato</span>
+                        </label>
                     </div>
+                    
+                    <!-- RIGHT SECTION - ACTIONS -->
+                    <div class="col-span-12 md:col-span-4 flex items-center justify-end gap-2">
+                        <button class="btn-action btn-edit" onclick="editOrder('${order.id}')" title="Modifica">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                        <button class="btn-action btn-delete" onclick="deleteOrder('${order.id}')" title="Elimina">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button class="btn-action btn-ritirato" onclick="completeOrder('${order.id}')">
+                            Ritirato / Spedito
+                        </button>
+                    </div>
+                    
                 </div>
             `;
 
             return card;
+        }
+
+        async function toggleMercePronta(orderId, checked) {
+            try {
+                const { error } = await _supabase
+                    .from('ordini_incorso')
+                    .update({ merce_pronta: checked })
+                    .eq('id', orderId);
+
+                if (error) throw error;
+                
+                // Reload to update card styling
+                await loadOrders();
+                applyCurrentFilter();
+            } catch (error) {
+                console.error('Error updating order:', error);
+                alert('Errore nell\'aggiornamento');
+            }
+        }
+
+        async function toggleClienteAvvisato(orderId, checked) {
+            try {
+                const { error } = await _supabase
+                    .from('ordini_incorso')
+                    .update({ cliente_avvisato: checked })
+                    .eq('id', orderId);
+
+                if (error) throw error;
+                
+                // Reload to update card styling
+                await loadOrders();
+                applyCurrentFilter();
+            } catch (error) {
+                console.error('Error updating order:', error);
+                alert('Errore nell\'aggiornamento');
+            }
+        }
+
+        async function completeOrder(orderId) {
+            if (!confirm('Segnare questo ordine come completato (Ritirato/Spedito)?')) return;
+            
+            try {
+                const { error } = await _supabase
+                    .from('ordini_incorso')
+                    .update({ stato: 'completato' })
+                    .eq('id', orderId);
+
+                if (error) throw error;
+                
+                alert('Ordine completato!');
+                await loadOrders();
+                applyCurrentFilter();
+            } catch (error) {
+                console.error('Error completing order:', error);
+                alert('Errore nel completamento');
+            }
+        }
+
+        function editOrder(orderId) {
+            // Navigate to edit page
+            window.location.href = `ordine_dettaglio.html?id=${orderId}`;
+        }
+
+        async function deleteOrder(orderId) {
+            if (!confirm('Eliminare questo ordine? Questa azione non può essere annullata.')) return;
+            
+            try {
+                const { error } = await _supabase
+                    .from('ordini_incorso')
+                    .delete()
+                    .eq('id', orderId);
+
+                if (error) throw error;
+                
+                alert('Ordine eliminato');
+                await loadOrders();
+                applyCurrentFilter();
+            } catch (error) {
+                console.error('Error deleting order:', error);
+                alert('Errore nell\'eliminazione');
+            }
         }
 
         function filterOrders(filter) {
@@ -335,38 +473,72 @@ alert(JSON.stringify(error));
                 }
             });
 
-            // Filter orders
+            applyCurrentFilter();
+        }
+
+        function applyCurrentFilter() {
             let filtered = allOrders;
-            if (filter !== 'tutti') {
-                filtered = allOrders.filter(order => order.stato === filter);
+            
+            // Apply status filter
+            if (currentFilter !== 'tutti') {
+                filtered = filtered.filter(order => {
+                    const merce_pronta = order.merce_pronta || false;
+                    const cliente_avvisato = order.cliente_avvisato || false;
+                    
+                    switch(currentFilter) {
+                        case 'da_ordinare':
+                            return !merce_pronta;
+                        case 'merce_pronta':
+                            return merce_pronta;
+                        case 'da_avvisare':
+                            return merce_pronta && !cliente_avvisato;
+                        case 'avvisati':
+                            return cliente_avvisato;
+                        default:
+                            return true;
+                    }
+                });
             }
 
-            // Apply search if active
+            // Apply search filter
             const searchTerm = document.getElementById('search-input').value.toLowerCase();
             if (searchTerm) {
                 filtered = filtered.filter(order => 
-                    order.numero_ordine.toLowerCase().includes(searchTerm) ||
-                    order.cliente_nome.toLowerCase().includes(searchTerm) ||
-                    order.cliente_cognome.toLowerCase().includes(searchTerm) ||
-                    order.emporio.toLowerCase().includes(searchTerm)
+                    (order.numero_ordine || '').toLowerCase().includes(searchTerm) ||
+                    (order.cliente_nome || '').toLowerCase().includes(searchTerm) ||
+                    (order.cliente_cognome || '').toLowerCase().includes(searchTerm) ||
+                    (order.emporio || '').toLowerCase().includes(searchTerm)
                 );
+            }
+
+            // Apply date filter
+            const filterDate = document.getElementById('filter-date').value;
+            if (filterDate) {
+                filtered = filtered.filter(order => {
+                    const orderDate = new Date(order.data_creazione).toISOString().split('T')[0];
+                    return orderDate === filterDate;
+                });
             }
 
             renderOrders(filtered);
         }
 
-        function searchOrders() {
-            filterOrders(currentFilter);
-        }
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => filterOrders(btn.getAttribute('data-filter')));
+            });
 
-        function viewOrderDetail(orderId) {
-            // Navigate to order detail page (to be implemented)
-            console.log('View order:', orderId);
-            // window.location.href = `ordine_dettaglio.html?id=${orderId}`;
-        }
+            // Search input
+            document.getElementById('search-input').addEventListener('input', applyCurrentFilter);
+            
+            // Date filter
+            document.getElementById('filter-date').addEventListener('change', applyCurrentFilter);
 
-        // Initialize
-        window.addEventListener('load', loadOrders);
+            // Load orders
+            loadOrders();
+        });
     </script>
 
     <script src="../../scripts/nav-script.js"></script>
