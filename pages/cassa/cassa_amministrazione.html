@@ -1,192 +1,597 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M361 - Amministrazione Cassa</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
-        .bg-m361-red { background-color: #b75252; }
-        .text-m361-red { color: #b75252; }
-        
-        /* Glassmorphism containers */
-        .admin-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            border: 1px solid #e2e8f0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M361 - Riepilogo Amministrazione</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:100vh;padding-bottom:80px;}
 
-        /* Table Styling */
-        .table-container {
-            overflow-x: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #cbd5e1 #f8fafc;
-        }
-        
-        table { border-collapse: separate; border-spacing: 0; width: 100%; }
-        
-        th { 
-            position: sticky; top: 0; background: #f1f5f9; 
-            z-index: 10; font-size: 11px; text-transform: uppercase; 
-            letter-spacing: 0.05em; color: #475569; padding: 12px 8px;
-            border-bottom: 2px solid #e2e8f0;
-        }
+/* ── LAYOUT ── */
+.main{max-width:1800px;margin:0 auto;padding:24px 16px;}
+.space-y>*+*{margin-top:18px;}
 
-        td { 
-            padding: 10px 8px; font-size: 13px; border-bottom: 1px solid #f1f5f9;
-            white-space: nowrap;
-        }
+/* ── CARD ── */
+.card{background:#fff;border-radius:20px;box-shadow:0 1px 4px rgba(0,0,0,.07);}
+.card-pad{padding:24px;}
 
-        /* Sticky Date Column */
-        .sticky-col {
-            position: sticky; left: 0; background: white; z-index: 5;
-            border-right: 2px solid #f1f5f9; font-weight: 600;
-        }
-        tr:hover .sticky-col { background: #f8fafc; }
-        tr:hover td { background: #f8fafc; }
+/* ── SECTION TITLE ── */
+.sec-title{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#94a3b8;display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.sec-title::before{content:'';display:block;width:3px;height:16px;background:#b75252;border-radius:2px;flex-shrink:0;}
 
-        /* Highlight Columns from Excel */
-        .col-corrispettivi { color: #1e293b; font-weight: 700; background: #fffbeb; }
-        .col-incassi { color: #b75252; font-weight: 700; background: #fef2f2; }
-        .col-spese { background: #fff1f1; color: #991b1b; font-weight: 600; }
-        
-        .negative { color: #94a3b8; font-weight: 400; } /* Per i "-" */
+/* ── BUTTONS ── */
+.btn-primary{background:#b75252;color:#fff;border:none;border-radius:12px;padding:13px 26px;font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background .15s;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:8px;}
+.btn-primary:hover{background:#8f3d3d;}
+.btn-secondary{background:#fff;color:#64748b;border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 20px;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:8px;}
+.btn-secondary:hover{border-color:#94a3b8;background:#f8fafc;}
 
-        /* Totals Row */
-        .row-totals { background: #1e293b !important; color: white; font-weight: 800; }
-        .row-totals td { border-top: 2px solid #000; }
-    </style>
+/* ── FILTERS ── */
+.filters{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:24px;}
+.filter-group{display:flex;flex-direction:column;gap:6px;}
+.filter-label{font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;}
+.filter-select{border:1px solid #e2e8f0;border-radius:12px;padding:11px 14px;font-size:13px;font-family:'Inter',sans-serif;color:#334155;background:#fff;min-width:160px;}
+.filter-select:focus{outline:none;border-color:#b75252;}
+
+/* ── STATS CARDS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;}
+.stat-card{background:#fff;border-radius:16px;border:1px solid #f1f5f9;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.stat-label{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
+.stat-value{font-size:28px;font-weight:900;color:#1e293b;font-family:'DM Mono',monospace;}
+.stat-value.red{color:#b75252;}
+.stat-value.green{color:#059669;}
+
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:16px;border:1px solid #e2e8f0;}
+.recap-table{width:100%;border-collapse:collapse;font-size:12px;background:#fff;min-width:1400px;}
+.recap-table thead{background:#f8fafc;position:sticky;top:0;z-index:10;}
+.recap-table th{padding:12px 8px;text-align:right;font-weight:800;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;border-bottom:2px solid #e2e8f0;white-space:nowrap;}
+.recap-table th:first-child{text-align:left;position:sticky;left:0;background:#f8fafc;z-index:11;border-right:1px solid #e2e8f0;}
+.recap-table th.totale-col{background:#fff1f1;color:#b75252;}
+.recap-table th.forma-pag{background:#fffcf8;color:#7a4f2b;font-size:8px;}
+.recap-table td{padding:10px 8px;text-align:right;font-family:'DM Mono',monospace;font-size:11px;color:#475569;border-bottom:1px solid #f1f5f9;}
+.recap-table td:first-child{text-align:left;font-family:'Inter',sans-serif;font-weight:700;position:sticky;left:0;background:#fff;z-index:9;border-right:1px solid #e2e8f0;}
+.recap-table tr:hover td{background:#fafbfc;}
+.recap-table tr:hover td:first-child{background:#f8fafc;}
+.recap-table .totale-col{font-weight:700;color:#1e293b;}
+.recap-table .totale-row td{background:#f8fafc;font-weight:800;color:#1e293b;border-top:2px solid #e2e8f0;border-bottom:2px solid #e2e8f0;}
+.recap-table .totale-row td:first-child{background:#f1f5f9;}
+.recap-table .riporto-row td{background:#fffcf8;font-style:italic;color:#7a4f2b;}
+.recap-table .domenica td:first-child{color:#b75252;}
+.recap-table .empty-val{color:#cbd5e1;}
+
+/* loading */
+.loading{text-align:center;padding:60px 20px;color:#94a3b8;}
+.loading i{font-size:32px;margin-bottom:12px;display:block;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.no-data{text-align:center;padding:60px 20px;color:#94a3b8;}
+.no-data i{font-size:48px;margin-bottom:16px;display:block;opacity:.3;}
+
+.export-btn{margin-left:auto;}
+</style>
 </head>
-<body class="pb-10">
+<body>
 
-<header class="bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
-    <div class="flex items-center gap-4">
-        <img src="../../assets/images/logom361_rosso.jpg" alt="Logo" class="h-8">
-        <h1 class="font-bold text-xl border-l pl-4 text-slate-700">Amministrazione Cassa</h1>
-    </div>
-    <div class="flex gap-3">
-        <select class="bg-slate-100 border-none rounded-lg px-3 py-2 text-sm font-semibold focus:ring-2 focus:ring-red-200">
-            <option>Aprile 2026</option>
-            <option>Marzo 2026</option>
-        </select>
-        <button class="bg-m361-red text-white px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity">
-            Esporta PDF
+<main class="main">
+  
+  <div class="card card-pad">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:24px;">
+      <div>
+        <h1 style="font-size:24px;font-weight:900;color:#1e293b;margin-bottom:4px;">Riepilogo Amministrazione</h1>
+        <p style="font-size:13px;color:#64748b;">Panoramica mensile incassi e forme di pagamento</p>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-secondary" onclick="exportTable()">
+          <i class="fas fa-download"></i> Esporta CSV
         </button>
+        <button class="btn-primary" onclick="window.location.href='m361-cassa.html'">
+          <i class="fas fa-cash-register"></i> Vai a Cassa
+        </button>
+      </div>
     </div>
-</header>
 
-<main class="max-w-[98%] mx-auto mt-6">
+    <!-- Filters -->
+    <div class="filters">
+      <div class="filter-group">
+        <label class="filter-label">Emporio</label>
+        <select id="filter-emporio" class="filter-select" onchange="loadData()">
+          <option value="">Tutti gli empori</option>
+          <option value="Cremona">Cremona</option>
+          <option value="Casalmaggiore">Casalmaggiore</option>
+          <option value="Reggio Emilia">Reggio Emilia</option>
+          <option value="Viadana">Viadana</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Mese</label>
+        <select id="filter-mese" class="filter-select" onchange="loadData()">
+          <option value="1">Gennaio</option>
+          <option value="2">Febbraio</option>
+          <option value="3">Marzo</option>
+          <option value="4">Aprile</option>
+          <option value="5">Maggio</option>
+          <option value="6">Giugno</option>
+          <option value="7">Luglio</option>
+          <option value="8">Agosto</option>
+          <option value="9">Settembre</option>
+          <option value="10">Ottobre</option>
+          <option value="11">Novembre</option>
+          <option value="12">Dicembre</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Anno</label>
+        <select id="filter-anno" class="filter-select" onchange="loadData()">
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+          <option value="2026">2026</option>
+        </select>
+      </div>
+      <button class="btn-secondary" onclick="loadData()" style="margin-top:20px;">
+        <i class="fas fa-sync-alt"></i> Aggiorna
+      </button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Totale Corrispettivi</div>
+        <div class="stat-value red" id="stat-corrispettivi">€ 0,00</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Totale Incassi</div>
+        <div class="stat-value" id="stat-incassi">€ 0,00</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Contanti Totali</div>
+        <div class="stat-value" id="stat-contanti">€ 0,00</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Giorni Aperti</div>
+        <div class="stat-value green" id="stat-giorni">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="card card-pad">
+    <div class="sec-title">Dettaglio Giornaliero</div>
     
-    <!-- KPI Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div class="admin-card p-5 border-l-4 border-amber-400">
-            <div class="text-xs font-bold text-slate-500 uppercase">Totale Corrispettivi</div>
-            <div class="text-2xl font-black text-slate-800 mt-1">€ 12.450,30</div>
-        </div>
-        <div class="admin-card p-5 border-l-4 border-m361-red">
-            <div class="text-xs font-bold text-slate-500 uppercase">Totale Incassi</div>
-            <div class="text-2xl font-black text-m361-red mt-1">€ 12.442,30</div>
-        </div>
-        <div class="admin-card p-5 border-l-4 border-blue-500">
-            <div class="text-xs font-bold text-slate-500 uppercase">Totale Carte/Digital</div>
-            <div class="text-2xl font-black text-blue-600 mt-1">€ 8.120,00</div>
-        </div>
-        <div class="admin-card p-5 border-l-4 border-red-600">
-            <div class="text-xs font-bold text-slate-500 uppercase">Uscite / Spese</div>
-            <div class="text-2xl font-black text-red-600 mt-1">€ 108,00</div>
-        </div>
+    <div id="loading-state" class="loading hidden">
+      <i class="fas fa-circle-notch"></i>
+      <p>Caricamento dati in corso...</p>
     </div>
 
-    <!-- Main Data Table -->
-    <div class="admin-card overflow-hidden">
-        <div class="p-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-            <h3 class="font-bold text-slate-700">Dettaglio Giornaliero Forme di Pagamento</h3>
-            <span class="text-xs text-slate-400 italic">Valori aggiornati in tempo reale dal modulo Cassa</span>
-        </div>
-        
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th class="sticky-col bg-slate-100">Data</th>
-                        <th class="bg-amber-50">Tot. Corrispettivi</th>
-                        <th class="bg-red-50">Tot. Incassi</th>
-                        <th>Contanti</th>
-                        <th>Bancomat</th>
-                        <th>Carte Credito</th>
-                        <th>Satispay</th>
-                        <th>Satispay Online</th>
-                        <th>Carte Online</th>
-                        <th>Paypal</th>
-                        <th>Bonifico</th>
-                        <th>Gift Card</th>
-                        <th class="col-spese">Spese</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body">
-                    <!-- Esempio riga 1 -->
-                    <tr>
-                        <td class="sticky-col">Mer 1 Apr</td>
-                        <td class="col-corrispettivi">1.116,10 €</td>
-                        <td class="col-incassi">1.116,10 €</td>
-                        <td>192,00 €</td>
-                        <td>459,10 €</td>
-                        <td>252,00 €</td>
-                        <td class="negative">- €</td>
-                        <td class="negative">- €</td>
-                        <td>37,00 €</td>
-                        <td>176,00 €</td>
-                        <td class="negative">- €</td>
-                        <td class="negative">- €</td>
-                        <td class="col-spese negative">- €</td>
-                    </tr>
-                    <!-- Esempio riga con spesa -->
-                    <tr>
-                        <td class="sticky-col">Mer 15 Apr</td>
-                        <td class="col-corrispettivi">488,10 €</td>
-                        <td class="col-incassi">488,10 €</td>
-                        <td>100,00 €</td>
-                        <td>63,00 €</td>
-                        <td>302,10 €</td>
-                        <td class="negative">- €</td>
-                        <td class="negative">- €</td>
-                        <td class="negative">- €</td>
-                        <td>23,00 €</td>
-                        <td class="negative">- €</td>
-                        <td class="negative">- €</td>
-                        <td class="col-spese">8,00 €</td>
-                    </tr>
-                    <!-- Altre righe generate via JS... -->
-                </tbody>
-                <tfoot>
-                    <tr class="row-totals">
-                        <td class="sticky-col bg-slate-800 text-white border-none">TOTALE MESE</td>
-                        <td>12.450,30 €</td>
-                        <td>12.442,30 €</td>
-                        <td>2.450,00 €</td>
-                        <td>3.100,00 €</td>
-                        <td>4.200,00 €</td>
-                        <td>240,00 €</td>
-                        <td>94,00 €</td>
-                        <td>350,00 €</td>
-                        <td>900,00 €</td>
-                        <td>51,00 €</td>
-                        <td>200,00 €</td>
-                        <td class="bg-red-900">108,00 €</td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
+    <div id="no-data-state" class="no-data hidden">
+      <i class="fas fa-inbox"></i>
+      <p>Nessun dato disponibile per il periodo selezionato</p>
     </div>
+
+    <div id="table-container" class="table-wrap hidden">
+      <table class="recap-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th class="totale-col">Totale<br>Corrispettivi</th>
+            <th class="totale-col">Totale<br>Incassi</th>
+            <th>Contanti</th>
+            <th class="forma-pag">Bancomat</th>
+            <th class="forma-pag">Carte<br>Credito</th>
+            <th class="forma-pag">Satispay</th>
+            <th class="forma-pag">Satispay<br>Online</th>
+            <th class="forma-pag">Carte<br>Online</th>
+            <th class="forma-pag">Paypal</th>
+            <th class="forma-pag">Bonifico</th>
+            <th class="forma-pag">Gift Card</th>
+            <th class="forma-pag">Gift Card<br>Online</th>
+            <th class="forma-pag">Buoni</th>
+            <th class="forma-pag">Rimborsi<br>Online</th>
+            <th class="forma-pag" style="background:#fff4f0;color:#b75252;">Spese</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <!-- Data rows will be inserted here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
-    // Logica per popolare la tabella e gestire i calcoli
-    // (Simile alla logica usata per i turni, adattata ai valori monetari)
-</script>
+/* ── SUPABASE ── */
+const SB_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
+let db = null;
+try { db = supabase.createClient(SB_URL, SB_KEY); } catch(e) { console.error('Supabase error:', e); }
 
+const MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const GIORNI_BREVI = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
+
+const euro = n => '€ ' + Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
+const parseEuro = v => parseFloat(String(v||'').replace(/\s/g,'').replace('€','').replace(/\./g,'').replace(',','.'))||0;
+
+let currentData = [];
+
+/* ── LOAD DATA ── */
+async function loadData() {
+  if (!db) {
+    alert('Database non disponibile');
+    return;
+  }
+
+  const emporio = document.getElementById('filter-emporio').value;
+  const mese = parseInt(document.getElementById('filter-mese').value);
+  const anno = parseInt(document.getElementById('filter-anno').value);
+
+  // Show loading
+  document.getElementById('loading-state').classList.remove('hidden');
+  document.getElementById('table-container').classList.add('hidden');
+  document.getElementById('no-data-state').classList.add('hidden');
+
+  try {
+    // Build query
+    let query = db.from('cassa_giorni').select('*');
+    
+    if (emporio) {
+      query = query.eq('emporio', emporio);
+    }
+
+    // Get all data for the year and filter by month in JS
+    // Format: emporio_year_month_day
+    const {data, error} = await query;
+    
+    if (error) throw error;
+
+    // Filter by month/year
+    const filtered = data.filter(row => {
+      const parts = row.chiave.split('_');
+      if (parts.length < 4) return false;
+      const rowYear = parseInt(parts[1]);
+      const rowMonth = parseInt(parts[2]);
+      return rowYear === anno && rowMonth === mese;
+    });
+
+    currentData = filtered;
+
+    if (filtered.length === 0) {
+      document.getElementById('loading-state').classList.add('hidden');
+      document.getElementById('no-data-state').classList.remove('hidden');
+      updateStats([]);
+      return;
+    }
+
+    // Sort by date
+    filtered.sort((a, b) => {
+      const partsA = a.chiave.split('_');
+      const partsB = b.chiave.split('_');
+      const dateA = new Date(partsA[1], partsA[2]-1, partsA[3]);
+      const dateB = new Date(partsB[1], partsB[2]-1, partsB[3]);
+      return dateA - dateB;
+    });
+
+    renderTable(filtered, anno, mese);
+    updateStats(filtered);
+
+    document.getElementById('loading-state').classList.add('hidden');
+    document.getElementById('table-container').classList.remove('hidden');
+
+  } catch (error) {
+    console.error('Error loading data:', error);
+    alert('Errore nel caricamento dei dati: ' + error.message);
+    document.getElementById('loading-state').classList.add('hidden');
+  }
+}
+
+/* ── RENDER TABLE ── */
+function renderTable(data, anno, mese) {
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+
+  // Get days in month
+  const daysInMonth = new Date(anno, mese, 0).getDate();
+  
+  // Create lookup map
+  const dataMap = {};
+  data.forEach(row => {
+    const parts = row.chiave.split('_');
+    const day = parseInt(parts[3]);
+    dataMap[day] = row;
+  });
+
+  let totals = {
+    corrispettivi: 0,
+    incassi: 0,
+    contanti: 0,
+    bancomat: 0,
+    carte: 0,
+    satispay: 0,
+    satispay_online: 0,
+    carte_online: 0,
+    paypal: 0,
+    bonifico: 0,
+    gift_card: 0,
+    gift_card_online: 0,
+    buoni: 0,
+    rimborsi_online: 0,
+    spese: 0
+  };
+
+  // Add "riporto mese precedente" row if we have data
+  if (data.length > 0) {
+    const tr = document.createElement('tr');
+    tr.className = 'riporto-row';
+    tr.innerHTML = `
+      <td colspan="16">riporto mese precedente</td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  // Render each day
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateObj = new Date(anno, mese - 1, day);
+    const dayOfWeek = dateObj.getDay();
+    const isDomenica = dayOfWeek === 0;
+    
+    const tr = document.createElement('tr');
+    if (isDomenica) tr.className = 'domenica';
+
+    const dayName = GIORNI_BREVI[dayOfWeek];
+    const dateStr = `${dayName} ${day} ${MESI[mese-1].toLowerCase()} ${anno}`;
+
+    const row = dataMap[day];
+    
+    if (row) {
+      // Calculate values
+      const matCorr = parseEuro(row.mat_corrispettivi) || 0;
+      const pomCorr = parseEuro(row.pom_corrispettivi) || 0;
+      const corrispettivi = matCorr + pomCorr;
+      
+      // Calculate contanti (sum of coins - fondo)
+      const matContanti = calcContanti(row, 'mat');
+      const pomContanti = calcContanti(row, 'pom');
+      const contanti = matContanti + pomContanti;
+      
+      // Get payments
+      const bancomat = (parseEuro(row.mat_pay_bancomat) || 0) + (parseEuro(row.pom_pay_bancomat) || 0);
+      const carte = (parseEuro(row.mat_pay_carte) || 0) + (parseEuro(row.pom_pay_carte) || 0);
+      const satispay = (parseEuro(row.mat_pay_satispay) || 0) + (parseEuro(row.pom_pay_satispay) || 0);
+      const satispay_online = (parseEuro(row.mat_pay_satispay_online) || 0) + (parseEuro(row.pom_pay_satispay_online) || 0);
+      const carte_online = (parseEuro(row.mat_pay_carte_online) || 0) + (parseEuro(row.pom_pay_carte_online) || 0);
+      const paypal = (parseEuro(row.mat_pay_paypal) || 0) + (parseEuro(row.pom_pay_paypal) || 0);
+      const bonifico = (parseEuro(row.mat_pay_bonifico) || 0) + (parseEuro(row.pom_pay_bonifico) || 0);
+      const gift_card = (parseEuro(row.mat_pay_gift_card) || 0) + (parseEuro(row.pom_pay_gift_card) || 0);
+      const gift_card_online = (parseEuro(row.mat_pay_gift_card_online) || 0) + (parseEuro(row.pom_pay_gift_card_online) || 0);
+      const buoni = (parseEuro(row.mat_pay_buoni) || 0) + (parseEuro(row.pom_pay_buoni) || 0);
+      const rimborsi = Math.abs(parseEuro(row.mat_pay_rimborsi_online) || 0) + Math.abs(parseEuro(row.pom_pay_rimborsi_online) || 0);
+      const spese = (parseEuro(row.mat_pay_spese) || 0) + (parseEuro(row.pom_pay_spese) || 0);
+      
+      const incassi = contanti + bancomat + carte + satispay + satispay_online + carte_online + paypal + bonifico + gift_card + gift_card_online + buoni - rimborsi - spese;
+
+      // Update totals
+      totals.corrispettivi += corrispettivi;
+      totals.incassi += incassi;
+      totals.contanti += contanti;
+      totals.bancomat += bancomat;
+      totals.carte += carte;
+      totals.satispay += satispay;
+      totals.satispay_online += satispay_online;
+      totals.carte_online += carte_online;
+      totals.paypal += paypal;
+      totals.bonifico += bonifico;
+      totals.gift_card += gift_card;
+      totals.gift_card_online += gift_card_online;
+      totals.buoni += buoni;
+      totals.rimborsi_online += rimborsi;
+      totals.spese += spese;
+
+      tr.innerHTML = `
+        <td>${dateStr}</td>
+        <td class="totale-col">${euro(corrispettivi)}</td>
+        <td class="totale-col">${euro(incassi)}</td>
+        <td>${euro(contanti)}</td>
+        <td>${formatCell(bancomat)}</td>
+        <td>${formatCell(carte)}</td>
+        <td>${formatCell(satispay)}</td>
+        <td>${formatCell(satispay_online)}</td>
+        <td>${formatCell(carte_online)}</td>
+        <td>${formatCell(paypal)}</td>
+        <td>${formatCell(bonifico)}</td>
+        <td>${formatCell(gift_card)}</td>
+        <td>${formatCell(gift_card_online)}</td>
+        <td>${formatCell(buoni)}</td>
+        <td>${formatCell(rimborsi)}</td>
+        <td>${formatCell(spese)}</td>
+      `;
+    } else {
+      // Empty day
+      tr.innerHTML = `
+        <td>${dateStr}</td>
+        <td class="totale-col empty-val">- €</td>
+        <td class="totale-col empty-val">- €</td>
+        <td class="empty-val">- €</td>
+        <td class="empty-val">- €</td>
+        <td class="empty-val">- €</td>
+        <td class="empty-val">- €</td>
+        <td class="empty-val">- €</td>
+        <td class="empty-val">- €</td>
+        <td class="empty-val">- €</td>
+        <td class="empty-val">- €</td>
+        <td class="empty-val">- €</td>
+        <td class="empty-val">- €</td>
+        <td class="empty-val">- €</td>
+        <td class="empty-val">- €</td>
+        <td class="empty-val">- €</td>
+      `;
+    }
+
+    tbody.appendChild(tr);
+  }
+
+  // Add totals row
+  const totalTr = document.createElement('tr');
+  totalTr.className = 'totale-row';
+  totalTr.innerHTML = `
+    <td>TOTALE</td>
+    <td class="totale-col">${euro(totals.corrispettivi)}</td>
+    <td class="totale-col">${euro(totals.incassi)}</td>
+    <td>${euro(totals.contanti)}</td>
+    <td>${euro(totals.bancomat)}</td>
+    <td>${euro(totals.carte)}</td>
+    <td>${euro(totals.satispay)}</td>
+    <td>${euro(totals.satispay_online)}</td>
+    <td>${euro(totals.carte_online)}</td>
+    <td>${euro(totals.paypal)}</td>
+    <td>${euro(totals.bonifico)}</td>
+    <td>${euro(totals.gift_card)}</td>
+    <td>${euro(totals.gift_card_online)}</td>
+    <td>${euro(totals.buoni)}</td>
+    <td>${euro(totals.rimborsi_online)}</td>
+    <td>${euro(totals.spese)}</td>
+  `;
+  tbody.appendChild(totalTr);
+}
+
+function calcContanti(row, turno) {
+  const tagli = [50,20,10,5,2,1,0.5,0.2,0.1,0.05,0.02,0.01];
+  let total = 0;
+  tagli.forEach(t => {
+    const k = String(t).replace('.', '_');
+    const qty = parseFloat(row[turno + '_coin_' + k]) || 0;
+    total += qty * t;
+  });
+  return Math.max(0, total - (parseFloat(row.fondo_cassa) || 0));
+}
+
+function formatCell(val) {
+  if (!val || val === 0) return '<span class="empty-val">- €</span>';
+  return euro(val);
+}
+
+/* ── UPDATE STATS ── */
+function updateStats(data) {
+  let totalCorr = 0;
+  let totalInc = 0;
+  let totalCont = 0;
+  let giorni = data.length;
+
+  data.forEach(row => {
+    const matCorr = parseEuro(row.mat_corrispettivi) || 0;
+    const pomCorr = parseEuro(row.pom_corrispettivi) || 0;
+    totalCorr += matCorr + pomCorr;
+
+    const matCont = calcContanti(row, 'mat');
+    const pomCont = calcContanti(row, 'pom');
+    totalCont += matCont + pomCont;
+
+    // Calculate incassi
+    const cont = matCont + pomCont;
+    const banc = (parseEuro(row.mat_pay_bancomat) || 0) + (parseEuro(row.pom_pay_bancomat) || 0);
+    const carte = (parseEuro(row.mat_pay_carte) || 0) + (parseEuro(row.pom_pay_carte) || 0);
+    const sat = (parseEuro(row.mat_pay_satispay) || 0) + (parseEuro(row.pom_pay_satispay) || 0);
+    const sat_o = (parseEuro(row.mat_pay_satispay_online) || 0) + (parseEuro(row.pom_pay_satispay_online) || 0);
+    const car_o = (parseEuro(row.mat_pay_carte_online) || 0) + (parseEuro(row.pom_pay_carte_online) || 0);
+    const pp = (parseEuro(row.mat_pay_paypal) || 0) + (parseEuro(row.pom_pay_paypal) || 0);
+    const bon = (parseEuro(row.mat_pay_bonifico) || 0) + (parseEuro(row.pom_pay_bonifico) || 0);
+    const gc = (parseEuro(row.mat_pay_gift_card) || 0) + (parseEuro(row.pom_pay_gift_card) || 0);
+    const gc_o = (parseEuro(row.mat_pay_gift_card_online) || 0) + (parseEuro(row.pom_pay_gift_card_online) || 0);
+    const buoni = (parseEuro(row.mat_pay_buoni) || 0) + (parseEuro(row.pom_pay_buoni) || 0);
+    const rimb = Math.abs(parseEuro(row.mat_pay_rimborsi_online) || 0) + Math.abs(parseEuro(row.pom_pay_rimborsi_online) || 0);
+    const spese = (parseEuro(row.mat_pay_spese) || 0) + (parseEuro(row.pom_pay_spese) || 0);
+    
+    totalInc += cont + banc + carte + sat + sat_o + car_o + pp + bon + gc + gc_o + buoni - rimb - spese;
+  });
+
+  document.getElementById('stat-corrispettivi').textContent = euro(totalCorr);
+  document.getElementById('stat-incassi').textContent = euro(totalInc);
+  document.getElementById('stat-contanti').textContent = euro(totalCont);
+  document.getElementById('stat-giorni').textContent = giorni;
+}
+
+/* ── EXPORT CSV ── */
+function exportTable() {
+  if (currentData.length === 0) {
+    alert('Nessun dato da esportare');
+    return;
+  }
+
+  const emporio = document.getElementById('filter-emporio').value || 'Tutti';
+  const mese = MESI[parseInt(document.getElementById('filter-mese').value) - 1];
+  const anno = document.getElementById('filter-anno').value;
+
+  let csv = 'Data,Totale Corrispettivi,Totale Incassi,Contanti,Bancomat,Carte,Satispay,Satispay Online,Carte Online,Paypal,Bonifico,Gift Card,Gift Card Online,Buoni,Rimborsi Online,Spese\n';
+
+  const daysInMonth = new Date(anno, parseInt(document.getElementById('filter-mese').value), 0).getDate();
+  const dataMap = {};
+  currentData.forEach(row => {
+    const parts = row.chiave.split('_');
+    const day = parseInt(parts[3]);
+    dataMap[day] = row;
+  });
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateObj = new Date(anno, parseInt(document.getElementById('filter-mese').value) - 1, day);
+    const dayName = GIORNI_BREVI[dateObj.getDay()];
+    const dateStr = `${dayName} ${day} ${mese.toLowerCase()} ${anno}`;
+
+    const row = dataMap[day];
+    if (row) {
+      const matCorr = parseEuro(row.mat_corrispettivi) || 0;
+      const pomCorr = parseEuro(row.pom_corrispettivi) || 0;
+      const corrispettivi = matCorr + pomCorr;
+      
+      const matContanti = calcContanti(row, 'mat');
+      const pomContanti = calcContanti(row, 'pom');
+      const contanti = matContanti + pomContanti;
+      
+      const bancomat = (parseEuro(row.mat_pay_bancomat) || 0) + (parseEuro(row.pom_pay_bancomat) || 0);
+      const carte = (parseEuro(row.mat_pay_carte) || 0) + (parseEuro(row.pom_pay_carte) || 0);
+      const satispay = (parseEuro(row.mat_pay_satispay) || 0) + (parseEuro(row.pom_pay_satispay) || 0);
+      const satispay_online = (parseEuro(row.mat_pay_satispay_online) || 0) + (parseEuro(row.pom_pay_satispay_online) || 0);
+      const carte_online = (parseEuro(row.mat_pay_carte_online) || 0) + (parseEuro(row.pom_pay_carte_online) || 0);
+      const paypal = (parseEuro(row.mat_pay_paypal) || 0) + (parseEuro(row.pom_pay_paypal) || 0);
+      const bonifico = (parseEuro(row.mat_pay_bonifico) || 0) + (parseEuro(row.pom_pay_bonifico) || 0);
+      const gift_card = (parseEuro(row.mat_pay_gift_card) || 0) + (parseEuro(row.pom_pay_gift_card) || 0);
+      const gift_card_online = (parseEuro(row.mat_pay_gift_card_online) || 0) + (parseEuro(row.pom_pay_gift_card_online) || 0);
+      const buoni = (parseEuro(row.mat_pay_buoni) || 0) + (parseEuro(row.pom_pay_buoni) || 0);
+      const rimborsi = Math.abs(parseEuro(row.mat_pay_rimborsi_online) || 0) + Math.abs(parseEuro(row.pom_pay_rimborsi_online) || 0);
+      const spese = (parseEuro(row.mat_pay_spese) || 0) + (parseEuro(row.pom_pay_spese) || 0);
+      
+      const incassi = contanti + bancomat + carte + satispay + satispay_online + carte_online + paypal + bonifico + gift_card + gift_card_online + buoni - rimborsi - spese;
+
+      csv += `"${dateStr}",${corrispettivi},${incassi},${contanti},${bancomat},${carte},${satispay},${satispay_online},${carte_online},${paypal},${bonifico},${gift_card},${gift_card_online},${buoni},${rimborsi},${spese}\n`;
+    } else {
+      csv += `"${dateStr}",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0\n`;
+    }
+  }
+
+  // Download
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', `riepilogo_${emporio}_${mese}_${anno}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+/* ── INIT ── */
+function init() {
+  const now = new Date();
+  document.getElementById('filter-mese').value = now.getMonth() + 1;
+  document.getElementById('filter-anno').value = now.getFullYear();
+  
+  loadData();
+}
+
+window.addEventListener('load', init);
+</script>
+<script src="../../scripts/nav-script.js"></script>
 </body>
 </html>
