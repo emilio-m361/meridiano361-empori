@@ -1021,5 +1021,15 @@ function show(id){document.getElementById(id).classList.remove('hidden');}
 });
 </script>
 <script src="/nav-script.js"></script>
+ <script>
+  // Forza l'inizializzazione se il caricamento automatico fallisce
+  window.onload = function() {
+      if (typeof init === "function") {
+          init(); 
+      } else {
+          console.error("La funzione init() non è stata trovata. Controlla nav-script.js");
+      }
+  };
+</script>
 </body>
 </html>
