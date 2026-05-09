@@ -68,10 +68,10 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .meta-chip-val{font-size:13px;font-weight:700;color:#475569;}
 
 /* scontrini chip */
-.scontrini-chip{background:#fff1f1;border:1px solid #f0c0c0;}
-.scontrini-chip input{background:transparent;border:none;font-size:20px;font-weight:900;color:#b75252;width:80px;text-align:center;font-family:monospace;}
+.scontrini-chip{background:#fff;border:1px solid #e2e8f0;}
+.scontrini-chip input{background:#fff;border:none;font-size:13px;font-weight:700;color:#334155;width:80px;text-align:center;font-family:'Inter',sans-serif;}
 .scontrini-chip input:focus{outline:none;}
-.scontrini-chip input::placeholder{color:#f0c0c0;}
+.scontrini-chip input::placeholder{color:#cbd5e1;}
 
 /* ── TURNO COLUMNS ── */
 .turno-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
@@ -113,7 +113,7 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .pay-section-lbl{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin:16px 0 8px;}
 .pay-row{display:grid;grid-template-columns:1fr 130px 34px;align-items:center;gap:8px;margin-bottom:4px;}
 .pay-label{font-size:13px;font-weight:700;letter-spacing:.02em;}
-.lbl-cash{color:#334155;} .lbl-digital{color:#475569;} .lbl-online{color:#4c5d88;} .lbl-neg{color:#e11d48;} .lbl-spese{color:#7a4f2b;}
+.lbl-cash{color:#334155;} .lbl-digital{color:#475569;} .lbl-online{color:#4c5d88;} .lbl-neg{color:#b75252;} .lbl-spese{color:#7a4f2b;}
 .money-input{border:1px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;font-family:monospace;color:#334155;width:100%;text-align:right;transition:border-color .15s;}
 .money-input:focus{outline:none;border-color:#b75252;}
 
@@ -126,6 +126,8 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .note-field:focus{outline:none;}
 .note-send-btn{width:32px;height:32px;border-radius:8px;background:#b75252;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;transition:background .15s;}
 .note-send-btn:hover{background:#8f3d3d;}
+.note-delete-btn{width:32px;height:32px;border-radius:8px;background:#e2e8f0;border:none;color:#64748b;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;transition:all .15s;}
+.note-delete-btn:hover{background:#cbd5e1;color:#334155;}
 .note-saved-wrap{display:flex;align-items:center;gap:8px;margin:4px 0 6px;padding:6px 10px;background:#fff1f1;border-radius:10px;border:1px solid #f0c0c0;}
 .note-saved-text{font-size:12px;font-weight:600;color:#b75252;flex:1;}
 .note-edit-btn{font-size:10px;font-weight:700;color:#94a3b8;background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:6px;white-space:nowrap;}
@@ -136,7 +138,9 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .corrispettivi-input{border:1.5px solid #b75252;border-radius:10px;padding:9px 12px;font-size:13px;font-family:monospace;color:#1e293b;width:160px;text-align:right;transition:border-color .15s;}
 .corrispettivi-input:focus{outline:none;border-color:#8f3d3d;}
 .diff-ok{color:#059669;} .diff-err{color:#e11d48;}
-.cassaforte-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin-top:14px;}
+.cassaforte-box{background:#f8fafc;border:1.5px solid #1e293b;border-radius:14px;padding:14px;margin-top:14px;}
+.cassaforte-heading{font-size:12px;font-weight:800;color:#1e293b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
+.cassaforte-suggest{font-size:11px;color:#94a3b8;font-style:italic;margin-left:6px;}
 
 /* ── FORM INPUTS ── */
 .select-input{width:100%;border:1px solid #e2e8f0;border-radius:12px;padding:11px 14px;font-size:13px;font-family:'Inter',sans-serif;color:#334155;background:#fff;}
@@ -169,33 +173,36 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .turno-type-opts label:has(input:checked){background:#b75252;color:#fff;border-color:#b75252;}
 .turno-type-opts input{display:none;}
 
+/* ── allinea operatore e note ── */
+.op-note-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px;}
+
 /* ══ IVA GIORNALIERA ══ */
-.iva-err-banner{background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:10px 14px;font-size:12px;font-weight:700;color:#e11d48;margin-bottom:14px;display:none;}
+.iva-err-banner{background:#fef2f2;border:1px solid#fca5a5;border-radius:12px;padding:10px 14px;font-size:12px;font-weight:700;color:#e11d48;margin-bottom:14px;display:none;}
 .iva-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid #f3d5d5;border-radius:16px;overflow:hidden;}
 @media(max-width:640px){.iva-grid{grid-template-columns:repeat(2,1fr);}}
-.iva-block{padding:20px 18px;display:flex;flex-direction:column;gap:6px;border-right:1px solid #f3d5d5;background:#fff;}
+.iva-block{padding:16px 14px;display:flex;flex-direction:column;gap:4px;border-right:1px solid #f3d5d5;background:#fff;}
 .iva-block:last-child{border-right:none;}
 @media(max-width:640px){.iva-block:nth-child(2){border-right:none;} .iva-block:nth-child(3){border-top:1px solid #f3d5d5;} .iva-block:nth-child(4){border-top:1px solid #f3d5d5;border-right:none;}}
-.iva-aliq-tag{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;}
-.iva-aliq-num{font-size:28px;font-weight:900;color:#b75252;line-height:1.1;}
+.iva-aliq-tag{font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;}
+.iva-aliq-num{font-size:20px;font-weight:900;color:#b75252;line-height:1.2;}
 .iva-aliq-num.esente{color:#64748b;}
-.iva-amount-inp{border:none;background:transparent;font-size:20px;font-weight:800;font-family:monospace;color:#1e293b;width:100%;padding:4px 0;border-bottom:2px solid #f1f5f9;transition:border-color .15s;}
+.iva-amount-inp{border:none;background:transparent;font-size:16px;font-weight:800;font-family:monospace;color:#1e293b;width:100%;padding:4px 0;border-bottom:2px solid #f1f5f9;transition:border-color .15s;}
 .iva-amount-inp:focus{outline:none;border-bottom-color:#b75252;color:#b75252;}
 .iva-amount-inp::placeholder{color:#cbd5e1;}
-.iva-esente-row{margin-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.iva-esente-row{margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .iva-esente-lbl{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;}
 .iva-esente-sel{border:1px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;font-family:'Inter',sans-serif;color:#64748b;background:#fff;}
 .iva-esente-sel:focus{outline:none;border-color:#b75252;}
 .iva-esente-txt{border:1px solid #b75252;border-radius:10px;padding:9px 12px;font-size:13px;font-family:'Inter',sans-serif;color:#64748b;background:#fff1f1;}
 .iva-esente-txt:focus{outline:none;}
-.iva-summary{background:#fff1f1;border-radius:16px;padding:20px 24px;margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
+.iva-summary{background:#fff1f1;border-radius:16px;padding:16px 20px;margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
 @media(max-width:500px){.iva-summary{grid-template-columns:1fr;gap:14px;}}
-.iva-sum-block{display:flex;flex-direction:column;gap:4px;border-right:1px solid #f0c0c0;padding:0 20px;}
+.iva-sum-block{display:flex;flex-direction:column;gap:4px;border-right:1px solid #f0c0c0;padding:0 16px;}
 .iva-sum-block:first-child{padding-left:0;}
 .iva-sum-block:last-child{border-right:none;}
 @media(max-width:500px){.iva-sum-block{border-right:none;padding:0;}}
 .iva-sum-lbl{font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;}
-.iva-sum-val{font-size:22px;font-weight:900;font-family:monospace;color:#b75252;}
+.iva-sum-val{font-size:18px;font-weight:900;font-family:monospace;color:#b75252;}
 .iva-ver-ok{color:#059669;} .iva-ver-err{color:#e11d48;}
 
 /* ── SAVE BAR ── */
@@ -212,7 +219,7 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 
   <!-- ══ STEP 1: Empori ══ -->
   <div id="step-emp" class="card card-pad">
-    <div class="sec-title">Seleziona emporio</div>
+    <div class="sec-title">Emporio</div>
     <div class="emp-grid">
       <div class="emp-card" onclick="selectEmp('Cremona')">
         <div class="emp-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#b75252"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72l1.189-1.19A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72M6.75 18h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .414.336.75.75.75z"/></svg></div>
@@ -235,7 +242,7 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 
   <!-- ══ STEP 2: Calendario ══ -->
   <div id="step-date" class="card card-pad hidden">
-    <div class="sec-title">Seleziona data</div>
+    <div class="sec-title">Data</div>
     <div class="calendar-wrap">
       <div class="month-nav">
         <button class="nav-btn" id="cal-prev"><i class="fas fa-chevron-left"></i></button>
@@ -296,7 +303,7 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
     <!-- ── TIPO TURNO ── -->
     <div class="card card-pad">
       <div class="turno-type-wrap">
-        <div class="turno-type-lbl">Giornata di lavoro</div>
+        <div class="turno-type-lbl">Seleziona apertura emporio</div>
         <div class="turno-type-opts">
           <label>
             <input type="radio" name="turno_type" value="entrambi" checked onchange="updateTurnoVisibility()">
@@ -348,10 +355,6 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
           <div class="coin-section-lbl">Conteggio contanti</div>
           <div id="mat-coin-list"></div>
           <hr class="sum-divider">
-          <div class="sum-row">
-            <span class="sum-label lbl-gray">Contanti lordi</span>
-            <span class="sum-val lbl-gray" id="mat-lordi">€ 0,00</span>
-          </div>
           <div class="fondo-box">
             <span class="sum-label lbl-gray">Fondo cassa</span>
             <span class="sum-val" style="color:#64748b;font-family:monospace" id="fondo-cassa-inline-mat">€ 0,00</span>
@@ -379,27 +382,48 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
             <span class="sum-val" id="mat-diff">€ 0,00</span>
           </div>
 
-          <hr class="sum-divider">
-
-          <label class="field-label">Chiusura effettuata da</label>
-          <div class="op-wrap">
-            <select id="chiuso-da-mat" class="select-input"></select>
-            <button class="op-add-btn" onclick="toggleOpModal('mat')">
-              <i class="fas fa-plus"></i> Aggiungi
-            </button>
-          </div>
-          <div id="op-mini-mat" class="op-mini-modal">
-            <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em">Nuovo operatore</p>
-            <div class="op-mini-row">
-              <input id="op-new-mat" type="text" class="op-mini-input" placeholder="Nome e Cognome">
-              <button class="op-mini-save" onclick="addOperatore('mat')">Aggiungi</button>
-              <button class="op-mini-cancel" onclick="toggleOpModal('mat')">✕</button>
+          <!-- cassaforte solo se "solo_mattino" -->
+          <div id="mat-cassaforte-box" class="cassaforte-box hidden">
+            <div class="cassaforte-heading">
+              Contanti in cassaforte
+              <span class="cassaforte-suggest" id="mat-cassaforte-suggest"></span>
+            </div>
+            <div class="corrispettivi-row" style="margin-bottom:10px">
+              <span class="sum-label lbl-red"></span>
+              <input id="mat-cassaforte" class="corrispettivi-input" value="€ 0,00"
+                oninput="calcAll()" onblur="formatMoney(this)" onfocus="clearMoney(this)">
+            </div>
+            <div class="fondo-box" style="margin:0;background:#fff">
+              <span class="sum-label lbl-gray">Fondo cassa residuo</span>
+              <span class="sum-val" id="mat-fondo-residuo">€ 0,00</span>
             </div>
           </div>
 
-          <div style="margin-top:12px">
-            <label class="field-label">Note mattino</label>
-            <textarea id="nota-mattino" class="textarea-note" rows="2"></textarea>
+          <hr class="sum-divider">
+
+          <div class="op-note-grid">
+            <div>
+              <label class="field-label">Chiusura effettuata da</label>
+              <div class="op-wrap">
+                <select id="chiuso-da-mat" class="select-input"></select>
+                <button class="op-add-btn" onclick="toggleOpModal('mat')">
+                  <i class="fas fa-plus"></i> Aggiungi
+                </button>
+              </div>
+              <div id="op-mini-mat" class="op-mini-modal">
+                <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em">Nuovo operatore</p>
+                <div class="op-mini-row">
+                  <input id="op-new-mat" type="text" class="op-mini-input" placeholder="Nome e Cognome">
+                  <button class="op-mini-save" onclick="addOperatore('mat')">Aggiungi</button>
+                  <button class="op-mini-cancel" onclick="toggleOpModal('mat')">✕</button>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="field-label">Note mattino</label>
+              <textarea id="nota-mattino" class="textarea-note" rows="2"></textarea>
+            </div>
           </div>
         </div>
 
@@ -432,10 +456,6 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
           <div class="coin-section-lbl">Conteggio contanti</div>
           <div id="pom-coin-list"></div>
           <hr class="sum-divider">
-          <div class="sum-row">
-            <span class="sum-label lbl-gray">Contanti lordi</span>
-            <span class="sum-val lbl-gray" id="pom-lordi">€ 0,00</span>
-          </div>
           <div class="fondo-box">
             <span class="sum-label lbl-gray">Fondo cassa</span>
             <span class="sum-val" style="color:#64748b;font-family:monospace" id="fondo-cassa-inline-pom">€ 0,00</span>
@@ -464,8 +484,12 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
           </div>
 
           <div class="cassaforte-box">
+            <div class="cassaforte-heading">
+              Contanti in cassaforte
+              <span class="cassaforte-suggest" id="pom-cassaforte-suggest"></span>
+            </div>
             <div class="corrispettivi-row" style="margin-bottom:10px">
-              <span class="sum-label lbl-red">Contanti in cassaforte</span>
+              <span class="sum-label lbl-red"></span>
               <input id="cassaforte" class="corrispettivi-input" value="€ 0,00"
                 oninput="calcAll()" onblur="formatMoney(this)" onfocus="clearMoney(this)">
             </div>
@@ -477,25 +501,29 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 
           <hr class="sum-divider">
 
-          <label class="field-label">Chiusura effettuata da</label>
-          <div class="op-wrap">
-            <select id="chiuso-da-pom" class="select-input"></select>
-            <button class="op-add-btn" onclick="toggleOpModal('pom')">
-              <i class="fas fa-plus"></i> Aggiungi
-            </button>
-          </div>
-          <div id="op-mini-pom" class="op-mini-modal">
-            <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em">Nuovo operatore</p>
-            <div class="op-mini-row">
-              <input id="op-new-pom" type="text" class="op-mini-input" placeholder="Nome e Cognome">
-              <button class="op-mini-save" onclick="addOperatore('pom')">Aggiungi</button>
-              <button class="op-mini-cancel" onclick="toggleOpModal('pom')">✕</button>
+          <div class="op-note-grid">
+            <div>
+              <label class="field-label">Chiusura effettuata da</label>
+              <div class="op-wrap">
+                <select id="chiuso-da-pom" class="select-input"></select>
+                <button class="op-add-btn" onclick="toggleOpModal('pom')">
+                  <i class="fas fa-plus"></i> Aggiungi
+                </button>
+              </div>
+              <div id="op-mini-pom" class="op-mini-modal">
+                <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em">Nuovo operatore</p>
+                <div class="op-mini-row">
+                  <input id="op-new-pom" type="text" class="op-mini-input" placeholder="Nome e Cognome">
+                  <button class="op-mini-save" onclick="addOperatore('pom')">Aggiungi</button>
+                  <button class="op-mini-cancel" onclick="toggleOpModal('pom')">✕</button>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div style="margin-top:12px">
-            <label class="field-label">Note pomeriggio</label>
-            <textarea id="nota-pomeriggio" class="textarea-note" rows="2"></textarea>
+            <div>
+              <label class="field-label">Note pomeriggio</label>
+              <textarea id="nota-pomeriggio" class="textarea-note" rows="2"></textarea>
+            </div>
           </div>
         </div>
 
@@ -505,7 +533,7 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
     <!-- ── SEZIONE 2: IVA giornaliera ── -->
     <div class="card card-pad">
       <div class="sec-title">IVA giornaliera</div>
-      <div class="iva-err-banner" id="iva-error">⚠ I dati IVA non tornano rispetto ai corrispettivi del pomeriggio.</div>
+      <div class="iva-err-banner" id="iva-error">⚠ I dati IVA non tornano rispetto ai corrispettivi.</div>
 
       <div class="iva-grid">
         <div class="iva-block">
@@ -531,18 +559,17 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
           <div class="iva-aliq-num esente">Esente</div>
           <input id="iva-esente" class="iva-amount-inp" placeholder="€ 0,00" value="€ 0,00"
             oninput="calcIva()" onblur="formatMiniMoney(this)" onfocus="clearMiniMoney(this)">
+          <div class="iva-esente-row">
+            <span class="iva-esente-lbl">Tipo:</span>
+            <select id="iva-esente-altro" class="iva-esente-sel" onchange="toggleIvaAltro()">
+              <option value="">—</option>
+              <option value="editoriali">editoriali</option>
+              <option value="gift card">gift card</option>
+              <option value="altro">altro</option>
+            </select>
+            <input id="iva-esente-altro-text" class="iva-esente-txt hidden" placeholder="specifica...">
+          </div>
         </div>
-      </div>
-
-      <div class="iva-esente-row">
-        <span class="iva-esente-lbl">Tipo esente:</span>
-        <select id="iva-esente-altro" class="iva-esente-sel" onchange="toggleIvaAltro()">
-          <option value="">— nessuno —</option>
-          <option value="editoriali">editoriali</option>
-          <option value="gift card">gift card</option>
-          <option value="altro">altro</option>
-        </select>
-        <input id="iva-esente-altro-text" class="iva-esente-txt hidden" placeholder="specifica...">
       </div>
 
       <div class="iva-summary">
@@ -647,6 +674,11 @@ const clearMiniMoney = el => { if(parseEuro(el.value)===0) el.value=''; };
 const getVal = id => { const e=document.getElementById(id); return e?e.value:''; };
 const getNum = id => parseEuro(getVal(id));
 
+/* arrotonda a multiplo di 5 */
+function roundTo5(n) {
+  return Math.round(n / 5) * 5;
+}
+
 /* ── WEATHER ── */
 function syncWeatherIcon() {
   const v = document.getElementById('meteo-label').value;
@@ -700,7 +732,7 @@ function renderCalendar() {
   for(let i=1;i<=rem;i++){ const d=document.createElement('div'); d.className='cal-day other-month'; d.textContent=i; grid.appendChild(d); }
 }
 
-/* ── BUILD COINS (main) ── */
+/* ── BUILD COINS ── */
 function buildCoins(turno) {
   const wrap=document.getElementById(turno+'-coin-list'); wrap.innerHTML='';
   TAGLI.forEach(t=>{
@@ -711,7 +743,7 @@ function buildCoins(turno) {
   });
 }
 
-/* ── BUILD CONTA COINS (opzionale inizio turno) ── */
+/* ── BUILD CONTA COINS ── */
 function buildContaCoins(turno) {
   const wrap=document.getElementById('conta-'+turno+'-coin-list'); wrap.innerHTML='';
   TAGLI.forEach(t=>{
@@ -754,8 +786,10 @@ function calcConta(turno) {
 /* ── BUILD PAYMENTS ── */
 function buildPayments(turno) {
   const wrap=document.getElementById(turno+'-payments'); wrap.innerHTML='';
+  
+  // Contanti netti (primo elemento)
   const cRow=document.createElement('div'); cRow.className='pay-row';
-  cRow.innerHTML=`<div class="pay-label lbl-cash">Contanti</div><div id="${turno}_pay_contanti_display" style="display:flex;align-items:center;justify-content:flex-end;background:#f8fafc;color:#64748b;font-family:monospace;font-size:13px;font-weight:700;border-radius:10px;padding:9px 12px;border:1px solid #e2e8f0;">€ 0,00</div><div></div>`;
+  cRow.innerHTML=`<div class="pay-label lbl-cash">Contanti netti</div><div id="${turno}_pay_contanti_display" style="display:flex;align-items:center;justify-content:flex-end;background:#f8fafc;color:#64748b;font-family:monospace;font-size:13px;font-weight:700;border-radius:10px;padding:9px 12px;border:1px solid #e2e8f0;">€ 0,00</div><div></div>`;
   wrap.appendChild(cRow);
 
   PAGAMENTI.forEach(p=>{
@@ -763,12 +797,23 @@ function buildPayments(turno) {
     if(p.spese) rowWrap.className='spese-row-wrap';
     const row=document.createElement('div'); row.className='pay-row';
     const label=document.createElement('div'); label.className='pay-label '+p.cls;
-    if(p.sign<0) label.innerHTML=p.label+' <span style="font-size:10px;color:#e11d48;font-family:monospace">(−)</span>';
+    if(p.sign<0) label.innerHTML=p.label+' <span style="font-size:10px;color:#b75252;font-family:monospace">(−)</span>';
     else label.textContent=p.label;
 
     const input=document.createElement('input');
     input.id=turno+'_pay_'+p.id; input.className='money-input'; input.placeholder='€ 0,00';
-    input.addEventListener('input', calcAll);
+    
+    // auto-meno per rimborsi
+    if (p.id === 'rimborsi_online') {
+      input.addEventListener('input', function() {
+        let v = this.value.replace(/[^0-9.,]/g, '');
+        if (v && !v.startsWith('-')) this.value = '-' + v;
+        calcAll();
+      });
+    } else {
+      input.addEventListener('input', calcAll);
+    }
+    
     input.addEventListener('blur',  function(){formatMoney(this);});
     input.addEventListener('focus', function(){clearMoney(this);});
 
@@ -790,7 +835,18 @@ function buildPayments(turno) {
 function toggleNoteRow(turno, id, label, rowWrap) {
   const area=document.getElementById(turno+'_notearea_'+id);
   const btn =document.getElementById(turno+'_notebtn_'+id);
-  if(!area.classList.contains('hidden')){ area.classList.add('hidden'); return; }
+  
+  // se già visibile con nota salvata, mostra editor
+  if(!area.classList.contains('hidden') && noteMap[turno+'_'+id]){
+    renderNoteEditor(turno, id, label, area, btn);
+    return;
+  }
+  
+  // altrimenti toggle
+  if(!area.classList.contains('hidden')){ 
+    area.classList.add('hidden'); 
+    return; 
+  }
   renderNoteEditor(turno, id, label, area, btn);
   area.classList.remove('hidden');
 }
@@ -800,12 +856,19 @@ function renderNoteEditor(turno, id, label, area, btn) {
   const row=document.createElement('div'); row.className='note-entry-row';
   const inp=document.createElement('input');
   inp.type='text'; inp.className='note-field'; inp.placeholder='Nota '+label.toLowerCase()+'…'; inp.value=noteMap[turno+'_'+id]||'';
+  
   const send=document.createElement('button');
-  send.type='button'; send.className='note-send-btn'; send.title='Invia';
+  send.type='button'; send.className='note-send-btn'; send.title='Salva';
   send.innerHTML='<i class="fas fa-arrow-right"></i>';
   send.addEventListener('click',()=>commitNote(turno,id,inp,area,btn));
+  
+  const del=document.createElement('button');
+  del.type='button'; del.className='note-delete-btn'; del.title='Elimina';
+  del.innerHTML='<i class="fas fa-times"></i>';
+  del.addEventListener('click',()=>deleteNote(turno,id,area,btn));
+  
   inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();commitNote(turno,id,inp,area,btn);} });
-  row.append(inp,send); area.appendChild(row);
+  row.append(inp,send,del); area.appendChild(row);
   inp.focus();
 }
 
@@ -817,7 +880,7 @@ function commitNote(turno, id, inp, area, btn) {
     const wrap=document.createElement('div'); wrap.className='note-saved-wrap';
     const txt=document.createElement('span'); txt.className='note-saved-text'; txt.innerHTML='<i class="fas fa-sticky-note" style="margin-right:5px;font-size:11px;"></i>'+val;
     const editBtn=document.createElement('button'); editBtn.className='note-edit-btn'; editBtn.textContent='modifica';
-    editBtn.addEventListener('click',()=>{ renderNoteEditor(turno,id,PAGAMENTI.find(p=>p.id===id)?.label||id,area,btn); area.classList.remove('hidden'); });
+    editBtn.addEventListener('click',()=>{ const lbl = PAGAMENTI.find(p=>p.id===id)?.label||id; renderNoteEditor(turno,id,lbl,area,btn); area.classList.remove('hidden'); });
     wrap.append(txt,editBtn); area.appendChild(wrap);
     area.classList.remove('hidden');
     if(btn){ btn.classList.add('has-note'); btn.title='Nota presente'; }
@@ -825,6 +888,13 @@ function commitNote(turno, id, inp, area, btn) {
     area.classList.add('hidden');
     if(btn){ btn.classList.remove('has-note'); btn.title='Aggiungi nota'; }
   }
+}
+
+function deleteNote(turno, id, area, btn) {
+  noteMap[turno+'_'+id] = '';
+  area.innerHTML='';
+  area.classList.add('hidden');
+  if(btn){ btn.classList.remove('has-note'); btn.title='Aggiungi nota'; }
 }
 
 /* ── OPERATORI ── */
@@ -878,25 +948,32 @@ function updateTurnoVisibility() {
   if (tipo === 'solo_mattino') {
     matDiv.style.display = 'block';
     pomDiv.style.display = 'none';
+    // mostra cassaforte nel mattino
+    document.getElementById('mat-cassaforte-box').classList.remove('hidden');
   } else if (tipo === 'solo_pomeriggio') {
     matDiv.style.display = 'none';
     pomDiv.style.display = 'block';
+    document.getElementById('mat-cassaforte-box').classList.add('hidden');
   } else {
     matDiv.style.display = 'block';
     pomDiv.style.display = 'block';
+    document.getElementById('mat-cassaforte-box').classList.add('hidden');
   }
   
-  // fix grid layout
   const grid = document.querySelector('.turno-grid');
   if (tipo === 'entrambi') {
     grid.style.gridTemplateColumns = '1fr 1fr';
   } else {
     grid.style.gridTemplateColumns = '1fr';
   }
+  
+  calcAll();
 }
 
 /* ── CALCOLO ── */
 function calcAll() {
+  const tipo = document.querySelector('input[name="turno_type"]:checked').value;
+  
   ['mat','pom'].forEach(turno=>{
     let lordi=0;
     TAGLI.forEach(t=>{
@@ -906,7 +983,6 @@ function calcAll() {
       const el=document.getElementById(id+'_tot'); if(el) el.textContent=euro(tot);
     });
     const netti=Math.max(0,lordi-fondoCassa);
-    document.getElementById(turno+'-lordi').textContent=euro(lordi);
     document.getElementById(turno+'-netti').textContent=euro(netti);
     const disp=document.getElementById(turno+'_pay_contanti_display'); if(disp) disp.textContent=euro(netti);
 
@@ -923,21 +999,45 @@ function calcAll() {
     const de=document.getElementById(turno+'-diff');
     if(Math.abs(diff)<0.01){ de.textContent='✓ '+euro(0); de.className='sum-val diff-ok'; }
     else { de.textContent=euro(diff); de.className='sum-val '+(diff>0?'diff-ok':'diff-err'); }
+    
+    // cassaforte suggestion
+    if (turno === 'mat' && tipo === 'solo_mattino') {
+      const suggest = roundTo5(netti);
+      document.getElementById('mat-cassaforte-suggest').textContent = `(suggerito: ${euro(suggest)})`;
+      const cass = parseEuro(document.getElementById('mat-cassaforte').value);
+      document.getElementById('mat-fondo-residuo').textContent = euro(Math.max(0, lordi - cass));
+    }
   });
-  const pomLordi=parseEuro(document.getElementById('pom-lordi').textContent);
+  
+  // cassaforte pomeriggio
+  const pomLordi=parseEuro(document.getElementById('pom-netti').textContent);
+  const suggest = roundTo5(pomLordi);
+  document.getElementById('pom-cassaforte-suggest').textContent = `(suggerito: ${euro(suggest)})`;
   const cass=parseEuro(document.getElementById('cassaforte').value);
-  document.getElementById('fondo-residuo').textContent=euro(Math.max(0,pomLordi-cass));
+  const pomLordiTotal = parseEuro(document.getElementById('pom-netti').textContent.replace('Contanti netti','').trim()) + fondoCassa;
+  document.getElementById('fondo-residuo').textContent=euro(Math.max(0, pomLordiTotal - cass));
+  
   calcIva();
 }
 
 function calcIva() {
+  const tipo = document.querySelector('input[name="turno_type"]:checked').value;
   const a=getNum('iva-22'),b=getNum('iva-10'),c=getNum('iva-4'),d=getNum('iva-esente');
   const somma=a+b+c+d, net=a+b+c;
   document.getElementById('iva-somma').value=somma;
   document.getElementById('iva-net-es').value=net;
   document.getElementById('iva-somma-disp').textContent=euro(somma);
   document.getElementById('iva-net-es-disp').textContent=euro(net);
-  const cor=getNum('pom-corrispettivi'), ok=Math.abs(somma-cor)<0.015;
+  
+  // verifica contro corrispettivi del turno appropriato
+  let cor;
+  if (tipo === 'solo_mattino') {
+    cor = getNum('mat-corrispettivi');
+  } else {
+    cor = getNum('pom-corrispettivi');
+  }
+  
+  const ok=Math.abs(somma-cor)<0.015;
   const cell=document.getElementById('iva-ver-cell');
   cell.textContent=ok?'✓ OK':'✗ ERR';
   cell.className='iva-sum-val '+(ok?'iva-ver-ok':'iva-ver-err');
@@ -980,6 +1080,7 @@ function fillForm(data) {
   if(data.mat_corrispettivi!=null) document.getElementById('mat-corrispettivi').value=euro(data.mat_corrispettivi);
   if(data.pom_corrispettivi!=null) document.getElementById('pom-corrispettivi').value=euro(data.pom_corrispettivi);
   if(data.cassaforte!=null)        document.getElementById('cassaforte').value=euro(data.cassaforte);
+  if(data.mat_cassaforte!=null)    document.getElementById('mat-cassaforte').value=euro(data.mat_cassaforte);
   if(data.global_scontrini!=null)  document.getElementById('global-scontrini').value=data.global_scontrini;
   if(data.chiuso_da_mat)  document.getElementById('chiuso-da-mat').value=data.chiuso_da_mat;
   if(data.chiuso_da_pom)  document.getElementById('chiuso-da-pom').value=data.chiuso_da_pom;
@@ -1000,14 +1101,13 @@ function fillForm(data) {
   toggleIvaAltro(); syncWeatherIcon(); calcIva();
 }
 
-/* ── OPEN DAY (OTTIMIZZATO) ── */
+/* ── OPEN DAY ── */
 async function openDay() {
   if(!selectedDate) return alert('Seleziona una data dal calendario');
   const {y, m, d} = selectedDate;
   const m1 = m + 1;
   currentKey  = currentEmp+'_'+y+'_'+m1+'_'+d;
 
-  // mostra UI immeditamente (non aspettare fondo e meteo)
   buildCoins('mat'); buildCoins('pom');
   buildPayments('mat'); buildPayments('pom');
   syncOperators();
@@ -1020,7 +1120,6 @@ async function openDay() {
   document.getElementById('screen-day').classList.remove('hidden');
   document.getElementById('save-bar').classList.remove('hidden');
 
-  // carica dati in background (parallelo)
   Promise.all([
     loadPreviousFondo(currentEmp, y, m1, d).then(fondo => {
       fondoCassa = fondo;
@@ -1038,10 +1137,17 @@ async function openDay() {
 
 /* ── SAVE ── */
 async function saveDay() {
+  const tipo = document.querySelector('input[name="turno_type"]:checked').value;
   calcIva();
-  const pomCorr  = getNum('pom-corrispettivi');
-  const ivaSomma = parseFloat(document.getElementById('iva-somma').value)||0;
-  if(Math.abs(ivaSomma-pomCorr)>=0.015) return alert('I dati IVA non tornano. Correggi prima di salvare.');
+  
+  let corToCheck, ivaSomma = parseFloat(document.getElementById('iva-somma').value)||0;
+  if (tipo === 'solo_mattino') {
+    corToCheck = getNum('mat-corrispettivi');
+  } else {
+    corToCheck = getNum('pom-corrispettivi');
+  }
+  
+  if(Math.abs(ivaSomma-corToCheck)>=0.015) return alert('I dati IVA non tornano. Correggi prima di salvare.');
 
   const payload = {
     chiave:          currentKey,
@@ -1054,7 +1160,7 @@ async function saveDay() {
     meteo:           getVal('meteo-label')||null,
     arrivo_merci:    document.getElementById('arrivo-merci').checked,
     global_scontrini: parseInt(document.getElementById('global-scontrini').value)||null,
-    turno_type:      document.querySelector('input[name="turno_type"]:checked').value,
+    turno_type:      tipo,
     iva_22:  getNum('iva-22'), iva_10: getNum('iva-10'), iva_4: getNum('iva-4'),
     iva_esente: getNum('iva-esente'),
     iva_esente_altro:      getVal('iva-esente-altro')||null,
@@ -1064,7 +1170,8 @@ async function saveDay() {
     mat_corrispettivi: getNum('mat-corrispettivi'),
     pom_corrispettivi: getNum('pom-corrispettivi'),
     cassaforte:    getNum('cassaforte'),
-    fondo_residuo: parseEuro(document.getElementById('fondo-residuo').textContent)
+    mat_cassaforte: tipo === 'solo_mattino' ? getNum('mat-cassaforte') : null,
+    fondo_residuo: parseEuro(document.getElementById(tipo === 'solo_mattino' ? 'mat-fondo-residuo' : 'fondo-residuo').textContent)
   };
 
   TAGLI.forEach(t=>{
