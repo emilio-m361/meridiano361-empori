@@ -1,56 +1,190 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <link rel="stylesheet" href="../../assets/style/nav-style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M361 - Ordini in corso</title>
+    <title>M361 - Ordini in Corso</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; padding-bottom: 50px; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f1f5f9; 
+            color: #1e293b; 
+        }
         .text-m361-red { color: #b75252; }
         .bg-m361-red { background-color: #b75252; }
-        .status-badge { padding: 4px 12px; border-radius: 99px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .active-filter { background-color: #1e293b !important; color: white !important; }
-        
-        .ping-notify {
-            animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
-            background-color: #b75252;
+
+        .order-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+            border: 1px solid #f1f5f9;
+            transition: all 0.2s;
+            cursor: pointer;
         }
-        @keyframes ping {
-            75%, 100% { transform: scale(2); opacity: 0; }
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .card-completata { background-color: #f1f5f9 !important; border-color: #e2e8f0 !important; }
-        .card-completata h2 { color: #64748b !important; }
+        .order-number {
+            font-family: 'DM Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            color: #b75252;
+            background: #fff1f1;
+            padding: 6px 12px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .order-status {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .status-in-corso {
+            background: #fff9ed;
+            color: #d97706;
+        }
+        .status-completato {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .btn-new-order {
+            background: #b75252;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(183, 82, 82, 0.3);
+            transition: all 0.2s;
+        }
+        .btn-new-order:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border: 1.5px solid #e2e8f0;
+            background: white;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .filter-btn:hover {
+            border-color: #b75252;
+            color: #b75252;
+        }
+        .filter-btn.active {
+            background: #b75252;
+            color: white;
+            border-color: #b75252;
+        }
+
+        .search-input {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 13px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #b75252;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #64748b;
+        }
+        .info-label {
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 0.06em;
+        }
+
+        .total-badge {
+            background: #f1f5f9;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 900;
+            color: #1e293b;
+            font-family: 'DM Mono', monospace;
+        }
     </style>
 </head>
-<body>
+<body class="pb-28">
 
-    <script src="../../scripts/nav-script.js"></script>
+    <header class="bg-white border-b p-4 px-6 md:px-8 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+        <div class="flex items-center gap-4">
+            <img src="../../assets/images/logom361_rosso.jpg" alt="Logo" class="h-8" onerror="this.style.display='none'">
+            <h1 class="font-bold text-lg border-l pl-4 text-slate-700">Ordini in Corso</h1>
+        </div>
+        <a href="ordini_nuovi.html" class="btn-new-order">
+            <i class="fas fa-plus"></i> Nuovo Ordine
+        </a>
+    </header>
 
-    <main class="max-w-7xl mx-auto p-8">
+    <main class="max-w-[1600px] mx-auto p-4 md:p-6">
         
-        <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
-            <div class="flex flex-wrap gap-2" id="filter-group">
-                <button onclick="caricaOrdini('tutti', this)" class="active-filter bg-white border border-slate-200 text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase transition-all">Tutti</button>
-                <button onclick="caricaOrdini('da_ordinare', this)" class="bg-white border border-slate-200 text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase hover:border-slate-400">Da ordinare</button>
-                <button onclick="caricaOrdini('merce_pronta', this)" class="bg-white border border-slate-200 text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase hover:border-slate-400">Merce Pronta</button>
-                <button onclick="caricaOrdini('da_avvisare', this)" class="bg-white border border-slate-200 text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase hover:border-slate-400">Da Avvisare</button>
-                <button onclick="caricaOrdini('avvisati', this)" class="bg-white border border-slate-200 text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold uppercase hover:border-slate-400">Avvisati</button>
-            </div>
-            
-            <div class="relative w-full md:w-96">
-                <span class="absolute left-4 top-3 text-slate-400"><i class="fas fa-search"></i></span>
-                <input type="text" oninput="filtraPerNome(this.value)" placeholder="Cerca cliente o emporio..." class="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-slate-100 transition-all">
+        <!-- FILTERS -->
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-6">
+            <div class="flex flex-wrap gap-4 items-center justify-between">
+                <div class="flex flex-wrap gap-2">
+                    <button class="filter-btn active" onclick="filterOrders('tutti')" data-filter="tutti">Tutti</button>
+                    <button class="filter-btn" onclick="filterOrders('in_corso')" data-filter="in_corso">In Corso</button>
+                    <button class="filter-btn" onclick="filterOrders('completato')" data-filter="completato">Completati</button>
+                </div>
+                <input type="text" id="search-input" class="search-input" placeholder="Cerca ordine, cliente..." oninput="searchOrders()">
             </div>
         </div>
 
-        <div class="space-y-4" id="orders-container">
-            <p class="text-center text-slate-400 py-20 font-medium">Caricamento ordini...</p>
+        <!-- ORDERS LIST -->
+        <div id="orders-container" class="space-y-4">
+            <!-- Loading state -->
+            <div id="loading" class="text-center py-12">
+                <i class="fas fa-circle-notch fa-spin text-4xl text-slate-300 mb-4"></i>
+                <p class="text-slate-400">Caricamento ordini...</p>
+            </div>
+
+            <!-- Empty state -->
+            <div id="empty-state" class="hidden text-center py-12">
+                <i class="fas fa-inbox text-5xl text-slate-300 mb-4"></i>
+                <p class="text-slate-400 mb-6">Nessun ordine trovato</p>
+                <a href="ordini_nuovi.html" class="btn-new-order">
+                    <i class="fas fa-plus"></i> Crea il primo ordine
+                </a>
+            </div>
         </div>
+
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -59,140 +193,179 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        async function caricaOrdini(filtro = 'tutti', btn = null) {
-            if(btn) {
-                document.querySelectorAll('#filter-group button').forEach(b => b.classList.remove('active-filter'));
-                btn.classList.add('active-filter');
-            }
+        let allOrders = [];
+        let currentFilter = 'tutti';
 
-            const container = document.getElementById('orders-container');
-            let query = _supabase.from('ordini_incorso').select('*').order('created_at', { ascending: false });
+        async function loadOrders() {
+            try {
+                document.getElementById('loading').classList.remove('hidden');
+                document.getElementById('empty-state').classList.add('hidden');
 
-            if (filtro === 'da_ordinare') query = query.or('merce_pronta.eq.false,merce_pronta.is.null');
-            else if (filtro === 'merce_pronta') query = query.eq('merce_pronta', true);
-            else if (filtro === 'da_avvisare') query = query.eq('merce_pronta', true).eq('cliente_avvisato', false);
-            else if (filtro === 'avvisati') query = query.eq('cliente_avvisato', true);
+                const { data, error } = await _supabase
+                    .from('ordini_incorso')
+                    .select('*')
+                    .order('data_creazione', { ascending: false });
 
-            const { data: ordini, error } = await query;
-            if (error) { container.innerHTML = "<p class='text-center text-red-500'>Errore durante il caricamento.</p>"; return; }
+                if (error) throw error;
 
-            container.innerHTML = ordini.length === 0 ? `<p class="text-center text-slate-400 py-20">Nessun ordine trovato per questo filtro.</p>` : "";
-
-            ordini.forEach(ord => {
-                const cardId = `card-${ord.id}`;
-                const nomeCliente = `${ord.cliente_nome || ''} ${ord.cliente_cognome || ''}`.trim().toUpperCase();
+                allOrders = data || [];
+                renderOrders(allOrders);
                 
-                const cittaLabel = ord.citta ? ord.citta.toUpperCase() : "EMPORIO NON SPECIFICATO";
-                const canaleLabel = (ord.canale && ord.canale.trim() !== "") ? ` - ${ord.canale}` : "";
-                const emporio = cittaLabel + canaleLabel;
+                document.getElementById('loading').classList.add('hidden');
                 
-                const isPronta = ord.merce_pronta === true;
-                const isAvvisato = ord.cliente_avvisato === true;
-                const daAvvisare = isPronta && !isAvvisato;
-                const completato = isPronta && isAvvisato;
-
-                container.insertAdjacentHTML('beforeend', `
-                    <div class="ordine-card bg-white border border-slate-200 rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between shadow-sm hover:shadow-md transition-all relative overflow-hidden ${completato ? 'card-completata' : ''}" id="${cardId}" data-search="${nomeCliente} ${emporio}">
-                        
-                        ${daAvvisare ? `<div class="absolute top-0 left-0 w-1.5 h-full bg-[#b75252]"></div>` : ''}
-
-                        <div class="w-full md:w-1/3 mb-4 md:mb-0">
-                            <div class="flex items-center gap-3 mb-2">
-                                <span class="status-badge ${isPronta ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
-                                    ${isPronta ? 'Merce Pronta' : 'Da Ordinare'}
-                                </span>
-                                <span class="text-[10px] text-slate-300 font-mono">#${ord.id.toString().slice(-5)}</span>
-                                <div class="flex gap-4 ml-2 items-center">
-                                    <a href="ordini_modifica.html?id=${ord.id}" class="text-slate-400 hover:text-blue-500 transition-colors">
-                                        <i class="fas fa-edit text-lg"></i>
-                                    </a>
-                                    <button onclick="eliminaOrdine('${ord.id}', '${cardId}')" class="text-red-200 hover:text-red-500 transition-colors">
-                                        <i class="fas fa-trash-alt text-lg"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div>
-                                <h2 class="text-2xl font-[900] text-slate-800 tracking-tight leading-none">${nomeCliente || 'CLIENTE ANONIMO'}</h2>
-                                <p class="text-[11px] font-bold text-[#b75252] mt-1 tracking-wider italic">${emporio}</p>
-                                
-                                ${daAvvisare ? `
-                                    <div class="flex items-center gap-1.5 bg-red-50 px-2 py-1 rounded-md border border-red-100 mt-2 w-fit">
-                                        <span class="relative flex h-2 w-2">
-                                            <span class="ping-notify absolute inline-flex h-full w-full rounded-full opacity-75"></span>
-                                            <span class="relative inline-flex rounded-full h-2 w-2 bg-[#b75252]"></span>
-                                        </span>
-                                        <span class="text-[9px] font-bold text-[#b75252] uppercase">Da Avvisare</span>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-
-                        <div class="w-full md:w-1/3 flex flex-col gap-3 justify-center border-l border-r border-slate-50 px-8">
-                            <label class="flex items-center gap-4 cursor-pointer group">
-                                <input type="checkbox" ${isPronta ? 'checked' : ''} onchange="aggiornaStato('${ord.id}', 'merce_pronta', this.checked)" class="w-6 h-6 rounded-lg border-slate-300 accent-emerald-600">
-                                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-800">Merce Pronta</span>
-                            </label>
-                            <label class="flex items-center gap-4 cursor-pointer group">
-                                <input type="checkbox" ${isAvvisato ? 'checked' : ''} onchange="aggiornaStato('${ord.id}', 'cliente_avvisato', this.checked)" class="w-6 h-6 rounded-lg border-slate-300 accent-blue-600">
-                                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-800">Cliente Avvisato</span>
-                            </label>
-                        </div>
-
-                        <div class="w-full md:w-1/3 text-right flex items-center justify-end">
-                            <button onclick="evadiOrdine('${ord.id}', '${cardId}')" class="bg-[#2d3748] text-white px-10 py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-900 shadow-lg active:scale-95 transition-all">
-                                RITIRATO / SPEDITO
-                            </button>
-                        </div>
-                    </div>
-                `);
-            });
-        }
-
-        async function aggiornaStato(id, campo, valore) {
-            await _supabase.from('ordini_incorso').update({ [campo]: valore }).eq('id', id);
-            const activeBtn = document.querySelector('.active-filter');
-            caricaOrdini(activeBtn.innerText.toLowerCase().includes('tutti') ? 'tutti' : activeBtn.innerText.toLowerCase().includes('ordinare') ? 'da_ordinare' : activeBtn.innerText.toLowerCase().includes('pronta') ? 'merce_pronta' : activeBtn.innerText.toLowerCase().includes('avvisare') ? 'da_avvisare' : 'avvisati');
-        }
-
-        async function eliminaOrdine(id, elementId) {
-            if (confirm("Eliminare definitivamente questo ordine?")) {
-                const { error } = await _supabase.from('ordini_incorso').delete().eq('id', id);
-                if (!error) document.getElementById(elementId).remove();
-            }
-        }
-
-        async function evadiOrdine(id, elementId) {
-            if (confirm(`Spostare in archivio come consegnato?`)) {
-                const { data: ordine } = await _supabase.from('ordini_incorso').select('*').eq('id', id).single();
-                
-                const ordinePerArchivio = { ...ordine };
-                delete ordinePerArchivio.id;
-                
-                const { error: errInsert } = await _supabase.from('ordini_archiviati').insert([{ 
-                    ...ordinePerArchivio, 
-                    stato: 'Evaso', 
-                    data_evasione: new Date() 
-                }]);
-
-                if (!errInsert) {
-                    await _supabase.from('ordini_incorso').delete().eq('id', id);
-                    document.getElementById(elementId).remove();
-                } else {
-                    alert("Errore durante l'archiviazione: " + errInsert.message);
+                if (allOrders.length === 0) {
+                    document.getElementById('empty-state').classList.remove('hidden');
                 }
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                document.getElementById('loading').innerHTML = `
+                    <p class="text-red-500">Errore nel caricamento: ${error.message}</p>
+                `;
             }
         }
 
-        function filtraPerNome(testo) {
-            const query = testo.toLowerCase();
-            document.querySelectorAll('.ordine-card').forEach(card => {
-                const content = card.getAttribute('data-search').toLowerCase();
-                card.style.display = content.includes(query) ? 'flex' : 'none';
+        function renderOrders(orders) {
+            const container = document.getElementById('orders-container');
+            
+            // Keep loading and empty state divs
+            const loading = document.getElementById('loading');
+            const emptyState = document.getElementById('empty-state');
+            
+            // Clear only order cards
+            const cards = container.querySelectorAll('.order-card');
+            cards.forEach(card => card.remove());
+
+            if (orders.length === 0 && currentFilter === 'tutti') {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            orders.forEach(order => {
+                const card = createOrderCard(order);
+                container.insertBefore(card, loading);
             });
         }
 
-        window.onload = () => caricaOrdini();
+        function createOrderCard(order) {
+            const card = document.createElement('div');
+            card.className = 'order-card';
+            card.onclick = () => viewOrderDetail(order.id);
+
+            const dataOrdine = new Date(order.data_ordine).toLocaleDateString('it-IT');
+            const statusClass = order.stato === 'completato' ? 'status-completato' : 'status-in-corso';
+            const statusText = order.stato === 'completato' ? 'Completato' : 'In Corso';
+
+            card.innerHTML = `
+                <div class="flex flex-col md:flex-row justify-between gap-4">
+                    <div class="flex-1 space-y-3">
+                        <div class="flex items-center gap-3 flex-wrap">
+                            <span class="order-number">${order.numero_ordine}</span>
+                            <span class="order-status ${statusClass}">${statusText}</span>
+                            ${order.tipo_ordine === 'bomboniere' ? '<span class="order-status" style="background:#fce7f3;color:#be185d;"><i class="fas fa-gift mr-1"></i>Bomboniere</span>' : ''}
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                            <div class="info-row">
+                                <i class="fas fa-user text-slate-400"></i>
+                                <span><span class="info-label">Cliente:</span> ${order.cliente_nome} ${order.cliente_cognome}</span>
+                            </div>
+                            <div class="info-row">
+                                <i class="fas fa-calendar text-slate-400"></i>
+                                <span><span class="info-label">Data:</span> ${dataOrdine}</span>
+                            </div>
+                            <div class="info-row">
+                                <i class="fas fa-store text-slate-400"></i>
+                                <span><span class="info-label">Emporio:</span> ${order.emporio}</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                            <div class="info-row">
+                                <i class="fas fa-phone text-slate-400"></i>
+                                <span>${order.cliente_telefono}</span>
+                                ${order.cliente_whatsapp ? '<i class="fab fa-whatsapp text-green-500"></i>' : ''}
+                            </div>
+                            <div class="info-row">
+                                <i class="fas fa-user-tie text-slate-400"></i>
+                                <span><span class="info-label">Operatore:</span> ${order.operatore}</span>
+                            </div>
+                            <div class="info-row">
+                                <i class="fas fa-truck text-slate-400"></i>
+                                <span><span class="info-label">Modalità:</span> ${order.modalita_consegna}</span>
+                            </div>
+                        </div>
+
+                        ${order.note ? `
+                            <div class="info-row">
+                                <i class="fas fa-note-sticky text-slate-400"></i>
+                                <span class="text-xs italic">${order.note}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="flex flex-col items-end justify-between gap-2">
+                        <div class="text-right">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Totale</div>
+                            <div class="total-badge">€ ${order.totale.toFixed(2).replace('.', ',')}</div>
+                        </div>
+                        ${order.saldo > 0 ? `
+                            <div class="text-right">
+                                <div class="text-[10px] font-bold text-red-400 uppercase mb-1">Da Pagare</div>
+                                <div class="text-lg font-bold text-m361-red font-mono">€ ${order.saldo.toFixed(2).replace('.', ',')}</div>
+                            </div>
+                        ` : '<div class="text-xs font-bold text-green-600"><i class="fas fa-check-circle mr-1"></i>Pagato</div>'}
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function filterOrders(filter) {
+            currentFilter = filter;
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-filter') === filter) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Filter orders
+            let filtered = allOrders;
+            if (filter !== 'tutti') {
+                filtered = allOrders.filter(order => order.stato === filter);
+            }
+
+            // Apply search if active
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            if (searchTerm) {
+                filtered = filtered.filter(order => 
+                    order.numero_ordine.toLowerCase().includes(searchTerm) ||
+                    order.cliente_nome.toLowerCase().includes(searchTerm) ||
+                    order.cliente_cognome.toLowerCase().includes(searchTerm) ||
+                    order.emporio.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            renderOrders(filtered);
+        }
+
+        function searchOrders() {
+            filterOrders(currentFilter);
+        }
+
+        function viewOrderDetail(orderId) {
+            // Navigate to order detail page (to be implemented)
+            console.log('View order:', orderId);
+            // window.location.href = `ordine_dettaglio.html?id=${orderId}`;
+        }
+
+        // Initialize
+        window.addEventListener('load', loadOrders);
     </script>
+
     <script src="../../scripts/nav-script.js"></script>
 </body>
 </html>
