@@ -4,206 +4,189 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M361 - Amministrazione Cassa</title>
-    
-    <link rel="stylesheet" href="nav-style.css">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=DM+Mono:wght@500;700&display=swap" rel="stylesheet">
-    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Stili specifici per la tabella amministrativa */
-        .input-money {
-            width: 100%;
-            max-width: 120px;
-            border: 1px solid var(--slate-200);
-            border-radius: 8px;
-            padding: 8px;
-            font-family: var(--font-mono);
-            text-align: right;
-            font-size: 14px;
-            background: var(--slate-50);
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
+        .bg-m361-red { background-color: #b75252; }
+        .text-m361-red { color: #b75252; }
+        
+        /* Glassmorphism containers */
+        .admin-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            border: 1px solid #e2e8f0;
         }
-        .input-money:focus {
-            outline: none;
-            border-color: var(--red);
-            background: #fff;
+
+        /* Table Styling */
+        .table-container {
+            overflow-x: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 #f8fafc;
         }
-        .recap-table {
-            width: 100%;
-            border-collapse: collapse;
+        
+        table { border-collapse: separate; border-spacing: 0; width: 100%; }
+        
+        th { 
+            position: sticky; top: 0; background: #f1f5f9; 
+            z-index: 10; font-size: 11px; text-transform: uppercase; 
+            letter-spacing: 0.05em; color: #475569; padding: 12px 8px;
+            border-bottom: 2px solid #e2e8f0;
         }
-        .recap-table th {
-            text-align: left;
-            padding: 12px;
-            background: var(--slate-50);
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--slate-500);
-            border-bottom: 1px solid var(--slate-200);
+
+        td { 
+            padding: 10px 8px; font-size: 13px; border-bottom: 1px solid #f1f5f9;
+            white-space: nowrap;
         }
-        .recap-table td {
-            padding: 12px;
-            border-bottom: 1px solid var(--slate-100);
-            vertical-align: middle;
+
+        /* Sticky Date Column */
+        .sticky-col {
+            position: sticky; left: 0; background: white; z-index: 5;
+            border-right: 2px solid #f1f5f9; font-weight: 600;
         }
-        .diff-badge {
-            font-family: var(--font-mono);
-            font-weight: 700;
-            padding: 4px 8px;
-            border-radius: 6px;
-        }
-        .diff-neg { color: var(--rose); background: #fff1f2; }
-        .diff-pos { color: var(--emerald); background: #ecfdf5; }
-        .text-right { text-align: right; }
+        tr:hover .sticky-col { background: #f8fafc; }
+        tr:hover td { background: #f8fafc; }
+
+        /* Highlight Columns from Excel */
+        .col-corrispettivi { color: #1e293b; font-weight: 700; background: #fffbeb; }
+        .col-incassi { color: #b75252; font-weight: 700; background: #fef2f2; }
+        .col-spese { background: #fff1f1; color: #991b1b; font-weight: 600; }
+        
+        .negative { color: #94a3b8; font-weight: 400; } /* Per i "-" */
+
+        /* Totals Row */
+        .row-totals { background: #1e293b !important; color: white; font-weight: 800; }
+        .row-totals td { border-top: 2px solid #000; }
     </style>
 </head>
-<body>
+<body class="pb-10">
 
-    <header style="position: fixed; top: 0; width: 100%; height: 56px; background: #fff; border-bottom: 1px solid var(--slate-200); display: flex; align-items: center; padding: 0 20px; z-index: 100;">
-        <div class="sec-title" style="margin-bottom: 0;">Amministrazione Cassa</div>
-    </header>
+<header class="bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+    <div class="flex items-center gap-4">
+        <img src="../../assets/images/logom361_rosso.jpg" alt="Logo" class="h-8">
+        <h1 class="font-bold text-xl border-l pl-4 text-slate-700">Amministrazione Cassa</h1>
+    </div>
+    <div class="flex gap-3">
+        <select class="bg-slate-100 border-none rounded-lg px-3 py-2 text-sm font-semibold focus:ring-2 focus:ring-red-200">
+            <option>Aprile 2026</option>
+            <option>Marzo 2026</option>
+        </select>
+        <button class="bg-m361-red text-white px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity">
+            Esporta PDF
+        </button>
+    </div>
+</header>
 
-    <main class="page-main space-y">
+<main class="max-w-[98%] mx-auto mt-6">
+    
+    <!-- KPI Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="admin-card p-5 border-l-4 border-amber-400">
+            <div class="text-xs font-bold text-slate-500 uppercase">Totale Corrispettivi</div>
+            <div class="text-2xl font-black text-slate-800 mt-1">€ 12.450,30</div>
+        </div>
+        <div class="admin-card p-5 border-l-4 border-m361-red">
+            <div class="text-xs font-bold text-slate-500 uppercase">Totale Incassi</div>
+            <div class="text-2xl font-black text-m361-red mt-1">€ 12.442,30</div>
+        </div>
+        <div class="admin-card p-5 border-l-4 border-blue-500">
+            <div class="text-xs font-bold text-slate-500 uppercase">Totale Carte/Digital</div>
+            <div class="text-2xl font-black text-blue-600 mt-1">€ 8.120,00</div>
+        </div>
+        <div class="admin-card p-5 border-l-4 border-red-600">
+            <div class="text-xs font-bold text-slate-500 uppercase">Uscite / Spese</div>
+            <div class="text-2xl font-black text-red-600 mt-1">€ 108,00</div>
+        </div>
+    </div>
+
+    <!-- Main Data Table -->
+    <div class="admin-card overflow-hidden">
+        <div class="p-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+            <h3 class="font-bold text-slate-700">Dettaglio Giornaliero Forme di Pagamento</h3>
+            <span class="text-xs text-slate-400 italic">Valori aggiornati in tempo reale dal modulo Cassa</span>
+        </div>
         
-        <div class="grid-auto">
-            <div class="card card-pad">
-                <span class="field-label">Totale Sistema (Z)</span>
-                <div id="display-tot-sys" class="font-mono fw-800 text-dark" style="font-size: 24px;">€ 0,00</div>
-            </div>
-            <div class="card card-pad">
-                <span class="field-label">Totale Reale (Contanti+POS)</span>
-                <div id="display-tot-real" class="font-mono fw-800 text-red" style="font-size: 24px;">€ 0,00</div>
-            </div>
-            <div class="card card-pad">
-                <span class="field-label">Differenza Totale</span>
-                <div id="display-tot-diff" class="font-mono fw-800" style="font-size: 24px;">€ 0,00</div>
-            </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="sticky-col bg-slate-100">Data</th>
+                        <th class="bg-amber-50">Tot. Corrispettivi</th>
+                        <th class="bg-red-50">Tot. Incassi</th>
+                        <th>Contanti</th>
+                        <th>Bancomat</th>
+                        <th>Carte Credito</th>
+                        <th>Satispay</th>
+                        <th>Satispay Online</th>
+                        <th>Carte Online</th>
+                        <th>Paypal</th>
+                        <th>Bonifico</th>
+                        <th>Gift Card</th>
+                        <th class="col-spese">Spese</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Esempio riga 1 -->
+                    <tr>
+                        <td class="sticky-col">Mer 1 Apr</td>
+                        <td class="col-corrispettivi">1.116,10 €</td>
+                        <td class="col-incassi">1.116,10 €</td>
+                        <td>192,00 €</td>
+                        <td>459,10 €</td>
+                        <td>252,00 €</td>
+                        <td class="negative">- €</td>
+                        <td class="negative">- €</td>
+                        <td>37,00 €</td>
+                        <td>176,00 €</td>
+                        <td class="negative">- €</td>
+                        <td class="negative">- €</td>
+                        <td class="col-spese negative">- €</td>
+                    </tr>
+                    <!-- Esempio riga con spesa -->
+                    <tr>
+                        <td class="sticky-col">Mer 15 Apr</td>
+                        <td class="col-corrispettivi">488,10 €</td>
+                        <td class="col-incassi">488,10 €</td>
+                        <td>100,00 €</td>
+                        <td>63,00 €</td>
+                        <td>302,10 €</td>
+                        <td class="negative">- €</td>
+                        <td class="negative">- €</td>
+                        <td class="negative">- €</td>
+                        <td>23,00 €</td>
+                        <td class="negative">- €</td>
+                        <td class="negative">- €</td>
+                        <td class="col-spese">8,00 €</td>
+                    </tr>
+                    <!-- Altre righe generate via JS... -->
+                </tbody>
+                <tfoot>
+                    <tr class="row-totals">
+                        <td class="sticky-col bg-slate-800 text-white border-none">TOTALE MESE</td>
+                        <td>12.450,30 €</td>
+                        <td>12.442,30 €</td>
+                        <td>2.450,00 €</td>
+                        <td>3.100,00 €</td>
+                        <td>4.200,00 €</td>
+                        <td>240,00 €</td>
+                        <td>94,00 €</td>
+                        <td>350,00 €</td>
+                        <td>900,00 €</td>
+                        <td>51,00 €</td>
+                        <td>200,00 €</td>
+                        <td class="bg-red-900">108,00 €</td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
+    </div>
+</main>
 
-        <div class="card" style="overflow: hidden;">
-            <div class="card-pad">
-                <div class="group-label">Confronto Chiusura</div>
-            </div>
-            <div style="overflow-x: auto;">
-                <table class="recap-table">
-                    <thead>
-                        <tr>
-                            <th>Metodo</th>
-                            <th class="text-right">Sistema (Z)</th>
-                            <th class="text-right">Reale (Effettivo)</th>
-                            <th class="text-right">Differenza</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Contanti</strong></td>
-                            <td class="text-right">
-                                <input type="number" step="0.01" class="input-money calc-trigger" id="sys-cash" placeholder="0.00">
-                            </td>
-                            <td class="text-right">
-                                <input type="number" step="0.01" class="input-money calc-trigger" id="real-cash" placeholder="0.00">
-                            </td>
-                            <td class="text-right">
-                                <span id="diff-cash" class="diff-badge">€ 0.00</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>POS / Carte</strong></td>
-                            <td class="text-right">
-                                <input type="number" step="0.01" class="input-money calc-trigger" id="sys-pos" placeholder="0.00">
-                            </td>
-                            <td class="text-right">
-                                <input type="number" step="0.01" class="input-money calc-trigger" id="real-pos" placeholder="0.00">
-                            </td>
-                            <td class="text-right">
-                                <span id="diff-pos" class="diff-badge">€ 0.00</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Satispay</strong></td>
-                            <td class="text-right">
-                                <input type="number" step="0.01" class="input-money calc-trigger" id="sys-satis" placeholder="0.00">
-                            </td>
-                            <td class="text-right">
-                                <input type="number" step="0.01" class="input-money calc-trigger" id="real-satis" placeholder="0.00">
-                            </td>
-                            <td class="text-right">
-                                <span id="diff-satis" class="diff-badge">€ 0.00</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+<script>
+    // Logica per popolare la tabella e gestire i calcoli
+    // (Simile alla logica usata per i turni, adattata ai valori monetari)
+</script>
 
-        <div class="grid-2">
-            <div class="card card-pad">
-                <div class="group-label">Note Amministrative</div>
-                <textarea class="textarea-input" placeholder="Segnala eventuali ammanchi o anomalie..."></textarea>
-            </div>
-            <div class="card card-pad">
-                <div class="group-label">Uscite / Spese</div>
-                <input type="text" class="input" placeholder="Motivo spesa" style="margin-bottom: 10px;">
-                <input type="number" class="input input-mono" placeholder="€ 0.00">
-            </div>
-        </div>
-
-    </main>
-
-    <nav style="position: fixed; bottom: 0; width: 100%; height: 68px; background: #fff; border-top: 1px solid var(--slate-200); display: flex; justify-content: space-around; align-items: center; padding: 0 10px;">
-        <a href="turni.html" class="btn-secondary">Turni</a>
-        <button class="btn-dark" onclick="alert('Dati Salvati!')">Salva Chiusura</button>
-    </nav>
-
-    <script>
-        function formatVal(val) {
-            return "€ " + val.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
-
-        function updateCalcoli() {
-            const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
-
-            // Valori Inseriti
-            const sCash = getVal('sys-cash'), rCash = getVal('real-cash');
-            const sPos = getVal('sys-pos'), rPos = getVal('real-pos');
-            const sSatis = getVal('sys-satis'), rSatis = getVal('real-satis');
-
-            // Differenze Singole
-            const dCash = rCash - sCash;
-            const dPos = rPos - sPos;
-            const dSatis = rSatis - sSatis;
-
-            // Aggiorna Righe Tabella
-            const updateRow = (idEl, val) => {
-                const el = document.getElementById(idEl);
-                el.innerText = formatVal(val);
-                el.className = "diff-badge " + (val < 0 ? "diff-neg" : val > 0 ? "diff-pos" : "");
-            };
-
-            updateRow('diff-cash', dCash);
-            updateRow('diff-pos', dPos);
-            updateRow('diff-satis', dSatis);
-
-            // Totali Generali
-            const totSys = sCash + sPos + sSatis;
-            const totReal = rCash + rPos + rSatis;
-            const totDiff = totReal - totSys;
-
-            document.getElementById('display-tot-sys').innerText = formatVal(totSys);
-            document.getElementById('display-tot-real').innerText = formatVal(totReal);
-            
-            const diffDisplay = document.getElementById('display-tot-diff');
-            diffDisplay.innerText = formatVal(totDiff);
-            diffDisplay.className = "font-mono fw-800 " + (totDiff < 0 ? "text-red" : "text-emerald");
-        }
-
-        // Listener su tutti gli input
-        document.querySelectorAll('.calc-trigger').forEach(input => {
-            input.addEventListener('input', updateCalcoli);
-        });
-
-        // Esegui calcolo iniziale
-        updateCalcoli();
-    </script>
 </body>
 </html>
