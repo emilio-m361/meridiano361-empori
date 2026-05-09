@@ -15,11 +15,11 @@
         }
         
         .logo {
-            height: 32px;
+            height: 36px;
         }
         
         .header-title {
-            font-size: 22px;
+            font-size: 26px;
             font-weight: 700;
             color: #1e293b;
         }
@@ -27,17 +27,17 @@
         .btn-new-order {
             background: #b75252;
             color: white;
-            padding: 12px 24px;
+            padding: 14px 28px;
             border-radius: 12px;
-            font-weight: 700;
-            font-size: 13px;
+            font-weight: 800;
+            font-size: 14px;
             text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.05em;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             text-decoration: none;
-            box-shadow: 0 2px 8px rgba(183, 82, 82, 0.3);
+            box-shadow: 0 3px 10px rgba(183, 82, 82, 0.3);
             transition: all 0.2s;
             border: none;
             cursor: pointer;
@@ -47,9 +47,9 @@
         }
         
         .filter-btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 12px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.04em;
@@ -70,12 +70,36 @@
         .search-input {
             border: 1px solid #e2e8f0;
             border-radius: 12px;
-            padding: 10px 16px 10px 40px;
-            font-size: 13px;
+            padding: 12px 18px 12px 44px;
+            font-size: 14px;
             width: 100%;
-            max-width: 300px;
+            min-width: 400px;
         }
         .search-input:focus {
+            outline: none;
+            border-color: #b75252;
+        }
+        
+        .date-filter-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .date-filter-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+        }
+        .date-input {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            width: 200px;
+        }
+        .date-input:focus {
             outline: none;
             border-color: #b75252;
         }
@@ -83,23 +107,27 @@
         .order-card {
             background: white;
             border-radius: 16px;
-            padding: 20px 24px;
+            padding: 24px 28px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
             border: 1px solid #f1f5f9;
             transition: all 0.2s;
             margin-bottom: 16px;
             position: relative;
-            border-left: 4px solid transparent;
+            border-left: 6px solid transparent;
         }
         .order-card.da-avvisare {
-            border-left-color: #ef4444;
+            border-left-color: #b75252;
+        }
+        .order-card.avvisato {
+            background: #f8fafb;
+            opacity: 0.85;
         }
         
         .status-badge {
             display: inline-block;
-            padding: 6px 14px;
+            padding: 8px 16px;
             border-radius: 8px;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -113,37 +141,70 @@
             color: #065f46;
         }
         
+        .badge-da-avvisare {
+            background: #b75252;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .badge-da-avvisare i {
+            font-size: 8px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
         .order-number {
             font-family: 'DM Mono', monospace;
-            font-size: 13px;
+            font-size: 14px;
             color: #94a3b8;
             font-weight: 600;
         }
         
         .customer-name {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 800;
             color: #1e293b;
-            margin: 8px 0;
+            margin: 10px 0;
             text-transform: uppercase;
         }
         
         .emporio-name {
-            font-size: 13px;
+            font-size: 15px;
             color: #b75252;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
+            margin-top: 4px;
+        }
+        
+        .delivery-method {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 600;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         
         .checkbox-label {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 13px;
+            gap: 10px;
+            font-size: 14px;
             font-weight: 600;
             color: #475569;
             cursor: pointer;
-            padding: 8px 12px;
+            padding: 10px 14px;
             border-radius: 8px;
             transition: all 0.15s;
         }
@@ -151,61 +212,64 @@
             background: #f8fafc;
         }
         .checkbox-label input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             cursor: pointer;
             accent-color: #059669;
         }
         
         .btn-action {
-            padding: 10px 16px;
+            padding: 12px;
             border-radius: 10px;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
+            font-size: 18px;
             border: none;
             cursor: pointer;
             transition: all 0.15s;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .btn-ritirato {
             background: #2d3748;
             color: white;
-            padding: 12px 20px;
-            font-size: 13px;
+            padding: 14px 24px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            width: auto;
+            height: auto;
         }
         .btn-ritirato:hover {
             background: #1a202c;
         }
         .btn-edit {
-            background: transparent;
-            color: #64748b;
-            padding: 8px;
+            background: #475569;
+            color: white;
         }
         .btn-edit:hover {
-            background: #f1f5f9;
-            color: #1e293b;
+            background: #334155;
         }
         .btn-delete {
-            background: transparent;
-            color: #64748b;
-            padding: 8px;
+            background: #b75252;
+            color: white;
         }
         .btn-delete:hover {
-            background: #fef2f2;
-            color: #ef4444;
+            background: #9a3d3d;
         }
         
         .info-text {
-            font-size: 12px;
+            font-size: 14px;
             color: #64748b;
-            margin: 4px 0;
+            margin: 6px 0;
         }
     </style>
 </head>
 <body class="pb-20">
 
-    <header class="bg-white border-b p-4 px-6 md:px-8 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+    <header class="bg-white border-b p-5 px-8 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <div class="flex items-center gap-6">
             <img src="../../assets/images/logom361_rosso.jpg" alt="Logo" class="logo" onerror="this.style.display='none'">
             <h1 class="header-title">Ordini in corso</h1>
@@ -221,23 +285,24 @@
         
         <!-- FILTERS AND SEARCH -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
-            <div class="flex flex-wrap gap-4 items-center justify-between">
+            <div class="flex flex-wrap gap-4 items-end justify-between">
                 <!-- Filters -->
                 <div class="flex flex-wrap gap-2">
-                    <button class="filter-btn active" data-filter="tutti">Tutti</button>
-                    <button class="filter-btn" data-filter="da_ordinare">Da ordinare</button>
-                    <button class="filter-btn" data-filter="merce_pronta">Merce pronta</button>
-                    <button class="filter-btn" data-filter="da_avvisare">Da avvisare</button>
-                    <button class="filter-btn" data-filter="avvisati">Avvisati</button>
+                    <button class="filter-btn" data-filter="da_ordinare">Merce da ordinare</button>
+                    <button class="filter-btn" data-filter="da_avvisare">Merce pronta cliente da avvisare</button>
+                    <button class="filter-btn" data-filter="avvisati">Merce pronta cliente avvisato</button>
                 </div>
                 
-                <!-- Search -->
-                <div class="flex gap-3">
+                <!-- Search and Date Filter -->
+                <div class="flex gap-3 items-end">
                     <div class="relative">
-                        <i class="fas fa-search absolute left-3 top-3 text-slate-400"></i>
-                        <input type="text" id="search-input" class="search-input" placeholder="Cerca cliente, emporio, numero...">
+                        <i class="fas fa-search absolute left-4 top-4 text-slate-400"></i>
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca cliente o emporio...">
                     </div>
-                    <input type="date" id="filter-date" class="search-input" style="max-width: 180px;">
+                    <div class="date-filter-wrapper">
+                        <label class="date-filter-label">Filtra per data</label>
+                        <input type="date" id="filter-date" class="date-input">
+                    </div>
                 </div>
             </div>
         </div>
@@ -247,13 +312,13 @@
             <!-- Loading state -->
             <div id="loading" class="text-center py-16">
                 <i class="fas fa-circle-notch fa-spin text-4xl text-slate-300 mb-4"></i>
-                <p class="text-slate-400">Caricamento ordini...</p>
+                <p class="text-slate-400 text-lg">Caricamento ordini...</p>
             </div>
 
             <!-- Empty state -->
             <div id="empty-state" class="hidden text-center py-16">
                 <i class="fas fa-inbox text-5xl text-slate-300 mb-4"></i>
-                <p class="text-slate-400 mb-6">Nessun ordine trovato</p>
+                <p class="text-slate-400 mb-6 text-lg">Nessun ordine trovato</p>
                 <button class="btn-new-order" onclick="location.href='ordini_nuovi.html'">
                     <i class="fas fa-plus"></i> Crea il primo ordine
                 </button>
@@ -269,7 +334,7 @@
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let allOrders = [];
-        let currentFilter = 'tutti';
+        let currentFilter = 'da_ordinare';
 
         async function loadOrders() {
             try {
@@ -284,7 +349,22 @@
                 if (error) throw error;
 
                 allOrders = data || [];
+                
+                // Check and update merce_pronta based on prodotti
+                for (let order of allOrders) {
+                    await checkAndUpdateMercePronta(order);
+                }
+                
+                // Reload after updates
+                const { data: updatedData } = await _supabase
+                    .from('ordini_incorso')
+                    .select('*')
+                    .order('data_creazione', { ascending: true });
+                
+                allOrders = updatedData || [];
+                
                 renderOrders(allOrders);
+                applyCurrentFilter();
                 
                 document.getElementById('loading').classList.add('hidden');
                 
@@ -294,8 +374,36 @@
             } catch (error) {
                 console.error('Error loading orders:', error);
                 document.getElementById('loading').innerHTML = `
-                    <p class="text-red-500">Errore nel caricamento: ${error.message}</p>
+                    <p class="text-red-500 text-lg">Errore nel caricamento: ${error.message}</p>
                 `;
+            }
+        }
+
+        async function checkAndUpdateMercePronta(order) {
+            if (!order.prodotti || !Array.isArray(order.prodotti)) return;
+            
+            // Check if all products have da_parte === qta
+            let allReady = true;
+            for (let product of order.prodotti) {
+                const qta = parseInt(product.qta) || 0;
+                const daParte = parseInt(product.da_parte) || 0;
+                
+                if (qta > 0 && daParte < qta) {
+                    allReady = false;
+                    break;
+                }
+            }
+            
+            // Update if needed
+            if (allReady && !order.merce_pronta) {
+                try {
+                    await _supabase
+                        .from('ordini_incorso')
+                        .update({ merce_pronta: true })
+                        .eq('id', order.id);
+                } catch (error) {
+                    console.error('Error auto-updating merce_pronta:', error);
+                }
             }
         }
 
@@ -328,30 +436,40 @@
             const merce_pronta = order.merce_pronta || false;
             const cliente_avvisato = order.cliente_avvisato || false;
             const da_avvisare = merce_pronta && !cliente_avvisato;
+            const avvisato = merce_pronta && cliente_avvisato;
             
             const statusClass = merce_pronta ? 'status-merce-pronta' : 'status-da-ordinare';
-            const statusText = merce_pronta ? 'Merce pronta' : 'Da ordinare';
+            const statusText = merce_pronta ? 'Merce pronta' : 'Merce da ordinare';
             
-            card.className = `order-card ${da_avvisare ? 'da-avvisare' : ''}`;
+            card.className = `order-card ${da_avvisare ? 'da-avvisare' : ''} ${avvisato ? 'avvisato' : ''}`;
             
             const dataCreazione = new Date(order.data_creazione).toLocaleDateString('it-IT');
+            
+            // Delivery method icon
+            const deliveryIcon = order.modalita_consegna === 'Spedizione' ? 'fa-truck' : 'fa-box';
+            const deliveryText = order.modalita_consegna || 'Ritiro';
 
             card.innerHTML = `
-                <div class="grid grid-cols-12 gap-4 items-center">
+                <div class="grid grid-cols-12 gap-6 items-center">
                     
                     <!-- LEFT SECTION -->
                     <div class="col-span-12 md:col-span-4">
-                        <div class="flex items-center gap-3 mb-3">
+                        <div class="flex items-center gap-3 mb-3 flex-wrap">
                             <span class="status-badge ${statusClass}">${statusText}</span>
+                            ${da_avvisare ? '<span class="badge-da-avvisare"><i class="fas fa-circle"></i> DA AVVISARE</span>' : ''}
                             <span class="order-number">#${order.numero_ordine}</span>
                         </div>
                         <div class="customer-name">${order.cliente_nome} ${order.cliente_cognome}</div>
-                        <div class="info-text">Data: ${dataCreazione}</div>
+                        <div class="info-text">Data ordine: ${dataCreazione}</div>
                         <div class="emporio-name">${order.emporio}</div>
+                        <div class="delivery-method">
+                            <i class="fas ${deliveryIcon}"></i>
+                            ${deliveryText}
+                        </div>
                     </div>
                     
                     <!-- MIDDLE SECTION - CHECKBOXES -->
-                    <div class="col-span-12 md:col-span-4 flex flex-col gap-2">
+                    <div class="col-span-12 md:col-span-4 flex flex-col gap-3">
                         <label class="checkbox-label">
                             <input type="checkbox" ${merce_pronta ? 'checked' : ''} onchange="toggleMercePronta('${order.id}', this.checked)">
                             <span>Merce pronta</span>
@@ -363,7 +481,7 @@
                     </div>
                     
                     <!-- RIGHT SECTION - ACTIONS -->
-                    <div class="col-span-12 md:col-span-4 flex items-center justify-end gap-2">
+                    <div class="col-span-12 md:col-span-4 flex items-center justify-end gap-3">
                         <button class="btn-action btn-edit" onclick="editOrder('${order.id}')" title="Modifica">
                             <i class="fas fa-pen"></i>
                         </button>
@@ -390,9 +508,7 @@
 
                 if (error) throw error;
                 
-                // Reload to update card styling
                 await loadOrders();
-                applyCurrentFilter();
             } catch (error) {
                 console.error('Error updating order:', error);
                 alert('Errore nell\'aggiornamento');
@@ -408,9 +524,7 @@
 
                 if (error) throw error;
                 
-                // Reload to update card styling
                 await loadOrders();
-                applyCurrentFilter();
             } catch (error) {
                 console.error('Error updating order:', error);
                 alert('Errore nell\'aggiornamento');
@@ -430,7 +544,6 @@
                 
                 alert('Ordine completato!');
                 await loadOrders();
-                applyCurrentFilter();
             } catch (error) {
                 console.error('Error completing order:', error);
                 alert('Errore nel completamento');
@@ -438,8 +551,8 @@
         }
 
         function editOrder(orderId) {
-            // Navigate to edit page
-            window.location.href = `ordine_dettaglio.html?id=${orderId}`;
+            // Redirect to edit page - create a simple edit page
+            window.location.href = `ordini_nuovi.html?edit=${orderId}`;
         }
 
         async function deleteOrder(orderId) {
@@ -455,7 +568,6 @@
                 
                 alert('Ordine eliminato');
                 await loadOrders();
-                applyCurrentFilter();
             } catch (error) {
                 console.error('Error deleting order:', error);
                 alert('Errore nell\'eliminazione');
@@ -480,7 +592,7 @@
             let filtered = allOrders;
             
             // Apply status filter
-            if (currentFilter !== 'tutti') {
+            if (currentFilter) {
                 filtered = filtered.filter(order => {
                     const merce_pronta = order.merce_pronta || false;
                     const cliente_avvisato = order.cliente_avvisato || false;
@@ -488,12 +600,10 @@
                     switch(currentFilter) {
                         case 'da_ordinare':
                             return !merce_pronta;
-                        case 'merce_pronta':
-                            return merce_pronta;
                         case 'da_avvisare':
                             return merce_pronta && !cliente_avvisato;
                         case 'avvisati':
-                            return cliente_avvisato;
+                            return merce_pronta && cliente_avvisato;
                         default:
                             return true;
                     }
@@ -529,6 +639,9 @@
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.addEventListener('click', () => filterOrders(btn.getAttribute('data-filter')));
             });
+            
+            // Set first filter as active by default
+            document.querySelector('.filter-btn').classList.add('active');
 
             // Search input
             document.getElementById('search-input').addEventListener('input', applyCurrentFilter);
