@@ -203,11 +203,12 @@ const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
                 document.getElementById('loading').classList.remove('hidden');
                 document.getElementById('empty-state').classList.add('hidden');
 
-                const { data, error } = await _supabase
-                    .from('ordini_incorso')
-                    .select('*')
-                    .order('data_creazione', { ascending: false });
-
+               const { data, error } = await _supabase
+    .from('ordini_incorso')
+    .select('*')
+    .order('data_creazione', { ascending: false });
+console.log(error);
+alert(JSON.stringify(error));
                 if (error) throw error;
 
                 allOrders = data || [];
