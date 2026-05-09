@@ -1,1022 +1,1020 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>M361 - Controllo Cassa</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:100vh;padding-bottom:100px;}
+    <link rel="stylesheet" href="../../assets/style/nav-style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M361 - Turni</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family:'Inter',sans-serif; background:#f0f2f5; color:#1e293b; }
+        .bg-m361-red { background-color:#b75252; }
+        .text-m361-red { color:#b75252; }
 
-/* ── HEADER ── */
-.top-bar{background:#fff;border-bottom:1px solid #e5e7eb;padding:0 20px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.05);}
-.top-bar-logo{height:30px;object-fit:contain;}
-.top-bar-title{font-size:16px;font-weight:700;color:#334155;border-left:1px solid #e5e7eb;padding-left:14px;margin-left:2px;}
+        /* ── CARD GIORNO ─────────────────────────────── */
+        .day-card {
+            background:#fff;
+            border-radius:20px;
+            box-shadow:0 1px 4px rgba(0,0,0,.07);
+            overflow:hidden;
+            transition:box-shadow .15s;
+            margin-bottom:10px;
+        }
+        .day-card:hover { box-shadow:0 4px 18px rgba(0,0,0,.1); }
 
-/* ── BOTTOM NAV ── */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e5e7eb;display:flex;z-index:200;box-shadow:0 -2px 12px rgba(0,0,0,.06);}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;gap:3px;text-decoration:none;color:#94a3b8;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;transition:color .15s;background:none;border:none;font-family:'Inter',sans-serif;cursor:pointer;}
-.nav-item i{font-size:18px;}
-.nav-item.active,.nav-item:hover{color:#b75252;}
+        /* colonna data */
+        .day-date-col {
+            min-width:88px; width:88px;
+            display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
+            padding:16px 10px;
+            background:#fff;
+            border-right:1px solid #f1f5f9;
+        }
+        .day-date-col.festivo { background:#fff8f8; }
+        .day-weekday  { font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase; }
+        .day-num      { font-size:52px;font-weight:900;line-height:1; margin:2px 0; }
+        .day-month    { font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase; }
+        .day-oggi-badge { font-size:9px;font-weight:800;padding:2px 7px;border-radius:999px;
+                          background:#b75252;color:#fff;margin-top:4px;letter-spacing:.05em; }
 
-/* ── LAYOUT ── */
-.main{max-width:1100px;margin:0 auto;padding:24px 16px;}
-.space-y>*+*{margin-top:18px;}
+        /* colori testo data */
+        .col-normale .day-weekday { color:#475569; }
+        .col-normale .day-num     { color:#1e293b; }
+        .col-normale .day-month   { color:#94a3b8; }
+        .col-festivo .day-weekday { color:#b75252; }
+        .col-festivo .day-num     { color:#b75252; }
+        .col-festivo .day-month   { color:#e8a0a0; }
+        .col-oggi    .day-weekday { color:#b75252; }
+        .col-oggi    .day-num     { color:#b75252; }
+        .col-oggi    .day-month   { color:#b75252; }
 
-/* ── CARD ── */
-.card{background:#fff;border-radius:20px;box-shadow:0 1px 4px rgba(0,0,0,.07);}
-.card-pad{padding:24px;}
+        /* ── TURNO SEZIONI ───────────────────────────── */
+        .turno-mat-bg {
+            background:linear-gradient(160deg,#fff5f5 0%,#fef0f0 100%);
+            border-left:3px solid #f0c0c0;
+        }
+        .turno-pom-bg {
+            background:linear-gradient(160deg,#f8fafc 0%,#eef2f7 100%);
+            border-left:3px solid #c8d4e3;
+        }
+        .turno-chiuso-bg {
+            background:repeating-linear-gradient(45deg,#f8fafc,#f8fafc 6px,#f1f5f9 6px,#f1f5f9 12px);
+        }
 
-/* ── SECTION TITLE ── */
-.sec-title{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#94a3b8;display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-.sec-title::before{content:'';display:block;width:3px;height:16px;background:#b75252;border-radius:2px;flex-shrink:0;}
+        /* label sezione */
+        .turno-lbl { font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase; }
+        .turno-lbl-mat { color:#c0504a; }
+        .turno-lbl-pom { color:#5a7a9e; }
 
-/* ══ STEP 1: EMPORI ══ */
-.emp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;}
-.emp-card{background:#fff;border-radius:24px;border:1px solid #f1f5f9;box-shadow:0 1px 4px rgba(0,0,0,.07);padding:32px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;cursor:pointer;transition:all .15s;text-align:center;}
-.emp-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(183,82,82,.15);}
-.emp-icon{width:56px;height:56px;border-radius:18px;background:#fff1f1;display:flex;align-items:center;justify-content:center;}
-.emp-icon svg{width:28px;height:28px;}
-.emp-name{font-weight:700;font-size:16px;color:#334155;}
+        /* ── CHIP NOMI ───────────────────────────────── */
+        .chip { display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;
+                padding:5px 13px;border-radius:999px;cursor:pointer;transition:opacity .15s; }
+        .chip:hover { opacity:.72; }
+        .chip-mat-dip { background:#fac8c8;color:#7f1d1d; }
+        .chip-mat-vol { background:#fde0d0;color:#9a3412; }
+        .chip-mat-sc  { background:#fce8e8;color:#b45252;border:1px solid #f0b8b8; }
+        .chip-pom-dip { background:#dce6f4;color:#1e3a5f; }
+        .chip-pom-vol { background:#e2eedc;color:#14532d; }
+        .chip-pom-sc  { background:#eef2f7;color:#334155;border:1px solid #c8d4e3; }
+        .chip-ferie    { background:#dbeafe;color:#1e40af; }
+        .chip-malattia { background:#fef9c3;color:#854d0e; }
 
-/* ══ STEP 2: CALENDARIO ══ */
-.calendar-wrap{max-width:480px;}
-.month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-.month-label{font-size:18px;font-weight:800;color:#1e293b;}
-.nav-btn{width:36px;height:36px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;}
-.nav-btn:hover{background:#fff1f1;color:#b75252;border-color:#b75252;}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
-.cal-head{text-align:center;font-size:10px;font-weight:800;color:#94a3b8;letter-spacing:.08em;padding:6px 0;text-transform:uppercase;}
-.cal-day{aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;cursor:pointer;color:#475569;transition:all .12s;border:1.5px solid transparent;}
-.cal-day:hover{background:#fff1f1;color:#b75252;}
-.cal-day.today{border-color:#b75252;color:#b75252;font-weight:800;}
-.cal-day.selected{background:#b75252;color:#fff!important;font-weight:800;border-color:#b75252;}
-.cal-day.other-month{color:#cbd5e1;cursor:default;}
-.cal-day.other-month:hover{background:transparent;color:#cbd5e1;}
-.cal-actions{margin-top:20px;display:flex;gap:10px;}
+        /* ── BOTTONI CHIUSURA ────────────────────────── */
+        .btn-lock { display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;
+                    padding:3px 9px;border-radius:7px;border:1.5px solid #e2e8f0;
+                    color:#94a3b8;background:#fff;cursor:pointer;transition:all .15s; }
+        .btn-lock:hover { border-color:#f87171;color:#ef4444;background:#fff5f5; }
+        .btn-lock.on { border-color:#fca5a5;color:#dc2626;background:#fff1f1;font-weight:800; }
 
-/* ── BUTTONS ── */
-.btn-primary{background:#b75252;color:#fff;border:none;border-radius:12px;padding:13px 26px;font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background .15s;font-family:'Inter',sans-serif;}
-.btn-primary:hover{background:#8f3d3d;}
-.btn-secondary{background:#fff;color:#64748b;border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 20px;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;}
-.btn-secondary:hover{border-color:#94a3b8;background:#f8fafc;}
+        /* ── ADD LINK ────────────────────────────────── */
+        .add-link { font-size:13px;font-weight:700;color:#94a3b8;display:inline-flex;
+                    align-items:center;gap:4px;transition:color .15s;cursor:pointer; }
+        .add-link:hover { color:#b75252; }
 
-/* ── DAY HEADER ── */
-.day-header{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:16px;}
-.day-title{font-size:22px;font-weight:900;color:#1e293b;}
-.day-emp-lbl{font-size:10px;font-weight:800;color:#b75252;letter-spacing:.14em;text-transform:uppercase;margin-top:4px;}
-.back-link{font-size:11px;font-weight:700;color:#94a3b8;display:inline-flex;align-items:center;gap:6px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;margin-bottom:10px;background:none;border:none;font-family:'Inter',sans-serif;transition:color .15s;}
-.back-link:hover{color:#b75252;}
-.meta-chips{display:flex;gap:10px;flex-wrap:wrap;}
-.meta-chip{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:10px 14px;min-width:140px;}
-.meta-chip-lbl{font-size:9px;font-weight:800;color:#94a3b8;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
-.meta-chip select{background:transparent;border:none;font-size:13px;font-weight:700;color:#475569;font-family:'Inter',sans-serif;width:100%;cursor:pointer;}
-.meta-chip select:focus{outline:none;}
-.meta-chip label{display:flex;align-items:center;gap:8px;cursor:pointer;}
-.meta-chip input[type=checkbox]{accent-color:#b75252;width:16px;height:16px;}
-.meta-chip-val{font-size:13px;font-weight:700;color:#475569;}
+        /* ── ASSENZA ─────────────────────────────────── */
+        .assenza-badge { font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px; }
+        .assenza-ferie    { background:#dbeafe;color:#1e40af; }
+        .assenza-malattia { background:#fef9c3;color:#854d0e; }
 
-/* ── TURNO COLUMNS ── */
-.turno-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-@media(max-width:820px){.turno-grid{grid-template-columns:1fr;}}
-.turno-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px;}
-.badge-mat{background:#fff1f1;color:#b75252;}
-.badge-pom{background:#f4efe8;color:#7a4f2b;}
+        /* ── PREDEFINITI GRIGLIA ─────────────────────── */
+        .day-grid { display:grid;grid-template-columns:repeat(7,1fr);gap:3px; }
+        .day-btn { width:28px;height:22px;border-radius:5px;border:1.5px solid #e2e8f0;
+                   font-size:9px;font-weight:700;color:#cbd5e1;background:white;
+                   cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center; }
+        .day-btn:hover { border-color:#f0b8b8;color:#b75252; }
+        .day-btn.on-mat { background:#fac8c8;border-color:#f0b8b8;color:#991b1b; }
+        .day-btn.on-pom { background:#dce6f4;border-color:#94a3b8;color:#1e3a5f; }
 
-/* ── COIN ── */
-.coin-section-lbl{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:8px;}
-.coin-row{display:grid;grid-template-columns:70px 1fr 90px;align-items:center;gap:8px;margin-bottom:5px;}
-.coin-label{font-size:12px;font-weight:700;color:#64748b;text-align:right;font-family:monospace;}
-.coin-input{border:1px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;font-family:monospace;color:#334155;width:100%;transition:border-color .15s;}
-.coin-input:focus{outline:none;border-color:#b75252;}
-.coin-total{font-size:12px;font-weight:700;color:#64748b;text-align:right;font-family:monospace;}
+        /* chiusura giorno in orari */
+        .dow-btn { padding:5px 10px;border-radius:9px;border:1.5px solid #e2e8f0;
+                   font-size:12px;font-weight:700;color:#94a3b8;background:#fff;
+                   cursor:pointer;transition:all .15s; }
+        .dow-btn.on { background:#1e293b;border-color:#1e293b;color:#fff; }
+        .dow-btn.festivo { border-color:#fca5a5;color:#dc2626; }
+        .dow-btn.festivo.on { background:#dc2626;border-color:#dc2626;color:#fff; }
 
-/* ── SUM ROWS ── */
-.sum-divider{border:none;border-top:1px solid #f1f5f9;margin:14px 0;}
-.sum-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;}
-.sum-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
-.sum-val{font-size:14px;font-weight:800;font-family:monospace;}
-.lbl-gray{color:#94a3b8;}
-.lbl-red{color:#b75252;}
-.lbl-dark{color:#475569;}
-.fondo-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;margin:8px 0;}
-
-/* ── PAYMENT ROWS ── */
-.pay-section-lbl{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin:16px 0 8px;}
-.pay-row{display:grid;grid-template-columns:1fr 130px 34px;align-items:center;gap:8px;margin-bottom:4px;}
-.pay-label{font-size:13px;font-weight:700;letter-spacing:.02em;}
-.lbl-cash{color:#334155;}
-.lbl-digital{color:#475569;}
-.lbl-online{color:#4c5d88;}
-.lbl-neg{color:#e11d48;}
-.lbl-spese{color:#7a4f2b;}
-.money-input{border:1px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;font-family:monospace;color:#334155;width:100%;text-align:right;transition:border-color .15s;}
-.money-input:focus{outline:none;border-color:#b75252;}
-
-/* ── SISTEMA NOTE ── */
-.note-btn{width:34px;height:34px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;color:#cbd5e1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s;flex-shrink:0;}
-.note-btn:hover{color:#b75252;border-color:#b75252;background:#fff1f1;}
-.note-btn.has-note{color:#b75252;border-color:#b75252;background:#fff1f1;}
-.note-entry-row{display:flex;align-items:center;gap:6px;margin:4px 0 6px;}
-.note-field{flex:1;border:1.5px solid #b75252;border-radius:10px;padding:8px 11px;font-size:12px;font-family:'Inter',sans-serif;color:#334155;background:#fff8f8;}
-.note-field:focus{outline:none;}
-.note-send-btn{width:32px;height:32px;border-radius:8px;background:#b75252;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;transition:background .15s;}
-.note-send-btn:hover{background:#8f3d3d;}
-.note-saved-wrap{display:flex;align-items:center;gap:8px;margin:4px 0 6px;padding:6px 10px;background:#fff1f1;border-radius:10px;border:1px solid #f0c0c0;}
-.note-saved-text{font-size:12px;font-weight:600;color:#b75252;flex:1;}
-.note-edit-btn{font-size:10px;font-weight:700;color:#94a3b8;background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:6px;white-space:nowrap;}
-.note-edit-btn:hover{color:#b75252;}
-
-.spese-row-wrap{background:rgba(122,79,43,.05);border-radius:12px;padding:4px 6px;}
-.corrispettivi-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;}
-.corrispettivi-input{border:1.5px solid #b75252;border-radius:10px;padding:9px 12px;font-size:13px;font-family:monospace;color:#1e293b;width:160px;text-align:right;transition:border-color .15s;}
-.corrispettivi-input:focus{outline:none;border-color:#8f3d3d;}
-.diff-ok{color:#059669;}
-.diff-err{color:#e11d48;}
-.cassaforte-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin-top:14px;}
-
-/* ── FORM INPUTS ── */
-.select-input{width:100%;border:1px solid #e2e8f0;border-radius:12px;padding:11px 14px;font-size:13px;font-family:'Inter',sans-serif;color:#334155;background:#fff;}
-.select-input:focus{outline:none;border-color:#b75252;}
-.textarea-note{width:100%;border:1px solid #e2e8f0;border-radius:12px;padding:11px 14px;font-size:13px;font-family:'Inter',sans-serif;color:#334155;resize:vertical;min-height:68px;}
-.textarea-note:focus{outline:none;border-color:#b75252;}
-.field-label{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:8px;display:block;}
-.text-input{width:100%;border:1px solid #e2e8f0;border-radius:12px;padding:11px 14px;font-size:13px;font-family:'Inter',sans-serif;color:#334155;background:#fff;}
-.text-input:focus{outline:none;border-color:#b75252;}
-
-/* ── SELECT+AGGIUNGI OPERATORE ── */
-.op-wrap{display:flex;gap:8px;align-items:center;}
-.op-wrap .select-input{flex:1;}
-.op-add-btn{height:42px;padding:0 14px;background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;font-size:12px;font-weight:700;color:#64748b;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px;}
-.op-add-btn:hover{border-color:#b75252;color:#b75252;background:#fff1f1;}
-/* mini modal aggiungi operatore */
-.op-mini-modal{display:none;margin-top:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;gap:8px;flex-direction:column;}
-.op-mini-modal.open{display:flex;}
-.op-mini-row{display:flex;gap:8px;}
-.op-mini-input{flex:1;border:1px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;font-family:'Inter',sans-serif;color:#334155;}
-.op-mini-input:focus{outline:none;border-color:#b75252;}
-.op-mini-save{padding:9px 16px;background:#b75252;color:#fff;border:none;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;}
-.op-mini-save:hover{background:#8f3d3d;}
-.op-mini-cancel{padding:9px 12px;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;color:#64748b;}
-
-/* ── SCONTRINI ── */
-.scontrini-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px;margin-top:0;}
-.scontrini-icon{width:40px;height:40px;background:#fff1f1;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.scontrini-icon i{font-size:18px;color:#b75252;}
-.scontrini-label{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
-.scontrini-input{border:none;background:transparent;font-size:24px;font-weight:900;color:#1e293b;font-family:monospace;width:100%;padding:0;}
-.scontrini-input:focus{outline:none;color:#b75252;}
-.scontrini-input::placeholder{color:#cbd5e1;font-weight:700;}
-
-/* ══ IVA GIORNALIERA ══ */
-.iva-err-banner{background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:10px 14px;font-size:12px;font-weight:700;color:#e11d48;margin-bottom:14px;display:none;}
-.iva-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid #f3d5d5;border-radius:16px;overflow:hidden;}
-@media(max-width:640px){.iva-grid{grid-template-columns:repeat(2,1fr);}}
-.iva-block{padding:20px 18px;display:flex;flex-direction:column;gap:6px;border-right:1px solid #f3d5d5;background:#fff;}
-.iva-block:last-child{border-right:none;}
-@media(max-width:640px){.iva-block:nth-child(2){border-right:none;} .iva-block:nth-child(3){border-top:1px solid #f3d5d5;} .iva-block:nth-child(4){border-top:1px solid #f3d5d5;border-right:none;}}
-.iva-aliq-tag{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;}
-.iva-aliq-num{font-size:28px;font-weight:900;color:#b75252;line-height:1.1;}
-.iva-aliq-num.esente{color:#64748b;}
-.iva-amount-inp{border:none;background:transparent;font-size:20px;font-weight:800;font-family:monospace;color:#1e293b;width:100%;padding:4px 0;border-bottom:2px solid #f1f5f9;transition:border-color .15s;}
-.iva-amount-inp:focus{outline:none;border-bottom-color:#b75252;color:#b75252;}
-.iva-amount-inp::placeholder{color:#cbd5e1;}
-
-.iva-esente-row{margin-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.iva-esente-lbl{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;}
-.iva-esente-sel{border:1px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;font-family:'Inter',sans-serif;color:#64748b;background:#fff;}
-.iva-esente-sel:focus{outline:none;border-color:#b75252;}
-.iva-esente-txt{border:1px solid #b75252;border-radius:10px;padding:9px 12px;font-size:13px;font-family:'Inter',sans-serif;color:#64748b;background:#fff1f1;}
-.iva-esente-txt:focus{outline:none;}
-
-.iva-summary{background:#fff1f1;border-radius:16px;padding:20px 24px;margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
-@media(max-width:500px){.iva-summary{grid-template-columns:1fr;gap:14px;}}
-.iva-sum-block{display:flex;flex-direction:column;gap:4px;border-right:1px solid #f0c0c0;padding:0 20px;}
-.iva-sum-block:first-child{padding-left:0;}
-.iva-sum-block:last-child{border-right:none;}
-@media(max-width:500px){.iva-sum-block{border-right:none;padding:0;}}
-.iva-sum-lbl{font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;}
-.iva-sum-val{font-size:22px;font-weight:900;font-family:monospace;color:#b75252;}
-.iva-ver-ok{color:#059669;}
-.iva-ver-err{color:#e11d48;}
-
-/* ── SAVE BAR ── */
-.save-bar{position:fixed;bottom:58px;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;padding:12px 20px;display:flex;align-items:center;justify-content:center;z-index:150;}
-.btn-save{background:#1e293b;color:#fff;border:none;border-radius:14px;padding:15px 40px;font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:background .15s;display:flex;align-items:center;gap:10px;}
-.btn-save:hover{background:#000;}
-
-.hidden{display:none!important;}
-</style>
+        .card-hover { transition:all .15s;cursor:pointer; }
+        .card-hover:hover { transform:translateY(-2px);box-shadow:0 4px 20px rgba(183,82,82,.15); }
+    </style>
 </head>
-<body>
+<body class="pb-28">
 
-<!-- ── HEADER ── -->
-<header class="top-bar">
-  <img src="../../assets/images/logom361_rosso.jpg" alt="M361" class="top-bar-logo"
-       onerror="this.outerHTML='<span style=\'font-weight:900;font-size:17px;color:#b75252;letter-spacing:.08em;\'>M361</span>'">
-  <span class="top-bar-title">Controllo Cassa</span>
+<header class="bg-white border-b border-gray-100 px-5 py-3.5 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+    <div class="flex items-center gap-4">
+        <img src="../../assets/images/logom361_rosso.jpg" alt="Logo" class="h-8" onerror="this.style.display='none'">
+        <h1 id="header-title" class="font-bold text-xl border-l pl-4 text-slate-700">Turni</h1>
+    </div>
+    <div id="header-controls" class="flex items-center gap-2 flex-wrap justify-end"></div>
 </header>
 
-<main class="main space-y">
-
-  <!-- ══ STEP 1: Empori ══ -->
-  <div id="step-emp" class="card card-pad">
-    <div class="sec-title">Seleziona emporio</div>
-    <div class="emp-grid">
-      <div class="emp-card" onclick="selectEmp('Cremona')">
-        <div class="emp-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#b75252"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72l1.189-1.19A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72M6.75 18h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .414.336.75.75.75z"/></svg></div>
-        <span class="emp-name">Cremona</span>
-      </div>
-      <div class="emp-card" onclick="selectEmp('Casalmaggiore')">
-        <div class="emp-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#b75252"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72l1.189-1.19A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72M6.75 18h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .414.336.75.75.75z"/></svg></div>
-        <span class="emp-name">Casalmaggiore</span>
-      </div>
-      <div class="emp-card" onclick="selectEmp('Reggio Emilia')">
-        <div class="emp-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#b75252"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72l1.189-1.19A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72M6.75 18h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .414.336.75.75.75z"/></svg></div>
-        <span class="emp-name">Reggio Emilia</span>
-      </div>
-      <div class="emp-card" onclick="selectEmp('Viadana')">
-        <div class="emp-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#b75252"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72l1.189-1.19A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72M6.75 18h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .414.336.75.75.75z"/></svg></div>
-        <span class="emp-name">Viadana</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ STEP 2: Calendario ══ -->
-  <div id="step-date" class="card card-pad hidden">
-    <div class="sec-title">Seleziona data</div>
-    <div class="calendar-wrap">
-      <div class="month-nav">
-        <button class="nav-btn" id="cal-prev"><i class="fas fa-chevron-left"></i></button>
-        <span class="month-label" id="cal-month-label"></span>
-        <button class="nav-btn" id="cal-next"><i class="fas fa-chevron-right"></i></button>
-      </div>
-      <div class="cal-grid" id="cal-grid"></div>
-    </div>
-    <div class="cal-actions">
-      <button class="btn-primary" id="btn-open-day">Apri giorno</button>
-      <button class="btn-secondary" id="btn-back-emp">Indietro</button>
-    </div>
-  </div>
-
-  <!-- ══ SCREEN GIORNATA ══ -->
-  <div id="screen-day" class="hidden space-y">
-
-    <!-- Header giornata -->
-    <div class="card card-pad">
-      <div class="day-header">
-        <div>
-          <button class="back-link" id="btn-back-date"><i class="fas fa-arrow-left"></i> Cambia data</button>
-          <div class="day-title" id="day-label"></div>
-          <div class="day-emp-lbl" id="emporio-label"></div>
-        </div>
-        <div class="meta-chips">
-          <div class="meta-chip">
-            <div class="meta-chip-lbl"><i id="meteo-icon" class="fas fa-cloud-sun"></i> Meteo</div>
-            <select id="meteo-label" onchange="syncWeatherIcon()">
-              <option value="sereno">sereno</option>
-              <option value="prevalentemente sereno">prevalentemente sereno</option>
-              <option value="parzialmente nuvoloso">parzialmente nuvoloso</option>
-              <option value="coperto">coperto</option>
-              <option value="nebbia">nebbia</option>
-              <option value="pioggia">pioggia</option>
-              <option value="pioviggine">pioviggine</option>
-              <option value="temporale">temporale</option>
-              <option value="neve">neve</option>
-              <option value="grandine">grandine</option>
-              <option value="variabile">variabile</option>
-            </select>
-          </div>
-          <div class="meta-chip">
-            <div class="meta-chip-lbl">Arrivo merci</div>
-            <label>
-              <input id="arrivo-merci" type="checkbox" style="accent-color:#b75252;width:16px;height:16px;">
-              <span class="meta-chip-val">Sì</span>
-            </label>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── SEZIONE 1: Foglio di giornata ── -->
-    <div class="card card-pad">
-      <div class="sec-title">Foglio di giornata</div>
-      <div class="turno-grid">
-
-        <!-- MATTINO -->
-        <div>
-          <span class="turno-badge badge-mat"><i class="fas fa-sun"></i> Mattino</span>
-
-          <div class="coin-section-lbl">Conteggio contanti</div>
-          <div id="mat-coin-list"></div>
-          <hr class="sum-divider">
-          <div class="sum-row">
-            <span class="sum-label lbl-gray">Contanti lordi</span>
-            <span class="sum-val lbl-gray" id="mat-lordi">€ 0,00</span>
-          </div>
-          <div class="fondo-box">
-            <span class="sum-label lbl-gray">Fondo cassa</span>
-            <span class="sum-val" style="color:#64748b;font-family:monospace" id="fondo-cassa-inline-mat">€ 0,00</span>
-          </div>
-          <div class="sum-row">
-            <span class="sum-label lbl-dark">Contanti netti</span>
-            <span class="sum-val" id="mat-netti">€ 0,00</span>
-          </div>
-
-          <div class="pay-section-lbl">Forme di pagamento</div>
-          <div id="mat-payments"></div>
-
-          <hr class="sum-divider">
-          <div class="sum-row">
-            <span class="sum-label lbl-dark">Totale incassato</span>
-            <span class="sum-val" id="mat-incassato">€ 0,00</span>
-          </div>
-          <div class="corrispettivi-row" style="margin-top:6px">
-            <span class="sum-label lbl-red">Totale corrispettivi</span>
-            <input id="mat-corrispettivi" class="corrispettivi-input" value="€ 0,00"
-              oninput="calcAll()" onblur="formatMoney(this)" onfocus="clearMoney(this)">
-          </div>
-          <div class="sum-row">
-            <span class="sum-label lbl-gray">Differenza</span>
-            <span class="sum-val" id="mat-diff">€ 0,00</span>
-          </div>
-
-          <hr class="sum-divider">
-
-          <!-- Numero scontrini mattino -->
-          <div class="scontrini-box" style="margin-bottom:16px;">
-            <div class="scontrini-icon"><i class="fas fa-receipt"></i></div>
-            <div style="flex:1">
-              <div class="scontrini-label">Scontrini emessi</div>
-              <input id="mat-scontrini" type="number" min="0" step="1"
-                class="scontrini-input" placeholder="0">
-            </div>
-          </div>
-
-          <label class="field-label">Chiusura effettuata da</label>
-          <!-- operatore mattino con pulsante aggiungi -->
-          <div class="op-wrap">
-            <select id="chiuso-da-mat" class="select-input"></select>
-            <button class="op-add-btn" onclick="toggleOpModal('mat')">
-              <i class="fas fa-plus"></i> Aggiungi
-            </button>
-          </div>
-          <div id="op-mini-mat" class="op-mini-modal">
-            <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em">Nuovo operatore</p>
-            <div class="op-mini-row">
-              <input id="op-new-mat" type="text" class="op-mini-input" placeholder="Nome e Cognome">
-              <button class="op-mini-save" onclick="addOperatore('mat')">Aggiungi</button>
-              <button class="op-mini-cancel" onclick="toggleOpModal('mat')">✕</button>
-            </div>
-          </div>
-
-          <div style="margin-top:12px">
-            <label class="field-label">Note mattino</label>
-            <textarea id="nota-mattino" class="textarea-note" rows="2"></textarea>
-          </div>
-        </div>
-
-        <!-- POMERIGGIO -->
-        <div>
-          <span class="turno-badge badge-pom"><i class="fas fa-moon"></i> Pomeriggio</span>
-
-          <div class="coin-section-lbl">Conteggio contanti</div>
-          <div id="pom-coin-list"></div>
-          <hr class="sum-divider">
-          <div class="sum-row">
-            <span class="sum-label lbl-gray">Contanti lordi</span>
-            <span class="sum-val lbl-gray" id="pom-lordi">€ 0,00</span>
-          </div>
-          <div class="fondo-box">
-            <span class="sum-label lbl-gray">Fondo cassa</span>
-            <span class="sum-val" style="color:#64748b;font-family:monospace" id="fondo-cassa-inline-pom">€ 0,00</span>
-          </div>
-          <div class="sum-row">
-            <span class="sum-label lbl-dark">Contanti netti</span>
-            <span class="sum-val" id="pom-netti">€ 0,00</span>
-          </div>
-
-          <div class="pay-section-lbl">Forme di pagamento</div>
-          <div id="pom-payments"></div>
-
-          <hr class="sum-divider">
-          <div class="sum-row">
-            <span class="sum-label lbl-dark">Totale incassato</span>
-            <span class="sum-val" id="pom-incassato">€ 0,00</span>
-          </div>
-          <div class="corrispettivi-row" style="margin-top:6px">
-            <span class="sum-label lbl-red">Totale corrispettivi</span>
-            <input id="pom-corrispettivi" class="corrispettivi-input" value="€ 0,00"
-              oninput="calcAll()" onblur="formatMoney(this)" onfocus="clearMoney(this)">
-          </div>
-          <div class="sum-row">
-            <span class="sum-label lbl-gray">Differenza</span>
-            <span class="sum-val" id="pom-diff">€ 0,00</span>
-          </div>
-
-          <div class="cassaforte-box">
-            <div class="corrispettivi-row" style="margin-bottom:10px">
-              <span class="sum-label lbl-red">Contanti in cassaforte</span>
-              <input id="cassaforte" class="corrispettivi-input" value="€ 0,00"
-                oninput="calcAll()" onblur="formatMoney(this)" onfocus="clearMoney(this)">
-            </div>
-            <div class="fondo-box" style="margin:0;background:#fff">
-              <span class="sum-label lbl-gray">Fondo cassa residuo</span>
-              <span class="sum-val" id="fondo-residuo">€ 0,00</span>
-            </div>
-          </div>
-
-          <hr class="sum-divider">
-
-          <!-- Numero scontrini pomeriggio -->
-          <div class="scontrini-box" style="margin-bottom:16px;">
-            <div class="scontrini-icon"><i class="fas fa-receipt"></i></div>
-            <div style="flex:1">
-              <div class="scontrini-label">Scontrini emessi</div>
-              <input id="pom-scontrini" type="number" min="0" step="1"
-                class="scontrini-input" placeholder="0">
-            </div>
-          </div>
-
-          <label class="field-label">Chiusura effettuata da</label>
-          <!-- operatore pomeriggio con pulsante aggiungi -->
-          <div class="op-wrap">
-            <select id="chiuso-da-pom" class="select-input"></select>
-            <button class="op-add-btn" onclick="toggleOpModal('pom')">
-              <i class="fas fa-plus"></i> Aggiungi
-            </button>
-          </div>
-          <div id="op-mini-pom" class="op-mini-modal">
-            <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em">Nuovo operatore</p>
-            <div class="op-mini-row">
-              <input id="op-new-pom" type="text" class="op-mini-input" placeholder="Nome e Cognome">
-              <button class="op-mini-save" onclick="addOperatore('pom')">Aggiungi</button>
-              <button class="op-mini-cancel" onclick="toggleOpModal('pom')">✕</button>
-            </div>
-          </div>
-
-          <div style="margin-top:12px">
-            <label class="field-label">Note pomeriggio</label>
-            <textarea id="nota-pomeriggio" class="textarea-note" rows="2"></textarea>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ── SEZIONE 2: IVA giornaliera ── -->
-    <div class="card card-pad">
-      <div class="sec-title">IVA giornaliera</div>
-      <div class="iva-err-banner" id="iva-error">⚠ I dati IVA non tornano rispetto ai corrispettivi del pomeriggio.</div>
-
-      <div class="iva-grid">
-        <div class="iva-block">
-          <div class="iva-aliq-tag">Aliquota</div>
-          <div class="iva-aliq-num">22%</div>
-          <input id="iva-22" class="iva-amount-inp" placeholder="€ 0,00" value="€ 0,00"
-            oninput="calcIva()" onblur="formatMiniMoney(this)" onfocus="clearMiniMoney(this)">
-        </div>
-        <div class="iva-block">
-          <div class="iva-aliq-tag">Aliquota</div>
-          <div class="iva-aliq-num">10%</div>
-          <input id="iva-10" class="iva-amount-inp" placeholder="€ 0,00" value="€ 0,00"
-            oninput="calcIva()" onblur="formatMiniMoney(this)" onfocus="clearMiniMoney(this)">
-        </div>
-        <div class="iva-block">
-          <div class="iva-aliq-tag">Aliquota</div>
-          <div class="iva-aliq-num">4%</div>
-          <input id="iva-4" class="iva-amount-inp" placeholder="€ 0,00" value="€ 0,00"
-            oninput="calcIva()" onblur="formatMiniMoney(this)" onfocus="clearMiniMoney(this)">
-        </div>
-        <div class="iva-block" style="border-right:none;">
-          <div class="iva-aliq-tag">Aliquota</div>
-          <div class="iva-aliq-num esente">Esente</div>
-          <input id="iva-esente" class="iva-amount-inp" placeholder="€ 0,00" value="€ 0,00"
-            oninput="calcIva()" onblur="formatMiniMoney(this)" onfocus="clearMiniMoney(this)">
-        </div>
-      </div>
-
-      <div class="iva-esente-row">
-        <span class="iva-esente-lbl">Tipo esente:</span>
-        <select id="iva-esente-altro" class="iva-esente-sel" onchange="toggleIvaAltro()">
-          <option value="">— nessuno —</option>
-          <option value="editoriali">editoriali</option>
-          <option value="gift card">gift card</option>
-          <option value="altro">altro</option>
-        </select>
-        <input id="iva-esente-altro-text" class="iva-esente-txt hidden" placeholder="specifica...">
-      </div>
-
-      <div class="iva-summary">
-        <div class="iva-sum-block">
-          <div class="iva-sum-lbl">Somma totale</div>
-          <div class="iva-sum-val" id="iva-somma-disp">€ 0,00</div>
-          <input id="iva-somma" type="hidden" value="0">
-        </div>
-        <div class="iva-sum-block">
-          <div class="iva-sum-lbl">Netto esente</div>
-          <div class="iva-sum-val" id="iva-net-es-disp">€ 0,00</div>
-          <input id="iva-net-es" type="hidden" value="0">
-        </div>
-        <div class="iva-sum-block">
-          <div class="iva-sum-lbl">Verifica</div>
-          <div class="iva-sum-val" id="iva-ver-cell">—</div>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /screen-day -->
+<main class="max-w-4xl mx-auto p-4 md:p-6">
+    <div id="view-empori"></div>
+    <div id="view-anni"  class="hidden"></div>
+    <div id="view-mesi"  class="hidden"></div>
+    <div id="view-mese"  class="hidden"></div>
 </main>
 
-<!-- ── SAVE BAR (centrata) ── -->
-<div class="save-bar hidden" id="save-bar">
-  <button class="btn-save" onclick="saveDay()">
-    <i class="fas fa-save"></i> Salva giornata
-  </button>
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- MODAL PERSONA                                              -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-7 space-y-4">
+        <h2 class="font-bold text-slate-800 text-lg" id="modal-title"></h2>
+        <div class="flex gap-2">
+            <button onclick="setModalTab('sel')" id="mtab-sel" class="flex-1 py-2 rounded-xl text-sm font-bold bg-m361-red text-white">Seleziona</button>
+            <button onclick="setModalTab('new')" id="mtab-new" class="flex-1 py-2 rounded-xl text-sm font-bold bg-slate-100 text-slate-600">+ Nuova</button>
+        </div>
+        <div id="mtab-body-sel" class="space-y-3">
+            <input id="modal-search" type="text" placeholder="Cerca nome…" oninput="filterModalList()"
+                class="w-full border border-gray-200 rounded-xl p-3 text-base">
+            <div id="modal-list" class="space-y-1 max-h-64 overflow-y-auto"></div>
+        </div>
+        <div id="mtab-body-new" class="hidden space-y-3">
+            <input id="np-nome"    type="text" placeholder="Nome *"    class="w-full border border-gray-200 rounded-xl p-3 text-base">
+            <input id="np-cognome" type="text" placeholder="Cognome"   class="w-full border border-gray-200 rounded-xl p-3 text-base">
+            <select id="np-ruolo" class="w-full border border-gray-200 rounded-xl p-3 text-base">
+                <option value="volontario">Volontario</option>
+                <option value="dipendente">Dipendente</option>
+                <option value="servizio_civile">Servizio Civile</option>
+            </select>
+            <button onclick="addNuovaPersona()" class="w-full py-3 rounded-xl bg-m361-red text-white text-base font-bold">Aggiungi e inserisci nel turno</button>
+        </div>
+        <button onclick="closeModal()" class="w-full py-3 rounded-xl border border-gray-200 text-base font-bold text-slate-500">Annulla</button>
+    </div>
 </div>
 
-<!-- ── BOTTOM NAV ── -->
-<nav class="bottom-nav">
-  <a href="turni.html"         class="nav-item"><i class="fas fa-calendar-alt"></i>Turni</a>
-  <a href="cassa.html"         class="nav-item active"><i class="fas fa-cash-register"></i>Cassa</a>
-  <a href="magazzino.html"     class="nav-item"><i class="fas fa-boxes-stacked"></i>Magazzino</a>
-  <a href="comunicazioni.html" class="nav-item"><i class="fas fa-bell"></i>Avvisi</a>
-  <a href="index.html"         class="nav-item"><i class="fas fa-home"></i>Home</a>
-</nav>
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- MODAL ORARI (con giorni di chiusura)                       -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="modal-orari" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-7 space-y-5">
+        <h2 class="font-bold text-slate-800 text-lg" id="orari-title">Orari del mese</h2>
 
-<!-- ════════════════════════════ SCRIPT ════════════════════════════ -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+        <div>
+            <span class="turno-lbl turno-lbl-mat block mb-2">☀ Mattino</span>
+            <div class="flex items-center gap-3">
+                <input type="time" id="ora-mat-ini" class="flex-1 border border-gray-200 rounded-xl p-3 text-sm">
+                <span class="text-slate-400 font-bold">→</span>
+                <input type="time" id="ora-mat-fin" class="flex-1 border border-gray-200 rounded-xl p-3 text-sm">
+            </div>
+        </div>
+        <div>
+            <span class="turno-lbl turno-lbl-pom block mb-2">◑ Pomeriggio</span>
+            <div class="flex items-center gap-3">
+                <input type="time" id="ora-pom-ini" class="flex-1 border border-gray-200 rounded-xl p-3 text-sm">
+                <span class="text-slate-400 font-bold">→</span>
+                <input type="time" id="ora-pom-fin" class="flex-1 border border-gray-200 rounded-xl p-3 text-sm">
+            </div>
+        </div>
+
+        <!-- GIORNI DI CHIUSURA SETTIMANALE -->
+        <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">🔒 Giorni di chiusura settimanale</p>
+            <p class="text-xs text-slate-400 mb-3">I giorni selezionati saranno automaticamente chiusi in tutto il mese.</p>
+            <div class="grid grid-cols-7 gap-1.5" id="orari-dow-grid">
+                <!-- popolato da JS -->
+            </div>
+        </div>
+
+        <p class="text-xs text-slate-400 bg-slate-50 rounded-xl p-3">Dipendenti: ore turno + 15 min pausa.</p>
+        <div class="flex gap-3">
+            <button onclick="closeOrari()" class="flex-1 py-3 rounded-xl border border-gray-200 text-sm font-bold text-slate-500">Annulla</button>
+            <button onclick="saveOrari()"  class="flex-1 py-3 rounded-xl bg-m361-red text-white text-sm font-bold">Salva</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- MODAL PREDEFINITI                                          -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="modal-default" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl p-7 space-y-5 max-h-[92vh] overflow-y-auto">
+        <div>
+            <h2 class="font-bold text-slate-800 text-lg mb-1">Turni predefiniti</h2>
+            <p class="text-sm text-slate-500">Clicca M (mattino) o P (pomeriggio) per ogni giorno. Riclicca per deselezionare.</p>
+        </div>
+        <div class="flex items-center gap-4 text-xs font-bold">
+            <span class="flex items-center gap-1.5"><span class="w-4 h-3.5 rounded bg-red-200 inline-block"></span>Mattino</span>
+            <span class="flex items-center gap-1.5"><span class="w-4 h-3.5 rounded bg-blue-200 inline-block"></span>Pomeriggio</span>
+        </div>
+        <!-- intestazione giorni -->
+        <div class="flex items-center gap-2">
+            <div class="w-44 shrink-0"></div>
+            <div class="day-grid flex-1">
+                <div class="text-center text-[10px] font-bold text-slate-400">Lun</div>
+                <div class="text-center text-[10px] font-bold text-slate-400">Mar</div>
+                <div class="text-center text-[10px] font-bold text-slate-400">Mer</div>
+                <div class="text-center text-[10px] font-bold text-slate-400">Gio</div>
+                <div class="text-center text-[10px] font-bold text-slate-400">Ven</div>
+                <div class="text-center text-[10px] font-bold text-red-400">Sab</div>
+                <div class="text-center text-[10px] font-bold text-red-300">Dom</div>
+            </div>
+        </div>
+        <div id="default-list" class="divide-y divide-gray-50"></div>
+        <div class="flex gap-3 pt-2">
+            <button onclick="closeDefault()" class="flex-1 py-3 rounded-xl border border-gray-200 text-sm font-bold text-slate-500">Annulla</button>
+            <button onclick="applyDefault()" class="flex-1 py-3 rounded-xl bg-m361-red text-white text-sm font-bold">Applica al mese</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- MODAL ASSENZA                                              -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="modal-assenza" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xs p-7 space-y-5">
+        <h2 class="font-bold text-slate-800 text-lg" id="assenza-title">Assenza</h2>
+        <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Tipo</p>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="selectTipoAssenza('ferie')" id="btn-ass-ferie"
+                    class="py-4 rounded-2xl bg-blue-50 border-2 border-blue-200 text-blue-800 font-bold text-base hover:border-blue-400 transition-all">🏖️ Ferie</button>
+                <button onclick="selectTipoAssenza('malattia')" id="btn-ass-malattia"
+                    class="py-4 rounded-2xl bg-yellow-50 border-2 border-yellow-200 text-yellow-800 font-bold text-base hover:border-yellow-400 transition-all">🤒 Malattia</button>
+            </div>
+        </div>
+        <div id="assenza-ore-block" class="hidden">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Ore</p>
+            <div class="flex items-center gap-3">
+                <input type="number" id="assenza-ore" min="0" max="24" step="0.25" placeholder="es. 4"
+                    class="flex-1 border border-gray-200 rounded-xl p-3 text-base font-bold text-slate-700">
+                <span class="text-slate-400 text-sm leading-tight">ore<br><span class="text-[10px]">(vuoto=intero)</span></span>
+            </div>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="closeAssenza()" class="flex-1 py-3 rounded-xl border border-gray-200 text-sm font-bold text-slate-500">Annulla</button>
+            <button onclick="confirmAssenza()" id="btn-conf-assenza"
+                class="flex-1 py-3 rounded-xl bg-m361-red text-white text-sm font-bold disabled:opacity-40" disabled>Conferma</button>
+        </div>
+        <button onclick="removeAssenza()" id="btn-remove-assenza"
+            class="hidden w-full py-2 text-sm text-red-400 hover:text-red-600 font-semibold">Rimuovi assenza</button>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- MODAL MODIFICA PERSONA                                     -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="modal-edit-persona" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xs p-7 space-y-4">
+        <h2 class="font-bold text-slate-800 text-lg">Modifica persona</h2>
+        <input id="edit-nome"    type="text" placeholder="Nome *"  class="w-full border border-gray-200 rounded-xl p-3 text-base">
+        <input id="edit-cognome" type="text" placeholder="Cognome" class="w-full border border-gray-200 rounded-xl p-3 text-base">
+        <select id="edit-ruolo" class="w-full border border-gray-200 rounded-xl p-3 text-base">
+            <option value="volontario">Volontario</option>
+            <option value="dipendente">Dipendente</option>
+            <option value="servizio_civile">Servizio Civile</option>
+        </select>
+        <div class="flex gap-3">
+            <button onclick="closeEditPersona()" class="flex-1 py-3 rounded-xl border border-gray-200 text-sm font-bold text-slate-500">Annulla</button>
+            <button onclick="saveEditPersona()"  class="flex-1 py-3 rounded-xl bg-m361-red text-white text-sm font-bold">Salva</button>
+        </div>
+        <button onclick="deletePersona()" class="w-full py-2 text-sm text-red-400 hover:text-red-600 font-semibold">Rimuovi dall'emporio</button>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- SCRIPT                                                     -->
+<!-- ══════════════════════════════════════════════════════════ -->
 <script>
-/* ── SUPABASE ── */
-const SB_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
-let db = null;
-try { db = supabase.createClient(SB_URL, SB_KEY); } catch(e) {}
+const EMPORI      = ['Cremona','Casalmaggiore','Viadana','Reggio Emilia'];
+const ANNI        = [2026,2027,2028,2029];
+const MESI_NOMI   = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
+                     'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const MESI_BREVI  = ['GEN','FEB','MAR','APR','MAG','GIU','LUG','AGO','SET','OTT','NOV','DIC'];
+const GIORNI_SETT = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
+const GRID_ORDER  = [1,2,3,4,5,6,0]; // Lun→Dom (indici JS)
+const DOW_LABELS  = ['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
+const DOW_JS      = [1,2,3,4,5,6,0]; // corrispondenze JS per DOW_LABELS
 
-async function dbGet(key) {
-  if (!db) return null;
-  try { const {data} = await db.from('cassa_giorni').select('*').eq('chiave', key).maybeSingle(); return data || null; } catch(e) { return null; }
-}
-async function dbGetFondo(key) {
-  if (!db) return null;
-  try { const {data} = await db.from('cassa_giorni').select('fondo_residuo').eq('chiave', key).maybeSingle(); return data || null; } catch(e) { return null; }
-}
-async function dbUpsert(payload) {
-  if (!db) return null;
-  try { const {error} = await db.from('cassa_giorni').upsert(payload, {onConflict:'chiave'}); return error || null; } catch(e) { return {message: e.message}; }
-}
-
-/* ── COSTANTI ── */
-const TAGLI  = [50,20,10,5,2,1,0.5,0.2,0.1,0.05,0.02,0.01];
-const MESI   = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
-const GIORNI = ['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
-
-const PAGAMENTI = [
-  {id:'bancomat',        label:'Bancomat',         sign:1,  spese:false, cls:'lbl-digital'},
-  {id:'carte',           label:'Carte',            sign:1,  spese:false, cls:'lbl-digital'},
-  {id:'satispay',        label:'Satispay',         sign:1,  spese:false, cls:'lbl-digital'},
-  {id:'satispay_online', label:'Satispay online',  sign:1,  spese:false, cls:'lbl-online'},
-  {id:'carte_online',    label:'Carte online',     sign:1,  spese:false, cls:'lbl-online'},
-  {id:'paypal',          label:'Paypal',           sign:1,  spese:false, cls:'lbl-online'},
-  {id:'bonifico',        label:'Bonifico',         sign:1,  spese:false, cls:'lbl-digital'},
-  {id:'gift_card',       label:'Gift card',        sign:1,  spese:false, cls:'lbl-digital'},
-  {id:'gift_card_online',label:'Gift card online', sign:1,  spese:false, cls:'lbl-online'},
-  {id:'buoni',           label:'Buoni',            sign:1,  spese:false, cls:'lbl-digital'},
-  {id:'rimborsi_online', label:'Rimborsi online',  sign:-1, spese:false, cls:'lbl-neg'},
-  {id:'spese',           label:'Spese',            sign:1,  spese:true,  cls:'lbl-spese'}
-];
-
-/* operatori per emporio — modificabili a runtime */
-const OPERATORI = {
-  'Cremona':       ['Chiara Monteverdi','Emilio Mazzolari','Giulia Galelli'],
-  'Casalmaggiore': ['Alessandra Rivetti','Barbara Araldi','Carla Maffei','Chiara Monteverdi','Edoardo Pavesi','Emilio Mazzolari','Erica Bossi','Francesco Lunardini','Giovanna Raineri','Giulia Frigeri','Giuseppe Lunardini','Ileana Galli','Maria Marcella Scaravonati','Matilde Chiarini','Michele Marchini','Roberta Vezzosi','Teyssir Mabrouk','Vittoria Lunardini'],
-  'Viadana':       ['Alessia Rovina','Ave Aroldi','Barbara Piotrowska','Carla Bellelli','Carla Chittolini','Chiara Monteverdi','Claudio Mortini','Donatella Falugi','Elena Ghelfi','Emilio Mazzolari','Franco Furlotti','Giuseppina Amadini','Manuela Scazza','Marta Sanfelici','Mariagrazia Bertolini','Mirella Panato','Roberta Alberini','Sara Germani','Tiziana Bortesi'],
-  'Reggio Emilia': ['Alessia Bartolomei','Elsa Scarpa','Manuela Capanni','Marica Pioli']
+let PERSONALE = {
+    'Cremona':[
+        {nome:'Chiara Monteverdi',  ruolo:'dipendente'},
+        {nome:'Emilio Mazzolari',   ruolo:'dipendente'},
+        {nome:'Jacopo Denti',       ruolo:'servizio_civile'},
+        {nome:'Noemi Capobianco',   ruolo:'servizio_civile'},
+        {nome:'Barbara Machetti',   ruolo:'volontario'},
+        {nome:'Elena Cattani',      ruolo:'volontario'},
+        {nome:'Giulia Galelli',     ruolo:'volontario'},
+        {nome:'Ileana Galli',       ruolo:'volontario'},
+    ],
+    'Casalmaggiore':[
+        {nome:'Alessandra Rivetti',        ruolo:'volontario'},
+        {nome:'Barbara Araldi',            ruolo:'volontario'},
+        {nome:'Carla Maffei',              ruolo:'volontario'},
+        {nome:'Edoardo Pavesi',            ruolo:'volontario'},
+        {nome:'Erica Bossi',               ruolo:'volontario'},
+        {nome:'Francesco Lunardini',       ruolo:'volontario'},
+        {nome:'Giovanna Raineri',          ruolo:'volontario'},
+        {nome:'Giulia Frigeri',            ruolo:'volontario'},
+        {nome:'Giuseppe Lunardini',        ruolo:'volontario'},
+        {nome:'Maria Marcella Scaravonati',ruolo:'volontario'},
+        {nome:'Matilde Chiarini',          ruolo:'volontario'},
+        {nome:'Michele Marchini',          ruolo:'volontario'},
+        {nome:'Miriam Federici',           ruolo:'volontario'},
+        {nome:'Piero Gatti',               ruolo:'volontario'},
+        {nome:'Roberta Vezzosi',           ruolo:'volontario'},
+        {nome:'Teyssir Mabrouk',           ruolo:'volontario'},
+        {nome:'Vittoria Lunardini',        ruolo:'volontario'},
+    ],
+    'Viadana':[
+        {nome:'Alessia Rovina',       ruolo:'volontario'},
+        {nome:'Ave Aroldi',           ruolo:'volontario'},
+        {nome:'Barbara Piotrowska',   ruolo:'volontario'},
+        {nome:'Carla Bellelli',       ruolo:'volontario'},
+        {nome:'Carla Chittolini',     ruolo:'volontario'},
+        {nome:'Claudio Mortini',      ruolo:'volontario'},
+        {nome:'Donatella Falugi',     ruolo:'volontario'},
+        {nome:'Elena Ghelfi',         ruolo:'volontario'},
+        {nome:'Franco Furlotti',      ruolo:'volontario'},
+        {nome:'Giuseppina Amadini',   ruolo:'volontario'},
+        {nome:'Manuela Scazza',       ruolo:'volontario'},
+        {nome:'Mariagrazia Bertolini',ruolo:'volontario'},
+        {nome:'Marta Sanfelici',      ruolo:'volontario'},
+        {nome:'Mirella Panato',       ruolo:'volontario'},
+        {nome:'Roberta Alberini',     ruolo:'volontario'},
+        {nome:'Sara Germani',         ruolo:'volontario'},
+        {nome:'Tiziana Bortesi',      ruolo:'volontario'},
+    ],
+    'Reggio Emilia':[
+        {nome:'Alessia Bartolomei',ruolo:'dipendente'},
+        {nome:'Elsa Scarpa',       ruolo:'dipendente'},
+        {nome:'Manuela Capanni',   ruolo:'dipendente'},
+        {nome:'Marica Pioli',      ruolo:'dipendente'},
+    ],
 };
 
-const CITY = {
-  'Cremona':       {lat:45.1333,lon:10.0227},
-  'Casalmaggiore': {lat:44.9916,lon:10.4217},
-  'Reggio Emilia': {lat:44.6979,lon:10.6297},
-  'Viadana':       {lat:44.9269,lon:10.5227}
-};
-const WX = {'sereno':'fa-sun','prevalentemente sereno':'fa-cloud-sun','parzialmente nuvoloso':'fa-cloud-sun','coperto':'fa-cloud','nebbia':'fa-smog','pioggia':'fa-cloud-rain','pioviggine':'fa-cloud-drizzle','temporale':'fa-bolt','neve':'fa-snowflake','grandine':'fa-cloud-meatball','variabile':'fa-cloud-sun'};
+// orariMese[key] = { matIni, matFin, pomIni, pomFin, closedDow:[0,6,...] }
+const predefiniti  = {};
+const chiusure     = {};  // chiusure manuali per singola data
+const assenze      = {};
+const orariMese    = {};
+const turniData    = {};
 
-/* ── STATE ── */
-let currentEmp = '';
-let currentKey = '';
-let fondoCassa = 0;
-let calYear, calMonth, selectedDate;
-const noteMap = {}; // key: 'turno_payid' → testo nota
+let ctx            = {emporio:null,anno:null,mese:null};
+let modalCtx       = null;
+let assenzaCtx     = null;
+let assenzaTipo    = null;
+let editPersonaCtx = null;
 
-/* ── FORMATTERS ── */
-const euro = n => '€ ' + Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
-const parseEuro = v => parseFloat(String(v||'').replace(/\s/g,'').replace('€','').replace(/\./g,'').replace(',','.'))||0;
-const formatMoney    = el => { el.value = euro(parseEuro(el.value)); };
-const clearMoney     = el => { if(parseEuro(el.value)===0) el.value=''; };
-const formatMiniMoney= el => { el.value = euro(parseEuro(el.value)); };
-const clearMiniMoney = el => { if(parseEuro(el.value)===0) el.value=''; };
-const getVal = id => { const e=document.getElementById(id); return e?e.value:''; };
-const getNum = id => parseEuro(getVal(id));
+window.onload = ()=>showEmpori();
 
-/* ── WEATHER ── */
-function syncWeatherIcon() {
-  const v = document.getElementById('meteo-label').value;
-  document.getElementById('meteo-icon').className = 'fas '+(WX[v]||'fa-cloud-sun');
-}
-function wxCode(c) {
-  const m={0:'sereno',1:'prevalentemente sereno',2:'parzialmente nuvoloso',3:'coperto',45:'nebbia',48:'nebbia',51:'pioviggine',53:'pioviggine',55:'pioviggine',61:'pioggia',63:'pioggia',65:'pioggia',71:'neve',73:'neve',75:'neve',77:'neve',80:'pioggia',81:'pioggia',82:'pioggia',85:'neve',86:'grandine',95:'temporale',96:'temporale',99:'temporale'};
-  return m[c]||'variabile';
-}
-async function autoWeather(emp) {
-  const c=CITY[emp], el=document.getElementById('meteo-label');
-  if(!c){el.value='variabile';syncWeatherIcon();return;}
-  try {
-    const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+c.lat+'&longitude='+c.lon+'&current=weather_code&timezone=Europe%2FRome');
-    const j=await r.json(); el.value=wxCode(j.current&&j.current.weather_code);
-  } catch(e){el.value='variabile';}
-  syncWeatherIcon();
+// ── NAVIGAZIONE ───────────────────────────────────────────────
+function showEmpori(){
+    ctx={emporio:null,anno:null,mese:null};
+    setHeader('Turni',''); hideAll(); show('view-empori');
+    document.getElementById('view-empori').innerHTML=`
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mt-2">
+        ${EMPORI.map(e=>`
+            <div onclick="showAnni('${e}')" class="card-hover bg-white rounded-3xl border border-gray-100 shadow-sm p-8 flex flex-col items-center gap-3">
+                <div class="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#b75252" class="w-7 h-7">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72l1.189-1.19A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72M6.75 18h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .414.336.75.75.75z"/>
+                    </svg>
+                </div>
+                <span class="font-bold text-slate-700 text-base text-center">${e}</span>
+            </div>`).join('')}
+        </div>`;
 }
 
-/* ── EMPORIO ── */
-function selectEmp(emp) {
-  currentEmp = emp;
-  document.getElementById('step-emp').classList.add('hidden');
-  document.getElementById('step-date').classList.remove('hidden');
+function showAnni(emp){
+    ctx.emporio=emp;
+    setHeader(emp,backBtn('showEmpori()')); hideAll(); show('view-anni');
+    document.getElementById('view-anni').innerHTML=`
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mt-2">
+        ${ANNI.map(a=>`
+            <div onclick="showMesi(${a})" class="card-hover bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center">
+                <span class="text-4xl font-extrabold text-slate-700">${a}</span>
+            </div>`).join('')}
+        </div>`;
 }
 
-/* ── CALENDARIO ── */
-function renderCalendar() {
-  const now = new Date();
-  document.getElementById('cal-month-label').textContent = MESI[calMonth]+' '+calYear;
-  const grid = document.getElementById('cal-grid');
-  grid.innerHTML = '';
-  ['Lun','Mar','Mer','Gio','Ven','Sab','Dom'].forEach(d => {
-    const h=document.createElement('div'); h.className='cal-head'; h.textContent=d; grid.appendChild(h);
-  });
-  const fd = new Date(calYear,calMonth,1).getDay();
-  const offset = fd===0?6:fd-1;
-  const dim = new Date(calYear,calMonth+1,0).getDate();
-  const dip = new Date(calYear,calMonth,0).getDate();
-  for(let i=offset-1;i>=0;i--){ const d=document.createElement('div'); d.className='cal-day other-month'; d.textContent=dip-i; grid.appendChild(d); }
-  for(let day=1;day<=dim;day++){
-    const d=document.createElement('div'); d.className='cal-day'; d.textContent=day;
-    const isToday = day===now.getDate()&&calMonth===now.getMonth()&&calYear===now.getFullYear();
-    const isSel   = selectedDate&&day===selectedDate.d&&calMonth===selectedDate.m&&calYear===selectedDate.y;
-    if(isToday&&!isSel) d.classList.add('today');
-    if(isSel) d.classList.add('selected');
-    d.addEventListener('click',()=>{ selectedDate={y:calYear,m:calMonth,d:day}; renderCalendar(); });
-    grid.appendChild(d);
-  }
-  const rem=(offset+dim)%7===0?0:7-((offset+dim)%7);
-  for(let i=1;i<=rem;i++){ const d=document.createElement('div'); d.className='cal-day other-month'; d.textContent=i; grid.appendChild(d); }
+function showMesi(anno){
+    ctx.anno=anno;
+    setHeader(`${ctx.emporio} — ${anno}`,backBtn(`showAnni('${ctx.emporio}')`));
+    hideAll(); show('view-mesi');
+    document.getElementById('view-mesi').innerHTML=`
+        <div class="grid grid-cols-3 md:grid-cols-4 gap-4 mt-2">
+        ${MESI_NOMI.map((m,i)=>`
+            <div onclick="showMese(${i})" class="card-hover bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center">
+                <span class="text-lg font-bold text-slate-700">${m}</span>
+            </div>`).join('')}
+        </div>`;
 }
 
-/* ── BUILD COINS ── */
-function buildCoins(turno) {
-  const wrap=document.getElementById(turno+'-coin-list'); wrap.innerHTML='';
-  TAGLI.forEach(t=>{
-    const id=turno+'_coin_'+String(t).replace('.','_');
-    const row=document.createElement('div'); row.className='coin-row';
-    row.innerHTML=`<div class="coin-label">${euro(t)}</div><input id="${id}" type="number" min="0" step="1" oninput="calcAll()" class="coin-input" placeholder="0"><div class="coin-total" id="${id}_tot">€ 0,00</div>`;
-    wrap.appendChild(row);
-  });
+function showMese(mese){
+    ctx.mese=mese;
+    const orari=getOrari(ctx.emporio,ctx.anno,mese);
+    const orStr=orari?`<span class="text-xs text-slate-400 font-semibold hidden md:inline">☀ ${orari.matIni}–${orari.matFin} &nbsp; ◑ ${orari.pomIni}–${orari.pomFin}</span>`:'';
+    setHeader(`${ctx.emporio} — ${MESI_NOMI[mese]} ${ctx.anno}`,
+        `<div class="flex items-center gap-2 flex-wrap justify-end">
+            ${orStr}
+            <button onclick="openDefault()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                Predefiniti
+            </button>
+            <button onclick="openOrari()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Orari
+            </button>
+            ${backBtn(`showMesi(${ctx.anno})`)}
+        </div>`);
+    hideAll(); show('view-mese');
+    renderMese();
 }
 
-/* ── BUILD PAYMENTS ── */
-function buildPayments(turno) {
-  const wrap=document.getElementById(turno+'-payments'); wrap.innerHTML='';
+// ── RENDER MESE ───────────────────────────────────────────────
+function renderMese(){
+    const {emporio,anno,mese}=ctx;
+    const days=new Date(anno,mese+1,0).getDate();
+    const oggi=new Date().toISOString().split('T')[0];
+    const orari=getOrari(emporio,anno,mese);
+    const closedDow=orari?.closedDow||[];
+    const cont=document.getElementById('view-mese');
+    cont.innerHTML='';
 
-  // Contanti netti read-only
-  const cRow=document.createElement('div'); cRow.className='pay-row';
-  cRow.innerHTML=`<div class="pay-label lbl-cash">Contanti</div><div id="${turno}_pay_contanti_display" style="display:flex;align-items:center;justify-content:flex-end;background:#f8fafc;color:#64748b;font-family:monospace;font-size:13px;font-weight:700;border-radius:10px;padding:9px 12px;border:1px solid #e2e8f0;">€ 0,00</div><div></div>`;
-  wrap.appendChild(cRow);
+    for(let d=1;d<=days;d++){
+        const ds=`${anno}-${String(mese+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const date=new Date(ds+'T12:00:00');
+        const dow=date.getDay(); // 0=Dom
+        const gS=GIORNI_SETT[dow];
+        const isFest=dow===0;
+        const isOggi=ds===oggi;
+        const nota=turniData[emporio]?.[ds]?.nota||'';
 
-  PAGAMENTI.forEach(p=>{
-    const rowWrap=document.createElement('div');
-    if(p.spese) rowWrap.className='spese-row-wrap';
+        // chiusura: manuale o da orari settimanali
+        const clManuale=chiusure[emporio]?.[ds]||{mat:false,pom:false};
+        const clSettimanale=closedDow.includes(dow);
+        const cl={
+            mat: clManuale.mat || clSettimanale,
+            pom: clManuale.pom || clSettimanale,
+        };
 
-    // riga importo
-    const row=document.createElement('div'); row.className='pay-row';
-    const label=document.createElement('div'); label.className='pay-label '+p.cls;
-    if(p.sign<0) label.innerHTML=p.label+' <span style="font-size:10px;color:#e11d48;font-family:monospace">(−)</span>';
-    else label.textContent=p.label;
+        const ed=getEffectiveDayData(emporio,ds);
+        const colCls=isOggi?'col-oggi':isFest?'col-festivo':'col-normale';
 
-    const input=document.createElement('input');
-    input.id=turno+'_pay_'+p.id; input.className='money-input'; input.placeholder='€ 0,00';
-    input.addEventListener('input', calcAll);
-    input.addEventListener('blur',  function(){formatMoney(this);});
-    input.addEventListener('focus', function(){clearMoney(this);});
+        const card=document.createElement('div');
+        card.id=`row-${ds}`;
+        card.className='day-card';
+        card.innerHTML=`
+        <div class="flex" style="min-height:110px">
+            <!-- Colonna data -->
+            <div class="day-date-col ${isFest||isOggi?'festivo':''} ${colCls}">
+                <span class="day-weekday">${gS}</span>
+                <span class="day-num">${d}</span>
+                <span class="day-month">${MESI_BREVI[mese]}</span>
+                ${isOggi?'<span class="day-oggi-badge">OGGI</span>':''}
+            </div>
 
-    const noteBtn=document.createElement('button');
-    noteBtn.type='button'; noteBtn.id=turno+'_notebtn_'+p.id; noteBtn.className='note-btn';
-    noteBtn.innerHTML='<i class="fas fa-sticky-note"></i>'; noteBtn.title='Aggiungi nota';
-    noteBtn.addEventListener('click',()=>toggleNoteRow(turno, p.id, p.label, rowWrap));
+            <!-- Contenuto turni -->
+            <div class="flex-1 min-w-0 flex flex-col">
+                <div class="flex flex-1 divide-x divide-gray-100">
+                    ${renderTurnoCell(emporio,ds,'mat',ed.mat,cl.mat)}
+                    ${renderTurnoCell(emporio,ds,'pom',ed.pom,cl.pom)}
+                </div>
+                <!-- Barra note + bottoni chiusura manuale -->
+                <div class="px-4 py-2 flex items-center gap-2 border-t border-gray-50 bg-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="#d97706" class="w-3.5 h-3.5 shrink-0">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/>
+                    </svg>
+                    <input type="text" placeholder="Note del giorno…"
+                        value="${nota.replace(/"/g,'&quot;')}"
+                        onchange="saveNota('${ds}',this.value)"
+                        class="flex-1 text-xs outline-none bg-transparent placeholder-slate-300 ${nota?'font-semibold text-amber-700':'text-slate-400'}">
+                    ${nota?'<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700">nota</span>':''}
+                    <div class="flex gap-1.5 ml-2 shrink-0">
+                        <button onclick="toggleChiuso('${ds}','mat')" id="btn-lock-mat-${ds}"
+                            class="btn-lock ${clManuale.mat?'on':''}">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+                            </svg>
+                            Chiuso Mat
+                        </button>
+                        <button onclick="toggleChiuso('${ds}','pom')" id="btn-lock-pom-${ds}"
+                            class="btn-lock ${clManuale.pom?'on':''}">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+                            </svg>
+                            Chiuso Pom
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+        cont.appendChild(card);
+    }
 
-    row.append(label, input, noteBtn);
-    rowWrap.appendChild(row);
-
-    // area nota (nascosta)
-    const noteArea=document.createElement('div');
-    noteArea.id=turno+'_notearea_'+p.id; noteArea.className='hidden';
-    rowWrap.appendChild(noteArea);
-
-    wrap.appendChild(rowWrap);
-  });
+    const wrap=document.createElement('div');
+    wrap.id='riepilogo-wrap';
+    wrap.innerHTML=buildRiepilogo();
+    cont.appendChild(wrap);
 }
 
-/* ── NOTE SYSTEM ── */
-function toggleNoteRow(turno, id, label, rowWrap) {
-  const area=document.getElementById(turno+'_notearea_'+id);
-  const btn =document.getElementById(turno+'_notebtn_'+id);
-  if(!area.classList.contains('hidden')){ area.classList.add('hidden'); return; }
-  renderNoteEditor(turno, id, label, area, btn);
-  area.classList.remove('hidden');
-}
+// ── TURNO CELL ────────────────────────────────────────────────
+function renderTurnoCell(emp,ds,turno,list,chiuso){
+    const isM=turno==='mat';
+    const orari=getOrari(emp,ctx.anno,ctx.mese);
+    const orStr=orari?`<span class="text-[10px] font-semibold ml-1 ${isM?'text-red-300':'text-slate-400'}">${isM?orari.matIni+'–'+orari.matFin:orari.pomIni+'–'+orari.pomFin}</span>`:'';
 
-function renderNoteEditor(turno, id, label, area, btn) {
-  area.innerHTML='';
-  const row=document.createElement('div'); row.className='note-entry-row';
-  const inp=document.createElement('input');
-  inp.type='text'; inp.className='note-field'; inp.placeholder='Nota '+label.toLowerCase()+'…'; inp.value=noteMap[turno+'_'+id]||'';
-  const send=document.createElement('button');
-  send.type='button'; send.className='note-send-btn'; send.title='Invia';
-  send.innerHTML='<i class="fas fa-arrow-right"></i>';
-  send.addEventListener('click',()=>commitNote(turno,id,inp,area,btn));
-  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();commitNote(turno,id,inp,area,btn);} });
-  row.append(inp,send); area.appendChild(row);
-  inp.focus();
-}
+    if(chiuso) return `
+        <div class="flex-1 p-4 ${isM?'turno-mat-bg':'turno-pom-bg turno-chiuso-bg'} flex flex-col">
+            <div class="flex items-center gap-1 mb-2">
+                <span class="turno-lbl ${isM?'turno-lbl-mat':'turno-lbl-pom'}">${isM?'Mattino':'Pomeriggio'}</span>
+            </div>
+            <div class="flex-1 flex items-center">
+                <span class="text-xs font-bold uppercase tracking-widest ${isM?'text-red-300':'text-slate-400'}">🔒 Chiuso</span>
+            </div>
+        </div>`;
 
-function commitNote(turno, id, inp, area, btn) {
-  const val=inp.value.trim();
-  noteMap[turno+'_'+id]=val;
-  area.innerHTML='';
-  if(val){
-    // mostra tag nota salvata
-    const wrap=document.createElement('div'); wrap.className='note-saved-wrap';
-    const txt=document.createElement('span'); txt.className='note-saved-text'; txt.innerHTML='<i class="fas fa-sticky-note" style="margin-right:5px;font-size:11px;"></i>'+val;
-    const editBtn=document.createElement('button'); editBtn.className='note-edit-btn'; editBtn.textContent='modifica';
-    editBtn.addEventListener('click',()=>{ renderNoteEditor(turno,id,PAGAMENTI.find(p=>p.id===id)?.label||id,area,btn); area.classList.remove('hidden'); });
-    wrap.append(txt,editBtn); area.appendChild(wrap);
-    area.classList.remove('hidden');
-    if(btn){ btn.classList.add('has-note'); btn.title='Nota presente'; }
-  } else {
-    area.classList.add('hidden');
-    if(btn){ btn.classList.remove('has-note'); btn.title='Aggiungi nota'; }
-  }
-}
-
-/* ── OPERATORI: aggiungi dinamicamente ── */
-function toggleOpModal(turno) {
-  const modal=document.getElementById('op-mini-'+turno);
-  modal.classList.toggle('open');
-  if(modal.classList.contains('open')) document.getElementById('op-new-'+turno).focus();
-}
-function addOperatore(turno) {
-  const inp=document.getElementById('op-new-'+turno);
-  const nome=inp.value.trim();
-  if(!nome) return;
-  // aggiungi alla lista locale se non esiste
-  if(!OPERATORI[currentEmp]) OPERATORI[currentEmp]=[];
-  if(!OPERATORI[currentEmp].includes(nome)) OPERATORI[currentEmp].push(nome);
-  // rebuild selects
-  syncOperators();
-  // seleziona il nuovo operatore
-  document.getElementById('chiuso-da-'+turno).value=nome;
-  inp.value='';
-  toggleOpModal(turno);
-}
-
-function syncOperators() {
-  ['mat','pom'].forEach(turno=>{
-    const sel=document.getElementById('chiuso-da-'+turno); if(!sel) return;
-    const prev=sel.value;
-    sel.innerHTML='<option value="">Seleziona operatore...</option>';
-    (OPERATORI[currentEmp]||[]).slice().sort().forEach(op=>{
-      const o=document.createElement('option'); o.value=op; o.textContent=op; sel.appendChild(o);
+    // Righe assenza dipendenti
+    const dip=(PERSONALE[emp]||[]).filter(p=>p.ruolo==='dipendente');
+    let assRows='';
+    dip.forEach(p=>{
+        const ass=getAssenza(emp,ds,p.nome);
+        if(!ass) return;
+        const oreT=ass.ore!=null?`${formatOre(ass.ore)} h`:'(intero)';
+        assRows+=`<div class="flex items-center gap-1.5 mb-1 flex-wrap">
+            <span class="text-xs font-semibold text-slate-600">${p.nome}</span>
+            <span class="assenza-badge ${ass.tipo==='ferie'?'assenza-ferie':'assenza-malattia'}">${ass.tipo==='ferie'?'🏖️':'🤒'} ${ass.tipo}</span>
+            <span class="text-[10px] text-slate-400">${oreT}</span>
+            <button onclick="openAssenza(event,'${ds}','${turno}','${p.nome}')" class="text-[10px] text-slate-300 hover:text-m361-red ml-auto">modifica</button>
+        </div>`;
     });
-    if(prev) sel.value=prev;
-  });
+
+    return `
+        <div class="flex-1 p-4 ${isM?'turno-mat-bg':'turno-pom-bg'} flex flex-col min-w-0">
+            <div class="flex items-center gap-1 mb-3">
+                <span class="turno-lbl ${isM?'turno-lbl-mat':'turno-lbl-pom'}">${isM?'Mattino':'Pomeriggio'}</span>
+                ${orStr}
+            </div>
+            ${assRows?`<div class="mb-2 pb-2 border-b ${isM?'border-red-100':'border-slate-100'} text-xs">${assRows}</div>`:''}
+            <div class="flex flex-wrap gap-1.5 mb-3" id="${turno}-${ds}">
+                ${renderChips(list,ds,turno)}
+            </div>
+            <button onclick="openModal('${ds}','${turno}')" class="add-link">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                </svg>
+                Aggiungi
+            </button>
+        </div>`;
 }
 
-/* ── FONDO CASSA PRECEDENTE ── */
-async function loadPreviousFondo(emp, y, m1, d) {
-  const dt=new Date(y, m1-1, d);
-  for(let i=0;i<60;i++){
-    dt.setDate(dt.getDate()-1);
-    const key=emp+'_'+dt.getFullYear()+'_'+(dt.getMonth()+1)+'_'+dt.getDate();
-    const data=await dbGetFondo(key);
-    if(data&&data.fondo_residuo!=null) return Number(data.fondo_residuo);
-  }
-  return 0;
+// ── CHIP ──────────────────────────────────────────────────────
+function renderChips(list,ds,turno){
+    const pred=predefiniti[ctx.emporio]||{};
+    return list.map(p=>{
+        const ass=getAssenza(ctx.emporio,ds,p.nome);
+        if(ass) return `<span class="chip ${ass.tipo==='ferie'?'chip-ferie':'chip-malattia'}"
+            onclick="removeChip('${ds}','${turno}','${p.nome}')">${ass.tipo==='ferie'?'🏖️':'🤒'} ${p.nome}<span class="opacity-40 ml-1">×</span></span>`;
+        const isPred=pred[p.nome]&&Object.values(pred[p.nome]).some(v=>v);
+        const isDip=p.ruolo==='dipendente';
+        const cls=turno==='mat'
+            ?(p.ruolo==='dipendente'?'chip-mat-dip':p.ruolo==='volontario'?'chip-mat-vol':'chip-mat-sc')
+            :(p.ruolo==='dipendente'?'chip-pom-dip':p.ruolo==='volontario'?'chip-pom-vol':'chip-pom-sc');
+        return `<span class="chip ${cls} ${isPred?'ring-1 ring-offset-1 ring-slate-300':''}"
+            onclick="removeChip('${ds}','${turno}','${p.nome}')"
+            ${isDip?`oncontextmenu="openAssenza(event,'${ds}','${turno}','${p.nome}')"`:''}>
+            ${p.nome}${isPred?'<span class="text-[8px] opacity-25 ml-0.5">★</span>':''}
+            <span class="opacity-20 ml-0.5">×</span>
+        </span>`;
+    }).join('');
+}
+function chipClass(r){return r==='dipendente'?'chip-mat-dip':r==='volontario'?'chip-mat-vol':'chip-mat-sc';}
+
+// ── PREDEFINITI ───────────────────────────────────────────────
+function getPredGiorno(emp,nome,dow){return predefiniti[emp]?.[nome]?.[dow]||null;}
+
+function openDefault(){
+    if(!predefiniti[ctx.emporio]) predefiniti[ctx.emporio]={};
+    const persone=[...(PERSONALE[ctx.emporio]||[])].sort((a,b)=>a.nome.localeCompare(b.nome));
+    document.getElementById('default-list').innerHTML=persone.map(p=>{
+        const nk=p.nome.replace(/ /g,'_');
+        const cells=GRID_ORDER.map(dow=>{
+            const val=getPredGiorno(ctx.emporio,p.nome,dow);
+            const mOn=val==='mat'||val==='entrambi';
+            const pOn=val==='pom'||val==='entrambi';
+            return `<div class="flex flex-col items-center gap-1">
+                <button onclick="cyclePred('${p.nome}',${dow},'mat')" id="pd-${nk}-${dow}-mat"
+                    class="day-btn ${mOn?'on-mat':''}">M</button>
+                <button onclick="cyclePred('${p.nome}',${dow},'pom')" id="pd-${nk}-${dow}-pom"
+                    class="day-btn ${pOn?'on-pom':''}">P</button>
+            </div>`;
+        }).join('');
+        const rL=p.ruolo==='dipendente'?'dip.':p.ruolo==='servizio_civile'?'SC':'vol.';
+        const rC=p.ruolo==='dipendente'?'text-red-400':p.ruolo==='servizio_civile'?'text-slate-400':'text-green-600';
+        return `<div class="flex items-center gap-2 py-3">
+            <div class="w-44 shrink-0">
+                <span class="font-semibold text-sm text-slate-700">${p.nome}</span>
+                <span class="text-xs ml-1 ${rC}">${rL}</span>
+            </div>
+            <div class="day-grid flex-1">${cells}</div>
+        </div>`;
+    }).join('');
+    document.getElementById('modal-default').classList.remove('hidden');
 }
 
-/* ── CALCOLO ── */
-function calcAll() {
-  ['mat','pom'].forEach(turno=>{
-    let lordi=0;
-    TAGLI.forEach(t=>{
-      const id=turno+'_coin_'+String(t).replace('.','_');
-      const qty=parseFloat(document.getElementById(id)?.value||0)||0;
-      const tot=qty*t; lordi+=tot;
-      const el=document.getElementById(id+'_tot'); if(el) el.textContent=euro(tot);
-    });
-    const netti=Math.max(0,lordi-fondoCassa);
-    document.getElementById(turno+'-lordi').textContent=euro(lordi);
-    document.getElementById(turno+'-netti').textContent=euro(netti);
-    const disp=document.getElementById(turno+'_pay_contanti_display'); if(disp) disp.textContent=euro(netti);
-
-    let altri=0;
-    PAGAMENTI.forEach(p=>{
-      const raw=parseEuro(document.getElementById(turno+'_pay_'+p.id)?.value);
-      if(p.sign<0) altri-=Math.abs(raw);
-      else if(p.spese) altri-=Math.abs(raw);
-      else altri+=raw;
-    });
-    const totale=netti+altri;
-    document.getElementById(turno+'-incassato').textContent=euro(totale);
-    const cor=getNum(turno+'-corrispettivi'), diff=totale-cor;
-    const de=document.getElementById(turno+'-diff');
-    if(Math.abs(diff)<0.01){ de.textContent='✓ '+euro(0); de.className='sum-val diff-ok'; }
-    else { de.textContent=euro(diff); de.className='sum-val '+(diff>0?'diff-ok':'diff-err'); }
-  });
-  const pomLordi=parseEuro(document.getElementById('pom-lordi').textContent);
-  const cass=parseEuro(document.getElementById('cassaforte').value);
-  document.getElementById('fondo-residuo').textContent=euro(Math.max(0,pomLordi-cass));
-  calcIva();
+function cyclePred(nome,dow,turno){
+    const emp=ctx.emporio;
+    if(!predefiniti[emp]) predefiniti[emp]={};
+    if(!predefiniti[emp][nome]) predefiniti[emp][nome]={};
+    const cur=predefiniti[emp][nome][dow]||null;
+    let next;
+    if(turno==='mat') next=(cur==='mat'||cur==='entrambi')?(cur==='entrambi'?'pom':null):(cur==='pom'?'entrambi':'mat');
+    else next=(cur==='pom'||cur==='entrambi')?(cur==='entrambi'?'mat':null):(cur==='mat'?'entrambi':'pom');
+    predefiniti[emp][nome][dow]=next;
+    const nk=nome.replace(/ /g,'_');
+    const mOn=next==='mat'||next==='entrambi';
+    const pOn=next==='pom'||next==='entrambi';
+    const bm=document.getElementById(`pd-${nk}-${dow}-mat`);
+    const bp=document.getElementById(`pd-${nk}-${dow}-pom`);
+    if(bm) bm.className='day-btn'+(mOn?' on-mat':'');
+    if(bp) bp.className='day-btn'+(pOn?' on-pom':'');
 }
 
-function calcIva() {
-  const a=getNum('iva-22'),b=getNum('iva-10'),c=getNum('iva-4'),d=getNum('iva-esente');
-  const somma=a+b+c+d, net=a+b+c;
-  document.getElementById('iva-somma').value=somma;
-  document.getElementById('iva-net-es').value=net;
-  document.getElementById('iva-somma-disp').textContent=euro(somma);
-  document.getElementById('iva-net-es-disp').textContent=euro(net);
-  const cor=getNum('pom-corrispettivi'), ok=Math.abs(somma-cor)<0.015;
-  const cell=document.getElementById('iva-ver-cell');
-  cell.textContent=ok?'✓ OK':'✗ ERR';
-  cell.className='iva-sum-val '+(ok?'iva-ver-ok':'iva-ver-err');
-  document.getElementById('iva-error').style.display=ok?'none':'block';
+function applyDefault(){
+    const {emporio,anno,mese}=ctx;
+    const n=new Date(anno,mese+1,0).getDate();
+    for(let d=1;d<=n;d++){
+        const ds=`${anno}-${String(mese+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        if(turniData[emporio]?.[ds]) turniData[emporio][ds].override={};
+    }
+    closeDefault(); renderMese();
+}
+function closeDefault(){document.getElementById('modal-default').classList.add('hidden');}
+
+// ── ORARI (con giorni di chiusura) ────────────────────────────
+function orariKey(e,a,m){return `${e}|${a}-${String(m+1).padStart(2,'0')}`;}
+function getOrari(e,a,m){return orariMese[orariKey(e,a,m)]||null;}
+
+function openOrari(){
+    const o=getOrari(ctx.emporio,ctx.anno,ctx.mese);
+    document.getElementById('ora-mat-ini').value=o?.matIni||'09:00';
+    document.getElementById('ora-mat-fin').value=o?.matFin||'13:00';
+    document.getElementById('ora-pom-ini').value=o?.pomIni||'15:00';
+    document.getElementById('ora-pom-fin').value=o?.pomFin||'19:00';
+    document.getElementById('orari-title').innerText=`Orari — ${MESI_NOMI[ctx.mese]} ${ctx.anno}`;
+    // Giorni di chiusura
+    const closed=o?.closedDow||[];
+    const grid=document.getElementById('orari-dow-grid');
+    grid.innerHTML=DOW_LABELS.map((lbl,i)=>{
+        const dowJS=DOW_JS[i];
+        const isFest=dowJS===0||dowJS===6;
+        const isOn=closed.includes(dowJS);
+        return `<button onclick="toggleDowClosed(${dowJS})" id="dow-btn-${dowJS}"
+            class="dow-btn ${isFest?'festivo':''} ${isOn?'on':''}">${lbl}</button>`;
+    }).join('');
+    document.getElementById('modal-orari').classList.remove('hidden');
+}
+function toggleDowClosed(dowJS){
+    const o=getOrari(ctx.emporio,ctx.anno,ctx.mese)||{};
+    const closed=[...(o.closedDow||[])];
+    const idx=closed.indexOf(dowJS);
+    if(idx>=0) closed.splice(idx,1); else closed.push(dowJS);
+    // salva parzialmente per aggiornare UI
+    orariMese[orariKey(ctx.emporio,ctx.anno,ctx.mese)]={...o,closedDow:closed};
+    const btn=document.getElementById(`dow-btn-${dowJS}`);
+    if(btn) btn.classList.toggle('on',closed.includes(dowJS));
+}
+function closeOrari(){document.getElementById('modal-orari').classList.add('hidden');}
+function saveOrari(){
+    const existing=getOrari(ctx.emporio,ctx.anno,ctx.mese)||{};
+    orariMese[orariKey(ctx.emporio,ctx.anno,ctx.mese)]={
+        matIni:document.getElementById('ora-mat-ini').value,
+        matFin:document.getElementById('ora-mat-fin').value,
+        pomIni:document.getElementById('ora-pom-ini').value,
+        pomFin:document.getElementById('ora-pom-fin').value,
+        closedDow:existing.closedDow||[],
+    };
+    closeOrari(); showMese(ctx.mese);
 }
 
-function toggleIvaAltro() {
-  document.getElementById('iva-esente-altro-text').classList.toggle('hidden', document.getElementById('iva-esente-altro').value!=='altro');
+// ── CHIUSURA MANUALE ──────────────────────────────────────────
+function toggleChiuso(ds,turno){
+    if(!chiusure[ctx.emporio]) chiusure[ctx.emporio]={};
+    if(!chiusure[ctx.emporio][ds]) chiusure[ctx.emporio][ds]={mat:false,pom:false};
+    chiusure[ctx.emporio][ds][turno]=!chiusure[ctx.emporio][ds][turno];
+    refreshDayCard(ds);
 }
 
-/* ── FILL FORM ── */
-function fillForm(data) {
-  TAGLI.forEach(t=>{
-    const k=String(t).replace('.','_');
-    const em=document.getElementById('mat_coin_'+k), ep=document.getElementById('pom_coin_'+k);
-    if(em) em.value=data['mat_coin_'+k]??'';
-    if(ep) ep.value=data['pom_coin_'+k]??'';
-  });
-  PAGAMENTI.forEach(p=>{
-    const em=document.getElementById('mat_pay_'+p.id), ep=document.getElementById('pom_pay_'+p.id);
-    if(em) em.value=data['mat_pay_'+p.id]!=null?euro(data['mat_pay_'+p.id]):'';
-    if(ep) ep.value=data['pom_pay_'+p.id]!=null?euro(data['pom_pay_'+p.id]):'';
-    // ripristina note
+function refreshDayCard(ds){
+    const emp=ctx.emporio;
+    const orari=getOrari(emp,ctx.anno,ctx.mese);
+    const closedDow=orari?.closedDow||[];
+    const dow=new Date(ds+'T12:00:00').getDay();
+    const clM=chiusure[emp]?.[ds]||{mat:false,pom:false};
+    const cl={mat:clM.mat||closedDow.includes(dow),pom:clM.pom||closedDow.includes(dow)};
+    const ed=getEffectiveDayData(emp,ds);
+    const row=document.getElementById(`row-${ds}`);
+    if(!row) return;
+    const turniDiv=row.querySelector('.flex.flex-1.divide-x');
+    if(turniDiv) turniDiv.innerHTML=renderTurnoCell(emp,ds,'mat',ed.mat,cl.mat)+renderTurnoCell(emp,ds,'pom',ed.pom,cl.pom);
     ['mat','pom'].forEach(t=>{
-      const nk='note_'+t+'_pay_'+p.id;
-      if(data[nk]){
-        noteMap[t+'_'+p.id]=data[nk];
-        const area=document.getElementById(t+'_notearea_'+p.id);
-        const btn=document.getElementById(t+'_notebtn_'+p.id);
-        if(area){
-          const wrap=document.createElement('div'); wrap.className='note-saved-wrap';
-          const txt=document.createElement('span'); txt.className='note-saved-text'; txt.innerHTML='<i class="fas fa-sticky-note" style="margin-right:5px;font-size:11px;"></i>'+data[nk];
-          const eb=document.createElement('button'); eb.className='note-edit-btn'; eb.textContent='modifica';
-          eb.addEventListener('click',()=>{ renderNoteEditor(t,p.id,p.label,area,btn); area.classList.remove('hidden'); });
-          wrap.append(txt,eb); area.appendChild(wrap); area.classList.remove('hidden');
-        }
-        if(btn) btn.classList.add('has-note');
-      }
+        const btn=document.getElementById(`btn-lock-${t}-${ds}`);
+        if(btn) btn.classList.toggle('on',chiusure[emp]?.[ds]?.[t]||false);
     });
-  });
-  if(data.mat_corrispettivi!=null) document.getElementById('mat-corrispettivi').value=euro(data.mat_corrispettivi);
-  if(data.pom_corrispettivi!=null) document.getElementById('pom-corrispettivi').value=euro(data.pom_corrispettivi);
-  if(data.cassaforte!=null)        document.getElementById('cassaforte').value=euro(data.cassaforte);
-  if(data.mat_scontrini!=null)     document.getElementById('mat-scontrini').value=data.mat_scontrini;
-  if(data.pom_scontrini!=null)     document.getElementById('pom-scontrini').value=data.pom_scontrini;
-  if(data.chiuso_da_mat)  document.getElementById('chiuso-da-mat').value=data.chiuso_da_mat;
-  if(data.chiuso_da_pom)  document.getElementById('chiuso-da-pom').value=data.chiuso_da_pom;
-  if(data.note_mattino)   document.getElementById('nota-mattino').value=data.note_mattino;
-  if(data.note_pomeriggio)document.getElementById('nota-pomeriggio').value=data.note_pomeriggio;
-  if(data.meteo)          document.getElementById('meteo-label').value=data.meteo;
-  if(data.arrivo_merci)   document.getElementById('arrivo-merci').checked=true;
-  if(data.iva_22!=null)   document.getElementById('iva-22').value=euro(data.iva_22);
-  if(data.iva_10!=null)   document.getElementById('iva-10').value=euro(data.iva_10);
-  if(data.iva_4!=null)    document.getElementById('iva-4').value=euro(data.iva_4);
-  if(data.iva_esente!=null) document.getElementById('iva-esente').value=euro(data.iva_esente);
-  if(data.iva_esente_altro)      document.getElementById('iva-esente-altro').value=data.iva_esente_altro;
-  if(data.iva_esente_altro_text) document.getElementById('iva-esente-altro-text').value=data.iva_esente_altro_text;
-  toggleIvaAltro(); syncWeatherIcon(); calcIva();
 }
 
-/* ── OPEN DAY ── (bug fix: selectedDate.m è 0-based) ── */
-async function openDay() {
-  if(!selectedDate) return alert('Seleziona una data dal calendario');
-  const {y, m, d} = selectedDate; // m è 0-based
-  const m1 = m + 1;               // m1 è 1-based
+// ── CRUD ──────────────────────────────────────────────────────
+function initDay(emp,ds){
+    if(!turniData[emp]) turniData[emp]={};
+    if(!turniData[emp][ds]) turniData[emp][ds]={mat:[],pom:[],nota:'',override:{}};
+    return turniData[emp][ds];
+}
+function getEffectiveDayData(emp,ds){
+    const stored=turniData[emp]?.[ds]||{};
+    const overrides=stored.override||{};
+    const pred=predefiniti[emp]||{};
+    const mat=[...(stored.mat||[])];
+    const pom=[...(stored.pom||[])];
+    const dow=new Date(ds+'T12:00:00').getDay();
+    (PERSONALE[emp]||[]).forEach(p=>{
+        if(overrides[p.nome]) return;
+        const val=pred[p.nome]?.[dow]||null;
+        if(!val) return;
+        if((val==='mat'||val==='entrambi')&&!mat.find(x=>x.nome===p.nome)) mat.unshift(p);
+        if((val==='pom'||val==='entrambi')&&!pom.find(x=>x.nome===p.nome)) pom.unshift(p);
+    });
+    return {mat,pom};
+}
+function addPersona(emp,ds,turno,persona){
+    const d=initDay(emp,ds);
+    delete d.override[persona.nome];
+    if(!d[turno].find(p=>p.nome===persona.nome)) d[turno].push(persona);
+}
+function removeChip(ds,turno,nome){
+    const emp=ctx.emporio;
+    const pred=predefiniti[emp]||{};
+    const dow=new Date(ds+'T12:00:00').getDay();
+    const isPredToday=pred[nome]?.[dow]&&pred[nome][dow]!==null;
+    const d=initDay(emp,ds);
+    if(isPredToday) d.override[nome]=true;
+    else d[turno]=d[turno].filter(p=>p.nome!==nome);
+    refreshCell(ds,turno);
+}
+function refreshCell(ds,turno){
+    const el=document.getElementById(`${turno}-${ds}`);
+    if(el) el.innerHTML=renderChips(getEffectiveDayData(ctx.emporio,ds)[turno],ds,turno);
+}
+function saveNota(ds,val){initDay(ctx.emporio,ds).nota=val;}
 
-  currentKey  = currentEmp+'_'+y+'_'+m1+'_'+d;
-  fondoCassa  = await loadPreviousFondo(currentEmp, y, m1, d);
-
-  buildCoins('mat'); buildCoins('pom');
-  buildPayments('mat'); buildPayments('pom');
-  syncOperators();
-
-  const data = await dbGet(currentKey);
-  if(data) fillForm(data);
-
-  const dateObj = new Date(y, m, d); // m 0-based → corretto
-  document.getElementById('day-label').textContent     = GIORNI[dateObj.getDay()]+' '+d+' '+MESI[m]+' '+y;
-  document.getElementById('emporio-label').textContent = currentEmp;
-  document.getElementById('fondo-cassa-inline-mat').textContent = euro(fondoCassa);
-  document.getElementById('fondo-cassa-inline-pom').textContent = euro(fondoCassa);
-
-  document.getElementById('step-date').classList.add('hidden');
-  document.getElementById('screen-day').classList.remove('hidden');
-  document.getElementById('save-bar').classList.remove('hidden');
-
-  await autoWeather(currentEmp);
-  calcAll();
+// ── ASSENZE ───────────────────────────────────────────────────
+function getAssenza(emp,ds,nome){return assenze[emp]?.[ds]?.[nome]||null;}
+function initAssenza(emp,ds){
+    if(!assenze[emp]) assenze[emp]={};
+    if(!assenze[emp][ds]) assenze[emp][ds]={};
+}
+function openAssenza(e,ds,turno,nome){
+    e.preventDefault();
+    assenzaCtx={ds,turno,nome}; assenzaTipo=null;
+    const ex=getAssenza(ctx.emporio,ds,nome);
+    document.getElementById('assenza-title').innerText=`Assenza — ${nome}`;
+    document.getElementById('assenza-ore-block').classList.add('hidden');
+    document.getElementById('assenza-ore').value=ex?.ore??'';
+    document.getElementById('btn-conf-assenza').disabled=true;
+    document.getElementById('btn-remove-assenza').classList.toggle('hidden',!ex);
+    ['ferie','malattia'].forEach(t=>{
+        const btn=document.getElementById(`btn-ass-${t}`);
+        const isA=ex?.tipo===t;
+        btn.classList.toggle('ring-2',isA); btn.classList.toggle('ring-offset-2',isA);
+        btn.classList.toggle('ring-blue-400',isA&&t==='ferie');
+        btn.classList.toggle('ring-yellow-400',isA&&t==='malattia');
+    });
+    if(ex){assenzaTipo=ex.tipo;document.getElementById('btn-conf-assenza').disabled=false;document.getElementById('assenza-ore-block').classList.remove('hidden');}
+    document.getElementById('modal-assenza').classList.remove('hidden');
+}
+function selectTipoAssenza(tipo){
+    assenzaTipo=tipo;
+    document.getElementById('assenza-ore-block').classList.remove('hidden');
+    document.getElementById('btn-conf-assenza').disabled=false;
+    ['ferie','malattia'].forEach(t=>{
+        const btn=document.getElementById(`btn-ass-${t}`);
+        btn.classList.toggle('ring-2',t===tipo); btn.classList.toggle('ring-offset-2',t===tipo);
+        btn.classList.toggle('ring-blue-400',t==='ferie'&&tipo==='ferie');
+        btn.classList.toggle('ring-yellow-400',t==='malattia'&&tipo==='malattia');
+    });
+}
+function confirmAssenza(){
+    if(!assenzaCtx||!assenzaTipo) return;
+    const oreVal=document.getElementById('assenza-ore').value;
+    const ore=oreVal===''?null:parseFloat(oreVal);
+    initAssenza(ctx.emporio,assenzaCtx.ds);
+    assenze[ctx.emporio][assenzaCtx.ds][assenzaCtx.nome]={tipo:assenzaTipo,ore};
+    closeAssenza(); refreshTurnoArea(assenzaCtx.ds); aggiornaMeseOrario();
+}
+function removeAssenza(){
+    if(!assenzaCtx) return;
+    if(assenze[ctx.emporio]?.[assenzaCtx.ds]) delete assenze[ctx.emporio][assenzaCtx.ds][assenzaCtx.nome];
+    closeAssenza(); refreshTurnoArea(assenzaCtx.ds); aggiornaMeseOrario();
+}
+function closeAssenza(){document.getElementById('modal-assenza').classList.add('hidden');assenzaCtx=null;assenzaTipo=null;}
+function refreshTurnoArea(ds){
+    const emp=ctx.emporio;
+    const orari=getOrari(emp,ctx.anno,ctx.mese);
+    const closedDow=orari?.closedDow||[];
+    const dow=new Date(ds+'T12:00:00').getDay();
+    const clM=chiusure[emp]?.[ds]||{mat:false,pom:false};
+    const cl={mat:clM.mat||closedDow.includes(dow),pom:clM.pom||closedDow.includes(dow)};
+    const ed=getEffectiveDayData(emp,ds);
+    const row=document.getElementById(`row-${ds}`);
+    if(!row) return;
+    const turniDiv=row.querySelector('.flex.flex-1.divide-x');
+    if(turniDiv) turniDiv.innerHTML=renderTurnoCell(emp,ds,'mat',ed.mat,cl.mat)+renderTurnoCell(emp,ds,'pom',ed.pom,cl.pom);
 }
 
-/* ── SAVE ── */
-async function saveDay() {
-  calcIva();
-  const pomCorr  = getNum('pom-corrispettivi');
-  const ivaSomma = parseFloat(document.getElementById('iva-somma').value)||0;
-  if(Math.abs(ivaSomma-pomCorr)>=0.015) return alert('I dati IVA non tornano. Correggi prima di salvare.');
-
-  const payload = {
-    chiave:          currentKey,
-    fondo_cassa:     fondoCassa,
-    emporio:         currentEmp,
-    chiuso_da_mat:   getVal('chiuso-da-mat')||null,
-    chiuso_da_pom:   getVal('chiuso-da-pom')||null,
-    note_mattino:    getVal('nota-mattino')||null,
-    note_pomeriggio: getVal('nota-pomeriggio')||null,
-    meteo:           getVal('meteo-label')||null,
-    arrivo_merci:    document.getElementById('arrivo-merci').checked,
-    mat_scontrini:   parseInt(document.getElementById('mat-scontrini').value)||null,
-    pom_scontrini:   parseInt(document.getElementById('pom-scontrini').value)||null,
-    iva_22:  getNum('iva-22'), iva_10: getNum('iva-10'), iva_4: getNum('iva-4'),
-    iva_esente: getNum('iva-esente'),
-    iva_esente_altro:      getVal('iva-esente-altro')||null,
-    iva_esente_altro_text: getVal('iva-esente-altro-text')||null,
-    iva_net_es:  parseFloat(document.getElementById('iva-net-es').value)||0,
-    iva_somma:   ivaSomma,
-    mat_corrispettivi: getNum('mat-corrispettivi'),
-    pom_corrispettivi: getNum('pom-corrispettivi'),
-    cassaforte:    getNum('cassaforte'),
-    fondo_residuo: parseEuro(document.getElementById('fondo-residuo').textContent)
-  };
-
-  TAGLI.forEach(t=>{
-    const k=String(t).replace('.','_');
-    payload['mat_coin_'+k]=parseFloat(document.getElementById('mat_coin_'+k)?.value||0)||0;
-    payload['pom_coin_'+k]=parseFloat(document.getElementById('pom_coin_'+k)?.value||0)||0;
-  });
-  PAGAMENTI.forEach(p=>{
-    payload['mat_pay_'+p.id]=parseEuro(document.getElementById('mat_pay_'+p.id)?.value);
-    payload['pom_pay_'+p.id]=parseEuro(document.getElementById('pom_pay_'+p.id)?.value);
-    ['mat','pom'].forEach(t=>{ payload['note_'+t+'_pay_'+p.id]=noteMap[t+'_'+p.id]||null; });
-  });
-
-  const error=await dbUpsert(payload);
-  if(error) return alert('Errore salvataggio: '+error.message);
-  alert('Foglio di giornata salvato ✓');
+// ── MODIFICA PERSONA ──────────────────────────────────────────
+function openEditPersona(emp,nomeOld){
+    editPersonaCtx={emp,nomeOld};
+    const p=(PERSONALE[emp]||[]).find(x=>x.nome===nomeOld);
+    if(!p) return;
+    const parti=nomeOld.split(' ');
+    document.getElementById('edit-nome').value=parti[0]||'';
+    document.getElementById('edit-cognome').value=parti.slice(1).join(' ')||'';
+    document.getElementById('edit-ruolo').value=p.ruolo;
+    document.getElementById('modal-edit-persona').classList.remove('hidden');
+}
+function closeEditPersona(){document.getElementById('modal-edit-persona').classList.add('hidden');editPersonaCtx=null;}
+function saveEditPersona(){
+    if(!editPersonaCtx) return;
+    const {emp,nomeOld}=editPersonaCtx;
+    const nome=document.getElementById('edit-nome').value.trim();
+    const cog=document.getElementById('edit-cognome').value.trim();
+    const ruolo=document.getElementById('edit-ruolo').value;
+    if(!nome){alert('Inserisci almeno il nome.');return;}
+    const nomeNew=cog?`${nome} ${cog}`:nome;
+    const idx=(PERSONALE[emp]||[]).findIndex(p=>p.nome===nomeOld);
+    if(idx>=0) PERSONALE[emp][idx]={nome:nomeNew,ruolo};
+    Object.keys(turniData[emp]||{}).forEach(ds=>{
+        ['mat','pom'].forEach(t=>{const arr=turniData[emp][ds][t];const pi=arr.findIndex(p=>p.nome===nomeOld);if(pi>=0)arr[pi]={nome:nomeNew,ruolo};});
+        if(turniData[emp][ds].override?.[nomeOld]){turniData[emp][ds].override[nomeNew]=true;delete turniData[emp][ds].override[nomeOld];}
+    });
+    if(predefiniti[emp]?.[nomeOld]){predefiniti[emp][nomeNew]=predefiniti[emp][nomeOld];delete predefiniti[emp][nomeOld];}
+    Object.keys(assenze[emp]||{}).forEach(ds=>{if(assenze[emp][ds][nomeOld]){assenze[emp][ds][nomeNew]=assenze[emp][ds][nomeOld];delete assenze[emp][ds][nomeOld];}});
+    closeEditPersona(); renderMese();
+}
+function deletePersona(){
+    if(!editPersonaCtx) return;
+    const {emp,nomeOld}=editPersonaCtx;
+    if(!confirm(`Rimuovere ${nomeOld} dall'emporio?`)) return;
+    PERSONALE[emp]=(PERSONALE[emp]||[]).filter(p=>p.nome!==nomeOld);
+    Object.keys(turniData[emp]||{}).forEach(ds=>['mat','pom'].forEach(t=>{turniData[emp][ds][t]=(turniData[emp][ds][t]||[]).filter(p=>p.nome!==nomeOld);}));
+    if(predefiniti[emp]) delete predefiniti[emp][nomeOld];
+    closeEditPersona(); renderMese();
 }
 
-/* ── INIT ── */
-function init() {
-  const now=new Date();
-  calYear=now.getFullYear(); calMonth=now.getMonth();
-  selectedDate={y:calYear,m:calMonth,d:now.getDate()};
-  renderCalendar();
+// ── RIEPILOGO ─────────────────────────────────────────────────
+function buildRiepilogo(){
+    const {emporio,anno,mese}=ctx;
+    const dip=(PERSONALE[emporio]||[]).filter(p=>p.ruolo==='dipendente');
+    if(!dip.length) return '';
+    const rows=dip.map(p=>{
+        const {negozio,ferie,malattia}=calcolaTotaleDettaglio(emporio,anno,mese,p.nome);
+        const tot=negozio+ferie+malattia;
+        return `<tr class="border-b border-gray-50 last:border-0">
+            <td class="py-3 pl-5 pr-4">
+                <div class="flex items-center gap-2">
+                    <span class="font-semibold text-sm text-slate-700">${p.nome}</span>
+                    <button onclick="openEditPersona('${emporio}','${p.nome}')" class="text-[10px] text-slate-300 hover:text-m361-red" title="Modifica">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg>
+                    </button>
+                </div>
+            </td>
+            <td class="py-3 px-3 text-center"><span class="text-sm font-bold text-slate-700">${fmtMin(negozio)}</span></td>
+            <td class="py-3 px-3 text-center"><span class="text-sm font-bold text-blue-600">${fmtMin(ferie)}</span></td>
+            <td class="py-3 px-3 text-center"><span class="text-sm font-bold text-amber-600">${fmtMin(malattia)}</span></td>
+            <td class="py-3 pl-3 pr-5 text-center"><span class="text-sm font-extrabold text-m361-red">${fmtMin(tot)}</span></td>
+        </tr>`;
+    }).join('');
+    return `
+    <div class="day-card mt-4 overflow-hidden">
+        <div class="p-5 border-b border-gray-50 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="#b75252" class="w-5 h-5 shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
+            </svg>
+            <h3 class="font-bold text-slate-700 text-base">Riepilogo ore — ${MESI_NOMI[mese]} ${anno}</h3>
+            <button onclick="aggiornaMeseOrario()" class="ml-auto text-xs text-slate-400 hover:text-m361-red">↻ aggiorna</button>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead><tr class="bg-slate-50">
+                    <th class="py-2 pl-5 pr-4 text-left text-xs font-bold uppercase tracking-wider text-slate-400">Dipendente</th>
+                    <th class="py-2 px-3 text-center text-xs font-bold uppercase tracking-wider text-slate-400">Negozio</th>
+                    <th class="py-2 px-3 text-center text-xs font-bold uppercase tracking-wider text-blue-400">🏖️ Ferie</th>
+                    <th class="py-2 px-3 text-center text-xs font-bold uppercase tracking-wider text-amber-400">🤒 Malattia</th>
+                    <th class="py-2 pl-3 pr-5 text-center text-xs font-bold uppercase tracking-wider text-m361-red">Totale</th>
+                </tr></thead>
+                <tbody>${rows}</tbody>
+            </table>
+        </div>
+        <p class="text-[11px] text-slate-300 px-5 py-3">Ogni turno = ore + 15 min. Ferie/malattia senza ore = giornata intera.</p>
+    </div>`;
+}
+function aggiornaMeseOrario(){const w=document.getElementById('riepilogo-wrap');if(w) w.innerHTML=buildRiepilogo();}
 
-  document.getElementById('cal-prev').addEventListener('click',()=>{ calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); });
-  document.getElementById('cal-next').addEventListener('click',()=>{ calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); });
-  document.getElementById('btn-open-day').addEventListener('click', openDay);
-  document.getElementById('btn-back-emp').addEventListener('click',()=>{
-    document.getElementById('step-date').classList.add('hidden');
-    document.getElementById('step-emp').classList.remove('hidden');
-  });
-  document.getElementById('btn-back-date').addEventListener('click',()=>{
-    document.getElementById('screen-day').classList.add('hidden');
-    document.getElementById('save-bar').classList.add('hidden');
-    document.getElementById('step-date').classList.remove('hidden');
-  });
+function calcolaTotaleDettaglio(emp,anno,mese,nomeDip){
+    const n=new Date(anno,mese+1,0).getDate();
+    const orari=getOrari(emp,anno,mese);
+    const closedDow=orari?.closedDow||[];
+    let negozio=0,ferie=0,malattia=0;
+    for(let d=1;d<=n;d++){
+        const ds=`${anno}-${String(mese+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const dow=new Date(ds+'T12:00:00').getDay();
+        const clM=chiusure[emp]?.[ds]||{mat:false,pom:false};
+        const cl={mat:clM.mat||closedDow.includes(dow),pom:clM.pom||closedDow.includes(dow)};
+        const ass=getAssenza(emp,ds,nomeDip);
+        if(ass){
+            let min=ass.ore!=null?Math.round(ass.ore*60):orari?(oraDiff(orari.matIni,orari.matFin)+oraDiff(orari.pomIni,orari.pomFin)+15):8*60;
+            if(ass.tipo==='ferie') ferie+=min; else malattia+=min;
+            continue;
+        }
+        const ed=getEffectiveDayData(emp,ds);
+        const nM=!cl.mat&&ed.mat.some(p=>p.nome===nomeDip);
+        const nP=!cl.pom&&ed.pom.some(p=>p.nome===nomeDip);
+        if(orari){if(nM)negozio+=oraDiff(orari.matIni,orari.matFin)+15;if(nP)negozio+=oraDiff(orari.pomIni,orari.pomFin)+15;}
+        else{if(nM)negozio+=4*60+15;if(nP)negozio+=4*60+15;}
+    }
+    return{negozio,ferie,malattia};
+}
+function oraDiff(i,f){if(!i||!f)return 0;const[ih,im]=i.split(':').map(Number);const[fh,fm]=f.split(':').map(Number);return(fh*60+fm)-(ih*60+im);}
+function fmtMin(m){if(!m)return '—';const h=Math.floor(m/60),r=m%60;return r?`${h}h ${r}m`:`${h}h`;}
+function formatOre(o){if(o==null)return '';const h=Math.floor(o),m=Math.round((o-h)*60);return m?`${h}h ${m}m`:`${h}h`;}
+
+// ── MODAL PERSONA ─────────────────────────────────────────────
+function openModal(ds,turno){
+    modalCtx={ds,turno};
+    const date=new Date(ds+'T12:00:00');
+    document.getElementById('modal-title').innerText=`${turno==='mat'?'Mattino':'Pomeriggio'} — ${GIORNI_SETT[date.getDay()]} ${date.getDate()} ${MESI_NOMI[date.getMonth()]}`;
+    setModalTab('sel');
+    document.getElementById('modal').classList.remove('hidden');
+}
+function closeModal(){document.getElementById('modal').classList.add('hidden');modalCtx=null;}
+function setModalTab(tab){
+    const isSel=tab==='sel';
+    document.getElementById('mtab-sel').className=`flex-1 py-2 rounded-xl text-sm font-bold ${isSel?'bg-m361-red text-white':'bg-slate-100 text-slate-600'}`;
+    document.getElementById('mtab-new').className=`flex-1 py-2 rounded-xl text-sm font-bold ${!isSel?'bg-m361-red text-white':'bg-slate-100 text-slate-600'}`;
+    document.getElementById('mtab-body-sel').classList.toggle('hidden',!isSel);
+    document.getElementById('mtab-body-new').classList.toggle('hidden',isSel);
+    if(isSel){document.getElementById('modal-search').value='';filterModalList();}
+}
+function filterModalList(){
+    if(!modalCtx) return;
+    const q=document.getElementById('modal-search').value.toLowerCase();
+    const ed=getEffectiveDayData(ctx.emporio,modalCtx.ds);
+    const nel=ed[modalCtx.turno].map(p=>p.nome);
+    const lista=[...(PERSONALE[ctx.emporio]||[])].sort((a,b)=>a.nome.localeCompare(b.nome)).filter(p=>p.nome.toLowerCase().includes(q)&&!nel.includes(p.nome));
+    document.getElementById('modal-list').innerHTML=lista.length===0
+        ?'<p class="text-sm text-slate-400 text-center py-4">Nessuno disponibile</p>'
+        :lista.map(p=>`<button onclick="selectPersona('${p.nome}','${p.ruolo}')" class="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 text-left"><span class="chip ${chipClass(p.ruolo)} pointer-events-none text-sm">${p.nome}</span></button>`).join('');
+}
+function selectPersona(nome,ruolo){
+    addPersona(ctx.emporio,modalCtx.ds,modalCtx.turno,{nome,ruolo});
+    refreshCell(modalCtx.ds,modalCtx.turno);
+    closeModal();
+}
+function addNuovaPersona(){
+    const nome=document.getElementById('np-nome').value.trim();
+    const cog=document.getElementById('np-cognome').value.trim();
+    const ruolo=document.getElementById('np-ruolo').value;
+    if(!nome){alert('Inserisci almeno il nome.');return;}
+    const nc=cog?`${nome} ${cog}`:nome;
+    if(!PERSONALE[ctx.emporio]) PERSONALE[ctx.emporio]=[];
+    if(!PERSONALE[ctx.emporio].find(p=>p.nome===nc)) PERSONALE[ctx.emporio].push({nome:nc,ruolo});
+    addPersona(ctx.emporio,modalCtx.ds,modalCtx.turno,{nome:nc,ruolo});
+    refreshCell(modalCtx.ds,modalCtx.turno);
+    document.getElementById('np-nome').value=''; document.getElementById('np-cognome').value='';
+    closeModal();
 }
 
-window.addEventListener('load', init);
+// ── UTIL ──────────────────────────────────────────────────────
+function setHeader(t,c){document.getElementById('header-title').innerText=t;document.getElementById('header-controls').innerHTML=c;}
+function backBtn(fn){return `<button onclick="${fn}" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>Indietro</button>`;}
+function hideAll(){['view-empori','view-anni','view-mesi','view-mese'].forEach(id=>document.getElementById(id).classList.add('hidden'));}
+function show(id){document.getElementById(id).classList.remove('hidden');}
+['modal','modal-orari','modal-assenza','modal-default','modal-edit-persona'].forEach(id=>{
+    document.getElementById(id)?.addEventListener('click',function(e){if(e.target===this)this.classList.add('hidden');});
+});
 </script>
+<script src="../../scripts/nav-script.js"></script>
 </body>
 </html>
