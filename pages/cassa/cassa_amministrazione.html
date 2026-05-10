@@ -1,597 +1,165 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>M361 - Riepilogo Amministrazione</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:100vh;padding-bottom:80px;}
+<!-- ══ MACRO: AMMINISTRAZIONE ══ -->
+<div id="macro-amministrazione" class="macro-section">
+  <div class="main space-y">
+    <div class="card card-pad">
+      <div class="sec-title">Amministrazione</div>
 
-/* ── LAYOUT ── */
-.main{max-width:1800px;margin:0 auto;padding:24px 16px;}
-.space-y>*+*{margin-top:18px;}
-
-/* ── CARD ── */
-.card{background:#fff;border-radius:20px;box-shadow:0 1px 4px rgba(0,0,0,.07);}
-.card-pad{padding:24px;}
-
-/* ── SECTION TITLE ── */
-.sec-title{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#94a3b8;display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-.sec-title::before{content:'';display:block;width:3px;height:16px;background:#b75252;border-radius:2px;flex-shrink:0;}
-
-/* ── BUTTONS ── */
-.btn-primary{background:#b75252;color:#fff;border:none;border-radius:12px;padding:13px 26px;font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background .15s;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:8px;}
-.btn-primary:hover{background:#8f3d3d;}
-.btn-secondary{background:#fff;color:#64748b;border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 20px;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:8px;}
-.btn-secondary:hover{border-color:#94a3b8;background:#f8fafc;}
-
-/* ── FILTERS ── */
-.filters{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:24px;}
-.filter-group{display:flex;flex-direction:column;gap:6px;}
-.filter-label{font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;}
-.filter-select{border:1px solid #e2e8f0;border-radius:12px;padding:11px 14px;font-size:13px;font-family:'Inter',sans-serif;color:#334155;background:#fff;min-width:160px;}
-.filter-select:focus{outline:none;border-color:#b75252;}
-
-/* ── STATS CARDS ── */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;}
-.stat-card{background:#fff;border-radius:16px;border:1px solid #f1f5f9;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
-.stat-label{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
-.stat-value{font-size:28px;font-weight:900;color:#1e293b;font-family:'DM Mono',monospace;}
-.stat-value.red{color:#b75252;}
-.stat-value.green{color:#059669;}
-
-/* ── TABLE ── */
-.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:16px;border:1px solid #e2e8f0;}
-.recap-table{width:100%;border-collapse:collapse;font-size:12px;background:#fff;min-width:1400px;}
-.recap-table thead{background:#f8fafc;position:sticky;top:0;z-index:10;}
-.recap-table th{padding:12px 8px;text-align:right;font-weight:800;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;border-bottom:2px solid #e2e8f0;white-space:nowrap;}
-.recap-table th:first-child{text-align:left;position:sticky;left:0;background:#f8fafc;z-index:11;border-right:1px solid #e2e8f0;}
-.recap-table th.totale-col{background:#fff1f1;color:#b75252;}
-.recap-table th.forma-pag{background:#fffcf8;color:#7a4f2b;font-size:8px;}
-.recap-table td{padding:10px 8px;text-align:right;font-family:'DM Mono',monospace;font-size:11px;color:#475569;border-bottom:1px solid #f1f5f9;}
-.recap-table td:first-child{text-align:left;font-family:'Inter',sans-serif;font-weight:700;position:sticky;left:0;background:#fff;z-index:9;border-right:1px solid #e2e8f0;}
-.recap-table tr:hover td{background:#fafbfc;}
-.recap-table tr:hover td:first-child{background:#f8fafc;}
-.recap-table .totale-col{font-weight:700;color:#1e293b;}
-.recap-table .totale-row td{background:#f8fafc;font-weight:800;color:#1e293b;border-top:2px solid #e2e8f0;border-bottom:2px solid #e2e8f0;}
-.recap-table .totale-row td:first-child{background:#f1f5f9;}
-.recap-table .riporto-row td{background:#fffcf8;font-style:italic;color:#7a4f2b;}
-.recap-table .domenica td:first-child{color:#b75252;}
-.recap-table .empty-val{color:#cbd5e1;}
-
-/* loading */
-.loading{text-align:center;padding:60px 20px;color:#94a3b8;}
-.loading i{font-size:32px;margin-bottom:12px;display:block;animation:spin 1s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-
-.no-data{text-align:center;padding:60px 20px;color:#94a3b8;}
-.no-data i{font-size:48px;margin-bottom:16px;display:block;opacity:.3;}
-
-.export-btn{margin-left:auto;}
-</style>
-</head>
-<body>
-
-<main class="main">
-  
-  <div class="card card-pad">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:24px;">
-      <div>
-        <h1 style="font-size:24px;font-weight:900;color:#1e293b;margin-bottom:4px;">Riepilogo Amministrazione</h1>
-        <p style="font-size:13px;color:#64748b;">Panoramica mensile incassi e forme di pagamento</p>
-      </div>
-      <div style="display:flex;gap:10px;">
-        <button class="btn-secondary" onclick="exportTable()">
-          <i class="fas fa-download"></i> Esporta CSV
+      <!-- Sottotab -->
+      <div class="sub-tabs">
+        <button class="sub-tab active" onclick="showSubTab('admin', 'iva', this)">
+          <i class="fas fa-percent"></i> IVA
         </button>
-        <button class="btn-primary" onclick="window.location.href='m361-cassa.html'">
-          <i class="fas fa-cash-register"></i> Vai a Cassa
+        <button class="sub-tab" onclick="showSubTab('admin', 'pagamenti', this)">
+          <i class="fas fa-credit-card"></i> Forme di Pagamento
+        </button>
+        <button class="sub-tab" onclick="showSubTab('admin', 'cassaforte', this)">
+          <i class="fas fa-vault"></i> Cassaforte & Versamenti
         </button>
       </div>
-    </div>
 
-    <!-- Filters -->
-    <div class="filters">
-      <div class="filter-group">
-        <label class="filter-label">Emporio</label>
-        <select id="filter-emporio" class="filter-select" onchange="loadData()">
-          <option value="">Tutti gli empori</option>
-          <option value="Cremona">Cremona</option>
-          <option value="Casalmaggiore">Casalmaggiore</option>
-          <option value="Reggio Emilia">Reggio Emilia</option>
-          <option value="Viadana">Viadana</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <label class="filter-label">Mese</label>
-        <select id="filter-mese" class="filter-select" onchange="loadData()">
-          <option value="1">Gennaio</option>
-          <option value="2">Febbraio</option>
-          <option value="3">Marzo</option>
-          <option value="4">Aprile</option>
-          <option value="5">Maggio</option>
-          <option value="6">Giugno</option>
-          <option value="7">Luglio</option>
-          <option value="8">Agosto</option>
-          <option value="9">Settembre</option>
-          <option value="10">Ottobre</option>
-          <option value="11">Novembre</option>
-          <option value="12">Dicembre</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <label class="filter-label">Anno</label>
-        <select id="filter-anno" class="filter-select" onchange="loadData()">
-          <option value="2024">2024</option>
-          <option value="2025">2025</option>
-          <option value="2026">2026</option>
-        </select>
-      </div>
-      <button class="btn-secondary" onclick="loadData()" style="margin-top:20px;">
-        <i class="fas fa-sync-alt"></i> Aggiorna
-      </button>
-    </div>
+      <!-- ── SOTTOSEZIONE IVA ── -->
+      <div id="admin-sub-iva" class="sub-content active">
+        <div class="export-bar">
+          <select id="iva-filter-emporio" onchange="loadIvaData()" class="btn-export">
+            <option value="">Tutti gli empori</option>
+            <option>Casalmaggiore</option>
+            <option>Cremona</option>
+            <option>Reggio Emilia</option>
+            <option>Viadana</option>
+          </select>
+          <select id="iva-filter-anno" onchange="loadIvaData()" class="btn-export">
+            <option value="2026">2026</option>
+            <option value="2025">2025</option>
+          </select>
+          <select id="iva-filter-mese" onchange="loadIvaData()" class="btn-export">
+            <option value="">Tutti i mesi</option>
+            <option value="1">Gennaio</option><option value="2">Febbraio</option>
+            <option value="3">Marzo</option><option value="4">Aprile</option>
+            <option value="5">Maggio</option><option value="6">Giugno</option>
+            <option value="7">Luglio</option><option value="8">Agosto</option>
+            <option value="9">Settembre</option><option value="10">Ottobre</option>
+            <option value="11">Novembre</option><option value="12">Dicembre</option>
+          </select>
+          <button class="btn-export" onclick="exportTableCSV('iva-table', 'riepilogo_iva')">
+            <i class="fas fa-file-csv"></i> Esporta CSV
+          </button>
+          <button class="btn-export" onclick="window.print()">
+            <i class="fas fa-print"></i> Stampa
+          </button>
+        </div>
 
-    <!-- Stats -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">Totale Corrispettivi</div>
-        <div class="stat-value red" id="stat-corrispettivi">€ 0,00</div>
+        <div class="kpi-grid" id="iva-kpi"></div>
+
+        <div style="overflow-x:auto">
+          <table class="admin-table" id="iva-table">
+            <thead>
+              <tr>
+                <th>Periodo</th>
+                <th>Emporio</th>
+                <th class="number">Lordo €</th>
+                <th class="number">IVA 4%</th>
+                <th class="number">IVA 5%</th>
+                <th class="number">IVA 10%</th>
+                <th class="number">IVA 22%</th>
+                <th class="number">Tot. IVA €</th>
+                <th class="number">Netto €</th>
+              </tr>
+            </thead>
+            <tbody id="iva-body">
+              <tr><td colspan="9" style="text-align:center;color:#94a3b8;padding:40px">
+                Caricamento dati...
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">Totale Incassi</div>
-        <div class="stat-value" id="stat-incassi">€ 0,00</div>
+
+      <!-- ── SOTTOSEZIONE FORME DI PAGAMENTO ── -->
+      <div id="admin-sub-pagamenti" class="sub-content">
+        <div class="export-bar">
+          <select id="pag-filter-emporio" onchange="loadPagamentiData()" class="btn-export">
+            <option value="">Tutti gli empori</option>
+            <option>Casalmaggiore</option><option>Cremona</option>
+            <option>Reggio Emilia</option><option>Viadana</option>
+          </select>
+          <input type="month" id="pag-filter-mese" onchange="loadPagamentiData()"
+            class="btn-export" style="min-width:160px">
+          <button class="btn-export" onclick="exportTableCSV('pag-table', 'forme_pagamento')">
+            <i class="fas fa-file-csv"></i> Esporta CSV
+          </button>
+          <button class="btn-export" onclick="window.print()">
+            <i class="fas fa-print"></i> Stampa
+          </button>
+        </div>
+
+        <div style="overflow-x:auto">
+          <table class="admin-table" id="pag-table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Emporio</th>
+                <th class="number">Contanti</th>
+                <th class="number">Bancomat</th>
+                <th class="number">Carte</th>
+                <th class="number">Satispay</th>
+                <th class="number">Satispay Online</th>
+                <th class="number">Carte Online</th>
+                <th class="number">PayPal</th>
+                <th class="number">Bonifico</th>
+                <th class="number">Gift Card</th>
+                <th class="number">Buoni</th>
+                <th class="number">Totale</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody id="pag-body">
+              <tr><td colspan="14" style="text-align:center;color:#94a3b8;padding:40px">
+                Seleziona emporio e mese
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">Contanti Totali</div>
-        <div class="stat-value" id="stat-contanti">€ 0,00</div>
+
+      <!-- ── SOTTOSEZIONE CASSAFORTE & VERSAMENTI ── -->
+      <div id="admin-sub-cassaforte" class="sub-content">
+        <div class="export-bar">
+          <select id="cf-filter-emporio" onchange="loadCassaforteData()" class="btn-export">
+            <option value="">Tutti gli empori</option>
+            <option>Casalmaggiore</option><option>Cremona</option>
+            <option>Reggio Emilia</option><option>Viadana</option>
+          </select>
+          <input type="month" id="cf-filter-mese" onchange="loadCassaforteData()"
+            class="btn-export" style="min-width:160px">
+          <button class="btn-export" onclick="exportTableCSV('cf-table', 'cassaforte_versamenti')">
+            <i class="fas fa-file-csv"></i> Esporta CSV
+          </button>
+        </div>
+
+        <div class="kpi-grid" id="cf-kpi"></div>
+
+        <div style="overflow-x:auto">
+          <table class="admin-table" id="cf-table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Emporio</th>
+                <th class="number">Saldo Cassaforte</th>
+                <th class="number">Versamento Banca</th>
+                <th>Data Versamento</th>
+                <th>Operatore</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody id="cf-body">
+              <tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:40px">
+                Seleziona emporio e mese
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">Giorni Aperti</div>
-        <div class="stat-value green" id="stat-giorni">0</div>
-      </div>
+
     </div>
   </div>
-
-  <!-- Table -->
-  <div class="card card-pad">
-    <div class="sec-title">Dettaglio Giornaliero</div>
-    
-    <div id="loading-state" class="loading hidden">
-      <i class="fas fa-circle-notch"></i>
-      <p>Caricamento dati in corso...</p>
-    </div>
-
-    <div id="no-data-state" class="no-data hidden">
-      <i class="fas fa-inbox"></i>
-      <p>Nessun dato disponibile per il periodo selezionato</p>
-    </div>
-
-    <div id="table-container" class="table-wrap hidden">
-      <table class="recap-table">
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th class="totale-col">Totale<br>Corrispettivi</th>
-            <th class="totale-col">Totale<br>Incassi</th>
-            <th>Contanti</th>
-            <th class="forma-pag">Bancomat</th>
-            <th class="forma-pag">Carte<br>Credito</th>
-            <th class="forma-pag">Satispay</th>
-            <th class="forma-pag">Satispay<br>Online</th>
-            <th class="forma-pag">Carte<br>Online</th>
-            <th class="forma-pag">Paypal</th>
-            <th class="forma-pag">Bonifico</th>
-            <th class="forma-pag">Gift Card</th>
-            <th class="forma-pag">Gift Card<br>Online</th>
-            <th class="forma-pag">Buoni</th>
-            <th class="forma-pag">Rimborsi<br>Online</th>
-            <th class="forma-pag" style="background:#fff4f0;color:#b75252;">Spese</th>
-          </tr>
-        </thead>
-        <tbody id="table-body">
-          <!-- Data rows will be inserted here -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-</main>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script>
-/* ── SUPABASE ── */
-const SB_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
-let db = null;
-try { db = supabase.createClient(SB_URL, SB_KEY); } catch(e) { console.error('Supabase error:', e); }
-
-const MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
-const GIORNI_BREVI = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
-
-const euro = n => '€ ' + Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
-const parseEuro = v => parseFloat(String(v||'').replace(/\s/g,'').replace('€','').replace(/\./g,'').replace(',','.'))||0;
-
-let currentData = [];
-
-/* ── LOAD DATA ── */
-async function loadData() {
-  if (!db) {
-    alert('Database non disponibile');
-    return;
-  }
-
-  const emporio = document.getElementById('filter-emporio').value;
-  const mese = parseInt(document.getElementById('filter-mese').value);
-  const anno = parseInt(document.getElementById('filter-anno').value);
-
-  // Show loading
-  document.getElementById('loading-state').classList.remove('hidden');
-  document.getElementById('table-container').classList.add('hidden');
-  document.getElementById('no-data-state').classList.add('hidden');
-
-  try {
-    // Build query
-    let query = db.from('cassa_giorni').select('*');
-    
-    if (emporio) {
-      query = query.eq('emporio', emporio);
-    }
-
-    // Get all data for the year and filter by month in JS
-    // Format: emporio_year_month_day
-    const {data, error} = await query;
-    
-    if (error) throw error;
-
-    // Filter by month/year
-    const filtered = data.filter(row => {
-      const parts = row.chiave.split('_');
-      if (parts.length < 4) return false;
-      const rowYear = parseInt(parts[1]);
-      const rowMonth = parseInt(parts[2]);
-      return rowYear === anno && rowMonth === mese;
-    });
-
-    currentData = filtered;
-
-    if (filtered.length === 0) {
-      document.getElementById('loading-state').classList.add('hidden');
-      document.getElementById('no-data-state').classList.remove('hidden');
-      updateStats([]);
-      return;
-    }
-
-    // Sort by date
-    filtered.sort((a, b) => {
-      const partsA = a.chiave.split('_');
-      const partsB = b.chiave.split('_');
-      const dateA = new Date(partsA[1], partsA[2]-1, partsA[3]);
-      const dateB = new Date(partsB[1], partsB[2]-1, partsB[3]);
-      return dateA - dateB;
-    });
-
-    renderTable(filtered, anno, mese);
-    updateStats(filtered);
-
-    document.getElementById('loading-state').classList.add('hidden');
-    document.getElementById('table-container').classList.remove('hidden');
-
-  } catch (error) {
-    console.error('Error loading data:', error);
-    alert('Errore nel caricamento dei dati: ' + error.message);
-    document.getElementById('loading-state').classList.add('hidden');
-  }
-}
-
-/* ── RENDER TABLE ── */
-function renderTable(data, anno, mese) {
-  const tbody = document.getElementById('table-body');
-  tbody.innerHTML = '';
-
-  // Get days in month
-  const daysInMonth = new Date(anno, mese, 0).getDate();
-  
-  // Create lookup map
-  const dataMap = {};
-  data.forEach(row => {
-    const parts = row.chiave.split('_');
-    const day = parseInt(parts[3]);
-    dataMap[day] = row;
-  });
-
-  let totals = {
-    corrispettivi: 0,
-    incassi: 0,
-    contanti: 0,
-    bancomat: 0,
-    carte: 0,
-    satispay: 0,
-    satispay_online: 0,
-    carte_online: 0,
-    paypal: 0,
-    bonifico: 0,
-    gift_card: 0,
-    gift_card_online: 0,
-    buoni: 0,
-    rimborsi_online: 0,
-    spese: 0
-  };
-
-  // Add "riporto mese precedente" row if we have data
-  if (data.length > 0) {
-    const tr = document.createElement('tr');
-    tr.className = 'riporto-row';
-    tr.innerHTML = `
-      <td colspan="16">riporto mese precedente</td>
-    `;
-    tbody.appendChild(tr);
-  }
-
-  // Render each day
-  for (let day = 1; day <= daysInMonth; day++) {
-    const dateObj = new Date(anno, mese - 1, day);
-    const dayOfWeek = dateObj.getDay();
-    const isDomenica = dayOfWeek === 0;
-    
-    const tr = document.createElement('tr');
-    if (isDomenica) tr.className = 'domenica';
-
-    const dayName = GIORNI_BREVI[dayOfWeek];
-    const dateStr = `${dayName} ${day} ${MESI[mese-1].toLowerCase()} ${anno}`;
-
-    const row = dataMap[day];
-    
-    if (row) {
-      // Calculate values
-      const matCorr = parseEuro(row.mat_corrispettivi) || 0;
-      const pomCorr = parseEuro(row.pom_corrispettivi) || 0;
-      const corrispettivi = matCorr + pomCorr;
-      
-      // Calculate contanti (sum of coins - fondo)
-      const matContanti = calcContanti(row, 'mat');
-      const pomContanti = calcContanti(row, 'pom');
-      const contanti = matContanti + pomContanti;
-      
-      // Get payments
-      const bancomat = (parseEuro(row.mat_pay_bancomat) || 0) + (parseEuro(row.pom_pay_bancomat) || 0);
-      const carte = (parseEuro(row.mat_pay_carte) || 0) + (parseEuro(row.pom_pay_carte) || 0);
-      const satispay = (parseEuro(row.mat_pay_satispay) || 0) + (parseEuro(row.pom_pay_satispay) || 0);
-      const satispay_online = (parseEuro(row.mat_pay_satispay_online) || 0) + (parseEuro(row.pom_pay_satispay_online) || 0);
-      const carte_online = (parseEuro(row.mat_pay_carte_online) || 0) + (parseEuro(row.pom_pay_carte_online) || 0);
-      const paypal = (parseEuro(row.mat_pay_paypal) || 0) + (parseEuro(row.pom_pay_paypal) || 0);
-      const bonifico = (parseEuro(row.mat_pay_bonifico) || 0) + (parseEuro(row.pom_pay_bonifico) || 0);
-      const gift_card = (parseEuro(row.mat_pay_gift_card) || 0) + (parseEuro(row.pom_pay_gift_card) || 0);
-      const gift_card_online = (parseEuro(row.mat_pay_gift_card_online) || 0) + (parseEuro(row.pom_pay_gift_card_online) || 0);
-      const buoni = (parseEuro(row.mat_pay_buoni) || 0) + (parseEuro(row.pom_pay_buoni) || 0);
-      const rimborsi = Math.abs(parseEuro(row.mat_pay_rimborsi_online) || 0) + Math.abs(parseEuro(row.pom_pay_rimborsi_online) || 0);
-      const spese = (parseEuro(row.mat_pay_spese) || 0) + (parseEuro(row.pom_pay_spese) || 0);
-      
-      const incassi = contanti + bancomat + carte + satispay + satispay_online + carte_online + paypal + bonifico + gift_card + gift_card_online + buoni - rimborsi - spese;
-
-      // Update totals
-      totals.corrispettivi += corrispettivi;
-      totals.incassi += incassi;
-      totals.contanti += contanti;
-      totals.bancomat += bancomat;
-      totals.carte += carte;
-      totals.satispay += satispay;
-      totals.satispay_online += satispay_online;
-      totals.carte_online += carte_online;
-      totals.paypal += paypal;
-      totals.bonifico += bonifico;
-      totals.gift_card += gift_card;
-      totals.gift_card_online += gift_card_online;
-      totals.buoni += buoni;
-      totals.rimborsi_online += rimborsi;
-      totals.spese += spese;
-
-      tr.innerHTML = `
-        <td>${dateStr}</td>
-        <td class="totale-col">${euro(corrispettivi)}</td>
-        <td class="totale-col">${euro(incassi)}</td>
-        <td>${euro(contanti)}</td>
-        <td>${formatCell(bancomat)}</td>
-        <td>${formatCell(carte)}</td>
-        <td>${formatCell(satispay)}</td>
-        <td>${formatCell(satispay_online)}</td>
-        <td>${formatCell(carte_online)}</td>
-        <td>${formatCell(paypal)}</td>
-        <td>${formatCell(bonifico)}</td>
-        <td>${formatCell(gift_card)}</td>
-        <td>${formatCell(gift_card_online)}</td>
-        <td>${formatCell(buoni)}</td>
-        <td>${formatCell(rimborsi)}</td>
-        <td>${formatCell(spese)}</td>
-      `;
-    } else {
-      // Empty day
-      tr.innerHTML = `
-        <td>${dateStr}</td>
-        <td class="totale-col empty-val">- €</td>
-        <td class="totale-col empty-val">- €</td>
-        <td class="empty-val">- €</td>
-        <td class="empty-val">- €</td>
-        <td class="empty-val">- €</td>
-        <td class="empty-val">- €</td>
-        <td class="empty-val">- €</td>
-        <td class="empty-val">- €</td>
-        <td class="empty-val">- €</td>
-        <td class="empty-val">- €</td>
-        <td class="empty-val">- €</td>
-        <td class="empty-val">- €</td>
-        <td class="empty-val">- €</td>
-        <td class="empty-val">- €</td>
-        <td class="empty-val">- €</td>
-      `;
-    }
-
-    tbody.appendChild(tr);
-  }
-
-  // Add totals row
-  const totalTr = document.createElement('tr');
-  totalTr.className = 'totale-row';
-  totalTr.innerHTML = `
-    <td>TOTALE</td>
-    <td class="totale-col">${euro(totals.corrispettivi)}</td>
-    <td class="totale-col">${euro(totals.incassi)}</td>
-    <td>${euro(totals.contanti)}</td>
-    <td>${euro(totals.bancomat)}</td>
-    <td>${euro(totals.carte)}</td>
-    <td>${euro(totals.satispay)}</td>
-    <td>${euro(totals.satispay_online)}</td>
-    <td>${euro(totals.carte_online)}</td>
-    <td>${euro(totals.paypal)}</td>
-    <td>${euro(totals.bonifico)}</td>
-    <td>${euro(totals.gift_card)}</td>
-    <td>${euro(totals.gift_card_online)}</td>
-    <td>${euro(totals.buoni)}</td>
-    <td>${euro(totals.rimborsi_online)}</td>
-    <td>${euro(totals.spese)}</td>
-  `;
-  tbody.appendChild(totalTr);
-}
-
-function calcContanti(row, turno) {
-  const tagli = [50,20,10,5,2,1,0.5,0.2,0.1,0.05,0.02,0.01];
-  let total = 0;
-  tagli.forEach(t => {
-    const k = String(t).replace('.', '_');
-    const qty = parseFloat(row[turno + '_coin_' + k]) || 0;
-    total += qty * t;
-  });
-  return Math.max(0, total - (parseFloat(row.fondo_cassa) || 0));
-}
-
-function formatCell(val) {
-  if (!val || val === 0) return '<span class="empty-val">- €</span>';
-  return euro(val);
-}
-
-/* ── UPDATE STATS ── */
-function updateStats(data) {
-  let totalCorr = 0;
-  let totalInc = 0;
-  let totalCont = 0;
-  let giorni = data.length;
-
-  data.forEach(row => {
-    const matCorr = parseEuro(row.mat_corrispettivi) || 0;
-    const pomCorr = parseEuro(row.pom_corrispettivi) || 0;
-    totalCorr += matCorr + pomCorr;
-
-    const matCont = calcContanti(row, 'mat');
-    const pomCont = calcContanti(row, 'pom');
-    totalCont += matCont + pomCont;
-
-    // Calculate incassi
-    const cont = matCont + pomCont;
-    const banc = (parseEuro(row.mat_pay_bancomat) || 0) + (parseEuro(row.pom_pay_bancomat) || 0);
-    const carte = (parseEuro(row.mat_pay_carte) || 0) + (parseEuro(row.pom_pay_carte) || 0);
-    const sat = (parseEuro(row.mat_pay_satispay) || 0) + (parseEuro(row.pom_pay_satispay) || 0);
-    const sat_o = (parseEuro(row.mat_pay_satispay_online) || 0) + (parseEuro(row.pom_pay_satispay_online) || 0);
-    const car_o = (parseEuro(row.mat_pay_carte_online) || 0) + (parseEuro(row.pom_pay_carte_online) || 0);
-    const pp = (parseEuro(row.mat_pay_paypal) || 0) + (parseEuro(row.pom_pay_paypal) || 0);
-    const bon = (parseEuro(row.mat_pay_bonifico) || 0) + (parseEuro(row.pom_pay_bonifico) || 0);
-    const gc = (parseEuro(row.mat_pay_gift_card) || 0) + (parseEuro(row.pom_pay_gift_card) || 0);
-    const gc_o = (parseEuro(row.mat_pay_gift_card_online) || 0) + (parseEuro(row.pom_pay_gift_card_online) || 0);
-    const buoni = (parseEuro(row.mat_pay_buoni) || 0) + (parseEuro(row.pom_pay_buoni) || 0);
-    const rimb = Math.abs(parseEuro(row.mat_pay_rimborsi_online) || 0) + Math.abs(parseEuro(row.pom_pay_rimborsi_online) || 0);
-    const spese = (parseEuro(row.mat_pay_spese) || 0) + (parseEuro(row.pom_pay_spese) || 0);
-    
-    totalInc += cont + banc + carte + sat + sat_o + car_o + pp + bon + gc + gc_o + buoni - rimb - spese;
-  });
-
-  document.getElementById('stat-corrispettivi').textContent = euro(totalCorr);
-  document.getElementById('stat-incassi').textContent = euro(totalInc);
-  document.getElementById('stat-contanti').textContent = euro(totalCont);
-  document.getElementById('stat-giorni').textContent = giorni;
-}
-
-/* ── EXPORT CSV ── */
-function exportTable() {
-  if (currentData.length === 0) {
-    alert('Nessun dato da esportare');
-    return;
-  }
-
-  const emporio = document.getElementById('filter-emporio').value || 'Tutti';
-  const mese = MESI[parseInt(document.getElementById('filter-mese').value) - 1];
-  const anno = document.getElementById('filter-anno').value;
-
-  let csv = 'Data,Totale Corrispettivi,Totale Incassi,Contanti,Bancomat,Carte,Satispay,Satispay Online,Carte Online,Paypal,Bonifico,Gift Card,Gift Card Online,Buoni,Rimborsi Online,Spese\n';
-
-  const daysInMonth = new Date(anno, parseInt(document.getElementById('filter-mese').value), 0).getDate();
-  const dataMap = {};
-  currentData.forEach(row => {
-    const parts = row.chiave.split('_');
-    const day = parseInt(parts[3]);
-    dataMap[day] = row;
-  });
-
-  for (let day = 1; day <= daysInMonth; day++) {
-    const dateObj = new Date(anno, parseInt(document.getElementById('filter-mese').value) - 1, day);
-    const dayName = GIORNI_BREVI[dateObj.getDay()];
-    const dateStr = `${dayName} ${day} ${mese.toLowerCase()} ${anno}`;
-
-    const row = dataMap[day];
-    if (row) {
-      const matCorr = parseEuro(row.mat_corrispettivi) || 0;
-      const pomCorr = parseEuro(row.pom_corrispettivi) || 0;
-      const corrispettivi = matCorr + pomCorr;
-      
-      const matContanti = calcContanti(row, 'mat');
-      const pomContanti = calcContanti(row, 'pom');
-      const contanti = matContanti + pomContanti;
-      
-      const bancomat = (parseEuro(row.mat_pay_bancomat) || 0) + (parseEuro(row.pom_pay_bancomat) || 0);
-      const carte = (parseEuro(row.mat_pay_carte) || 0) + (parseEuro(row.pom_pay_carte) || 0);
-      const satispay = (parseEuro(row.mat_pay_satispay) || 0) + (parseEuro(row.pom_pay_satispay) || 0);
-      const satispay_online = (parseEuro(row.mat_pay_satispay_online) || 0) + (parseEuro(row.pom_pay_satispay_online) || 0);
-      const carte_online = (parseEuro(row.mat_pay_carte_online) || 0) + (parseEuro(row.pom_pay_carte_online) || 0);
-      const paypal = (parseEuro(row.mat_pay_paypal) || 0) + (parseEuro(row.pom_pay_paypal) || 0);
-      const bonifico = (parseEuro(row.mat_pay_bonifico) || 0) + (parseEuro(row.pom_pay_bonifico) || 0);
-      const gift_card = (parseEuro(row.mat_pay_gift_card) || 0) + (parseEuro(row.pom_pay_gift_card) || 0);
-      const gift_card_online = (parseEuro(row.mat_pay_gift_card_online) || 0) + (parseEuro(row.pom_pay_gift_card_online) || 0);
-      const buoni = (parseEuro(row.mat_pay_buoni) || 0) + (parseEuro(row.pom_pay_buoni) || 0);
-      const rimborsi = Math.abs(parseEuro(row.mat_pay_rimborsi_online) || 0) + Math.abs(parseEuro(row.pom_pay_rimborsi_online) || 0);
-      const spese = (parseEuro(row.mat_pay_spese) || 0) + (parseEuro(row.pom_pay_spese) || 0);
-      
-      const incassi = contanti + bancomat + carte + satispay + satispay_online + carte_online + paypal + bonifico + gift_card + gift_card_online + buoni - rimborsi - spese;
-
-      csv += `"${dateStr}",${corrispettivi},${incassi},${contanti},${bancomat},${carte},${satispay},${satispay_online},${carte_online},${paypal},${bonifico},${gift_card},${gift_card_online},${buoni},${rimborsi},${spese}\n`;
-    } else {
-      csv += `"${dateStr}",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0\n`;
-    }
-  }
-
-  // Download
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
-  link.setAttribute('href', url);
-  link.setAttribute('download', `riepilogo_${emporio}_${mese}_${anno}.csv`);
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
-
-/* ── INIT ── */
-function init() {
-  const now = new Date();
-  document.getElementById('filter-mese').value = now.getMonth() + 1;
-  document.getElementById('filter-anno').value = now.getFullYear();
-  
-  loadData();
-}
-
-window.addEventListener('load', init);
-</script>
-<script src="../../scripts/nav-script.js"></script>
-</body>
-</html>
+</div>
