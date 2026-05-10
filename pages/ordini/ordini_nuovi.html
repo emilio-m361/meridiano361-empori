@@ -250,6 +250,7 @@
         
         <!-- ORDER TYPE SELECTION -->
         <div id="order-type-selection" class="mb-8 text-center bg-white p-8 md:p-16 rounded-3xl shadow-sm border border-gray-100">
+            <h2 class="text-2xl font-bold text-slate-800 mb-8">Seleziona Tipo di Ordine</h2>
             <div class="flex flex-col md:flex-row justify-center gap-6">
                 <button id="btn-standard" class="btn-red-big">
                     <i class="fas fa-shopping-bag"></i> Ordine Standard
@@ -602,7 +603,7 @@
                                 <th class="pb-2 text-left">Descrizione *</th>
                                 <th class="pb-2 w-24">Prezzo</th>
                                 <th class="pb-2 w-16">Qtà</th>
-                                <th class="pb-2 w-16 bg-green-50 text-green-700">Da parte</th>
+                                <th class="pb-2 w-16 bg-green-50 text-green-700">Merce pronta</th>
                                 <th class="pb-2 w-16 bg-slate-50">Da forn.</th>
                                 <th class="pb-2 w-32 bg-slate-50">Da empori</th>
                                 <th class="pb-2 w-32 bg-slate-50">Da altri</th>
@@ -637,7 +638,7 @@
                 <td class="p-1"><input type="text" placeholder="Descrizione" required class="w-full border-gray-200 border rounded-lg p-2 desc-input"></td>
                 <td class="p-1"><input type="text" class="price-input w-full border-gray-200 border rounded-lg p-2 text-right" value="€ 0,00"></td>
                 <td class="p-1"><input type="number" class="qty-input w-full border-gray-200 border rounded-lg p-2 text-center" value="1" min="1"></td>
-                <td class="p-1 bg-green-50"><input type="number" class="parte-input w-full border-green-200 border rounded-lg p-2 text-center" value="0" min="0"></td>
+                <td class="p-1 bg-green-50"><input type="number" class="pronta-input w-full border-green-200 border rounded-lg p-2 text-center" value="0" min="0"></td>
                 <td class="p-1 bg-slate-50"><input type="number" class="forn-input w-full border-slate-200 border rounded-lg p-2 text-center" value="0" min="0"></td>
                 <td class="p-1 bg-slate-50">
                     <div class="flex flex-col gap-1">
@@ -667,7 +668,7 @@
             });
             row.querySelector('.price-input').addEventListener('input', () => calcRow(rowId, groupId));
             row.querySelector('.qty-input').addEventListener('input', () => calcRow(rowId, groupId));
-            row.querySelector('.parte-input').addEventListener('input', () => calcRow(rowId, groupId));
+            row.querySelector('.pronta-input').addEventListener('input', () => calcRow(rowId, groupId));
             row.querySelector('.forn-input').addEventListener('input', () => calcRow(rowId, groupId));
             row.querySelector('.emp-q-input').addEventListener('input', () => calcRow(rowId, groupId));
             row.querySelector('.altri-q-input').addEventListener('input', () => calcRow(rowId, groupId));
@@ -680,12 +681,12 @@
             
             const qty = parseInt(row.querySelector('.qty-input').value) || 0;
             const price = parseFloat(row.querySelector('.price-input').value.replace('€', '').replace(',', '.').trim()) || 0;
-            const parte = parseInt(row.querySelector('.parte-input').value) || 0;
+            const pronta = parseInt(row.querySelector('.pronta-input').value) || 0;
             const forn = parseInt(row.querySelector('.forn-input').value) || 0;
             const empQ = parseInt(row.querySelector('.emp-q-input').value) || 0;
             const altriQ = parseInt(row.querySelector('.altri-q-input').value) || 0;
             
-            const sumProv = parte + forn + empQ + altriQ;
+            const sumProv = pronta + forn + empQ + altriQ;
             const daOrd = Math.max(0, qty - sumProv);
             
             // Toggle error class if sum > qty
@@ -784,7 +785,7 @@
                         descrizione: row.querySelector('.desc-input').value,
                         prezzo: parseFloat(row.querySelector('.price-input').value.replace('€', '').replace(',', '.').trim()) || 0,
                         qta: parseInt(row.querySelector('.qty-input').value) || 0,
-                        da_parte: parseInt(row.querySelector('.parte-input').value) || 0,
+                        merce_pronta: parseInt(row.querySelector('.pronta-input').value) || 0,
                         da_forn: parseInt(row.querySelector('.forn-input').value) || 0,
                         da_emporio_qta: parseInt(row.querySelector('.emp-q-input').value) || 0,
                         da_emporio_nome: row.querySelector('.emporio-dropdown').value,
@@ -803,15 +804,15 @@
                     data_ordine: document.getElementById('order-date').value,
                     cliente_nome: document.getElementById('cust-nome').value,
                     cliente_cognome: document.getElementById('cust-cognome').value,
-                    cliente_telefono: document.getElementById('cust-tel').value,
+                    cliente_cellulare: document.getElementById('cust-tel').value,
                     cliente_email: document.getElementById('cust-email').value,
-                    cliente_whatsapp: document.getElementById('btn-wa').classList.contains('wa-active'),
+                    wa_attivo: document.getElementById('btn-wa').classList.contains('wa-active'),
                     modalita_consegna: document.querySelector('input[name="mod_consegna"]:checked').value,
-                    totale: parseFloat(document.getElementById('grand-total').textContent.replace('€', '').replace(',', '.').trim()),
+                    totale_ordine: parseFloat(document.getElementById('grand-total').textContent.replace('€', '').replace(',', '.').trim()),
                     acconto: parseFloat(document.getElementById('acconto').value.replace('€', '').replace(',', '.').trim()) || 0,
-                    saldo: parseFloat(document.getElementById('saldo-finale').textContent.replace('€', '').replace(',', '.').trim()),
+                    da_pagare: parseFloat(document.getElementById('saldo-finale').textContent.replace('€', '').replace(',', '.').trim()),
                     note: document.getElementById('order-notes').value,
-                    prodotti: articoli,
+                    articoli: articoli,
                     stato: 'in_corso',
                     data_creazione: new Date().toISOString()
                 };
