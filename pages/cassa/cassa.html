@@ -215,7 +215,18 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 </style>
 </head>
 <body>
-
+<!-- ══ MAIN NAV ══ -->
+<nav class="main-nav">
+  <button class="nav-tab active" onclick="showMacroSection('empori', this)">
+    <i class="fas fa-store"></i> Empori
+  </button>
+  <button class="nav-tab" onclick="showMacroSection('amministrazione', this)">
+    <i class="fas fa-file-invoice"></i> Amministrazione
+  </button>
+  <button class="nav-tab" onclick="showMacroSection('commerciale', this)">
+    <i class="fas fa-chart-line"></i> Commerciale
+  </button>
+</nav>
 <main class="main space-y">
 
   <!-- ══ STEP 1: Empori ══ -->
