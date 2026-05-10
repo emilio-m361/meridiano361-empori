@@ -14,12 +14,65 @@
         .text-m361-green { color: #6b8d53; }
         .bg-m361-green { background-color: #6b8d53; }
         .hover-card:hover { transform: translateY(-4px); transition: all 0.3s ease; }
+        
+        /* Emporio logos styling */
+        .emporio-logos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin: 32px 0;
+        }
+        .emporio-logo-card {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        .emporio-logo-img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+        .emporio-logo-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+            text-align: center;
+        }
     </style>
 </head>
 <body class="bg-slate-50">
 
     <script src="../../scripts/nav-script.js"></script>
     <main class="max-w-4xl mx-auto p-8 md:pt-24">
+        
+        <!-- Emporio Logos -->
+        <div class="mb-12">
+            <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-4">Empori M361</h2>
+            <div class="emporio-logos">
+                <div class="emporio-logo-card">
+                    <img src="../../assets/images/logo_cremona.png" alt="Cremona" class="emporio-logo-img" onerror="this.style.display='none'">
+                    <div class="emporio-logo-name">Cremona</div>
+                </div>
+                <div class="emporio-logo-card">
+                    <img src="../../assets/images/logo_casalmaggiore.png" alt="Casalmaggiore" class="emporio-logo-img" onerror="this.style.display='none'">
+                    <div class="emporio-logo-name">Casalmaggiore</div>
+                </div>
+                <div class="emporio-logo-card">
+                    <img src="../../assets/images/logo_reggio_emilia.png" alt="Reggio Emilia" class="emporio-logo-img" onerror="this.style.display='none'">
+                    <div class="emporio-logo-name">Reggio Emilia</div>
+                </div>
+                <div class="emporio-logo-card">
+                    <img src="../../assets/images/logo_viadana.png" alt="Viadana" class="emporio-logo-img" onerror="this.style.display='none'">
+                    <div class="emporio-logo-name">Viadana</div>
+                </div>
+            </div>
+        </div>
+        
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
             <!-- NUOVO ORDINE -->
