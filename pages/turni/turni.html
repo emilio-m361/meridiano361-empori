@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>M361 - Gestione Turni</title>
+<link rel="stylesheet" href="../../assets/style/nav-style.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -14,8 +15,11 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .main{max-width:1200px;margin:0 auto;padding:24px 16px;}
 .space-y>*+*{margin-top:18px;}
 
+/* ── HEADER ACTIONS ── */
+.header-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end;margin-bottom:24px;}
+
 /* ── CARD ── */
-.card{background:#fff;border-radius:20px;box-shadow:0 1px 4px rgba(0,0,0,.07);}
+.card{background:#fff;border-radius:24px;box-shadow:0 1px 4px rgba(0,0,0,.07);}
 .card-pad{padding:24px;}
 
 /* ── SECTION TITLE ── */
@@ -32,8 +36,7 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .emp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;}
 .emp-card{background:#fff;border-radius:24px;border:1px solid #f1f5f9;box-shadow:0 1px 4px rgba(0,0,0,.07);padding:32px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;cursor:pointer;transition:all .15s;text-align:center;}
 .emp-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(183,82,82,.15);}
-.emp-icon{width:56px;height:56px;border-radius:18px;background:#fff1f1;display:flex;align-items:center;justify-content:center;}
-.emp-icon svg{width:28px;height:28px;}
+.emp-logo{width:80px;height:80px;border-radius:50%;object-fit:contain;padding:8px;}
 .emp-name{font-weight:700;font-size:16px;color:#334155;}
 
 /* ── FILTERS ── */
@@ -43,12 +46,28 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .filter-select{border:1px solid #e2e8f0;border-radius:12px;padding:11px 14px;font-size:13px;font-family:'Inter',sans-serif;color:#334155;background:#fff;min-width:160px;}
 .filter-select:focus{outline:none;border-color:#b75252;}
 
-/* ── DAY CARD ── */
-.day-card{background:#fff;border-radius:20px;box-shadow:0 1px 4px rgba(0,0,0,.07);overflow:hidden;display:grid;grid-template-columns:100px 1fr 1fr;min-height:140px;transition:all .15s;margin-bottom:12px;}
+/* ── DAY CARD ── PIÙ ARROTONDATA */
+.day-card{background:#fff;border-radius:24px;box-shadow:0 1px 4px rgba(0,0,0,.07);overflow:hidden;display:grid;grid-template-columns:100px 1fr 1fr;min-height:140px;transition:all .15s;margin-bottom:12px;position:relative;}
 .day-card:hover{box-shadow:0 4px 18px rgba(0,0,0,.1);}
 
+/* STRISCE OBLIQUE QUANDO CHIUSO */
+.day-card.chiuso::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(148,163,184,0.08) 10px,
+    rgba(148,163,184,0.08) 20px
+  );
+  pointer-events:none;
+  z-index:1;
+}
+
 /* ── DATE COLUMN ── */
-.date-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;border-right:1px solid #f1f5f9;background:#fff;}
+.date-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;border-right:1px solid #f1f5f9;background:#fff;position:relative;z-index:2;}
 .date-col.festivo{background:#fff8f8;}
 .day-name{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#475569;}
 .day-name.festivo{color:#b75252;}
@@ -58,20 +77,22 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .day-month.festivo{color:#e8a0a0;}
 
 /* ── TURNO SECTIONS ── */
-.turno-section{padding:20px;display:flex;flex-direction:column;gap:12px;}
+.turno-section{padding:20px;display:flex;flex-direction:column;gap:12px;position:relative;z-index:2;}
 .turno-section.mattina{background:linear-gradient(160deg,#fff5f5 0%,#fef0f0 100%);border-left:3px solid #f0c0c0;}
 .turno-section.pomeriggio{background:linear-gradient(160deg,#eff3f7 0%,#e2e8f0 100%);border-left:3px solid #cbd5e1;}
-.turno-section.chiuso{background:#fafbfc;}
+.turno-section.chiuso{background:#fafbfc;opacity:0.7;}
 
 .turno-header{display:flex;align-items:center;justify-content:space-between;}
 .turno-title{font-size:13px;font-weight:800;letter-spacing:.04em;color:#1e293b;}
 
-/* ── BADGES ── */
-.status-badge{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .15s;}
-.badge-aperto{background:#fff9ed;color:#d97706;border:1.5px solid #fbbf24;}
-.badge-aperto:hover{background:#fef3c7;border-color:#f59e0b;}
+/* ── BADGES ── SOLO COLORI M361 (NO GIALLO) */
+.status-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .15s;}
 .badge-chiuso{background:#fff1f1;color:#b75252;border:1.5px solid #fca5a5;}
 .badge-chiuso:hover{background:#ffe4e6;border-color:#f87171;}
+
+/* ICONA LUCCHETTO M361 STYLE - TEMA NEGOZIO */
+.lock-icon{width:14px;height:14px;display:inline-flex;align-items:center;justify-content:center;}
+.lock-icon svg{width:100%;height:100%;fill:currentColor;}
 
 /* ── OPERATORS ── */
 .operators{display:flex;flex-direction:column;gap:6px;}
@@ -86,8 +107,6 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 .chip-pom-dip{background:#dce6f4;color:#1e3a5f;border:1px solid #bfdbfe;}
 .chip-pom-vol{background:#e2eedc;color:#14532d;border:1px solid #bbf7d0;}
 .chip-pom-sc{background:#eef2f7;color:#334155;border:1px solid #cbd5e1;}
-.chip-ferie{background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;}
-.chip-malattia{background:#fef9c3;color:#854d0e;border:1px solid #fde047;}
 
 .add-link{font-size:12px;font-weight:800;color:#94a3b8;display:inline-flex;align-items:center;gap:5px;cursor:pointer;transition:color .15s;letter-spacing:.04em;}
 .add-link:hover{color:#b75252;}
@@ -97,556 +116,630 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:
 /* ── MODAL ── */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px;}
 .modal.show{display:flex;}
-.modal-content{background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:500px;width:100%;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;}
-.modal-header{padding:24px;border-bottom:1px solid #f1f5f9;position:relative;}
-.modal-title{font-size:18px;font-weight:900;color:#1e293b;}
-.modal-close{position:absolute;top:20px;right:20px;width:32px;height:32px;border-radius:10px;border:none;background:#f1f5f9;color:#64748b;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.modal-close:hover{background:#e2e8f0;color:#1e293b;}
+.modal-content{background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:700px;width:100%;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;}
+.modal-header{padding:24px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:18px;font-weight:800;color:#1e293b;}
+.modal-close{background:none;border:none;font-size:24px;color:#cbd5e1;cursor:pointer;transition:color .15s;}
+.modal-close:hover{color:#b75252;}
 .modal-body{padding:24px;overflow-y:auto;flex:1;}
-.modal-footer{padding:20px 24px;border-top:1px solid #f1f5f9;display:flex;gap:10px;justify-content:flex-end;}
+.modal-footer{padding:24px;border-top:1px solid #f1f5f9;display:flex;gap:12px;justify-content:flex-end;}
 
-/* ── TABS ── */
-.tabs{display:flex;gap:8px;margin-bottom:20px;}
-.tab{flex:1;padding:12px;border-radius:12px;text-align:center;font-size:13px;font-weight:800;cursor:pointer;transition:all .15s;}
-.tab.active{background:#b75252;color:#fff;}
-.tab:not(.active){background:#f1f5f9;color:#64748b;}
-.tab:not(.active):hover{background:#e2e8f0;}
+/* ── LEGENDA COLORI ── */
+.legend{display:flex;gap:16px;align-items:center;margin-bottom:16px;padding:12px;background:#f8fafc;border-radius:12px;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#64748b;}
+.legend-color{width:16px;height:16px;border-radius:4px;}
 
-/* ── OPERATOR LIST ── */
-.operator-list{display:flex;flex-direction:column;gap:8px;}
-.operator-item{padding:12px 16px;border-radius:12px;border:1px solid #e2e8f0;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:space-between;}
-.operator-item:hover{background:#f8fafc;border-color:#b75252;}
-.operator-name{font-size:14px;font-weight:700;color:#334155;}
-.operator-role{font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;}
+/* ── TURNI PREDEFINITI TABLE ── */
+.preset-table{width:100%;border-collapse:separate;border-spacing:0 8px;}
+.preset-table th{text-align:left;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;padding:8px 12px;}
+.preset-table td{padding:12px;background:#f8fafc;border:1px solid #f1f5f9;}
+.preset-table tr td:first-child{border-radius:12px 0 0 12px;}
+.preset-table tr td:last-child{border-radius:0 12px 12px 0;}
+.preset-name{font-weight:700;color:#334155;font-size:13px;}
+.preset-role{font-size:10px;color:#94a3b8;font-weight:600;margin-left:6px;}
+.day-toggle{width:40px;height:40px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;font-size:10px;font-weight:800;color:#94a3b8;}
+.day-toggle.active-m{background:#fff1f1;border-color:#fca5a5;color:#b75252;}
+.day-toggle.active-p{background:#eff3f7;border-color:#cbd5e1;color:#475569;}
+.day-toggle:hover{border-color:#b75252;}
 
-/* ── FORM ── */
-.form-group{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
-.form-label{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;}
-.form-input{width:100%;border:1px solid #e2e8f0;border-radius:12px;padding:11px 14px;font-size:13px;font-family:'Inter',sans-serif;color:#334155;background:#fff;}
-.form-input:focus{outline:none;border-color:#b75252;}
-.form-select{width:100%;border:1px solid #e2e8f0;border-radius:12px;padding:11px 14px;font-size:13px;font-family:'Inter',sans-serif;color:#334155;background:#fff;}
-.form-select:focus{outline:none;border-color:#b75252;}
+/* ── ORARI EMPORIO TABLE ── */
+.hours-table{width:100%;border-collapse:separate;border-spacing:0 8px;}
+.hours-table th{text-align:left;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;padding:8px 12px;}
+.hours-table td{padding:12px;background:#f8fafc;border:1px solid #f1f5f9;}
+.hours-table tr td:first-child{border-radius:12px 0 0 12px;font-weight:700;color:#334155;}
+.hours-table tr td:last-child{border-radius:0 12px 12px 0;}
+.time-input{border:1px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:13px;font-family:'Inter',sans-serif;width:100px;}
+.time-input:focus{outline:none;border-color:#b75252;}
+.closed-checkbox{display:flex;align-items:center;gap:8px;font-size:12px;color:#64748b;}
 
-.loading{text-align:center;padding:60px 20px;color:#94a3b8;}
-.loading i{font-size:32px;margin-bottom:12px;display:block;animation:spin 1s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-
-.hidden{display:none!important;}
-
-@media(max-width:768px){
-  .day-card{grid-template-columns:80px 1fr;min-height:auto;}
-  .turno-section.pomeriggio{border-left:none;border-top:3px solid #cbd5e1;}
-}
+/* ── OPERATOR SELECTION ── */
+.operator-selection{display:flex;flex-direction:column;gap:8px;}
+.operator-option{padding:14px 18px;border-radius:12px;border:1.5px solid #e2e8f0;background:#fff;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .15s;}
+.operator-option:hover{border-color:#b75252;background:#fff8f8;}
+.operator-option-name{font-weight:700;font-size:14px;color:#334155;}
+.operator-option-role{font-size:11px;color:#94a3b8;font-weight:600;}
 </style>
 </head>
 <body>
 
-<main class="main">
+<div class="main">
   
-  <!-- ══ STEP 1: Empori ══ -->
-  <div id="step-empori" class="card card-pad">
-    <div class="sec-title">Seleziona Emporio</div>
+  <!-- EMPORIO SELECTION -->
+  <div id="emporioSelection">
+    <h2 class="sec-title">Seleziona Emporio</h2>
     <div class="emp-grid">
-       <div class="emp-card" onclick="selectEmporio('Casalmaggiore')">
-        <div class="emp-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#b75252"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72l1.189-1.19A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72M6.75 18h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .414.336.75.75.75z"/></svg></div>
-        <span class="emp-name">Casalmaggiore</span>
-      </div>
       <div class="emp-card" onclick="selectEmporio('Cremona')">
-        <div class="emp-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#b75252"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72l1.189-1.19A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72M6.75 18h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .414.336.75.75.75z"/></svg></div>
-        <span class="emp-name">Cremona</span>
+        <img src="../../assets/images/logo_cremona.png" alt="Cremona" class="emp-logo" onerror="this.style.display='none'">
+        <div class="emp-name">Cremona</div>
+      </div>
+      <div class="emp-card" onclick="selectEmporio('Casalmaggiore')">
+        <img src="../../assets/images/logo_casalmaggiore.png" alt="Casalmaggiore" class="emp-logo" onerror="this.style.display='none'">
+        <div class="emp-name">Casalmaggiore</div>
       </div>
       <div class="emp-card" onclick="selectEmporio('Reggio Emilia')">
-        <div class="emp-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#b75252"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72l1.189-1.19A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72M6.75 18h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .414.336.75.75.75z"/></svg></div>
-        <span class="emp-name">Reggio Emilia</span>
+        <img src="../../assets/images/logo_reggio_emilia.png" alt="Reggio Emilia" class="emp-logo" onerror="this.style.display='none'">
+        <div class="emp-name">Reggio Emilia</div>
       </div>
       <div class="emp-card" onclick="selectEmporio('Viadana')">
-        <div class="emp-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#b75252"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72l1.189-1.19A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72M6.75 18h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .414.336.75.75.75z"/></svg></div>
-        <span class="emp-name">Viadana</span>
+        <img src="../../assets/images/logo_viadana.png" alt="Viadana" class="emp-logo" onerror="this.style.display='none'">
+        <div class="emp-name">Viadana</div>
       </div>
     </div>
   </div>
 
-  <!-- ══ STEP 2: Main View ══ -->
-  <div id="step-turni" class="hidden">
-    <div class="card card-pad">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:24px;">
-        <div>
-          <h1 style="font-size:24px;font-weight:900;color:#1e293b;margin-bottom:4px;">Gestione Turni</h1>
-          <p style="font-size:13px;color:#64748b;" id="emporio-subtitle"></p>
-        </div>
-        <div style="display:flex;gap:10px;">
-          <button class="btn-secondary" onclick="backToEmpori()">
-            <i class="fas fa-arrow-left"></i> Cambia Emporio
-          </button>
-        </div>
-      </div>
+  <!-- TURNI MANAGEMENT -->
+  <div id="turniManagement" style="display:none;">
+    
+    <!-- HEADER ACTIONS -->
+    <div class="header-actions">
+      <button class="btn-secondary" onclick="openPresetModal()">
+        <i class="fas fa-calendar-check"></i> Turni predefiniti
+      </button>
+      <button class="btn-secondary" onclick="openHoursModal()">
+        <i class="fas fa-clock"></i> Orari emporio
+      </button>
+    </div>
 
-      <!-- Filters -->
-      <div class="filters">
-        <div class="filter-group">
-          <label class="filter-label">Mese</label>
-          <select id="filter-mese" class="filter-select" onchange="loadTurni()">
-            <option value="0">Gennaio</option>
-            <option value="1">Febbraio</option>
-            <option value="2">Marzo</option>
-            <option value="3">Aprile</option>
-            <option value="4">Maggio</option>
-            <option value="5">Giugno</option>
-            <option value="6">Luglio</option>
-            <option value="7">Agosto</option>
-            <option value="8">Settembre</option>
-            <option value="9">Ottobre</option>
-            <option value="10">Novembre</option>
-            <option value="11">Dicembre</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label class="filter-label">Anno</label>
-          <select id="filter-anno" class="filter-select" onchange="loadTurni()">
-            <option value="2024">2024</option>
-            <option value="2025">2025</option>
-            <option value="2026">2026</option>
-          </select>
-        </div>
+    <!-- FILTERS -->
+    <div class="filters">
+      <div class="filter-group">
+        <label class="filter-label">Mese</label>
+        <select id="monthFilter" class="filter-select" onchange="renderCalendar()">
+          <option value="0">Gennaio</option>
+          <option value="1">Febbraio</option>
+          <option value="2">Marzo</option>
+          <option value="3">Aprile</option>
+          <option value="4">Maggio</option>
+          <option value="5">Giugno</option>
+          <option value="6">Luglio</option>
+          <option value="7">Agosto</option>
+          <option value="8">Settembre</option>
+          <option value="9">Ottobre</option>
+          <option value="10">Novembre</option>
+          <option value="11">Dicembre</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Anno</label>
+        <select id="yearFilter" class="filter-select" onchange="renderCalendar()">
+          <option value="2025">2025</option>
+          <option value="2026" selected>2026</option>
+          <option value="2027">2027</option>
+        </select>
       </div>
     </div>
 
-    <!-- Calendar -->
-    <div id="calendar-container" class="space-y"></div>
+    <!-- CALENDAR DAYS -->
+    <div id="calendar"></div>
 
-    <div id="loading-state" class="card card-pad loading hidden">
-      <i class="fas fa-circle-notch"></i>
-      <p>Caricamento turni...</p>
-    </div>
   </div>
 
-</main>
+</div>
 
-<!-- Modal Add Operator -->
-<div id="modal-operator" class="modal">
+<!-- TURNI PREDEFINITI MODAL -->
+<div id="presetModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 class="modal-title" id="modal-title">Aggiungi Operatore</h3>
-      <button class="modal-close" onclick="closeModal()">×</button>
+      <h3 class="modal-title">Turni predefiniti</h3>
+      <button class="modal-close" onclick="closePresetModal()">&times;</button>
     </div>
     <div class="modal-body">
-      <div class="tabs">
-        <div class="tab active" id="tab-select" onclick="switchTab('select')">Seleziona</div>
-        <div class="tab" id="tab-new" onclick="switchTab('new')">Nuova Persona</div>
+      <p style="margin-bottom:16px;font-size:13px;color:#64748b;">
+        Clicca M (mattino) o P (pomeriggio) per ogni giorno. Riclicca per deselezionare.
+      </p>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background:#fff1f1;border:1.5px solid #fca5a5;"></div>
+          <span>Mattino</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background:#eff3f7;border:1.5px solid #cbd5e1;"></div>
+          <span>Pomeriggio</span>
+        </div>
       </div>
-
-      <div id="tab-select-content">
-        <div class="form-group">
-          <label class="form-label">Cerca</label>
-          <input type="text" id="search-operator" class="form-input" placeholder="Nome o cognome..." oninput="filterOperators()">
-        </div>
-        <div class="operator-list" id="operator-list"></div>
-      </div>
-      
-      <div id="tab-new-content" class="hidden">
-        <div class="form-group">
-          <label class="form-label">Nome *</label>
-          <input type="text" id="new-operator-nome" class="form-input" placeholder="Nome">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Cognome</label>
-          <input type="text" id="new-operator-cognome" class="form-input" placeholder="Cognome (opzionale)">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Ruolo</label>
-          <select id="new-operator-role" class="form-select">
-            <option value="volontario">Volontario</option>
-            <option value="dipendente">Dipendente</option>
-            <option value="servizio_civile">Servizio Civile</option>
-          </select>
-        </div>
-        <button class="btn-primary" onclick="addNewOperator()" style="width:100%;">
-          <i class="fas fa-plus"></i> Aggiungi al Personale
-        </button>
-      </div>
+      <table class="preset-table">
+        <thead>
+          <tr>
+            <th>Dipendente</th>
+            <th style="text-align:center;width:60px;">Lun</th>
+            <th style="text-align:center;width:60px;">Mar</th>
+            <th style="text-align:center;width:60px;">Mer</th>
+            <th style="text-align:center;width:60px;">Gio</th>
+            <th style="text-align:center;width:60px;">Ven</th>
+            <th style="text-align:center;width:60px;">Sab</th>
+            <th style="text-align:center;width:60px;">Dom</th>
+          </tr>
+        </thead>
+        <tbody id="presetTableBody"></tbody>
+      </table>
     </div>
     <div class="modal-footer">
-      <button class="btn-secondary" onclick="closeModal()">Annulla</button>
+      <button class="btn-secondary" onclick="closePresetModal()">Annulla</button>
+      <button class="btn-primary" onclick="savePresets()">
+        <i class="fas fa-save"></i> Applica al mese
+      </button>
     </div>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<!-- ORARI EMPORIO MODAL -->
+<div id="hoursModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Orari emporio</h3>
+      <button class="modal-close" onclick="closeHoursModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <table class="hours-table">
+        <thead>
+          <tr>
+            <th>Giorno</th>
+            <th>Apertura Mattina</th>
+            <th>Chiusura Mattina</th>
+            <th>Apertura Pomeriggio</th>
+            <th>Chiusura Pomeriggio</th>
+            <th>Chiuso</th>
+          </tr>
+        </thead>
+        <tbody id="hoursTableBody"></tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeHoursModal()">Annulla</button>
+      <button class="btn-primary" onclick="saveHours()">
+        <i class="fas fa-save"></i> Salva orari
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD OPERATOR MODAL -->
+<div id="operatorModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Aggiungi operatore</h3>
+      <button class="modal-close" onclick="closeOperatorModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="operatorModalBody">
+      <div class="operator-selection" id="operatorSelection"></div>
+    </div>
+    <div class="modal-footer" id="operatorModalFooter">
+      <button class="btn-secondary" onclick="closeOperatorModal()">Chiudi</button>
+    </div>
+  </div>
+</div>
+
 <script>
-/* ── SUPABASE ── */
-const SB_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
-let db = null;
-try { db = supabase.createClient(SB_URL, SB_KEY); } catch(e) { console.error('Supabase error:', e); }
-
-const MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
-const GIORNI = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
-
-// Personnel database
-let PERSONALE = {
-  'Cremona':[
-    {nome:'Chiara Monteverdi',ruolo:'dipendente'},
-    {nome:'Emilio Mazzolari',ruolo:'dipendente'},
-    {nome:'Giulia Galelli',ruolo:'volontario'}
+const EMPORI_OPERATORI = {
+  'Cremona': [
+    { name: 'Chiara Monteverdi', role: 'dip' },
+    { name: 'Emilio Mazzolari', role: 'dip' },
+    { name: 'Giulia Galelli', role: 'vol' }
   ],
-  'Casalmaggiore':[
-    {nome:'Alessandra Rivetti',ruolo:'volontario'},
-    {nome:'Barbara Araldi',ruolo:'volontario'},
-    {nome:'Carla Maffei',ruolo:'volontario'},
-    {nome:'Chiara Monteverdi',ruolo:'dipendente'},
-    {nome:'Edoardo Pavesi',ruolo:'volontario'},
-    {nome:'Emilio Mazzolari',ruolo:'dipendente'},
-    {nome:'Erica Bossi',ruolo:'volontario'},
-    {nome:'Francesco Lunardini',ruolo:'volontario'},
-    {nome:'Giovanna Raineri',ruolo:'volontario'},
-    {nome:'Giulia Frigeri',ruolo:'volontario'},
-    {nome:'Giuseppe Lunardini',ruolo:'volontario'},
-    {nome:'Ileana Galli',ruolo:'volontario'},
-    {nome:'Maria Marcella Scaravonati',ruolo:'volontario'},
-    {nome:'Matilde Chiarini',ruolo:'servizio_civile'},
-    {nome:'Michele Marchini',ruolo:'volontario'},
-    {nome:'Roberta Vezzosi',ruolo:'volontario'},
-    {nome:'Teyssir Mabrouk',ruolo:'volontario'},
-    {nome:'Vittoria Lunardini',ruolo:'volontario'}
+  'Casalmaggiore': [
+    { name: 'Barbara Machetti', role: 'vol' },
+    { name: 'Elena Cattani', role: 'vol' },
+    { name: 'Ileana Galli', role: 'vol' },
+    { name: 'Jacopo Denti', role: 'sc' },
+    { name: 'Noemi Capobianco', role: 'sc' }
   ],
-  'Viadana':[
-    {nome:'Alessia Rovina',ruolo:'volontario'},
-    {nome:'Ave Aroldi',ruolo:'volontario'},
-    {nome:'Barbara Piotrowska',ruolo:'volontario'},
-    {nome:'Carla Bellelli',ruolo:'volontario'},
-    {nome:'Carla Chittolini',ruolo:'volontario'},
-    {nome:'Chiara Monteverdi',ruolo:'dipendente'},
-    {nome:'Claudio Mortini',ruolo:'volontario'},
-    {nome:'Donatella Falugi',ruolo:'volontario'},
-    {nome:'Elena Ghelfi',ruolo:'volontario'},
-    {nome:'Emilio Mazzolari',ruolo:'dipendente'},
-    {nome:'Franco Furlotti',ruolo:'volontario'},
-    {nome:'Giuseppina Amadini',ruolo:'volontario'},
-    {nome:'Manuela Scazza',ruolo:'volontario'},
-    {nome:'Marta Sanfelici',ruolo:'volontario'},
-    {nome:'Mariagrazia Bertolini',ruolo:'volontario'},
-    {nome:'Mirella Panato',ruolo:'volontario'},
-    {nome:'Roberta Alberini',ruolo:'volontario'},
-    {nome:'Sara Germani',ruolo:'volontario'},
-    {nome:'Tiziana Bortesi',ruolo:'volontario'}
+  'Reggio Emilia': [
+    { name: 'Alessia Bartolomei', role: 'dip' },
+    { name: 'Elsa Scarpa', role: 'vol' },
+    { name: 'Manuela Capanni', role: 'vol' }
   ],
-  'Reggio Emilia':[
-    {nome:'Alessia Bartolomei',ruolo:'dipendente'},
-    {nome:'Elsa Scarpa',ruolo:'volontario'},
-    {nome:'Manuela Capanni',ruolo:'volontario'},
-    {nome:'Marica Pioli',ruolo:'volontario'}
+  'Viadana': [
+    { name: 'Alessia Rovina', role: 'dip' },
+    { name: 'Barbara Piotrowska', role: 'vol' },
+    { name: 'Carla Bellelli', role: 'vol' }
   ]
 };
 
+const GIORNI = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
+
 let currentEmporio = '';
-let currentMese = new Date().getMonth();
-let currentAnno = new Date().getFullYear();
-let turniData = {}; // {emporio_year_month_day_shift: {aperto: true/false, operatori: [{nome, ruolo}]}}
-let modalContext = null;
+let turniData = {};
+let presetData = {};
+let hoursData = {};
+let currentModalDay = null;
+let currentModalTurno = null;
 
-/* ── EMPORIO SELECTION ── */
-function selectEmporio(emp) {
-  currentEmporio = emp;
-  document.getElementById('step-empori').classList.add('hidden');
-  document.getElementById('step-turni').classList.remove('hidden');
-  document.getElementById('emporio-subtitle').textContent = emp;
-  loadTurni();
+// Initialize default hours
+function initDefaultHours() {
+  return {
+    'Lunedì': { mattina: { open: '09:00', close: '12:30' }, pomeriggio: { open: '15:00', close: '19:00' }, chiuso: false },
+    'Martedì': { mattina: { open: '09:00', close: '12:30' }, pomeriggio: { open: '15:00', close: '19:00' }, chiuso: false },
+    'Mercoledì': { mattina: { open: '09:00', close: '12:30' }, pomeriggio: { open: '15:00', close: '19:00' }, chiuso: false },
+    'Giovedì': { mattina: { open: '09:00', close: '12:30' }, pomeriggio: { open: '15:00', close: '19:00' }, chiuso: false },
+    'Venerdì': { mattina: { open: '09:00', close: '12:30' }, pomeriggio: { open: '15:00', close: '19:00' }, chiuso: false },
+    'Sabato': { mattina: { open: '09:00', close: '12:30' }, pomeriggio: { open: '15:00', close: '19:00' }, chiuso: false },
+    'Domenica': { mattina: { open: '', close: '' }, pomeriggio: { open: '', close: '' }, chiuso: true }
+  };
 }
 
-function backToEmpori() {
-  document.getElementById('step-turni').classList.add('hidden');
-  document.getElementById('step-empori').classList.remove('hidden');
-  currentEmporio = '';
-}
-
-/* ── LOAD TURNI ── */
-async function loadTurni() {
-  currentMese = parseInt(document.getElementById('filter-mese').value);
-  currentAnno = parseInt(document.getElementById('filter-anno').value);
-
-  document.getElementById('loading-state').classList.remove('hidden');
-  document.getElementById('calendar-container').innerHTML = '';
-
-  if (db) {
-    try {
-      const { data, error } = await db
-        .from('turni')
-        .select('*')
-        .eq('emporio', currentEmporio)
-        .eq('anno', currentAnno)
-        .eq('mese', currentMese + 1);
-
-      if (error) throw error;
-
-      turniData = {};
-      if (data) {
-        data.forEach(row => {
-          const key = `${row.emporio}_${row.anno}_${row.mese}_${row.giorno}_${row.turno}`;
-          turniData[key] = {
-            aperto: row.aperto,
-            operatori: row.operatori || []
-          };
-        });
-      }
-    } catch (error) {
-      console.error('Error loading turni:', error);
-    }
-  }
-
-  renderCalendar();
-  document.getElementById('loading-state').classList.add('hidden');
-}
-
-/* ── RENDER CALENDAR ── */
-function renderCalendar() {
-  const container = document.getElementById('calendar-container');
-  const daysInMonth = new Date(currentAnno, currentMese + 1, 0).getDate();
+function selectEmporio(name) {
+  currentEmporio = name;
+  document.getElementById('emporioSelection').style.display = 'none';
+  document.getElementById('turniManagement').style.display = 'block';
   
-  container.innerHTML = '';
+  if (!hoursData[name]) hoursData[name] = initDefaultHours();
+  if (!presetData[name]) presetData[name] = {};
+  
+  const now = new Date();
+  document.getElementById('monthFilter').value = now.getMonth();
+  document.getElementById('yearFilter').value = now.getFullYear();
+  
+  renderCalendar();
+}
 
+function renderCalendar() {
+  const month = parseInt(document.getElementById('monthFilter').value);
+  const year = parseInt(document.getElementById('yearFilter').value);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  
+  let html = '';
+  
   for (let day = 1; day <= daysInMonth; day++) {
-    const dateObj = new Date(currentAnno, currentMese, day);
-    const dayOfWeek = dateObj.getDay();
+    const date = new Date(year, month, day);
+    const dayOfWeek = date.getDay();
+    const dayName = GIORNI[dayOfWeek === 0 ? 6 : dayOfWeek - 1];
     const isFestivo = dayOfWeek === 0;
-
-    const matKey = `${currentEmporio}_${currentAnno}_${currentMese + 1}_${day}_mattina`;
-    const pomKey = `${currentEmporio}_${currentAnno}_${currentMese + 1}_${day}_pomeriggio`;
-
-    const matData = turniData[matKey] || { aperto: true, operatori: [] };
-    const pomData = turniData[pomKey] || { aperto: true, operatori: [] };
-
-    const card = document.createElement('div');
-    card.className = 'day-card';
-    card.innerHTML = `
-      <div class="date-col ${isFestivo ? 'festivo' : ''}">
-        <div class="day-name ${isFestivo ? 'festivo' : ''}">${GIORNI[dayOfWeek]}</div>
-        <div class="day-num ${isFestivo ? 'festivo' : ''}">${day}</div>
-        <div class="day-month ${isFestivo ? 'festivo' : ''}">${MESI[currentMese].substring(0, 3).toUpperCase()}</div>
-      </div>
-      
-      <div class="turno-section mattina ${!matData.aperto ? 'chiuso' : ''}">
-        <div class="turno-header">
-          <div class="turno-title">Mattina</div>
-          <span class="status-badge ${matData.aperto ? 'badge-aperto' : 'badge-chiuso'}" onclick="toggleTurno('${matKey}')">
-            <i class="fas fa-${matData.aperto ? 'store' : 'lock'}"></i>
-            ${matData.aperto ? 'APERTO' : 'CHIUSO'}
-          </span>
+    const dateKey = `${year}-${month + 1}-${day}`;
+    
+    // Check if closed based on hours
+    const dayHours = hoursData[currentEmporio]?.[dayName] || {};
+    const isClosed = dayHours.chiuso;
+    
+    const turniMattina = turniData[dateKey]?.mattina || [];
+    const turniPomeriggio = turniData[dateKey]?.pomeriggio || [];
+    
+    html += `
+      <div class="day-card ${isClosed ? 'chiuso' : ''}">
+        <div class="date-col ${isFestivo ? 'festivo' : ''}">
+          <div class="day-name ${isFestivo ? 'festivo' : ''}">${dayName.substring(0, 3).toUpperCase()}</div>
+          <div class="day-num ${isFestivo ? 'festivo' : ''}">${day}</div>
+          <div class="day-month ${isFestivo ? 'festivo' : ''}">${['GEN', 'FEB', 'MAR', 'APR', 'MAG', 'GIU', 'LUG', 'AGO', 'SET', 'OTT', 'NOV', 'DIC'][month]}</div>
         </div>
-        ${renderTurnoContent(matKey, matData, day, 'mattina')}
-      </div>
-      
-      <div class="turno-section pomeriggio ${!pomData.aperto ? 'chiuso' : ''}">
-        <div class="turno-header">
-          <div class="turno-title">Pomeriggio</div>
-          <span class="status-badge ${pomData.aperto ? 'badge-aperto' : 'badge-chiuso'}" onclick="toggleTurno('${pomKey}')">
-            <i class="fas fa-${pomData.aperto ? 'store' : 'lock'}"></i>
-            ${pomData.aperto ? 'APERTO' : 'CHIUSO'}
-          </span>
+        
+        <div class="turno-section mattina ${isClosed ? 'chiuso' : ''}">
+          <div class="turno-header">
+            <div class="turno-title">Mattina</div>
+            ${isClosed ? `
+              <div class="status-badge badge-chiuso">
+                <span class="lock-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
+                  </svg>
+                </span>
+                Chiuso
+              </div>
+            ` : ''}
+          </div>
+          ${!isClosed ? `
+            <div class="operators">
+              ${turniMattina.map(op => `
+                <div class="operator-chip chip-mat-${op.role}">
+                  ${op.name}
+                  <i class="fas fa-times" onclick="removeOperator('${dateKey}', 'mattina', '${op.name}')"></i>
+                </div>
+              `).join('')}
+              ${turniMattina.length === 0 ? '<div class="nessun-turno">Nessun turno</div>' : ''}
+              <div class="add-link" onclick="openAddOperator('${dateKey}', 'mattina')">
+                + Aggiungi
+              </div>
+            </div>
+          ` : '<div class="nessun-turno">Nessun turno</div>'}
         </div>
-        ${renderTurnoContent(pomKey, pomData, day, 'pomeriggio')}
+        
+        <div class="turno-section pomeriggio ${isClosed ? 'chiuso' : ''}">
+          <div class="turno-header">
+            <div class="turno-title">Pomeriggio</div>
+          </div>
+          ${!isClosed ? `
+            <div class="operators">
+              ${turniPomeriggio.map(op => `
+                <div class="operator-chip chip-pom-${op.role}">
+                  ${op.name}
+                  <i class="fas fa-times" onclick="removeOperator('${dateKey}', 'pomeriggio', '${op.name}')"></i>
+                </div>
+              `).join('')}
+              ${turniPomeriggio.length === 0 ? '<div class="nessun-turno">Nessun turno</div>' : ''}
+              <div class="add-link" onclick="openAddOperator('${dateKey}', 'pomeriggio')">
+                + Aggiungi
+              </div>
+            </div>
+          ` : '<div class="nessun-turno">Nessun turno</div>'}
+        </div>
       </div>
     `;
-
-    container.appendChild(card);
-  }
-}
-
-function renderTurnoContent(key, data, day, turno) {
-  if (!data.aperto) {
-    return '<div class="nessun-turno">Nessun turno</div>';
-  }
-
-  let html = '<div class="operators">';
-  
-  if (data.operatori && data.operatori.length > 0) {
-    data.operatori.forEach((op, idx) => {
-      const chipClass = getChipClass(op.ruolo, turno);
-      html += `
-        <div class="operator-chip ${chipClass}">
-          ${op.nome}
-          <i class="fas fa-times" onclick="event.stopPropagation();removeOperator('${key}', ${idx})"></i>
-        </div>
-      `;
-    });
   }
   
-  html += `</div><div class="add-link" onclick="openAddOperator('${key}', ${day}, '${turno}')">
-    <i class="fas fa-plus"></i> Aggiungi
-  </div>`;
+  document.getElementById('calendar').innerHTML = html;
+}
+
+function openAddOperator(dateKey, turno) {
+  currentModalDay = dateKey;
+  currentModalTurno = turno;
   
-  return html;
-}
-
-function getChipClass(ruolo, turno) {
-  const prefix = turno === 'mattina' ? 'chip-mat' : 'chip-pom';
-  if (ruolo === 'dipendente') return prefix + '-dip';
-  if (ruolo === 'servizio_civile') return prefix + '-sc';
-  return prefix + '-vol';
-}
-
-/* ── TOGGLE TURNO ── */
-async function toggleTurno(key) {
-  const data = turniData[key] || { aperto: true, operatori: [] };
-  data.aperto = !data.aperto;
+  const operators = EMPORI_OPERATORI[currentEmporio] || [];
+  let html = '';
   
-  if (!data.aperto) {
-    data.operatori = [];
-  }
+  operators.forEach(op => {
+    const roleLabel = op.role === 'dip' ? 'Dipendente' : op.role === 'vol' ? 'Volontario' : 'Servizio civile';
+    html += `
+      <div class="operator-option" onclick="selectOperator('${op.name}', '${op.role}')">
+        <span class="operator-option-name">${op.name}</span>
+        <span class="operator-option-role">${roleLabel}</span>
+      </div>
+    `;
+  });
   
-  turniData[key] = data;
-  await saveTurno(key);
-  renderCalendar();
-}
-
-/* ── ADD/REMOVE OPERATOR ── */
-function openAddOperator(key, day, turno) {
-  modalContext = { key, day, turno };
-  document.getElementById('modal-title').textContent = `${turno === 'mattina' ? 'Mattina' : 'Pomeriggio'} - ${day} ${MESI[currentMese]}`;
-  document.getElementById('search-operator').value = '';
-  document.getElementById('new-operator-nome').value = '';
-  document.getElementById('new-operator-cognome').value = '';
-  switchTab('select');
-  filterOperators();
-  document.getElementById('modal-operator').classList.add('show');
-}
-
-function closeModal() {
-  document.getElementById('modal-operator').classList.remove('show');
-  modalContext = null;
-}
-
-function switchTab(tab) {
-  if (tab === 'select') {
-    document.getElementById('tab-select').classList.add('active');
-    document.getElementById('tab-new').classList.remove('active');
-    document.getElementById('tab-select-content').classList.remove('hidden');
-    document.getElementById('tab-new-content').classList.add('hidden');
-  } else {
-    document.getElementById('tab-select').classList.remove('active');
-    document.getElementById('tab-new').classList.add('active');
-    document.getElementById('tab-select-content').classList.add('hidden');
-    document.getElementById('tab-new-content').classList.remove('hidden');
-  }
-}
-
-function filterOperators() {
-  const search = document.getElementById('search-operator').value.toLowerCase();
-  const list = document.getElementById('operator-list');
-  const currentOps = (turniData[modalContext.key]?.operatori || []).map(o => o.nome);
-  
-  const available = (PERSONALE[currentEmporio] || [])
-    .filter(op => !currentOps.includes(op.nome))
-    .filter(op => op.nome.toLowerCase().includes(search));
-
-  if (available.length === 0) {
-    list.innerHTML = '<p style="text-align:center;color:#94a3b8;font-size:13px;padding:20px;">Nessun operatore disponibile</p>';
-    return;
-  }
-
-  list.innerHTML = available.map(op => `
-    <div class="operator-item" onclick="selectOperator('${op.nome.replace(/'/g, "\\'")}', '${op.ruolo}')">
-      <span class="operator-name">${op.nome}</span>
-      <span class="operator-role">${op.ruolo}</span>
+  html += `
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid #f1f5f9;">
+      <button class="btn-primary" onclick="showNewOperatorForm()" style="width:100%;justify-content:center;">
+        <i class="fas fa-plus"></i> Nuovo operatore
+      </button>
     </div>
-  `).join('');
+  `;
+  
+  document.getElementById('operatorSelection').innerHTML = html;
+  document.getElementById('operatorModal').classList.add('show');
 }
 
-function selectOperator(name, ruolo) {
-  if (!turniData[modalContext.key]) {
-    turniData[modalContext.key] = { aperto: true, operatori: [] };
+function selectOperator(name, role) {
+  if (!turniData[currentModalDay]) turniData[currentModalDay] = { mattina: [], pomeriggio: [] };
+  
+  const alreadyExists = turniData[currentModalDay][currentModalTurno].some(op => op.name === name);
+  if (!alreadyExists) {
+    turniData[currentModalDay][currentModalTurno].push({ name, role });
   }
   
-  if (!turniData[modalContext.key].operatori.find(o => o.nome === name)) {
-    turniData[modalContext.key].operatori.push({ nome: name, ruolo: ruolo });
-  }
-  
-  saveTurno(modalContext.key);
+  closeOperatorModal();
   renderCalendar();
-  closeModal();
+}
+
+function removeOperator(dateKey, turno, name) {
+  if (!turniData[dateKey]) return;
+  turniData[dateKey][turno] = turniData[dateKey][turno].filter(op => op.name !== name);
+  renderCalendar();
+}
+
+function showNewOperatorForm() {
+  const html = `
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div>
+        <label class="filter-label">Nome e Cognome</label>
+        <input type="text" id="newOperatorName" class="filter-select" placeholder="Es: Mario Rossi" style="width:100%;">
+      </div>
+      <div>
+        <label class="filter-label">Ruolo</label>
+        <select id="newOperatorRole" class="filter-select" style="width:100%;">
+          <option value="dip">Dipendente</option>
+          <option value="vol">Volontario</option>
+          <option value="sc">Servizio civile</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-secondary" onclick="openAddOperator('${currentModalDay}', '${currentModalTurno}')" style="flex:1;">
+          <i class="fas fa-arrow-left"></i> Indietro
+        </button>
+        <button class="btn-primary" onclick="addNewOperator()" style="flex:1;">
+          <i class="fas fa-check"></i> Aggiungi
+        </button>
+      </div>
+    </div>
+  `;
+  
+  document.getElementById('operatorSelection').innerHTML = html;
 }
 
 function addNewOperator() {
-  const nome = document.getElementById('new-operator-nome').value.trim();
-  const cognome = document.getElementById('new-operator-cognome').value.trim();
-  const ruolo = document.getElementById('new-operator-role').value;
+  const name = document.getElementById('newOperatorName').value.trim();
+  const role = document.getElementById('newOperatorRole').value;
   
-  if (!nome) {
-    alert('Inserisci almeno il nome');
+  if (!name) {
+    alert('Inserisci un nome');
     return;
   }
-
-  const fullName = cognome ? `${nome} ${cognome}` : nome;
-
-  if (!PERSONALE[currentEmporio]) {
-    PERSONALE[currentEmporio] = [];
-  }
   
-  if (!PERSONALE[currentEmporio].find(p => p.nome === fullName)) {
-    PERSONALE[currentEmporio].push({ nome: fullName, ruolo: ruolo });
-  }
-
-  selectOperator(fullName, ruolo);
+  if (!EMPORI_OPERATORI[currentEmporio]) EMPORI_OPERATORI[currentEmporio] = [];
+  EMPORI_OPERATORI[currentEmporio].push({ name, role });
+  
+  selectOperator(name, role);
 }
 
-async function removeOperator(key, index) {
-  if (!turniData[key]) return;
+function closeOperatorModal() {
+  document.getElementById('operatorModal').classList.remove('show');
+}
+
+// TURNI PREDEFINITI
+function openPresetModal() {
+  const operators = EMPORI_OPERATORI[currentEmporio] || [];
+  let html = '';
   
-  turniData[key].operatori.splice(index, 1);
-  await saveTurno(key);
+  operators.forEach(op => {
+    const presets = presetData[currentEmporio]?.[op.name] || {};
+    const roleLabel = op.role === 'dip' ? 'dip.' : op.role === 'vol' ? 'vol.' : 'SC';
+    
+    html += `
+      <tr>
+        <td>
+          <span class="preset-name">${op.name}</span>
+          <span class="preset-role">${roleLabel}</span>
+        </td>
+        ${GIORNI.map((day, i) => {
+          const current = presets[day] || '';
+          const hasM = current === 'mattina' || current === 'entrambi';
+          const hasP = current === 'pomeriggio' || current === 'entrambi';
+          
+          return `
+            <td style="text-align:center;padding:4px;">
+              <div style="display:flex;gap:4px;flex-direction:column;align-items:center;">
+                <div class="day-toggle ${hasM ? 'active-m' : ''}" 
+                     onclick="togglePreset('${op.name}', '${day}', 'mattina')">
+                  M
+                </div>
+                <div class="day-toggle ${hasP ? 'active-p' : ''}"
+                     onclick="togglePreset('${op.name}', '${day}', 'pomeriggio')">
+                  P
+                </div>
+              </div>
+            </td>
+          `;
+        }).join('')}
+      </tr>
+    `;
+  });
+  
+  document.getElementById('presetTableBody').innerHTML = html;
+  document.getElementById('presetModal').classList.add('show');
+}
+
+function closePresetModal() {
+  document.getElementById('presetModal').classList.remove('show');
+}
+
+function togglePreset(operator, day, turno) {
+  if (!presetData[currentEmporio]) presetData[currentEmporio] = {};
+  if (!presetData[currentEmporio][operator]) presetData[currentEmporio][operator] = {};
+  
+  const current = presetData[currentEmporio][operator][day] || '';
+  
+  if (current === turno) {
+    delete presetData[currentEmporio][operator][day];
+  } else if (current === 'entrambi') {
+    presetData[currentEmporio][operator][day] = turno === 'mattina' ? 'pomeriggio' : 'mattina';
+  } else if (current === 'mattina' && turno === 'pomeriggio') {
+    presetData[currentEmporio][operator][day] = 'entrambi';
+  } else if (current === 'pomeriggio' && turno === 'mattina') {
+    presetData[currentEmporio][operator][day] = 'entrambi';
+  } else {
+    presetData[currentEmporio][operator][day] = turno;
+  }
+  
+  openPresetModal();
+}
+
+function savePresets() {
+  const month = parseInt(document.getElementById('monthFilter').value);
+  const year = parseInt(document.getElementById('yearFilter').value);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(year, month, day);
+    const dayOfWeek = date.getDay();
+    const dayName = GIORNI[dayOfWeek === 0 ? 6 : dayOfWeek - 1];
+    const dateKey = `${year}-${month + 1}-${day}`;
+    
+    if (!turniData[dateKey]) turniData[dateKey] = { mattina: [], pomeriggio: [] };
+    
+    for (const [operator, days] of Object.entries(presetData[currentEmporio] || {})) {
+      const turno = days[dayName];
+      if (!turno) continue;
+      
+      const opData = EMPORI_OPERATORI[currentEmporio].find(op => op.name === operator);
+      if (!opData) continue;
+      
+      if (turno === 'mattina' || turno === 'entrambi') {
+        if (!turniData[dateKey].mattina.some(op => op.name === operator)) {
+          turniData[dateKey].mattina.push({ name: operator, role: opData.role });
+        }
+      }
+      if (turno === 'pomeriggio' || turno === 'entrambi') {
+        if (!turniData[dateKey].pomeriggio.some(op => op.name === operator)) {
+          turniData[dateKey].pomeriggio.push({ name: operator, role: opData.role });
+        }
+      }
+    }
+  }
+  
+  closePresetModal();
   renderCalendar();
 }
 
-/* ── SAVE TO SUPABASE ── */
-async function saveTurno(key) {
-  if (!db) return;
-
-  const parts = key.split('_');
-  const emporio = parts[0];
-  const anno = parseInt(parts[1]);
-  const mese = parseInt(parts[2]);
-  const giorno = parseInt(parts[3]);
-  const turno = parts[4];
-
-  const data = turniData[key] || { aperto: true, operatori: [] };
-
-  try {
-    const { error } = await db
-      .from('turni')
-      .upsert({
-        emporio,
-        anno,
-        mese,
-        giorno,
-        turno,
-        aperto: data.aperto,
-        operatori: data.operatori
-      }, {
-        onConflict: 'emporio,anno,mese,giorno,turno'
-      });
-
-    if (error) throw error;
-  } catch (error) {
-    console.error('Error saving turno:', error);
-    alert('Errore nel salvataggio: ' + error.message);
-  }
+// ORARI EMPORIO
+function openHoursModal() {
+  const hours = hoursData[currentEmporio] || initDefaultHours();
+  let html = '';
+  
+  GIORNI.forEach(day => {
+    const h = hours[day] || { mattina: { open: '', close: '' }, pomeriggio: { open: '', close: '' }, chiuso: false };
+    html += `
+      <tr>
+        <td>${day}</td>
+        <td><input type="time" class="time-input" value="${h.mattina.open}" id="open-m-${day}" ${h.chiuso ? 'disabled' : ''}></td>
+        <td><input type="time" class="time-input" value="${h.mattina.close}" id="close-m-${day}" ${h.chiuso ? 'disabled' : ''}></td>
+        <td><input type="time" class="time-input" value="${h.pomeriggio.open}" id="open-p-${day}" ${h.chiuso ? 'disabled' : ''}></td>
+        <td><input type="time" class="time-input" value="${h.pomeriggio.close}" id="close-p-${day}" ${h.chiuso ? 'disabled' : ''}></td>
+        <td>
+          <label class="closed-checkbox">
+            <input type="checkbox" ${h.chiuso ? 'checked' : ''} onchange="toggleDayClosed('${day}', this.checked)">
+            Chiuso
+          </label>
+        </td>
+      </tr>
+    `;
+  });
+  
+  document.getElementById('hoursTableBody').innerHTML = html;
+  document.getElementById('hoursModal').classList.add('show');
 }
 
-/* ── INIT ── */
-function init() {
-  const now = new Date();
-  document.getElementById('filter-mese').value = now.getMonth();
-  document.getElementById('filter-anno').value = now.getFullYear();
+function closeHoursModal() {
+  document.getElementById('hoursModal').classList.remove('show');
 }
 
-window.addEventListener('load', init);
+function toggleDayClosed(day, checked) {
+  ['open-m-', 'close-m-', 'open-p-', 'close-p-'].forEach(prefix => {
+    const input = document.getElementById(prefix + day);
+    if (input) input.disabled = checked;
+  });
+}
 
-// Close modal on outside click
-document.getElementById('modal-operator').addEventListener('click', function(e) {
-  if (e.target === this) {
-    closeModal();
-  }
-});
+function saveHours() {
+  const hours = {};
+  
+  GIORNI.forEach(day => {
+    const chiuso = document.querySelector(`input[type="checkbox"][onchange*="${day}"]`).checked;
+    hours[day] = {
+      mattina: {
+        open: document.getElementById(`open-m-${day}`).value,
+        close: document.getElementById(`close-m-${day}`).value
+      },
+      pomeriggio: {
+        open: document.getElementById(`open-p-${day}`).value,
+        close: document.getElementById(`close-p-${day}`).value
+      },
+      chiuso
+    };
+  });
+  
+  hoursData[currentEmporio] = hours;
+  closeHoursModal();
+  renderCalendar();
+}
 </script>
+
 <script src="../../scripts/nav-script.js"></script>
 </body>
 </html>
