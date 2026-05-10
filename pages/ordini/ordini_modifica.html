@@ -349,53 +349,60 @@
         function populateForm(order) {
             currentType = order.tipo_ordine || 'standard';
             
+            // Helper function for safe element value setting
+            const setValueSafe = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.value = value || '';
+            };
+            
             // Emporio
-            document.getElementById('select-emporio').value = order.emporio || order.citta || '';
+            setValueSafe('select-emporio', order.emporio || order.citta);
             handleCittaChange();
             
             if (order.canale) {
-                document.getElementById('select-canale').value = order.canale;
+                setValueSafe('select-canale', order.canale);
             }
             
             // Operatore
             setTimeout(() => {
-                document.getElementById('select-operatore').value = order.operatore || '';
+                setValueSafe('select-operatore', order.operatore);
             }, 100);
             
             // Date
             if (order.data_ordine) {
-                document.getElementById('order-date').value = order.data_ordine;
+                setValueSafe('order-date', order.data_ordine);
             }
             
             // Order number
-            document.getElementById('numero-ordine-preview').value = order.numero_ordine || '';
+            setValueSafe('numero-ordine-preview', order.numero_ordine);
             
             // Cliente
-            document.getElementById('cust-nome').value = order.cliente_nome || '';
-            document.getElementById('cust-cognome').value = order.cliente_cognome || '';
-            document.getElementById('cust-tel').value = order.cliente_cellulare || '';
-            document.getElementById('cust-email').value = order.cliente_email || '';
+            setValueSafe('cust-nome', order.cliente_nome);
+            setValueSafe('cust-cognome', order.cliente_cognome);
+            setValueSafe('cust-tel', order.cliente_cellulare);
+            setValueSafe('cust-email', order.cliente_email);
             
             // WhatsApp
             const waBtn = document.getElementById('btn-wa');
-            if (order.wa_attivo || order.cliente_whatsapp) {
+            if (waBtn && (order.wa_attivo || order.cliente_whatsapp)) {
                 waBtn.classList.add('wa-active');
                 waBtn.classList.remove('wa-inactive');
-            } else {
+            } else if (waBtn) {
                 waBtn.classList.add('wa-inactive');
                 waBtn.classList.remove('wa-active');
             }
             
             // Modalità consegna
             const modConsegna = order.modalita_consegna || 'Ritiro';
-            document.querySelector(`input[name="mod_consegna"][value="${modConsegna}"]`).checked = true;
+            const modConsegnaEl = document.querySelector(`input[name="mod_consegna"][value="${modConsegna}"]`);
+            if (modConsegnaEl) modConsegnaEl.checked = true;
             
             // Acconto
             const acconto = parseFloat(order.acconto) || 0;
-            document.getElementById('acconto').value = '€ ' + acconto.toFixed(2).replace('.', ',');
+            setValueSafe('acconto', '€ ' + acconto.toFixed(2).replace('.', ','));
             
             // Note
-            document.getElementById('order-notes').value = order.note || '';
+            setValueSafe('order-notes', order.note);
             
             // Products
             if (order.articoli && Array.isArray(order.articoli)) {
@@ -433,7 +440,7 @@
                 <td class="p-1 pl-4"><input type="text" placeholder="Codice" required class="w-full border-gray-200 border rounded-lg p-2 codice-input" value="${productData.codice || ''}"></td>
                 <td class="p-1"><input type="text" placeholder="Descrizione" required class="w-full border-gray-200 border rounded-lg p-2 desc-input" value="${productData.descrizione || ''}"></td>
                 <td class="p-1"><input type="text" class="price-input w-full border-gray-200 border rounded-lg p-2 text-right" value="€ ${(productData.prezzo || 0).toFixed(2).replace('.', ',')}"></td>
-                <td class="p-1"><input type="number" class="qty-input w-full border-gray-200 border rounded-lg p-2 text-center" value="${productData.qta || 1}" min="1"></td>
+                <td class="p-1"><input type="number" required class="qty-input w-full border-gray-200 border rounded-lg p-2 text-center" value="${productData.qta || 1}" min="1"></td>
                 <td class="p-1 bg-green-50"><input type="number" class="pronta-input w-full border-green-200 border rounded-lg p-2 text-center" value="${productData.merce_pronta || 0}" min="0"></td>
                 <td class="p-1 bg-slate-50"><input type="number" class="forn-input w-full border-slate-200 border rounded-lg p-2 text-center" value="${productData.da_forn || 0}" min="0"></td>
                 <td class="p-1 bg-slate-50">
