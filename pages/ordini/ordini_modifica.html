@@ -434,7 +434,7 @@
                 <td class="p-1"><input type="text" placeholder="Descrizione" required class="w-full border-gray-200 border rounded-lg p-2 desc-input" value="${productData.descrizione || ''}"></td>
                 <td class="p-1"><input type="text" class="price-input w-full border-gray-200 border rounded-lg p-2 text-right" value="€ ${(productData.prezzo || 0).toFixed(2).replace('.', ',')}"></td>
                 <td class="p-1"><input type="number" class="qty-input w-full border-gray-200 border rounded-lg p-2 text-center" value="${productData.qta || 1}" min="1"></td>
-                <td class="p-1 bg-green-50"><input type="number" class="parte-input w-full border-green-200 border rounded-lg p-2 text-center" value="${productData.da_parte || 0}" min="0"></td>
+                <td class="p-1 bg-green-50"><input type="number" class="pronta-input w-full border-green-200 border rounded-lg p-2 text-center" value="${productData.merce_pronta || 0}" min="0"></td>
                 <td class="p-1 bg-slate-50"><input type="number" class="forn-input w-full border-slate-200 border rounded-lg p-2 text-center" value="${productData.da_forn || 0}" min="0"></td>
                 <td class="p-1 bg-slate-50">
                     <div class="flex flex-col gap-1">
@@ -465,7 +465,7 @@
             row.querySelector('.price-input').addEventListener('blur', function() { formatCurrency(this); });
             row.querySelector('.price-input').addEventListener('input', () => calcRow(rowId, groupId));
             row.querySelector('.qty-input').addEventListener('input', () => calcRow(rowId, groupId));
-            row.querySelector('.parte-input').addEventListener('input', () => calcRow(rowId, groupId));
+            row.querySelector('.pronta-input').addEventListener('input', () => calcRow(rowId, groupId));
             row.querySelector('.forn-input').addEventListener('input', () => calcRow(rowId, groupId));
             row.querySelector('.emp-q-input').addEventListener('input', () => calcRow(rowId, groupId));
             row.querySelector('.altri-q-input').addEventListener('input', () => calcRow(rowId, groupId));
@@ -542,7 +542,7 @@
                                 <th class="pb-2 text-left">Descrizione *</th>
                                 <th class="pb-2 w-24">Prezzo</th>
                                 <th class="pb-2 w-16">Qtà</th>
-                                <th class="pb-2 w-16 bg-green-50 text-green-700">Da parte</th>
+                                <th class="pb-2 w-16 bg-green-50 text-green-700">Merce pronta</th>
                                 <th class="pb-2 w-16 bg-slate-50">Da forn.</th>
                                 <th class="pb-2 w-32 bg-slate-50">Da empori</th>
                                 <th class="pb-2 w-32 bg-slate-50">Da altri</th>
@@ -571,7 +571,7 @@
                 descrizione: '',
                 prezzo: 0,
                 qta: 1,
-                da_parte: 0,
+                merce_pronta: 0,
                 da_forn: 0,
                 da_emporio_qta: 0,
                 da_emporio_nome: '',
@@ -586,7 +586,7 @@
             
             const qty = parseInt(row.querySelector('.qty-input').value) || 0;
             const price = parseFloat(row.querySelector('.price-input').value.replace('€', '').replace(',', '.').trim()) || 0;
-            const parte = parseInt(row.querySelector('.parte-input').value) || 0;
+            const parte = parseInt(row.querySelector('.pronta-input').value) || 0;
             const forn = parseInt(row.querySelector('.forn-input').value) || 0;
             const empQ = parseInt(row.querySelector('.emp-q-input').value) || 0;
             const altriQ = parseInt(row.querySelector('.altri-q-input').value) || 0;
@@ -666,7 +666,7 @@
                         descrizione: row.querySelector('.desc-input').value,
                         prezzo: parseFloat(row.querySelector('.price-input').value.replace('€','').replace(',','.').trim()) || 0,
                         qta: parseInt(row.querySelector('.qty-input').value) || 0,
-                        da_parte: parseInt(row.querySelector('.parte-input').value) || 0,
+                        merce_pronta: parseInt(row.querySelector('.pronta-input').value) || 0,
                         da_forn: parseInt(row.querySelector('.forn-input').value) || 0,
                         da_emporio_qta: parseInt(row.querySelector('.emp-q-input').value) || 0,
                         da_emporio_nome: row.querySelector('.emporio-dropdown').value,
