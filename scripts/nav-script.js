@@ -18,8 +18,21 @@
   window.__m361NavLoaded = true;
 
   /* ═══════════════════════════════════════
-     PERCORSO BASE
+     SUPABASE CLIENT
   ═══════════════════════════════════════ */
+  const SUPA_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
+  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
+
+  function getSupabase() {
+    if (window._supabase) return window._supabase;
+    if (window.supabase && window.supabase.createClient) {
+      window._supabase = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+      return window._supabase;
+    }
+    return null;
+  }
+
+  /* ── Percorso base ── */
   function getBase() {
     const scripts = document.querySelectorAll('script[src]');
     for (const s of scripts) {
@@ -35,27 +48,112 @@
   const BASE = getBase();
 
   /* ═══════════════════════════════════════
+     SESSIONE & PROFILO UTENTE
+  ═══════════════════════════════════════ */
+  function getUserProfile() {
+    try { return JSON.parse(localStorage.getItem('m361_user') || 'null'); }
+    catch { return null; }
+  }
+
+  function getUserSections() {
+    const p = getUserProfile();
+    if (!p) return [];
+    const s = p.sezioni;
+    if (Array.isArray(s)) return s;
+    if (typeof s === 'string') { try { return JSON.parse(s); } catch { return []; } }
+    return [];
+  }
+
+  /* Pagine che non richiedono login */
+  const PUBLIC_PATHS = ['login.html'];
+  function isPublicPage() {
+    const path = window.location.pathname.toLowerCase();
+    return PUBLIC_PATHS.some(p => path.endsWith(p));
+  }
+
+  /* Controlla sessione — se non loggato reindirizza al login */
+  async function guardSession() {
+    if (isPublicPage()) return true;
+
+    /* Aspetta che Supabase SDK sia disponibile (max 3s) */
+    let db = null;
+    for (let i = 0; i < 30; i++) {
+      db = getSupabase();
+      if (db) break;
+      await new Promise(r => setTimeout(r, 100));
+    }
+
+    if (!db) {
+      // SDK non caricato — controlla solo localStorage come fallback
+      if (!getUserProfile()) {
+        window.location.href = BASE + 'login.html';
+        return false;
+      }
+      return true;
+    }
+
+    const { data: { session } } = await db.auth.getSession();
+    if (!session) {
+      localStorage.removeItem('m361_user');
+      window.location.href = BASE + 'login.html';
+      return false;
+    }
+
+    // Sessione valida: se manca il profilo locale lo ricarica
+    if (!getUserProfile()) {
+      const email = session.user.email;
+      const { data: perms } = await db.from('user_permissions').select('*').eq('email', email).maybeSingle();
+      if (perms) {
+        localStorage.setItem('m361_user', JSON.stringify({
+          email:   perms.email,
+          nome:    perms.nome_cognome,
+          ruolo:   perms.ruolo,
+          emporio: perms.emporio_riferimento,
+          livello: perms.livello_accesso,
+          sezioni: perms.allowed_sections || [],
+          loginAt: new Date().toISOString()
+        }));
+      } else {
+        await db.auth.signOut();
+        window.location.href = BASE + 'login.html';
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /* Logout */
+  async function doLogout() {
+    const db = getSupabase();
+    if (db) await db.auth.signOut();
+    localStorage.removeItem('m361_user');
+    window.location.href = BASE + 'login.html';
+  }
+
+  /* ═══════════════════════════════════════
      VOCI DI NAVIGAZIONE
+     (active = sempre visibili; visibilità
+      finale filtrata da allowed_sections)
   ═══════════════════════════════════════ */
   const NAV = [
     { group: null, items: [
-      { id: 'home', label: 'Home', icon: 'fa-house', href: 'index.html', active: true },
+      { id: 'home', label: 'Home', icon: 'fa-house', href: 'index.html', section: null, active: true },
     ]},
     { group: 'Clienti', items: [
-      { id: 'ordini',       label: 'Ordini',       icon: 'fa-bag-shopping',   href: 'pages/ordini/ordini.html',         active: true  },
-      { id: 'prenotazioni', label: 'Prenotazioni', icon: 'fa-calendar-check', href: 'pages/prenotazioni/index.html',    active: false },
-      { id: 'tessere',      label: 'Tessere',      icon: 'fa-id-card',        href: 'pages/tessere/index.html',         active: false },
-      { id: 'info',         label: 'Info',         icon: 'fa-message',        href: 'pages/info/index.html',            active: false },
+      { id: 'ordini',       label: 'Ordini',       icon: 'fa-bag-shopping',   href: 'pages/ordini/ordini.html',         section: 'ordini',  active: true  },
+      { id: 'prenotazioni', label: 'Prenotazioni', icon: 'fa-calendar-check', href: 'pages/prenotazioni/index.html',    section: null,      active: false },
+      { id: 'tessere',      label: 'Tessere',      icon: 'fa-id-card',        href: 'pages/tessere/index.html',         section: null,      active: false },
+      { id: 'info',         label: 'Info',         icon: 'fa-message',        href: 'pages/info/index.html',            section: null,      active: false },
     ]},
     { group: 'Negozio', items: [
-      { id: 'turni',        label: 'Turni',        icon: 'fa-users',          href: 'pages/turni/turni.html',           active: true  },
-      { id: 'cassa',        label: 'Cassa',        icon: 'fa-cash-register',  href: 'pages/cassa/cassa.html',           active: true  },
-      { id: 'calendario',   label: 'Calendario',   icon: 'fa-calendar-days',  href: 'pages/calendario/index.html',      active: false },
-      { id: 'rifornimento', label: 'Rifornimento', icon: 'fa-boxes-stacked',  href: 'pages/rifornimento/index.html',    active: false },
-      { id: 'prezzi',       label: 'Prezzi',       icon: 'fa-tag',            href: 'pages/prezzi/index.html',          active: false },
+      { id: 'turni',        label: 'Turni',        icon: 'fa-users',          href: 'pages/turni/turni.html',           section: 'turni',   active: true  },
+      { id: 'cassa',        label: 'Cassa',        icon: 'fa-cash-register',  href: 'pages/cassa/cassa.html',           section: 'cassa',   active: true  },
+      { id: 'calendario',   label: 'Calendario',   icon: 'fa-calendar-days',  href: 'pages/calendario/index.html',      section: null,      active: false },
+      { id: 'rifornimento', label: 'Rifornimento', icon: 'fa-boxes-stacked',  href: 'pages/rifornimento/index.html',    section: null,      active: false },
+      { id: 'prezzi',       label: 'Prezzi',       icon: 'fa-tag',            href: 'pages/prezzi/index.html',          section: null,      active: false },
     ]},
     { group: null, items: [
-      { id: 'logout', label: 'Esci', icon: 'fa-right-from-bracket', href: '#', active: true, isLogout: true },
+      { id: 'logout', label: 'Esci', icon: 'fa-right-from-bracket', href: '#', section: null, active: true, isLogout: true },
     ]},
   ];
   const ALL_ITEMS = NAV.flatMap(s => s.items);
@@ -311,33 +409,51 @@ body {
   ═══════════════════════════════════════ */
   function buildNav() {
     document.querySelectorAll('#m361-nav, nav.bottom-nav, .bottom-nav').forEach(n => n.remove());
-    const currentId = getCurrentId();
+    const currentId   = getCurrentId();
+    const userSections = getUserSections(); // es. ["cassa","turni","ordini"]
+
     const nav = document.createElement('nav');
     nav.id = 'm361-nav';
     nav.setAttribute('role', 'navigation');
     nav.setAttribute('aria-label', 'Navigazione principale');
 
     NAV.forEach((section, si) => {
-      if (si > 0) { const sep = document.createElement('div'); sep.className = 'mn-sep'; nav.appendChild(sep); }
+      let sectionHasItems = false;
+
       section.items.forEach(item => {
+        // Filtra per permessi: se l'item ha una section richiesta,
+        // l'utente deve averla tra le sue sezioni consentite
+        const permitted = !item.section || isPublicPage() || userSections.includes(item.section) || userSections.length === 0;
+        if (!permitted) return; // nasconde voce senza permesso
+
         const isCurrent = item.id === currentId;
         const a = document.createElement('a');
         a.className = 'mn-item'
-          + (item.active  ? ' mn-active'  : ' mn-wip')
-          + (isCurrent    ? ' mn-current' : '')
-          + (item.isLogout? ' mn-logout'  : '');
+          + (item.active   ? ' mn-active'  : ' mn-wip')
+          + (isCurrent     ? ' mn-current' : '')
+          + (item.isLogout ? ' mn-logout'  : '');
         a.href = item.isLogout ? '#' : (item.active ? BASE + item.href : '#');
         if (!item.active) { a.setAttribute('aria-disabled','true'); a.setAttribute('tabindex','-1'); }
         if (isCurrent) a.setAttribute('aria-current','page');
+
         if (item.isLogout) {
           a.addEventListener('click', e => {
             e.preventDefault();
-            if (confirm('Vuoi uscire dall\'applicazione?')) window.location.href = BASE + 'index.html';
+            if (confirm('Vuoi uscire dall\'applicazione?')) doLogout();
           });
         }
+
         a.innerHTML = `<i class="fas ${item.icon}"></i><span>${item.label}</span>`;
         nav.appendChild(a);
+        sectionHasItems = true;
       });
+
+      // Separatore solo se la sezione aveva voci visibili e non è l'ultima
+      if (sectionHasItems && si < NAV.length - 1) {
+        const sep = document.createElement('div');
+        sep.className = 'mn-sep';
+        nav.appendChild(sep);
+      }
     });
 
     document.body.appendChild(nav);
@@ -348,11 +464,49 @@ body {
   }
 
   /* ═══════════════════════════════════════
+     BUILD HEADER — aggiunge nome utente
+  ═══════════════════════════════════════ */
+  function buildHeader() {
+    document.querySelectorAll('header:not(#m361-header)').forEach(h => h.remove());
+    if (document.getElementById('m361-header')) return;
+
+    const pageTitle = document.title.replace(/^M361\s*[-–]\s*/i, '').trim() || 'App';
+    const logoSrc   = BASE + 'assets/images/logom361_rosso.jpg';
+    const isHome    = getCurrentId() === 'home';
+    const profile   = getUserProfile();
+    const nomeBreve = profile ? profile.nome.split(' ')[0] : '';
+
+    const hdr = document.createElement('header');
+    hdr.id = 'm361-header';
+    hdr.innerHTML = `
+      <a href="${BASE}index.html" class="hd-left" title="Home">
+        <img src="${logoSrc}" alt="M361" class="hd-logo"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="hd-logo-fb">M361</span>
+        <span class="hd-sep"></span>
+        <span id="header-title">${pageTitle}</span>
+      </a>
+      <div class="hd-right">
+        ${nomeBreve ? `<span style="font-size:11px;font-weight:700;color:#94a3b8;white-space:nowrap">${nomeBreve}</span>` : ''}
+        <button id="back-btn" ${isHome ? 'class="hidden"' : ''} onclick="history.back()">
+          <i class="fas fa-arrow-left"></i> Indietro
+        </button>
+      </div>
+    `;
+    document.body.insertBefore(hdr, document.body.firstChild);
+  }
+
+  /* ═══════════════════════════════════════
      INIT
   ═══════════════════════════════════════ */
-  function init() {
+  async function init() {
     injectDeps();
     injectStyles();
+
+    // Guard sessione (reindirizza a login se non autenticato)
+    const ok = await guardSession();
+    if (!ok) return;
+
     buildHeader();
     buildNav();
   }
