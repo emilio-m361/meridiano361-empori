@@ -243,88 +243,72 @@ body { font-family: 'Inter', sans-serif; padding-top: 56px; padding-bottom: 68px
      BUILD BOTTOM NAV
   ═══════════════════════════════════════ */
 function buildNav() {
-    // Rimuove eventuali nav esistenti per evitare duplicati
-    document.querySelectorAll('#m361-nav, nav.bottom-nav, .bottom-nav').forEach(n => n.remove());
+  // Rimuove eventuali nav esistenti
+  document.querySelectorAll('#m361-nav, nav.bottom-nav, .bottom-nav').forEach(n => n.remove());
+  
+  const currentId = typeof getCurrentId === 'function' ? getCurrentId() : '';
+  const userSections = typeof getUserSections === 'function' ? getUserSections() : [];
+  const user = JSON.parse(localStorage.getItem('m361_user'));
+
+  const nav = document.createElement('nav');
+  nav.id = 'm361-nav';
+  nav.setAttribute('role', 'navigation');
+
+  // Funzione per creare i singoli link (mn-item)
+  const renderItem = (item) => {
+    const isCurrent = item.id === currentId || window.location.pathname.includes(item.href);
+    const a = document.createElement('a');
+    a.className = 'mn-item' 
+      + (item.active   ? ' mn-active'  : ' mn-wip')
+      + (isCurrent     ? ' mn-current' : '')
+      + (item.isLogout ? ' mn-logout'  : '');
     
-    const currentId = getCurrentId();
-    const userSections = getUserSections();
-    const user = JSON.parse(localStorage.getItem('m361_user'));
-
-    const nav = document.createElement('nav');
-    nav.id = 'm361-nav';
-    nav.setAttribute('role', 'navigation');
-
-    // Funzione helper per aggiungere un item al nav
-    const createNavItem = (item) => {
-        const isCurrent = item.id === currentId;
-        const a = document.createElement('a');
-        a.className = 'mn-item'
-          + (item.active   ? ' mn-active'  : ' mn-wip')
-          + (isCurrent     ? ' mn-current' : '')
-          + (item.isLogout ? ' mn-logout'  : '');
-        
-        a.href = item.isLogout ? '#' : (item.active ? BASE + item.href : '#');
-        
-        if (!item.active) { 
-            a.setAttribute('aria-disabled','true'); 
-            a.setAttribute('tabindex','-1'); 
-        }
-        if (isCurrent) a.setAttribute('aria-current','page');
-        
-        if (item.isLogout) {
-            a.addEventListener('click', e => {
-                e.preventDefault();
-                if (confirm('Vuoi uscire dall\'applicazione?')) doLogout();
-            });
-        }
-        
-        a.innerHTML = `<i class="fas ${item.icon}"></i><span>${item.label}</span>`;
-        return a;
-    };
-
-    // Ciclo sulle sezioni definite nella costante NAV
-    NAV.forEach((section, si) => {
-        if (si > 0) {
-            const sep = document.createElement('div');
-            sep.className = 'mn-sep';
-            nav.appendChild(sep);
-        }
-
-        section.items.forEach(item => {
-            // FILTRO PERMESSI: 
-            // Mostra se: non ha sezione specifica OPPURE se è inclusa nei permessi utente
-            if (item.section && userSections.length > 0 && !userSections.includes(item.section)) return;
-
-            nav.appendChild(createNavItem(item));
-        });
-    });
-
-    // AGGIUNTA MANUALE TASTO IMPOSTAZIONI (Solo per l'Admin)
-    if (user && user.email === 'e.mazzolari@meridiano361.it') {
-        // Aggiungiamo un separatore prima del tasto admin se il nav non è vuoto
-        if (nav.children.length > 0) {
-            const sep = document.createElement('div');
-            sep.className = 'mn-sep';
-            nav.appendChild(sep);
-        }
-        
-        const adminItem = {
-            id: 'impostazioni',
-            label: 'Admin',
-            icon: 'fa-gear',
-            href: 'impostazioni.html',
-            active: true
-        };
-        nav.appendChild(createNavItem(adminItem));
+    a.href = item.isLogout ? '#' : (item.active ? BASE + item.href : '#');
+    
+    if (item.isLogout) {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        if (confirm('Vuoi uscire?')) doLogout();
+      });
     }
+    
+    a.innerHTML = `<i class="fas ${item.icon}"></i><span>${item.label}</span>`;
+    return a;
+  };
 
-    document.body.appendChild(nav);
-
-    // Auto-scroll sull'elemento corrente
-    requestAnimationFrame(() => {
-        const cur = nav.querySelector('.mn-current');
-        if (cur) cur.scrollIntoView({ behavior: 'instant', block: 'nearest', inline: 'center' });
+  // Carica le voci dal tuo array NAV esistente
+  if (typeof NAV !== 'undefined') {
+    NAV.forEach((section, si) => {
+      if (si > 0) {
+        const sep = document.createElement('div');
+        sep.className = 'mn-sep';
+        nav.appendChild(sep);
+      }
+      section.items.forEach(item => {
+        // Filtro permessi sezioni
+        if (item.section && userSections.length > 0 && !userSections.includes(item.section)) return;
+        nav.appendChild(renderItem(item));
+      });
     });
+  }
+
+  // AGGIUNTA MANUALE TASTO ADMIN (Solo per te)
+  if (user && user.email === 'e.mazzolari@meridiano361.it') {
+    const sep = document.createElement('div');
+    sep.className = 'mn-sep';
+    nav.appendChild(sep);
+
+    const adminBtn = {
+      id: 'impostazioni',
+      label: 'Admin',
+      icon: 'fa-gear',
+      href: 'impostazioni.html',
+      active: true
+    };
+    nav.appendChild(renderItem(adminBtn));
+  }
+
+  document.body.appendChild(nav);
 }
 
   /* ═══════════════════════════════════════
