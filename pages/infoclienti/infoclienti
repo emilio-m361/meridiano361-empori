@@ -1,1 +1,419 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <link rel="stylesheet" href="../../assets/style/nav-style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M361 - Richieste Info</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root { --red:#b75252;--red-dark:#8f3d3d;--red-light:#fff1f1;--green:#059669;--green-light:#dcfce7;--slate-50:#f8fafc;--slate-100:#f1f5f9;--slate-200:#e2e8f0;--slate-300:#cbd5e1;--slate-400:#94a3b8;--slate-500:#64748b;--slate-600:#475569;--slate-700:#334155;--slate-800:#1e293b; }
+        body { font-family:'Inter',sans-serif; background:#f0f2f5; }
+        .font-mono { font-family:'DM Mono',monospace; }
+        .sec-t { font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--slate-400);display:flex;align-items:center;gap:10px;margin-bottom:16px; }
+        .sec-t::before { content:'';width:3px;height:16px;background:var(--red);border-radius:2px;flex-shrink:0; }
+        .card-r { background:#fff;border-radius:20px;border:1px solid var(--slate-200);box-shadow:0 1px 4px rgba(0,0,0,.05); }
 
+        /* Emporio selector */
+        .emp-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:10px; }
+        @media(min-width:640px) { .emp-grid { grid-template-columns:repeat(4,1fr); } }
+        .emp-btn { padding:20px 12px;border-radius:16px;border:2px solid var(--slate-200);background:#fff;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:8px; }
+        .emp-btn:hover { border-color:var(--red);transform:translateY(-2px);box-shadow:0 4px 12px rgba(183,82,82,.12); }
+        .emp-btn.selected { border-color:var(--red);background:var(--red-light); }
+        .emp-btn img { width:48px;height:48px;object-fit:contain;border-radius:12px; }
+        .emp-btn span { font-size:12px;font-weight:800;color:var(--slate-700); }
+
+        /* Tabs */
+        .tab-bar { display:flex;gap:4px;background:#fff;padding:5px;border-radius:14px;border:1px solid var(--slate-200); }
+        .tab-btn { padding:8px 16px;border-radius:10px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;border:none;background:transparent;color:var(--slate-400);transition:all .12s;position:relative; }
+        .tab-btn:hover { color:var(--slate-700); }
+        .tab-btn.active { background:var(--red);color:#fff; }
+        .tab-btn .badge-count { position:absolute;top:-4px;right:-4px;background:var(--slate-800);color:#fff;font-size:8px;font-weight:900;padding:2px 6px;border-radius:99px;min-width:18px;text-align:center; }
+        .tab-content { display:none; }
+        .tab-content.active { display:block; }
+
+        /* Form */
+        .f-label { font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--slate-400);margin-bottom:6px;display:block; }
+        .f-input { width:100%;border:1px solid var(--slate-200);border-radius:12px;padding:10px 14px;font-size:14px;font-family:'Inter',sans-serif;color:var(--slate-700);outline:none;transition:border .15s; }
+        .f-input:focus { border-color:var(--red); }
+        .f-textarea { min-height:80px;resize:vertical; }
+        .f-row { display:grid;gap:12px; }
+        .f-row-2 { grid-template-columns:1fr 1fr; }
+        .f-row-3 { grid-template-columns:1fr 1fr 1fr; }
+        @media(max-width:640px) { .f-row-2,.f-row-3 { grid-template-columns:1fr; } }
+
+        /* Request card */
+        .req-card { background:#fff;border-radius:16px;border:1px solid var(--slate-200);overflow:hidden;transition:all .15s; }
+        .req-card:hover { border-color:var(--slate-300); }
+        .req-header { padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--slate-100); }
+        .req-body { padding:16px 18px; }
+        .req-field { margin-bottom:10px; }
+        .req-field-label { font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--slate-400); }
+        .req-field-value { font-size:13px;font-weight:600;color:var(--slate-700);margin-top:2px; }
+        .req-desc { background:var(--slate-50);border-radius:10px;padding:12px;font-size:13px;color:var(--slate-600);line-height:1.5;margin-top:10px; }
+        .req-date { font-size:10px;font-weight:700;color:var(--slate-400);font-family:'DM Mono',monospace; }
+        .req-emp { font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:3px 10px;border-radius:8px; }
+
+        /* Response */
+        .resp-box { margin-top:12px;padding:12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px; }
+        .resp-box-label { font-size:9px;font-weight:800;text-transform:uppercase;color:var(--green);margin-bottom:4px; }
+        .resp-box-text { font-size:13px;color:var(--slate-700);line-height:1.5; }
+        .resp-input { display:flex;gap:8px;margin-top:12px; }
+        .resp-input textarea { flex:1;border:1px solid var(--slate-200);border-radius:10px;padding:8px 12px;font-size:13px;font-family:'Inter',sans-serif;resize:none;min-height:60px;outline:none; }
+        .resp-input textarea:focus { border-color:var(--green); }
+
+        /* Status badges */
+        .st-new { background:#fef3c7;color:#92400e; }
+        .st-replied { background:#d1fae5;color:#065f46; }
+        .st-archived { background:var(--slate-100);color:var(--slate-500); }
+        .emp-cr { background:#fce4ec;color:#b75252; }
+        .emp-ca { background:#fff3e0;color:#c78044; }
+        .emp-re { background:#e8f5e9;color:#6b8d53; }
+        .emp-vi { background:#e3f2fd;color:#4c6d90; }
+
+        /* Empty */
+        .empty-st { padding:40px 20px;text-align:center;color:var(--slate-400);font-size:13px;font-weight:600; }
+    </style>
+</head>
+<body class="pb-20">
+    <script src="../../scripts/nav-script.js"></script>
+
+    <main class="max-w-4xl mx-auto p-4 md:p-8">
+
+        <!-- EMPORIO SELECTION -->
+        <div id="emporio-selection">
+            <div class="sec-t">Seleziona Emporio</div>
+            <div class="emp-grid mb-6">
+                <button class="emp-btn" onclick="selectEmporio('cremona')">
+                    <img src="../../assets/images/logo_cremona.png" alt="CR" onerror="this.outerHTML='<div style=\'width:48px;height:48px;border-radius:12px;background:#fce4ec;display:flex;align-items:center;justify-content:center;font-weight:900;color:#b75252;font-size:16px\'>CR</div>'">
+                    <span>Cremona</span>
+                </button>
+                <button class="emp-btn" onclick="selectEmporio('casalmaggiore')">
+                    <img src="../../assets/images/logo_casalmaggiore.png" alt="CA" onerror="this.outerHTML='<div style=\'width:48px;height:48px;border-radius:12px;background:#fff3e0;display:flex;align-items:center;justify-content:center;font-weight:900;color:#c78044;font-size:16px\'>CA</div>'">
+                    <span>Casalmaggiore</span>
+                </button>
+                <button class="emp-btn" onclick="selectEmporio('reggioemilia')">
+                    <img src="../../assets/images/logo_reggio_emilia.png" alt="RE" onerror="this.outerHTML='<div style=\'width:48px;height:48px;border-radius:12px;background:#e8f5e9;display:flex;align-items:center;justify-content:center;font-weight:900;color:#6b8d53;font-size:16px\'>RE</div>'">
+                    <span>Reggio Emilia</span>
+                </button>
+                <button class="emp-btn" onclick="selectEmporio('viadana')">
+                    <img src="../../assets/images/logo_viadana.png" alt="VI" onerror="this.outerHTML='<div style=\'width:48px;height:48px;border-radius:12px;background:#e3f2fd;display:flex;align-items:center;justify-content:center;font-weight:900;color:#4c6d90;font-size:16px\'>VI</div>'">
+                    <span>Viadana</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT (hidden until emporio selected) -->
+        <div id="main-content" style="display:none">
+
+            <!-- Current emporio indicator -->
+            <div class="flex items-center justify-between mb-5">
+                <div class="flex items-center gap-3">
+                    <span class="req-emp" id="current-emp-badge"></span>
+                    <button onclick="changeEmporio()" class="text-xs font-bold text-slate-400 hover:text-red-500 transition-colors">
+                        <i class="fas fa-exchange-alt"></i> Cambia
+                    </button>
+                </div>
+                <button onclick="showNewForm()" id="btn-new" class="text-xs font-bold text-white bg-[#b75252] hover:bg-[#8f3d3d] px-4 py-2 rounded-lg transition-all flex items-center gap-2">
+                    <i class="fas fa-plus"></i> Nuova Richiesta
+                </button>
+            </div>
+
+            <!-- NEW REQUEST FORM -->
+            <div id="new-form" class="card-r p-5 mb-6" style="display:none">
+                <div class="sec-t" style="margin-bottom:14px">Nuova Richiesta Info</div>
+
+                <div class="space-y-3">
+                    <div class="f-row f-row-2">
+                        <div><label class="f-label">Cliente (Nome e Cognome)</label><input type="text" id="f-cliente" class="f-input" placeholder="Mario Rossi"></div>
+                        <div><label class="f-label">Telefono</label><input type="tel" id="f-telefono" class="f-input" placeholder="333 1234567"></div>
+                    </div>
+                    <div><label class="f-label">E-mail</label><input type="email" id="f-email" class="f-input" placeholder="mario@email.com"></div>
+                    <div class="f-row f-row-3">
+                        <div><label class="f-label">Consegna</label>
+                            <select id="f-consegna" class="f-input" onchange="toggleIndirizzo()">
+                                <option value="ritiro">Ritiro in negozio</option>
+                                <option value="domicilio">Consegna a domicilio</option>
+                            </select>
+                        </div>
+                        <div id="addr-wrap" style="display:none"><label class="f-label">Indirizzo</label><input type="text" id="f-indirizzo" class="f-input" placeholder="Via Roma 1"></div>
+                        <div><label class="f-label">Giorno preferito</label><input type="date" id="f-giorno" class="f-input"></div>
+                        <div><label class="f-label">Orario preferito</label><input type="time" id="f-orario" class="f-input"></div>
+                    </div>
+                    <div><label class="f-label">Descrizione richiesta</label><textarea id="f-descrizione" class="f-input f-textarea" placeholder="Descrivi cosa cerca il cliente, tipo di prodotto, budget, dettagli..."></textarea></div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 mt-4">
+                    <button onclick="hideNewForm()" class="text-xs font-bold text-slate-400 hover:text-slate-600 px-4 py-2">Annulla</button>
+                    <button onclick="submitRequest()" class="text-xs font-bold text-white bg-[#1e293b] hover:bg-[#334155] px-5 py-3 rounded-lg transition-all flex items-center gap-2">
+                        <i class="fas fa-paper-plane"></i> Invia Richiesta
+                    </button>
+                </div>
+            </div>
+
+            <!-- TABS -->
+            <div class="tab-bar mb-5">
+                <button class="tab-btn active" data-tab="attive" onclick="switchTab('attive')">
+                    Attive <span class="badge-count" id="count-attive">0</span>
+                </button>
+                <button class="tab-btn" data-tab="archiviate" onclick="switchTab('archiviate')">
+                    Archiviate
+                </button>
+                <button class="tab-btn" data-tab="recap" onclick="switchTab('recap')">
+                    Recap Completo
+                </button>
+            </div>
+
+            <!-- ACTIVE REQUESTS -->
+            <div class="tab-content active" data-tab="attive">
+                <div id="list-attive" class="space-y-4"></div>
+            </div>
+
+            <!-- ARCHIVED -->
+            <div class="tab-content" data-tab="archiviate">
+                <div id="list-archiviate" class="space-y-4"></div>
+            </div>
+
+            <!-- RECAP -->
+            <div class="tab-content" data-tab="recap">
+                <div class="card-r p-5">
+                    <div class="sec-t" style="margin-bottom:14px">Recap Tutte le Richieste</div>
+                    <div class="table-scroll">
+                        <table class="w-full text-sm border-collapse" id="recap-table">
+                            <thead>
+                                <tr style="background:var(--slate-50);border-bottom:2px solid var(--slate-200)">
+                                    <th class="p-3 text-left text-xs font-bold text-slate-400 uppercase">Data</th>
+                                    <th class="p-3 text-left text-xs font-bold text-slate-400 uppercase">Emporio</th>
+                                    <th class="p-3 text-left text-xs font-bold text-slate-400 uppercase">Cliente</th>
+                                    <th class="p-3 text-left text-xs font-bold text-slate-400 uppercase">Richiesta</th>
+                                    <th class="p-3 text-center text-xs font-bold text-slate-400 uppercase">Stato</th>
+                                    <th class="p-3 text-left text-xs font-bold text-slate-400 uppercase">Risposta</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recap-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+    const { createClient } = supabase;
+    const db = createClient('https://hsalynvxazxqtmsvjrzc.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8');
+
+    const EMP_MAP = {
+        cremona:       { label:'Cremona',        css:'emp-cr' },
+        casalmaggiore: { label:'Casalmaggiore',  css:'emp-ca' },
+        reggioemilia:  { label:'Reggio Emilia',  css:'emp-re' },
+        viadana:       { label:'Viadana',        css:'emp-vi' },
+    };
+
+    let currentEmporio = null;
+    let requests = [];
+
+    // ─── EMPORIO ───
+    function selectEmporio(emp) {
+        currentEmporio = emp;
+        document.querySelectorAll('.emp-btn').forEach(b => b.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
+
+        const badge = document.getElementById('current-emp-badge');
+        badge.textContent = EMP_MAP[emp].label;
+        badge.className = 'req-emp ' + EMP_MAP[emp].css;
+
+        document.getElementById('emporio-selection').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+        loadRequests();
+    }
+
+    function changeEmporio() {
+        document.getElementById('emporio-selection').style.display = 'block';
+        document.getElementById('main-content').style.display = 'none';
+    }
+
+    // ─── TABS ───
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.dataset.tab === tab));
+        if (tab === 'recap') renderRecap();
+    }
+
+    // ─── FORM ───
+    function showNewForm() {
+        document.getElementById('new-form').style.display = 'block';
+        document.getElementById('btn-new').style.display = 'none';
+        document.getElementById('f-giorno').value = new Date().toISOString().split('T')[0];
+    }
+    function hideNewForm() {
+        document.getElementById('new-form').style.display = 'none';
+        document.getElementById('btn-new').style.display = 'flex';
+    }
+    function toggleIndirizzo() {
+        document.getElementById('addr-wrap').style.display = document.getElementById('f-consegna').value === 'domicilio' ? 'block' : 'none';
+    }
+
+    async function submitRequest() {
+        const cliente = document.getElementById('f-cliente').value.trim();
+        if (!cliente) { alert('Inserisci il nome del cliente'); return; }
+
+        const newReq = {
+            emporio: currentEmporio,
+            cliente,
+            telefono: document.getElementById('f-telefono').value.trim(),
+            email: document.getElementById('f-email').value.trim(),
+            consegna: document.getElementById('f-consegna').value,
+            indirizzo: document.getElementById('f-indirizzo').value.trim(),
+            giorno: document.getElementById('f-giorno').value,
+            orario: document.getElementById('f-orario').value,
+            descrizione: document.getElementById('f-descrizione').value.trim(),
+            stato: 'nuova',
+            risposta: '',
+            archiviata: false,
+            created_at: new Date().toISOString()
+        };
+
+        const { data, error } = await db.from('info_clienti').insert([newReq]).select().single();
+        if (error) {
+            newReq.id = 'local-' + Date.now();
+            requests.push(newReq);
+        } else {
+            requests.push(data);
+        }
+
+        // Reset form
+        ['f-cliente','f-telefono','f-email','f-indirizzo','f-descrizione','f-orario'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('f-consegna').value = 'ritiro';
+        toggleIndirizzo();
+        hideNewForm();
+        render();
+    }
+
+    // ─── RESPONSES ───
+    async function sendResponse(id) {
+        const textarea = document.getElementById('resp-' + id);
+        const text = textarea.value.trim();
+        if (!text) return;
+
+        const item = requests.find(r => r.id === id);
+        if (!item) return;
+        item.risposta = text;
+        item.stato = 'risposto';
+
+        if (!String(id).startsWith('local-')) {
+            await db.from('info_clienti').update({ risposta: text, stato: 'risposto' }).eq('id', id);
+        }
+        render();
+    }
+
+    async function archiveRequest(id) {
+        if (!confirm('Archiviare questa richiesta?')) return;
+        const item = requests.find(r => r.id === id);
+        if (!item) return;
+        item.archiviata = true;
+
+        if (!String(id).startsWith('local-')) {
+            await db.from('info_clienti').update({ archiviata: true }).eq('id', id);
+        }
+        render();
+    }
+
+    async function deleteRequest(id) {
+        if (!confirm('Eliminare questa richiesta?')) return;
+        requests = requests.filter(r => r.id !== id);
+        if (!String(id).startsWith('local-')) {
+            await db.from('info_clienti').delete().eq('id', id);
+        }
+        render();
+    }
+
+    // ─── RENDER ───
+    function render() {
+        const empReqs = requests.filter(r => r.emporio === currentEmporio);
+        const active = empReqs.filter(r => !r.archiviata);
+        const archived = empReqs.filter(r => r.archiviata);
+
+        document.getElementById('count-attive').textContent = active.length;
+        document.getElementById('list-attive').innerHTML = active.length ? active.map(r => renderCard(r, false)).join('') : '<div class="empty-st"><i class="fas fa-inbox" style="font-size:24px;display:block;margin-bottom:8px"></i>Nessuna richiesta attiva</div>';
+        document.getElementById('list-archiviate').innerHTML = archived.length ? archived.map(r => renderCard(r, true)).join('') : '<div class="empty-st"><i class="fas fa-archive" style="font-size:24px;display:block;margin-bottom:8px"></i>Nessuna richiesta archiviata</div>';
+    }
+
+    function renderCard(r, isArchived) {
+        const date = r.created_at ? new Date(r.created_at).toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' }) : '—';
+        const stClass = r.stato === 'risposto' ? 'st-replied' : r.archiviata ? 'st-archived' : 'st-new';
+        const stLabel = r.stato === 'risposto' ? 'Risposto' : r.archiviata ? 'Archiviata' : 'Da rispondere';
+
+        const deliveryInfo = r.consegna === 'domicilio'
+            ? `<span class="text-xs text-slate-500"><i class="fas fa-truck" style="margin-right:4px"></i>${r.indirizzo || 'Domicilio'}</span>`
+            : `<span class="text-xs text-slate-500"><i class="fas fa-store" style="margin-right:4px"></i>Ritiro in negozio</span>`;
+
+        const scheduleInfo = (r.giorno || r.orario)
+            ? `<span class="text-xs text-slate-500 ml-3"><i class="fas fa-calendar" style="margin-right:4px"></i>${r.giorno ? new Date(r.giorno).toLocaleDateString('it-IT') : ''} ${r.orario || ''}</span>`
+            : '';
+
+        return `
+        <div class="req-card">
+            <div class="req-header">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <span class="req-date">${date}</span>
+                    <span class="req-emp ${stClass}" style="font-size:9px;padding:3px 10px;border-radius:8px">${stLabel}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    ${!isArchived ? `<button onclick="archiveRequest('${r.id}')" class="text-slate-400 hover:text-slate-600 transition-colors" title="Archivia"><i class="fas fa-archive" style="font-size:12px"></i></button>` : ''}
+                    <button onclick="deleteRequest('${r.id}')" class="text-slate-300 hover:text-red-500 transition-colors" title="Elimina"><i class="fas fa-trash" style="font-size:11px"></i></button>
+                </div>
+            </div>
+            <div class="req-body">
+                <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:8px">
+                    <div class="req-field"><div class="req-field-label">Cliente</div><div class="req-field-value">${r.cliente}</div></div>
+                    ${r.telefono ? `<div class="req-field"><div class="req-field-label">Telefono</div><div class="req-field-value"><a href="tel:${r.telefono}" style="color:var(--slate-700);text-decoration:none">${r.telefono}</a></div></div>` : ''}
+                    ${r.email ? `<div class="req-field"><div class="req-field-label">Email</div><div class="req-field-value"><a href="mailto:${r.email}" style="color:var(--red);text-decoration:none;font-size:12px">${r.email}</a></div></div>` : ''}
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">${deliveryInfo}${scheduleInfo}</div>
+                ${r.descrizione ? `<div class="req-desc">${r.descrizione}</div>` : ''}
+                ${r.risposta ? `<div class="resp-box"><div class="resp-box-label"><i class="fas fa-reply"></i> Risposta</div><div class="resp-box-text">${r.risposta}</div></div>` : ''}
+                ${!isArchived && !r.risposta ? `
+                <div class="resp-input">
+                    <textarea id="resp-${r.id}" placeholder="Scrivi la risposta al cliente..."></textarea>
+                    <button onclick="sendResponse('${r.id}')" style="background:var(--green);color:#fff;border:none;padding:8px 14px;border-radius:10px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;align-self:flex-end">
+                        <i class="fas fa-check"></i> Rispondi
+                    </button>
+                </div>` : ''}
+            </div>
+        </div>`;
+    }
+
+    // ─── RECAP TABLE ───
+    function renderRecap() {
+        const all = [...requests].sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+        const tbody = document.getElementById('recap-body');
+        tbody.innerHTML = all.map(r => {
+            const date = r.created_at ? new Date(r.created_at).toLocaleDateString('it-IT') : '—';
+            const emp = EMP_MAP[r.emporio] || { label: r.emporio, css: '' };
+            const stClass = r.stato === 'risposto' ? 'st-replied' : r.archiviata ? 'st-archived' : 'st-new';
+            const stLabel = r.stato === 'risposto' ? 'Risposto' : r.archiviata ? 'Archiviata' : 'Nuova';
+            return `<tr style="border-bottom:1px solid var(--slate-100)">
+                <td class="p-3 font-mono text-xs" style="white-space:nowrap">${date}</td>
+                <td class="p-3"><span class="req-emp ${emp.css}">${emp.label}</span></td>
+                <td class="p-3 font-semibold">${r.cliente}</td>
+                <td class="p-3 text-xs text-slate-500" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.descrizione || '—'}</td>
+                <td class="p-3 text-center"><span class="req-emp ${stClass}" style="font-size:9px">${stLabel}</span></td>
+                <td class="p-3 text-xs text-slate-500" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.risposta || '—'}</td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="6" class="p-8 text-center text-slate-400">Nessuna richiesta registrata</td></tr>';
+    }
+
+    // ─── LOAD ───
+    async function loadRequests() {
+        const { data, error } = await db.from('info_clienti').select('*').order('created_at', { ascending: false });
+        if (data) requests = data;
+        render();
+    }
+    </script>
+
+    <script src="../../scripts/nav-script.js"></script>
+</body>
+</html>
