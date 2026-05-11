@@ -410,37 +410,6 @@
             }
         }
 
-        async function loadOrderData() {
-            const orderId = getOrderIdFromURL();
-            
-            if (!orderId) {
-                alert('ID ordine mancante!');
-                window.location.href = 'ordini_incorso.html';
-                return;
-            }
-
-            currentOrderId = orderId;
-
-            try {
-                const { data, error } = await _supabase
-                    .from('ordini_incorso')
-                    .select('*')
-                    .eq('id', orderId)
-                    .single();
-
-                if (error) throw error;
-                if (!data) throw new Error('Ordine non trovato');
-
-                populateForm(data);
-                
-                document.getElementById('loading-overlay').remove();
-            } catch (error) {
-                console.error('Error loading order:', error);
-                alert('Errore nel caricamento dell\'ordine: ' + error.message);
-                window.location.href = 'ordini_incorso.html';
-            }
-        }
-
         // POPULATE FORM WITH ORDER DATA
         function populateForm(order) {
             currentType = order.tipo_ordine || 'standard';
