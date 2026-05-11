@@ -315,6 +315,18 @@
         </div>
     </header>
 
+    <!-- Quick Navigation Bar -->
+    <div class="bg-white border-b px-6 md:px-8 py-3 flex items-center gap-3">
+        <span class="text-xs font-bold text-slate-400 uppercase">Vai a:</span>
+        <a href="ordini_nuovi.html" class="text-sm font-bold text-green-600 hover:text-green-700 px-4 py-2 rounded-lg border-2 border-green-600 hover:bg-green-50 flex items-center gap-2 transition-all">
+            <i class="fas fa-plus"></i> Nuovo Ordine
+        </a>
+        <a href="ordini_archiviati.html" class="text-sm font-bold text-slate-600 hover:text-slate-800 px-4 py-2 rounded-lg border-2 border-slate-300 hover:bg-slate-50 flex items-center gap-2 transition-all">
+            <i class="fas fa-archive"></i> Archiviati
+        </a>
+    </div>
+
+
     <main class="max-w-[1600px] mx-auto p-6">
         
         <!-- FILTERS AND SEARCH -->
@@ -646,18 +658,9 @@
                 console.error('Error:', error);
                 alert('Errore: ' + error.message);
             }
-        })
-                    .eq('id', orderId);
-
-                if (error) throw error;
-                
-                alert('Ordine completato!');
-                await loadOrders();
-            } catch (error) {
-                console.error('Error completing order:', error);
-                alert('Errore nel completamento');
-            }
         }
+
+        
 
         function editOrder(orderId) {
             window.location.href = `ordini_modifica.html?id=${orderId}`;
