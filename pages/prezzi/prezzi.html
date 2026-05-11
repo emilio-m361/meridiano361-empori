@@ -4,437 +4,68 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>M361 - Prezzi</title>
-
+  <!-- Usa i percorsi corretti per i tuoi file M361 -->
   <link rel="stylesheet" href="../nav-style-2.css">
   <script defer src="../nav-script-3.js"></script>
-
   <style>
-    :root{
-      --bg:#f6f1ea;
-      --card:#ffffff;
-      --text:#243041;
-      --muted:#6b7280;
-      --line:#e6ddd4;
-      --brand:#b75252;
-      --brand-2:#8f3f3f;
-      --ok:#1f8f5f;
-      --warn:#d97706;
-      --danger:#b91c1c;
-      --soft:#f9f5f1;
-      --soft-2:#efe6dd;
-    }
-    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;}
-    body{padding:18px 16px 88px;}
-    .wrap{max-width:1200px;margin:0 auto;}
-    .hero{
-      background:linear-gradient(135deg,#fff 0%, #fff7f2 100%);
-      border:1px solid var(--line);
-      border-radius:22px;
-      padding:20px;
-      box-shadow:0 10px 24px rgba(36,48,65,.06);
-      margin-bottom:14px;
-    }
-    .hero h1{margin:0 0 8px;font-size:28px;line-height:1.1;letter-spacing:-.03em;}
-    .hero p{margin:0;color:var(--muted);font-size:16px;line-height:1.5;}
-    .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:14px;align-items:start;}
-    @media (max-width: 960px){.grid{grid-template-columns:1fr;}}
-    .card{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:20px;
-      padding:18px;
-      box-shadow:0 8px 20px rgba(36,48,65,.05);
-    }
-    .card h2{margin:0 0 12px;font-size:22px;}
-    .sub{color:var(--muted);font-size:14px;margin-top:-6px;margin-bottom:12px;}
-    .toolbar{
-      display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;
-    }
-    .btn{
-      border:0;border-radius:14px;padding:12px 16px;font-weight:800;font-size:15px;cursor:pointer;
-      font-family:inherit;transition:.15s;background:var(--soft);color:var(--text);
-    }
-    .btn.brand{background:var(--brand);color:#fff;}
-    .btn.brand:hover{background:var(--brand-2);}
-    .btn.ghost{background:#fff;border:1px solid var(--line);}
-    .btn.ok{background:var(--ok);color:#fff;}
-    .btn.warn{background:var(--warn);color:#fff;}
-    .btn.danger{background:var(--danger);color:#fff;}
-    .btn.small{padding:9px 12px;font-size:13px;border-radius:12px;}
-    .row{
-      display:grid;
-      grid-template-columns: 1.2fr .6fr .9fr .7fr .9fr auto;
-      gap:10px;
-      align-items:end;
-      padding:12px;
-      border:1px solid var(--line);
-      border-radius:16px;
-      background:var(--soft);
-      margin-bottom:10px;
-    }
-    @media (max-width: 960px){.row{grid-template-columns:1fr 1fr;}}
-    .field label{
-      display:block;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;
-      color:var(--muted);margin:0 0 6px;
-    }
-    .field input,.field select{
-      width:100%;border:1px solid #d8cfc6;border-radius:12px;padding:12px 12px;font-size:16px;
-      background:#fff;outline:none;font-family:inherit;
-    }
-    .field input:focus,.field select:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(183,82,82,.12);}
-    .row-actions{display:flex;gap:8px;justify-content:flex-end;align-items:center;}
-    .icon-btn{
-      width:42px;height:42px;border:0;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;
-      cursor:pointer;background:#fff;border:1px solid var(--line);font-size:18px;
-    }
-    .icon-btn.send{background:var(--brand);color:#fff;border-color:var(--brand);}
-    .icon-btn.send:disabled{opacity:.35;cursor:not-allowed;}
-    .icon-btn.done{background:var(--ok);color:#fff;border-color:var(--ok);}
-    .icon-btn.del{background:#fff;color:var(--danger);}
-    .muted{color:var(--muted);}
-    .summary{
-      display:grid;grid-template-columns:1fr 1fr;gap:12px;
-    }
-    @media (max-width: 960px){.summary{grid-template-columns:1fr;}}
-    .summary-box{
-      border:1px solid var(--line);border-radius:18px;padding:14px;background:linear-gradient(180deg,#fff,#fffaf6);
-    }
-    .summary-box.ready{border-color:rgba(31,143,95,.35);box-shadow:0 0 0 3px rgba(31,143,95,.08) inset;}
-    .summary-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
-    .summary-title{font-size:18px;font-weight:900;margin:0;}
-    .badge{
-      display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 11px;font-weight:800;font-size:12px;
-      background:var(--soft-2);color:var(--text);
-    }
-    .badge.ok{background:rgba(31,143,95,.12);color:var(--ok);}
-    .badge.warn{background:rgba(217,119,6,.12);color:var(--warn);}
-    .pill-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
-    .pill{
-      display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;border:1px solid var(--line);
-      background:#fff;font-size:13px;
-    }
-    .pill input{accent-color:var(--brand);}
-    .list{
-      margin-top:10px;display:flex;flex-direction:column;gap:8px;
-      max-height:320px;overflow:auto;padding-right:4px;
-    }
-    .item{
-      display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;align-items:center;
-      border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:#fff;
-    }
-    .item.done{opacity:.55;background:#faf7f4;}
-    .item strong{font-size:15px;}
-    .item small{color:var(--muted);display:block;margin-top:2px;font-size:12px;}
-    .mono{font-family:'DM Mono', monospace;font-size:13px;}
-    .footer-note{margin-top:10px;font-size:13px;color:var(--muted);line-height:1.45;}
-    .hidden{display:none !important;}
-    .topbar{
-      display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;
-    }
-    .topbar .mini{
-      font-size:14px;color:var(--muted);
-    }
+    body { background: #f6f1ea; padding-top: 70px; font-family: 'Inter', sans-serif; }
+    .wrap { max-width: 900px; margin: auto; padding: 20px; }
+    .card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    h1 { font-size: 24px; color: #b75252; }
+    .row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 10px; background: #fffaf6; border-radius: 12px; }
+    input, select { padding: 8px; border: 1px solid #e5e7eb; border-radius: 8px; flex: 1; }
+    .btn-add { background: #b75252; color: white; padding: 12px 20px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; }
+    .arrow-btn { background: #1f8f5f; color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .ready { border: 2px solid #1f8f5f; }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="hero">
-      <h1>Inserisci i frontali da fare</h1>
-      <p>Gestisci frontalini e etichette, seleziona cosa stampare e marca come già fatto quello che hai stampato.</p>
+    <h1>Inserisci i frontali da fare</h1>
+    <div class="card">
+      <button class="btn-add" id="addBtn">+ Aggiungi frontalino da fare</button>
+      <div id="rowContainer" style="margin-top:20px;"></div>
     </div>
-
-    <div class="grid">
-      <div class="card">
-        <div class="topbar">
-          <div>
-            <h2>Aggiungi frontalino da fare</h2>
-            <div class="sub">Compila almeno un campo: comparirà la freccia di invio sulla riga.</div>
-          </div>
-          <button class="btn brand" id="addRowBtn">+ Aggiungi frontalino da fare</button>
-        </div>
-
-        <div id="rows"></div>
-
-        <div class="toolbar">
-          <button class="btn ok" id="saveAllBtn">Salva tutti i compilandi</button>
-          <button class="btn ghost" id="clearNewBtn">Pulisci righe nuove</button>
-        </div>
-
-        <div class="footer-note">
-          I frontalini vengono considerati pronti per la stampa quando arrivano ad almeno 40 pezzi. Le etichette vengono conteggiate a blocchi da 24. Puoi lasciare alcuni elementi fuori dalla stampa senza cancellarli.
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Sintesi stampa</h2>
-        <div class="sub">Segnala quando i blocchi sono pronti da stampare.</div>
-
-        <div class="summary" id="summary"></div>
-
-        <div class="toolbar" style="margin-top:14px;">
-          <button class="btn warn" id="printPrepBtn">Prepara selezione stampa</button>
-          <button class="btn ghost" id="showDoneBtn">Mostra/Nascondi stampati</button>
-        </div>
-
-        <div class="card" style="padding:14px;margin-top:10px;">
-          <div class="summary-head">
-            <p class="summary-title">Elementi salvati</p>
-            <span class="badge" id="savedCount">0 elementi</span>
-          </div>
-          <div class="list" id="savedList"></div>
-        </div>
-      </div>
+    <div class="summary-grid">
+      <div class="card" id="sumFrontalini"></div>
+      <div class="card" id="sumEtichette"></div>
     </div>
   </div>
 
   <script>
-    const TYPE_INFO = {
-      frontalino: { label: 'Frontalino', block: 40, color: 'brand' },
-      etichetta: { label: 'Etichetta', block: 24, color: 'warn' }
-    };
-
-    let showDone = true;
     let data = [];
+    const container = document.getElementById('rowContainer');
 
-    const rowsEl = document.getElementById('rows');
-    const summaryEl = document.getElementById('summary');
-    const savedListEl = document.getElementById('savedList');
-    const savedCountEl = document.getElementById('savedCount');
-
-    function uid(){ return (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random()); }
-
-    function loadData(){
-      try { data = JSON.parse(localStorage.getItem('prezzi_da_fare_local') || '[]'); }
-      catch { data = []; }
-      if (!data.length) addRow('frontalino');
-      render();
-    }
-
-    function saveData(){
-      localStorage.setItem('prezzi_da_fare_local', JSON.stringify(data));
-    }
-
-    function addRow(tipo='frontalino'){
-      data.push({
-        id: uid(),
-        emporio: '',
-        tipo,
-        codice: '',
-        descrizione: '',
-        qta: 1,
-        prezzo: 0,
-        fatto: false,
-        selezionato: true,
-        created_at: new Date().toISOString(),
-        newRow: true
-      });
-      render();
-    }
-
-    function renderRows(){
-      rowsEl.innerHTML = '';
-      const newRows = data.filter(x => x.newRow && !x.fatto);
-      if (!newRows.length) {
-        const box = document.createElement('div');
-        box.className = 'muted';
-        box.textContent = 'Nessuna riga nuova. Premi “Aggiungi frontalino da fare”.';
-        rowsEl.appendChild(box);
-        return;
-      }
-      newRows.forEach((r, idx) => {
+    function render() {
+      container.innerHTML = '';
+      data.forEach((item, i) => {
         const row = document.createElement('div');
         row.className = 'row';
-        const canSend = !!(r.emporio || r.codice || r.descrizione || String(r.qta || '').trim() || String(r.prezzo || '').trim());
         row.innerHTML = `
-          <div class="field">
-            <label>Emporio</label>
-            <input value="${escapeHtml(r.emporio)}" placeholder="Es. Centrale" data-k="emporio" data-id="${r.id}">
-          </div>
-          <div class="field">
-            <label>Tipo</label>
-            <select data-k="tipo" data-id="${r.id}">
-              <option value="frontalino" ${r.tipo==='frontalino'?'selected':''}>Frontalino</option>
-              <option value="etichetta" ${r.tipo==='etichetta'?'selected':''}>Etichetta</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Codice</label>
-            <input value="${escapeHtml(r.codice)}" placeholder="Codice" data-k="codice" data-id="${r.id}">
-          </div>
-          <div class="field">
-            <label>Descrizione</label>
-            <input value="${escapeHtml(r.descrizione)}" placeholder="Descrizione" data-k="descrizione" data-id="${r.id}">
-          </div>
-          <div class="field">
-            <label>Qta / Prezzo</label>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-              <input type="number" min="1" step="1" value="${Number(r.qta || 1)}" data-k="qta" data-id="${r.id}">
-              <input type="number" min="0" step="0.01" value="${Number(r.prezzo || 0)}" data-k="prezzo" data-id="${r.id}">
-            </div>
-          </div>
-          <div class="row-actions">
-            <button class="icon-btn send" title="Invia" ${canSend ? '' : 'disabled'} data-send="${r.id}">➜</button>
-            <button class="icon-btn del" title="Elimina riga" data-del="${r.id}">✕</button>
-          </div>
+          <input placeholder="Emporio" value="${item.e}" oninput="data[${i}].e=this.value; render()">
+          <select onchange="data[${i}].t=this.value; render()">
+            <option value="frontalino" ${item.t==='frontalino'?'selected':''}>Frontalino</option>
+            <option value="etichetta" ${item.t==='etichetta'?'selected':''}>Etichetta</option>
+          </select>
+          <input placeholder="Descrizione" value="${item.d}" oninput="data[${i}].d=this.value; render()">
+          ${(item.e || item.d) ? `<button class="arrow-btn" onclick="invia(${i})">➜</button>` : ''}
+          <button onclick="data.splice(${i},1); render()">✕</button>
         `;
-        rowsEl.appendChild(row);
+        container.appendChild(row);
       });
-
-      rowsEl.querySelectorAll('input,select').forEach(el => {
-        el.addEventListener('input', onEdit);
-        el.addEventListener('change', onEdit);
-      });
-      rowsEl.querySelectorAll('[data-send]').forEach(btn => btn.addEventListener('click', sendRow));
-      rowsEl.querySelectorAll('[data-del]').forEach(btn => btn.addEventListener('click', delRow));
+      aggiornaSintesi();
     }
 
-    function renderSummary(){
-      const active = data.filter(x => !x.fatto);
-      const frontalini = active.filter(x => x.tipo === 'frontalino');
-      const etichette = active.filter(x => x.tipo === 'etichetta');
-
-      const makeBox = (title, arr, block) => {
-        const count = arr.length;
-        const readyBlocks = Math.floor(count / block);
-        const rest = count % block;
-        const ready = readyBlocks > 0;
-        return `
-          <div class="summary-box ${ready ? 'ready' : ''}">
-            <div class="summary-head">
-              <div>
-                <p class="summary-title">${title}</p>
-                <div class="muted">Totale: <span class="mono">${count}</span></div>
-              </div>
-              <span class="badge ${ready ? 'ok' : 'warn'}">
-                ${ready ? 'Pronto' : 'In attesa'}
-              </span>
-            </div>
-            <div class="pill-list">
-              <span class="pill">Fogli pronti: <b class="mono">${readyBlocks}</b></span>
-              <span class="pill">Residuo: <b class="mono">${rest}</b></span>
-              <span class="pill">Formato foglio: <b class="mono">${block}</b></span>
-            </div>
-            <div style="margin-top:10px;" class="muted">
-              ${ready ? `Puoi stampare ${readyBlocks} foglio/i completo/i.` : `Serve ancora arrivare a ${block} pezzi per stampare il primo foglio.`}
-            </div>
-          </div>`;
-      };
-
-      summaryEl.innerHTML = `
-        ${makeBox('Frontalini', frontalini, TYPE_INFO.frontalino.block)}
-        ${makeBox('Etichette', etichette, TYPE_INFO.etichetta.block)}
-      `;
+    function invia(i) { alert('Invio riga ' + i + ': ' + data[i].d); }
+    function aggiornaSintesi() {
+      const f = data.filter(i => i.t === 'frontalino').length;
+      const e = data.filter(i => i.t === 'etichetta').length;
+      document.getElementById('sumFrontalini').innerHTML = `<h3>Frontalini: ${f}</h3><p>${Math.floor(f/40)} fogli pronti (40/foglio)</p>`;
+      document.getElementById('sumEtichette').innerHTML = `<h3>Etichette: ${e}</h3><p>${Math.floor(e/24)} fogli pronti (24/foglio)</p>`;
     }
-
-    function renderSaved(){
-      const saved = data.filter(x => !x.newRow);
-      savedCountEl.textContent = `${saved.length} elementi`;
-      savedListEl.innerHTML = '';
-      const list = showDone ? saved : saved.filter(x => !x.fatto);
-      if (!list.length){
-        savedListEl.innerHTML = '<div class="muted">Nessun elemento salvato.</div>';
-        return;
-      }
-
-      list.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'item' + (item.fatto ? ' done' : '');
-        div.innerHTML = `
-          <input type="checkbox" ${item.selezionato !== false ? 'checked' : ''} data-select="${item.id}">
-          <div>
-            <strong>${escapeHtml(item.emporio || '(senza emporio)')} — ${TYPE_INFO[item.tipo].label}</strong>
-            <small>${escapeHtml(item.codice || '')} ${item.descrizione ? '• ' + escapeHtml(item.descrizione) : ''}</small>
-          </div>
-          <div class="mono">${Number(item.qta || 1)} x €${Number(item.prezzo || 0).toFixed(2)}</div>
-          <div style="display:flex;gap:8px;">
-            <button class="icon-btn done" title="Segna come stampato" data-done="${item.id}">✓</button>
-            <button class="icon-btn del" title="Elimina" data-remove="${item.id}">🗑</button>
-          </div>
-        `;
-        savedListEl.appendChild(div);
-      });
-
-      savedListEl.querySelectorAll('[data-select]').forEach(x => x.addEventListener('change', e => {
-        const it = data.find(d => d.id === e.target.dataset.select);
-        if (it) it.selezionato = e.target.checked;
-        saveData();
-        renderSummary();
-      }));
-      savedListEl.querySelectorAll('[data-done]').forEach(x => x.addEventListener('click', e => {
-        const it = data.find(d => d.id === e.target.dataset.done);
-        if (it) it.fatto = true;
-        saveData(); render();
-      }));
-      savedListEl.querySelectorAll('[data-remove]').forEach(x => x.addEventListener('click', e => {
-        data = data.filter(d => d.id !== e.target.dataset.remove);
-        saveData(); render();
-      }));
-    }
-
-    function render(){
-      saveData();
-      renderRows();
-      renderSummary();
-      renderSaved();
-    }
-
-    function onEdit(e){
-      const id = e.target.dataset.id;
-      const k = e.target.dataset.k;
-      const item = data.find(x => x.id === id);
-      if (!item) return;
-      let v = e.target.value;
-      if (k === 'qta' || k === 'prezzo') v = v === '' ? '' : Number(v);
-      item[k] = v;
-      render();
-    }
-
-    function sendRow(e){
-      const id = e.currentTarget.dataset.send;
-      const item = data.find(x => x.id === id);
-      if (!item) return;
-      item.newRow = false;
-      item.selezionato = true;
-      if (!item.qta || item.qta < 1) item.qta = 1;
-      if (item.prezzo === '') item.prezzo = 0;
-      render();
-    }
-
-    function delRow(e){
-      const id = e.currentTarget.dataset.del;
-      data = data.filter(x => x.id !== id);
-      render();
-    }
-
-    function escapeHtml(str){
-      return String(str || '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
-    }
-
-    document.getElementById('addRowBtn').addEventListener('click', () => addRow('frontalino'));
-    document.getElementById('saveAllBtn').addEventListener('click', () => {
-      data.forEach(x => { if (x.newRow) x.newRow = false; });
-      render();
-    });
-    document.getElementById('clearNewBtn').addEventListener('click', () => {
-      data = data.filter(x => !x.newRow || x.fatto);
-      render();
-    });
-    document.getElementById('showDoneBtn').addEventListener('click', () => {
-      showDone = !showDone;
-      render();
-    });
-    document.getElementById('printPrepBtn').addEventListener('click', () => {
-      const selected = data.filter(x => !x.fatto && x.selezionato !== false);
-      const frontalini = selected.filter(x => x.tipo === 'frontalino');
-      const etichette = selected.filter(x => x.tipo === 'etichetta');
-      alert(
-        `Selezionati per la stampa:\n` +
-        `Frontalini: ${frontalini.length} (fogli da ${TYPE_INFO.frontalino.block}, pronti: ${Math.floor(frontalini.length / TYPE_INFO.frontalino.block)})\n` +
-        `Etichette: ${etichette.length} (fogli da ${TYPE_INFO.etichetta.block}, pronti: ${Math.floor(etichette.length / TYPE_INFO.etichetta.block)})`
-      );
-    });
-
-    loadData();
+    document.getElementById('addBtn').onclick = () => { data.push({e:'', t:'frontalino', d:''}); render(); };
+    render();
   </script>
 </body>
 </html>
