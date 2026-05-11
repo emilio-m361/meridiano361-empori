@@ -1,270 +1,106 @@
 /*
  * nav-style.css — M361 App
- * Stili condivisi per header, bottom nav, e componenti base.
- *
- * FONT (max 3, caricati da nav-script.js):
- *   1. Inter     — testo UI, label, titoli
- *   2. DM Mono   — valori numerici, monospace
- *
- * Includi questo file PRIMA di nav-script.js in ogni pagina:
- *   <link rel="stylesheet" href="../../assets/style/nav-style.css">
- *   <script src="../../scripts/nav-script.js"></script>
+ * Stile per la navigazione inferiore e componenti condivisi
  */
 
-/* ── Reset & Base ── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --red:        #b75252;
-  --red-dark:   #8f3d3d;
-  --red-light:  #fff1f1;
-  --slate-50:   #f8fafc;
+  --red-m361:   #b75252;
+  --red-dark:   #9e3f3f;
+  --white:      #ffffff;
+  --white-70:   rgba(255, 255, 255, 0.65);
+  --white-10:   rgba(255, 255, 255, 0.10);
   --slate-100:  #f1f5f9;
-  --slate-200:  #e2e8f0;
-  --slate-300:  #cbd5e1;
   --slate-400:  #94a3b8;
-  --slate-500:  #64748b;
-  --slate-600:  #475569;
   --slate-700:  #334155;
-  --slate-800:  #1e293b;
-  --emerald:    #059669;
-  --rose:       #e11d48;
-  --brown:      #7a4f2b;
-  --blue-emp:   #4c5d88;
-
   --font-main:  'Inter', sans-serif;
-  --font-mono:  'DM Mono', 'Courier New', monospace;
-  --radius:     20px;
-  --shadow-sm:  0 1px 4px rgba(0,0,0,.07);
-  --shadow-md:  0 4px 16px rgba(0,0,0,.10);
 }
 
-html { -webkit-text-size-adjust: 100%; }
-
-body {
-  font-family: var(--font-main);
-  background: #f0f2f5;
-  color: var(--slate-800);
-  min-height: 100vh;
-  padding-top: 56px;    /* header height */
-  padding-bottom: 68px; /* nav height */
-  line-height: 1.5;
-}
-
-/* ── TIPOGRAFIA ── */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-main);
-  font-weight: 800;
-  color: var(--slate-800);
-  line-height: 1.2;
-}
-
-.font-mono,
-.mono { font-family: var(--font-mono); }
-
-/* ── CARD BASE ── */
-.card {
-  background: #fff;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--slate-200);
-}
-.card-pad { padding: 24px; }
-
-/* ── SECTION TITLE ── */
-.sec-title {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--slate-400);
+/* ── CONTENITORE NAVBAR ── */
+#m361-nav {
+  position: fixed;
+  bottom: 0; 
+  left: 0; 
+  right: 0; 
+  height: 65px; /* Leggermente più alto per miglior tocco */
+  background: var(--red-m361);
+  border-top: 1px solid var(--red-dark);
+  z-index: 9999;
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-.sec-title::before {
-  content: '';
-  display: block;
-  width: 3px;
-  height: 16px;
-  background: var(--red);
-  border-radius: 2px;
-  flex-shrink: 0;
+  align-items: stretch;
+  justify-content: center;
+  padding: 0 10px;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.12);
 }
 
-/* ── MAIN CONTAINER ── */
-.main, .page-main {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 24px 16px;
-}
-
-/* ── BUTTONS ── */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: none;
-  border-radius: 12px;
-  font-family: var(--font-main);
-  font-weight: 800;
-  font-size: 11px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all .15s;
-  text-decoration: none;
-  white-space: nowrap;
-}
-.btn-primary { background: var(--red); color: #fff; padding: 13px 26px; }
-.btn-primary:hover { background: var(--red-dark); }
-.btn-secondary { background: #fff; color: var(--slate-600); border: 1.5px solid var(--slate-200); padding: 12px 20px; }
-.btn-secondary:hover { border-color: var(--slate-400); background: var(--slate-50); }
-.btn-dark { background: var(--slate-800); color: #fff; padding: 14px 32px; }
-.btn-dark:hover { background: #000; }
-
-/* ── FORM ELEMENTS ── */
-.input, .select-input, .textarea-input {
-  width: 100%;
-  border: 1px solid var(--slate-200);
-  border-radius: 12px;
-  padding: 11px 14px;
-  font-size: 13px;
-  font-family: var(--font-main);
-  color: var(--slate-700);
-  background: #fff;
-  transition: border-color .15s;
-}
-.input:focus, .select-input:focus, .textarea-input:focus {
-  outline: none;
-  border-color: var(--red);
-}
-.textarea-input { resize: vertical; min-height: 80px; }
-.input-mono {
-  font-family: var(--font-mono);
-  text-align: right;
-  font-weight: 700;
-}
-
-.field-label {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--slate-400);
-  margin-bottom: 8px;
-  display: block;
-}
-
-/* ── CARD NAVIGAZIONE (home page) ── */
-.nav-card {
-  background: #fff;
-  border-radius: 20px;
-  border: 1px solid var(--slate-100);
-  box-shadow: var(--shadow-sm);
-  padding: 28px 20px;
+/* ── ELEMENTO SINGOLO (Pulsante) ── */
+.mn-item {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  cursor: pointer;
-  transition: all .15s;
-  text-decoration: none;
-}
-.nav-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(183,82,82,.14);
-  border-color: rgba(183,82,82,.2);
-}
-.nav-card-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  background: var(--red-light);
-  display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 4px;
+  gap: 4px;
+  padding: 0 12px;
+  min-width: 65px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Icona */
+.mn-item i {
+  font-size: 18px;
+  color: var(--white-70);
+  transition: all 0.2s ease;
+}
+
+/* Testo Label */
+.mn-item span {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--white-70);
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+/* ── STATO CORRENTE (PAGINA ATTIVA) ── */
+/* Quando il JS aggiunge la classe .mn-current, il tasto diventa bianco */
+.mn-item.mn-current i,
+.mn-item.mn-current span {
+  color: var(--white) !important;
+  opacity: 1 !important;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+/* Feedback al tocco (Mobile) */
+.mn-item:active {
+  background: var(--white-10);
+  transform: scale(0.95);
+}
+
+/* ── SEPARATORI ── */
+.mn-sep {
+  width: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 15px 8px;
   flex-shrink: 0;
 }
-.nav-card-icon svg, .nav-card-icon i { width: 24px; height: 24px; font-size: 20px; color: var(--red); }
-.nav-card-title { font-size: 16px; font-weight: 800; color: var(--slate-700); }
-.nav-card-sub { font-size: 12px; font-weight: 600; color: var(--slate-400); }
 
-/* WIP cards */
-.nav-card.wip {
-  background: linear-gradient(135deg, #fafafa, #f4f4f6);
-  border: 2px dashed var(--slate-200);
-  cursor: default;
-  opacity: .55;
-  pointer-events: none;
-}
-.nav-card.wip .nav-card-icon { background: var(--slate-100); }
-.nav-card.wip .nav-card-icon svg,
-.nav-card.wip .nav-card-icon i { color: var(--slate-400); }
-.nav-card.wip .nav-card-title { color: var(--slate-400); }
-
-.wip-badge {
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--slate-400);
-  background: var(--slate-100);
-  border-radius: 999px;
-  padding: 3px 10px;
-  display: inline-block;
-}
-
-/* ── UTILITY ── */
+/* ── UTILITY PER LE PAGINE ── */
 .hidden { display: none !important; }
-.space-y > * + * { margin-top: 18px; }
-.divider { border: none; border-top: 1px solid var(--slate-100); margin: 16px 0; }
-.text-red   { color: var(--red); }
-.text-gray  { color: var(--slate-400); }
-.text-dark  { color: var(--slate-700); }
-.text-mono  { font-family: var(--font-mono); }
-.fw-800     { font-weight: 800; }
-.upper      { text-transform: uppercase; letter-spacing: .08em; }
 
-/* ── SEZIONE HEADER (group labels) ── */
-.group-label {
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: var(--slate-400);
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.group-label::before {
-  content: '';
-  display: block;
-  width: 3px;
-  height: 14px;
-  background: var(--red);
-  border-radius: 2px;
+/* Stile per i badge "WIP" se presenti nel menu */
+.mn-wip {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(1);
 }
 
-/* ── RESPONSIVE GRID ── */
-.grid-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 16px; }
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
-@media (max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
-@media (max-width: 640px) { .grid-4 { grid-template-columns: repeat(2,1fr); } }
-@media (max-width: 380px) { .grid-4 { grid-template-columns: 1fr; } }
-
-/* STATO ATTIVO: Illumina di bianco l'icona e il testo della pagina corrente */
-.mn-item.mn-current i, 
-.mn-item.mn-current span {
-    color: #ffffff !important;
-    opacity: 1 !important;
-}
-
-/* Effetto al tocco */
-.mn-item:active {
-    background: rgba(255,255,255,0.1);
+/* Scrollbar nascosta per menu lunghi su mobile */
+#m361-nav::-webkit-scrollbar {
+  display: none;
 }
