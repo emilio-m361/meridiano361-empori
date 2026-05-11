@@ -314,42 +314,76 @@ function buildNav() {
   /* ═══════════════════════════════════════
      INIT — SINCRONO, MAI BLOCCA
   ═══════════════════════════════════════ */
-  function init() {
-    if (isPublicPage()) return;
+  async function init() {
+    // 1. Se siamo sulla pagina di login, non facciamo nulla e permettiamo l'accesso
+    if (typeof isPublicPage === 'function' && isPublicPage()) return;
+    if (window.location.pathname.includes('login.html')) return;
 
+    // 2. Recupero utente dal localStorage
+    const user = JSON.parse(localStorage.getItem('m361_user'));
+
+    // 3. PROTEZIONE: Se l'utente non esiste, spediscilo al login immediatamente
+    if (!user || !user.email) {
+      console.warn("Accesso non autorizzato. Reindirizzamento...");
+      window.location.href = getBase() + 'login.html';
+      return; // Blocca l'esecuzione del resto dello script
+    }
+
+    // 4. Caricamento Interfaccia (Eseguito solo se loggati)
     injectDeps();
     injectStyles();
     buildHeader();
     buildNav();
 
-    // Guard sessione in background (NON blocca il rendering)
-    guardSessionAsync();
-
-    // Nel tuo nav-script.js, dentro la funzione init():
-async function checkPermissionsAndApply() {
-    const user = JSON.parse(localStorage.getItem('m361_user'));
-    if (!user) return;
-
-    // Recupera lo stato aggiornato dal DB
-    const { data: dbUser } = await _supabase
-        .from('user_permissions')
-        .select('is_readonly, visible_sections')
-        .eq('email', user.email)
-        .single();
-
-    if (dbUser && dbUser.is_readonly) {
-        const style = document.createElement('style');
-        style.innerHTML = `
-            button[type="submit"], .btn-add, .btn-delete, #submit-btn { display: none !important; }
-            input, select, textarea { pointer-events: none !important; opacity: 0.7; background: #f1f5f9 !important; }
-            body::after { content: "SOLA LETTURA ATTIVA"; position: fixed; top: 75px; left: 50%; transform: translateX(-50%); background: #fef9c3; color: #854d0e; padding: 2px 10px; font-size: 9px; font-weight: 800; border-radius: 5px; z-index: 10000; border: 1px solid #facc15; }
-        `;
-        document.head.appendChild(style);
-    }
-}
+    // 5. Controllo Sola Lettura (Async)
+    await checkPermissionsAndApply(user);
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();
+  /**
+   * Applica le restrizioni se l'utente è in modalità sola lettura nel DB
+   */
+  async function checkPermissionsAndApply(user) {
+    const _supabase = getSupabase();
+    if (!_supabase) return;
+
+    const { data: dbUser } = await _supabase
+      .from('user_permissions')
+      .select('is_readonly')
+      .eq('email', user.email)
+      .single();
+
+    if (dbUser && dbUser.is_readonly) {
+      const style = document.createElement('style');
+      style.id = 'readonly-styles';
+      style.innerHTML = `
+        /* Nasconde i tasti di azione */
+        button[type="submit"], .btn-add, .btn-delete, .btn-save, #submit-btn, .admin-only { 
+            display: none !important; 
+        }
+        /* Blocca l'interazione con i campi */
+        input, select, textarea { 
+            pointer-events: none !important; 
+            opacity: 0.7; 
+            background: #f1f5f9 !important; 
+        }
+        /* Etichetta visiva */
+        body::after { 
+            content: "SOLA LETTURA ATTIVA"; 
+            position: fixed; top: 75px; left: 50%; transform: translateX(-50%); 
+            background: #fef9c3; color: #854d0e; padding: 2px 10px; 
+            font-size: 9px; font-weight: 800; border-radius: 5px; 
+            z-index: 10000; border: 1px solid #facc15; 
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  }
+
+  // Lancio dello script
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 
 })();
