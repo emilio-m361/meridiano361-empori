@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M361 - Prezzi da Fare</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="assets/style/nav-style.css">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .card { background: white; border-radius: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; margin-bottom: 2rem; }
+        .badge { padding: 4px 10px; border-radius: 999px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .badge-frontalino { background-color: #dcfce7; color: #166534; }
+        .badge-etichetta { background-color: #fef9c3; color: #854d0e; }
+        .table-header { background-color: #f1f5f9; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    </style>
+</head>
+<body class="p-4 pb-24">
+
+    <div class="max-w-md mx-auto">
+        <header class="mb-6">
+            <h1 class="text-2xl font-extrabold text-slate-800">Prezzi da Fare</h1>
+            <p class="text-slate-500 text-sm">Gestione stampe per emporio</p>
+        </header>
+
+        <section class="mb-8">
+            <div class="flex items-center gap-2 mb-3 ml-2">
+                <i class="fas fa-location-dot text-[#b75252]"></i>
+                <h2 class="text-lg font-bold text-slate-700">Cremona</h2>
+            </div>
+            
+            <div class="card">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="table-header">
+                            <th class="p-4">Prodotto</th>
+                            <th class="p-4 text-center">Tipo</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <tr>
+                            <td class="p-4 text-sm font-medium text-slate-700">Frollini Libera Terra</td>
+                            <td class="p-4 text-center"><span class="badge badge-frontalino">Frontalino</span></td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 text-sm font-medium text-slate-700">Coppia tazze verdi</td>
+                            <td class="p-4 text-center"><span class="badge badge-etichetta">Etichetta</span></td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 text-sm font-medium text-slate-700">Sfera rametti</td>
+                            <td class="p-4 text-center"><span class="badge badge-etichetta">Etichetta</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="mb-8 opacity-60">
+            <div class="flex items-center gap-2 mb-3 ml-2 text-slate-400">
+                <i class="fas fa-location-dot"></i>
+                <h2 class="text-lg font-bold">Casalmaggiore</h2>
+            </div>
+            <div class="p-8 text-center bg-slate-100 rounded-3xl border-2 border-dashed border-slate-200">
+                <p class="text-slate-400 text-sm font-medium">Nessuna richiesta di stampa</p>
+            </div>
+        </section>
+
+        <section class="mb-8 opacity-60">
+            <div class="flex items-center gap-2 mb-3 ml-2 text-slate-400">
+                <i class="fas fa-location-dot"></i>
+                <h2 class="text-lg font-bold">Viadana</h2>
+            </div>
+            <div class="p-8 text-center bg-slate-100 rounded-3xl border-2 border-dashed border-slate-200">
+                <p class="text-slate-400 text-sm font-medium">Nessuna richiesta di stampa</p>
+            </div>
+        </section>
+    </div>
+
+    <script src="scripts/nav-script.js"></script>
+</body>
+</html>
