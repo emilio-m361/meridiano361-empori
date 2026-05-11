@@ -314,6 +314,62 @@
         }
 
         // LOAD ORDER DATA
+        
+        // AUTOMATIC ORDER NUMBER GENERATION
+        async function generateNumeroOrdine(emporio, data) {
+            // Get emporio abbreviation
+            const emporioMap = {
+                'Cremona': 'CR',
+                'Casalmaggiore': 'CA',
+                'Reggio Emilia': 'RE',
+                'Viadana': 'VI'
+            };
+            
+            const sigla = emporioMap[emporio] || 'XX';
+            const dateStr = data.replace(/-/g, ''); // 2026-05-11 -> 20260511
+            
+            try {
+                // Query database to find last order number for this emporio and date
+                const { data: existingOrders, error } = await _supabase
+                    .from('ordini_incorso')
+                    .select('numero_ordine')
+                    .like('numero_ordine', `${dateStr}${sigla}#%`)
+                    .order('numero_ordine', { ascending: false })
+                    .limit(1);
+                
+                let progressivo = 1;
+                
+                if (existingOrders && existingOrders.length > 0) {
+                    // Extract progressive number from last order
+                    const lastOrder = existingOrders[0].numero_ordine;
+                    const match = lastOrder.match(/#(\d+)$/);
+                    if (match) {
+                        progressivo = parseInt(match[1]) + 1;
+                    }
+                }
+                
+                // Format: 20260511CR#01
+                const numeroOrdine = `${dateStr}${sigla}#${String(progressivo).padStart(2, '0')}`;
+                return numeroOrdine;
+                
+            } catch (error) {
+                console.error('Error generating order number:', error);
+                // Fallback to basic generation
+                return `${dateStr}${sigla}#01`;
+            }
+        }
+        
+        // Auto-update order number when emporio or date changes
+        async function updateNumeroOrdine() {
+            const emporio = document.getElementById('select-emporio')?.value;
+            const data = document.getElementById('order-date')?.value;
+            const numeroField = document.getElementById('numero-ordine-preview');
+            
+            if (emporio && data && numeroField) {
+                numeroField.value = await generateNumeroOrdine(emporio, data);
+            }
+        }
+
         async function loadOrderData() {
             const orderId = getOrderIdFromURL();
             
@@ -379,7 +435,7 @@
             // Cliente
             setValueSafe('cust-nome', order.cliente_nome);
             setValueSafe('cust-cognome', order.cliente_cognome);
-            setValueSafe('cust-tel', order.cliente_cellulare);
+            setValueSafe('cust-cel', order.cliente_cellulare);
             setValueSafe('cust-email', order.cliente_email);
             
             // WhatsApp
