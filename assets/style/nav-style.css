@@ -256,3 +256,15 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .grid-4 { grid-template-columns: repeat(2,1fr); } }
 @media (max-width: 380px) { .grid-4 { grid-template-columns: 1fr; } }
+
+/* STATO ATTIVO: Illumina di bianco l'icona e il testo della pagina corrente */
+.mn-item.mn-current i, 
+.mn-item.mn-current span {
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+/* Effetto al tocco */
+.mn-item:active {
+    background: rgba(255,255,255,0.1);
+}
