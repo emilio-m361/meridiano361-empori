@@ -265,6 +265,40 @@
             color: #64748b;
             margin: 6px 0;
         }
+    
+        /* Bulk Selection */
+        .bulk-actions {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 20px;
+            margin-bottom: 16px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .bulk-actions.show { display: flex; }
+        .bulk-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            border: none;
+            background: #fee2e2;
+            color: #991b1b;
+            transition: all 0.2s;
+        }
+        .bulk-btn:hover { background: #fecaca; }
+        .order-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #b75252;
+        }
+
     </style>
 </head>
 <body class="pb-20">
@@ -290,8 +324,8 @@
                 <div class="flex flex-wrap gap-2">
                     <button class="filter-btn active" data-filter="tutti">Tutti</button>
                     <button class="filter-btn" data-filter="da_ordinare">Merce da ordinare</button>
-                    <button class="filter-btn" data-filter="da_avvisare">Merce pronta cliente da avvisare</button>
-                    <button class="filter-btn" data-filter="avvisati">Merce pronta cliente avvisato</button>
+                    <button class="filter-btn" data-filter="da_avvisare">Merce pronta → cliente da avvisare</button>
+                    <button class="filter-btn" data-filter="avvisati">Merce pronta: cliente avvisato</button>
                 </div>
                 
                 <!-- Search and Date Filter -->
@@ -330,6 +364,54 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+
+        // === BULK SELECTION ===
+        let selectedOrders = new Set();
+        
+        function toggleOrderSelection(orderId, checked) {
+            if (checked) {
+                selectedOrders.add(orderId);
+            } else {
+                selectedOrders.delete(orderId);
+            }
+            updateBulkBar();
+        }
+        
+        function toggleSelectAll(checked) {
+            selectedOrders.clear();
+            document.querySelectorAll('.order-checkbox:not(#select-all)').forEach(cb => {
+                cb.checked = checked;
+                if (checked && cb.dataset.orderId) {
+                    selectedOrders.add(cb.dataset.orderId);
+                }
+            });
+            updateBulkBar();
+        }
+        
+        function updateBulkBar() {
+            const count = selectedOrders.size;
+            document.getElementById('selected-count').textContent = count;
+            document.getElementById('bulk-actions').classList.toggle('show', count > 0);
+        }
+        
+        async function bulkDelete() {
+            if (selectedOrders.size === 0) return;
+            if (!confirm(`Eliminare ${selectedOrders.size} ordini?`)) return;
+            
+            try {
+                for (const id of selectedOrders) {
+                    await _supabase.from('ordini_incorso').delete().eq('id', id);
+                }
+                selectedOrders.clear();
+                updateBulkBar();
+                alert('Ordini eliminati!');
+                await loadOrders();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Errore eliminazione');
+            }
+        }
+
         const SUPABASE_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -530,9 +612,41 @@
             if (!confirm('Segnare questo ordine come completato (Ritirato/Spedito)?')) return;
             
             try {
-                const { error } = await _supabase
+                // Fetch order data
+                const { data: orderData, error: fetchError } = await _supabase
                     .from('ordini_incorso')
-                    .update({ stato: 'completato' })
+                    .select('*')
+                    .eq('id', orderId)
+                    .single();
+
+                if (fetchError) throw fetchError;
+                
+                // Insert into archived
+                const archiveData = { ...orderData };
+                delete archiveData.id;
+                archiveData.data_archiviazione = new Date().toISOString();
+                
+                const { error: insertError } = await _supabase
+                    .from('ordini_archiviati')
+                    .insert([archiveData]);
+
+                if (insertError) throw insertError;
+                
+                // Delete from in corso
+                const { error: deleteError } = await _supabase
+                    .from('ordini_incorso')
+                    .delete()
+                    .eq('id', orderId);
+
+                if (deleteError) throw deleteError;
+                
+                alert('Ordine archiviato con successo!');
+                await loadOrders();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Errore: ' + error.message);
+            }
+        })
                     .eq('id', orderId);
 
                 if (error) throw error;
