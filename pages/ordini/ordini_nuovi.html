@@ -476,8 +476,12 @@
 
         function initOrder(type) {
             currentType = type;
-            const today = new Date().toISOString().split("T")[0];
+            
+            // Set today's date
+            const today = new Date().toISOString().split('T')[0];
             document.getElementById("order-date").value = today;
+            
+            // Show/hide sections
             document.getElementById('order-type-selection').classList.add('hidden');
             document.getElementById('orderForm').classList.remove('hidden');
             document.getElementById('header-title').innerText = type === 'bomboniere' ? 'Ordine Bomboniere' : 'Ordine Standard';
@@ -488,10 +492,6 @@
             }
             
             addGroup();
-            
-            const today = new Date().toISOString().split('T')[0];
-            getValueSafe('order-date') = today;
-            
             refreshNumeroOrdinePreview();
         }
 
