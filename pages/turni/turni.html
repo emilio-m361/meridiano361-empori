@@ -5,70 +5,1017 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>M361 - Gestione Turni</title>
 <link rel="stylesheet" href="../../assets/style/nav-style.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,sans-serif;background:#f0f2f5;color:#1e293b;padding-bottom:100px}
-.mono{font-family:'DM Mono',monospace}
-.main{max-width:1400px;margin:0 auto;padding:20px 12px}
-.sec-t{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#94a3b8;display:flex;align-items:center;gap:10px;margin-bottom:16px}
-.sec-t::before{content:'';width:3px;height:16px;background:#b75252;border-radius:2px}
-.emp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
-.emp-card{background:#fff;border-radius:20px;border:1px solid #f1f5f9;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:28px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:all .15s;text-align:center}
-.emp-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(183,82,82,.14)}
-.emp-card img{width:72px;height:72px;border-radius:50%;object-fit:contain;padding:6px}
-.emp-card .name{font-weight:700;font-size:15px;color:#334155}
-.btn-p{background:#b75252;color:#fff;border:none;border-radius:11px;padding:10px 18px;font-weight:800;font-size:10px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .15s;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
-.btn-p:hover{background:#8f3d3d}
-.btn-s{background:#fff;color:#64748b;border:1.5px solid #e2e8f0;border-radius:11px;padding:10px 16px;font-weight:800;font-size:10px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .15s;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
-.btn-s:hover{border-color:#94a3b8;background:#f8fafc}
-.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:20px}
-.f-grp{display:flex;flex-direction:column;gap:4px}
-.f-lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8}
-.f-sel{border:1px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;font-family:inherit;color:#334155;background:#fff;min-width:140px}
-.f-sel:focus{outline:none;border-color:#b75252}
-.view-tabs{display:flex;gap:4px;background:#fff;padding:4px;border-radius:12px;border:1px solid #e2e8f0;margin-bottom:16px}
-.v-tab{flex:1;padding:8px;border-radius:9px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;border:none;background:transparent;color:#94a3b8;transition:all .12s;text-align:center}
-.v-tab.on{background:#1e293b;color:#fff}
-.month-bar{display:flex;gap:3px;flex-wrap:wrap;background:#fff;padding:4px;border-radius:12px;border:1px solid #e2e8f0;margin-bottom:16px}
-.m-btn{padding:6px 10px;border-radius:8px;font-size:9px;font-weight:800;text-transform:uppercase;cursor:pointer;border:none;background:transparent;color:#94a3b8;transition:all .12s;flex:1;text-align:center;min-width:44px}
-.m-btn.on{background:#b75252;color:#fff}
-.m-btn:hover:not(.on){background:#f1f5f9;color:#475569}
-.cal-table{width:100%;border-collapse:collapse;font-size:12px;min-width:800px}
-.cal-table thead th{padding:7px 6px;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;background:#f8fafc;border-bottom:2px solid #e2e8f0;position:sticky;top:0;z-index:5;white-space:nowrap;text-align:left}
-.cal-table tbody td{padding:6px;border-bottom:1px solid #f1f5f9;vertical-align:top}
-.cal-table tbody tr:hover{background:#fefce8}
-.cal-table tbody tr.festivo{background:#fff8f8}
-.cal-table tbody tr.festivo td:first-child{color:#b75252;font-weight:900}
-.date-cell{white-space:nowrap;font-weight:800;color:#1e293b;min-width:80px}
-.date-cell .dn{font-size:9px;color:#94a3b8;font-weight:700;text-transform:uppercase}
-.op-list{display:flex;flex-direction:column;gap:3px;min-width:120px}
-.op-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:8px;font-size:11px;font-weight:600;max-width:fit-content;white-space:nowrap}
-.op-chip .rm{font-size:9px;color:#cbd5e1;cursor:pointer;margin-left:2px}
-.op-chip .rm:hover{color:#ef4444}
-.c-dip{background:#fce4ec;color:#7f1d1d}
-.c-vol{background:#e8f5e9;color:#1b5e20}
-.c-scu{background:#e3f2fd;color:#0d47a1}
-.op-add{font-size:10px;color:#94a3b8;cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border-radius:6px;transition:color .12s}
-.op-add:hover{color:#b75252}
-.st-btn{font-size:8px;font-weight:900;text-transform:uppercase;padding:3px 8px;border-radius:6px;cursor:pointer;border:1px solid;transition:all .12s}
-.st-open{background:#dcfce7;color:#166534;border-color:#86efac}
-.st-closed{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
-.ass-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:6px;display:inline-flex;align-items:center;gap:3px;cursor:pointer;white-space:nowrap}
-.ass-ferie{background:#dbeafe;color:#1e40af}
-.ass-malattia{background:#fef9c3;color:#854d0e}
-.ass-permesso{background:#fce7f3;color:#9d174d}
-.note-cell{min-width:80px}
-.note-cell textarea{width:100%;min-height:28px;border:1px solid transparent;border-radius:6px;padding:3px 6px;font-size:11px;font-family:inherit;resize:vertical;background:transparent;transition:border .15s}
-.note-cell textarea:focus{border-color:#b75252;background:#fff;outline:none}
-.ore-inp{width:48px;border:1px solid #e2e8f0;border-radius:6px;padding:2px 4px;font-size:11px;font-family:'DM Mono',monospace;text-align:center;font-weight:700}
-.ore-inp:focus{border-color:#b75252;outline:none}
-.hrs-table{width:100%;border-collapse:collapse;font-size:12px;min-width:600px}
-.hrs-table th{padding:8px 10px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#fff;background:#1e293b;white-space:nowrap;text-align:center}
-.hrs-table th:first-child{text-align:left;border-radius:12px 0 0 0}
-.hrs-table th:last-child{border-radius:0 12px 0 0}
-.hrs-table td{padding:8px 10px;border-bottom:1px solid #f1f5f9;text-align:center;font-family:'DM Mono',monospace;font-weight:700}
-.hrs-table td:first-child{text-align:left;font-family:inherit;font-weight:800;color:#334155}
-.hrs-table tbody tr:hover{background:#f8fafc}
-.hrs-table tfoot td{backgr
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1e293b;min-height:100vh;padding-bottom:100px;}
+
+/* ── LAYOUT ── */
+.main{max-width:1400px;margin:0 auto;padding:24px 16px;}
+.space-y>*+*{margin-top:18px;}
+
+/* ── HEADER ACTIONS ── */
+.header-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-bottom:24px;}
+.header-actions-left{display:flex;gap:12px;flex-wrap:wrap;}
+.header-actions-right{display:flex;gap:12px;flex-wrap:wrap;}
+
+/* ── HOURS SUMMARY ── */
+.hours-summary{background:#fff;border-radius:16px;padding:20px;border:1px solid #f1f5f9;box-shadow:0 1px 4px rgba(0,0,0,.07);}
+.hours-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:12px;}
+.hours-card{background:#f8fafc;padding:12px 16px;border-radius:12px;border:1px solid #e2e8f0;}
+.hours-name{font-size:12px;font-weight:700;color:#334155;margin-bottom:4px;}
+.hours-value{font-size:20px;font-weight:900;color:#b75252;font-family:'DM Mono',monospace;}
+.hours-label{font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;}
+
+/* ── CARD ── */
+.card{background:#fff;border-radius:24px;box-shadow:0 1px 4px rgba(0,0,0,.07);}
+.card-pad{padding:24px;}
+
+/* ── SECTION TITLE ── */
+.sec-title{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#94a3b8;display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.sec-title::before{content:'';display:block;width:3px;height:16px;background:#b75252;border-radius:2px;flex-shrink:0;}
+
+/* ── BUTTONS ── */
+.btn-primary{background:#b75252;color:#fff;border:none;border-radius:12px;padding:13px 26px;font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background .15s;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:8px;}
+.btn-primary:hover{background:#8f3d3d;}
+.btn-secondary{background:#fff;color:#64748b;border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 20px;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:8px;}
+.btn-secondary:hover{border-color:#94a3b8;background:#f8fafc;}
+.btn-icon{background:none;border:none;color:#94a3b8;cursor:pointer;font-size:14px;padding:6px;transition:color .15s;}
+.btn-icon:hover{color:#b75252;}
+
+/* ── EMPORIO CARDS ── */
+.emp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;}
+.emp-card{background:#fff;border-radius:24px;border:1px solid #f1f5f9;box-shadow:0 1px 4px rgba(0,0,0,.07);padding:32px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;cursor:pointer;transition:all .15s;text-align:center;}
+.emp-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(183,82,82,.15);}
+.emp-logo{width:80px;height:80px;border-radius:50%;object-fit:contain;padding:8px;}
+.emp-name{font-weight:700;font-size:16px;color:#334155;}
+
+/* ── FILTERS ── */
+.filters{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:24px;}
+.filter-group{display:flex;flex-direction:column;gap:6px;}
+.filter-label{font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;}
+.filter-select{border:1px solid #e2e8f0;border-radius:12px;padding:11px 14px;font-size:13px;font-family:'Inter',sans-serif;color:#334155;background:#fff;min-width:160px;}
+.filter-select:focus{outline:none;border-color:#b75252;}
+
+/* ── DAY CARD ── */
+.day-card{background:#fff;border-radius:24px;box-shadow:0 1px 4px rgba(0,0,0,.07);overflow:hidden;display:grid;grid-template-columns:100px 1fr 1fr;min-height:140px;transition:all .15s;margin-bottom:12px;position:relative;}
+.day-card:hover{box-shadow:0 4px 18px rgba(0,0,0,.1);}
+.day-card.chiuso::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(148,163,184,0.08) 10px,rgba(148,163,184,0.08) 20px);pointer-events:none;z-index:1;}
+
+/* ── DATE COLUMN ── */
+.date-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;border-right:1px solid #f1f5f9;background:#fff;position:relative;z-index:2;}
+.date-col.festivo{background:#fff8f8;}
+.day-name{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#475569;}
+.day-name.festivo{color:#b75252;}
+.day-num{font-size:52px;font-weight:900;line-height:1;margin:4px 0;color:#1e293b;}
+.day-num.festivo{color:#b75252;}
+.day-month{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;}
+.day-month.festivo{color:#e8a0a0;}
+
+/* ── TURNO SECTIONS ── */
+.turno-section{padding:20px;display:flex;flex-direction:column;gap:12px;position:relative;z-index:2;}
+.turno-section.mattina{background:linear-gradient(160deg,#fff5f5 0%,#fef0f0 100%);border-left:3px solid #f0c0c0;}
+.turno-section.pomeriggio{background:linear-gradient(160deg,#eff3f7 0%,#e2e8f0 100%);border-left:3px solid #cbd5e1;}
+.turno-section.chiuso{background:#fafbfc;opacity:0.7;}
+.turno-header{display:flex;align-items:center;justify-content:space-between;}
+.turno-title{font-size:13px;font-weight:800;letter-spacing:.04em;color:#1e293b;}
+
+/* ── BADGES ── */
+.status-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .15s;}
+.badge-chiuso{background:#fff1f1;color:#b75252;border:1.5px solid #fca5a5;}
+.badge-chiuso:hover{background:#ffe4e6;border-color:#f87171;}
+.lock-icon{width:14px;height:14px;display:inline-flex;align-items:center;justify-content:center;}
+.lock-icon svg{width:100%;height:100%;fill:currentColor;}
+
+/* ── OPERATORS ── */
+.operators{display:flex;flex-direction:column;gap:6px;}
+.operator-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600;max-width:fit-content;position:relative;}
+.operator-chip i{font-size:10px;color:#cbd5e1;cursor:pointer;transition:color .15s;}
+.operator-chip i:hover{color:#ef4444;}
+.chip-mat-dip{background:#fac8c8;color:#7f1d1d;border:1px solid #f0b8b8;}
+.chip-mat-vol{background:#fde0d0;color:#9a3412;border:1px solid #fed7aa;}
+.chip-mat-sc{background:#fce8e8;color:#b45252;border:1px solid #f0b8b8;}
+.chip-pom-dip{background:#dce6f4;color:#1e3a5f;border:1px solid #bfdbfe;}
+.chip-pom-vol{background:#e2eedc;color:#14532d;border:1px solid #bbf7d0;}
+.chip-pom-sc{background:#eef2f7;color:#334155;border:1px solid #cbd5e1;}
+.chip-ferie{background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;}
+.chip-malattia{background:#fef9c3;color:#854d0e;border:1px solid #fde047;}
+.add-link{font-size:12px;font-weight:800;color:#94a3b8;display:inline-flex;align-items:center;gap:5px;cursor:pointer;transition:color .15s;letter-spacing:.04em;}
+.add-link:hover{color:#b75252;}
+.nessun-turno{font-size:12px;font-style:italic;color:#94a3b8;}
+
+/* ── MODAL ── */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px;overflow-y:auto;}
+.modal.show{display:flex;}
+.modal-content{background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:900px;width:100%;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;margin:auto;}
+.modal-header{padding:24px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:18px;font-weight:800;color:#1e293b;}
+.modal-close{background:none;border:none;font-size:24px;color:#cbd5e1;cursor:pointer;transition:color .15s;}
+.modal-close:hover{color:#b75252;}
+.modal-body{padding:24px;overflow-y:auto;flex:1;}
+.modal-footer{padding:24px;border-top:1px solid #f1f5f9;display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap;}
+
+/* ── TURNI PREDEFINITI ── */
+.preset-table{width:100%;border-collapse:separate;border-spacing:0 8px;}
+.preset-table th{text-align:left;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;padding:8px 4px;}
+.preset-table td{padding:8px 4px;background:#f8fafc;border:1px solid #f1f5f9;}
+.preset-table tr td:first-child{border-radius:12px 0 0 12px;padding-left:12px;}
+.preset-table tr td:last-child{border-radius:0 12px 12px 0;padding-right:12px;}
+.preset-name{font-weight:700;color:#334155;font-size:13px;display:flex;align-items:center;gap:8px;}
+.preset-role{font-size:10px;color:#94a3b8;font-weight:600;}
+.day-toggle{width:36px;height:36px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;font-size:10px;font-weight:800;color:#94a3b8;}
+.day-toggle.active-m{background:#fff1f1;border-color:#fca5a5;color:#b75252;}
+.day-toggle.active-p{background:#eff3f7;border-color:#cbd5e1;color:#475569;}
+.day-toggle:hover{border-color:#b75252;}
+
+/* ── ORARI EMPORIO ── */
+.hours-table{width:100%;border-collapse:separate;border-spacing:0 8px;}
+.hours-table th{text-align:left;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;padding:8px 6px;}
+.hours-table td{padding:10px 6px;background:#f8fafc;border:1px solid #f1f5f9;}
+.hours-table tr td:first-child{border-radius:12px 0 0 12px;font-weight:700;color:#334155;padding-left:12px;}
+.hours-table tr td:last-child{border-radius:0 12px 12px 0;padding-right:12px;}
+.time-input{border:1px solid #e2e8f0;border-radius:8px;padding:6px 8px;font-size:12px;font-family:'Inter',sans-serif;width:70px;}
+.time-input:focus{outline:none;border-color:#b75252;}
+.closed-checkbox{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:#64748b;}
+.closed-checkbox input{width:16px;height:16px;}
+
+/* ── OPERATOR MANAGEMENT ── */
+.operator-list{display:flex;flex-direction:column;gap:8px;}
+.operator-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:12px;border:1.5px solid #e2e8f0;background:#fff;transition:all .15s;}
+.operator-item:hover{border-color:#b75252;background:#fff8f8;}
+.operator-item-info{display:flex;align-items:center;gap:12px;flex:1;}
+.operator-item-name{font-weight:700;font-size:14px;color:#334155;}
+.operator-item-role{font-size:11px;color:#94a3b8;font-weight:600;}
+.operator-item-actions{display:flex;gap:4px;}
+
+/* ── OPERATOR SELECTION ── */
+.operator-selection{display:flex;flex-direction:column;gap:8px;}
+.operator-option{padding:14px 18px;border-radius:12px;border:1.5px solid #e2e8f0;background:#fff;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .15s;}
+.operator-option:hover{border-color:#b75252;background:#fff8f8;}
+.operator-option-name{font-weight:700;font-size:14px;color:#334155;}
+.operator-option-role{font-size:11px;color:#94a3b8;font-weight:600;}
+
+/* ── STATUS SELECTION ── */
+.status-selection{display:flex;gap:8px;margin-top:8px;}
+.status-option{padding:8px 14px;border-radius:999px;border:1.5px solid #e2e8f0;background:#fff;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.05em;}
+.status-option:hover{border-color:#b75252;}
+.status-option.active-ferie{background:#dbeafe;border-color:#93c5fd;color:#1e40af;}
+.status-option.active-malattia{background:#fef9c3;border-color:#fde047;color:#854d0e;}
+
+/* ── LEGEND ── */
+.legend{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding:12px;background:#f8fafc;border-radius:12px;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#64748b;}
+.legend-color{width:16px;height:16px;border-radius:4px;}
+</style>
+</head>
+<body>
+
+<div class="main">
+  
+  <!-- EMPORIO SELECTION -->
+  <div id="emporioSelection">
+    <h2 class="sec-title">Seleziona Emporio</h2>
+    <div class="emp-grid">
+      <div class="emp-card" onclick="selectEmporio('Cremona')">
+        <img src="../../assets/images/logo_cremona.png" alt="Cremona" class="emp-logo" onerror="this.style.display='none'">
+        <div class="emp-name">Cremona</div>
+      </div>
+      <div class="emp-card" onclick="selectEmporio('Casalmaggiore')">
+        <img src="../../assets/images/logo_casalmaggiore.png" alt="Casalmaggiore" class="emp-logo" onerror="this.style.display='none'">
+        <div class="emp-name">Casalmaggiore</div>
+      </div>
+      <div class="emp-card" onclick="selectEmporio('Reggio Emilia')">
+        <img src="../../assets/images/logo_reggio_emilia.png" alt="Reggio Emilia" class="emp-logo" onerror="this.style.display='none'">
+        <div class="emp-name">Reggio Emilia</div>
+      </div>
+      <div class="emp-card" onclick="selectEmporio('Viadana')">
+        <img src="../../assets/images/logo_viadana.png" alt="Viadana" class="emp-logo" onerror="this.style.display='none'">
+        <div class="emp-name">Viadana</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TURNI MANAGEMENT -->
+  <div id="turniManagement" style="display:none;">
+    
+    <!-- HEADER ACTIONS -->
+    <div class="header-actions">
+      <div class="header-actions-left">
+        <button class="btn-secondary" onclick="openPresetModal()">
+          <i class="fas fa-calendar-check"></i> Turni predefiniti
+        </button>
+        <button class="btn-secondary" onclick="openHoursModal()">
+          <i class="fas fa-clock"></i> Orari emporio
+        </button>
+      </div>
+      <div class="header-actions-right">
+        <button class="btn-secondary" onclick="toggleHoursSummary()">
+          <i class="fas fa-chart-line"></i> <span id="hoursSummaryToggleText">Mostra ore dipendenti</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- HOURS SUMMARY -->
+    <div id="hoursSummary" class="hours-summary" style="display:none;margin-bottom:24px;">
+      <h3 class="sec-title">Riepilogo ore mese</h3>
+      <div class="hours-grid" id="hoursGrid"></div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters">
+      <div class="filter-group">
+        <label class="filter-label">Mese</label>
+        <select id="monthFilter" class="filter-select" onchange="renderCalendar()">
+          <option value="0">Gennaio</option>
+          <option value="1">Febbraio</option>
+          <option value="2">Marzo</option>
+          <option value="3">Aprile</option>
+          <option value="4">Maggio</option>
+          <option value="5">Giugno</option>
+          <option value="6">Luglio</option>
+          <option value="7">Agosto</option>
+          <option value="8">Settembre</option>
+          <option value="9">Ottobre</option>
+          <option value="10">Novembre</option>
+          <option value="11">Dicembre</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Anno</label>
+        <select id="yearFilter" class="filter-select" onchange="renderCalendar()">
+          <option value="2025">2025</option>
+          <option value="2026" selected>2026</option>
+          <option value="2027">2027</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- CALENDAR DAYS -->
+    <div id="calendar"></div>
+
+  </div>
+
+</div>
+
+<!-- TURNI PREDEFINITI MODAL -->
+<div id="presetModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Turni predefiniti</h3>
+      <button class="modal-close" onclick="closePresetModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="margin-bottom:16px;font-size:13px;color:#64748b;">
+        Clicca M (mattino) o P (pomeriggio) per ogni giorno. Riclicca per deselezionare.
+      </p>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background:#fff1f1;border:1.5px solid #fca5a5;"></div>
+          <span>Mattino</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background:#eff3f7;border:1.5px solid #cbd5e1;"></div>
+          <span>Pomeriggio</span>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <button class="btn-secondary" onclick="openManageOperators()" style="width:100%;justify-content:center;">
+          <i class="fas fa-users-cog"></i> Gestisci operatori
+        </button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="preset-table">
+          <thead>
+            <tr>
+              <th style="min-width:140px;">Dipendente</th>
+              <th style="text-align:center;width:50px;">Lun</th>
+              <th style="text-align:center;width:50px;">Mar</th>
+              <th style="text-align:center;width:50px;">Mer</th>
+              <th style="text-align:center;width:50px;">Gio</th>
+              <th style="text-align:center;width:50px;">Ven</th>
+              <th style="text-align:center;width:50px;">Sab</th>
+              <th style="text-align:center;width:50px;">Dom</th>
+            </tr>
+          </thead>
+          <tbody id="presetTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closePresetModal()">Annulla</button>
+      <button class="btn-primary" onclick="savePresets('month')">
+        <i class="fas fa-calendar-alt"></i> Applica al mese
+      </button>
+      <button class="btn-primary" onclick="savePresets('year')">
+        <i class="fas fa-calendar"></i> Applica all'anno
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE OPERATORS MODAL -->
+<div id="manageOperatorsModal" class="modal">
+  <div class="modal-content" style="max-width:600px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Gestisci operatori</h3>
+      <button class="modal-close" onclick="closeManageOperators()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="operator-list" id="operatorList"></div>
+      <div style="margin-top:16px;">
+        <button class="btn-primary" onclick="showAddOperatorForm()" style="width:100%;justify-content:center;">
+          <i class="fas fa-plus"></i> Aggiungi operatore
+        </button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeManageOperators()">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT OPERATOR MODAL -->
+<div id="editOperatorModal" class="modal">
+  <div class="modal-content" style="max-width:500px;">
+    <div class="modal-header">
+      <h3 class="modal-title" id="editOperatorTitle">Aggiungi operatore</h3>
+      <button class="modal-close" onclick="closeEditOperator()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div>
+          <label class="filter-label">Nome e Cognome</label>
+          <input type="text" id="editOperatorName" class="filter-select" placeholder="Es: Mario Rossi" style="width:100%;">
+        </div>
+        <div>
+          <label class="filter-label">Ruolo</label>
+          <select id="editOperatorRole" class="filter-select" style="width:100%;">
+            <option value="dip">Dipendente</option>
+            <option value="vol">Volontario</option>
+            <option value="sc">Servizio civile</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeEditOperator()">Annulla</button>
+      <button class="btn-primary" onclick="saveOperator()">
+        <i class="fas fa-check"></i> Salva
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ORARI EMPORIO MODAL -->
+<div id="hoursModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Orari emporio</h3>
+      <button class="modal-close" onclick="closeHoursModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div style="overflow-x:auto;">
+        <table class="hours-table">
+          <thead>
+            <tr>
+              <th style="min-width:80px;">Giorno</th>
+              <th style="text-align:center;">Ap. Matt</th>
+              <th style="text-align:center;">Ch. Matt</th>
+              <th style="text-align:center;">Chiuso Matt</th>
+              <th style="text-align:center;">Ap. Pom</th>
+              <th style="text-align:center;">Ch. Pom</th>
+              <th style="text-align:center;">Chiuso Pom</th>
+            </tr>
+          </thead>
+          <tbody id="hoursTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeHoursModal()">Annulla</button>
+      <button class="btn-primary" onclick="saveHours('month')">
+        <i class="fas fa-calendar-alt"></i> Applica al mese
+      </button>
+      <button class="btn-primary" onclick="saveHours('year')">
+        <i class="fas fa-calendar"></i> Applica all'anno
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- OPERATOR SELECTION MODAL -->
+<div id="operatorModal" class="modal">
+  <div class="modal-content" style="max-width:600px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Aggiungi operatore</h3>
+      <button class="modal-close" onclick="closeOperatorModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="operator-selection" id="operatorSelection"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeOperatorModal()">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const EMPORI_OPERATORI = {
+  'Cremona': [
+    { name: 'Chiara Monteverdi', role: 'dip' },
+    { name: 'Emilio Mazzolari', role: 'dip' },
+    { name: 'Giulia Galelli', role: 'vol' }
+  ],
+  'Casalmaggiore': [
+    { name: 'Barbara Machetti', role: 'vol' },
+    { name: 'Elena Cattani', role: 'vol' },
+    { name: 'Ileana Galli', role: 'vol' },
+    { name: 'Jacopo Denti', role: 'sc' },
+    { name: 'Noemi Capobianco', role: 'sc' }
+  ],
+  'Reggio Emilia': [
+    { name: 'Alessia Bartolomei', role: 'dip' },
+    { name: 'Elsa Scarpa', role: 'vol' },
+    { name: 'Manuela Capanni', role: 'vol' }
+  ],
+  'Viadana': [
+    { name: 'Alessia Rovina', role: 'dip' },
+    { name: 'Barbara Piotrowska', role: 'vol' },
+    { name: 'Carla Bellelli', role: 'vol' }
+  ]
+};
+
+const GIORNI = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
+
+let currentEmporio = '';
+let turniData = {};
+let presetData = {};
+let hoursData = {};
+let currentModalDay = null;
+let currentModalTurno = null;
+let editingOperatorIndex = null;
+
+function initDefaultHours() {
+  return {
+    'Lunedì': { mattina: { open: '09:00', close: '12:30', chiuso: false }, pomeriggio: { open: '15:00', close: '19:00', chiuso: false } },
+    'Martedì': { mattina: { open: '09:00', close: '12:30', chiuso: false }, pomeriggio: { open: '15:00', close: '19:00', chiuso: false } },
+    'Mercoledì': { mattina: { open: '09:00', close: '12:30', chiuso: false }, pomeriggio: { open: '15:00', close: '19:00', chiuso: false } },
+    'Giovedì': { mattina: { open: '09:00', close: '12:30', chiuso: false }, pomeriggio: { open: '15:00', close: '19:00', chiuso: false } },
+    'Venerdì': { mattina: { open: '09:00', close: '12:30', chiuso: false }, pomeriggio: { open: '15:00', close: '19:00', chiuso: false } },
+    'Sabato': { mattina: { open: '09:00', close: '12:30', chiuso: false }, pomeriggio: { open: '15:00', close: '19:00', chiuso: false } },
+    'Domenica': { mattina: { open: '', close: '', chiuso: true }, pomeriggio: { open: '', close: '', chiuso: true } }
+  };
+}
+
+function selectEmporio(name) {
+  currentEmporio = name;
+  document.getElementById('emporioSelection').style.display = 'none';
+  document.getElementById('turniManagement').style.display = 'block';
+  
+  if (!hoursData[name]) hoursData[name] = initDefaultHours();
+  if (!presetData[name]) presetData[name] = {};
+  
+  const now = new Date();
+  document.getElementById('monthFilter').value = now.getMonth();
+  document.getElementById('yearFilter').value = now.getFullYear();
+  
+  renderCalendar();
+}
+
+function calculateHours(openTime, closeTime) {
+  if (!openTime || !closeTime) return 0;
+  const [openH, openM] = openTime.split(':').map(Number);
+  const [closeH, closeM] = closeTime.split(':').map(Number);
+  const minutes = (closeH * 60 + closeM) - (openH * 60 + openM) + 15; // +15min for employees
+  return minutes / 60;
+}
+
+function calculateMonthlyHours() {
+  const month = parseInt(document.getElementById('monthFilter').value);
+  const year = parseInt(document.getElementById('yearFilter').value);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  
+  const employeeHours = {};
+  const operators = EMPORI_OPERATORI[currentEmporio] || [];
+  operators.forEach(op => {
+    if (op.role === 'dip') employeeHours[op.name] = 0;
+  });
+  
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(year, month, day);
+    const dayOfWeek = date.getDay();
+    const dayName = GIORNI[dayOfWeek === 0 ? 6 : dayOfWeek - 1];
+    const dateKey = `${year}-${month + 1}-${day}`;
+    
+    const dayHours = hoursData[currentEmporio]?.[dayName] || {};
+    const turni = turniData[dateKey] || { mattina: [], pomeriggio: [] };
+    
+    // Mattina
+    if (!dayHours.mattina?.chiuso) {
+      const hours = calculateHours(dayHours.mattina?.open, dayHours.mattina?.close);
+      turni.mattina.forEach(op => {
+        if (op.role === 'dip' && !op.status) {
+          employeeHours[op.name] = (employeeHours[op.name] || 0) + hours;
+        }
+      });
+    }
+    
+    // Pomeriggio
+    if (!dayHours.pomeriggio?.chiuso) {
+      const hours = calculateHours(dayHours.pomeriggio?.open, dayHours.pomeriggio?.close);
+      turni.pomeriggio.forEach(op => {
+        if (op.role === 'dip' && !op.status) {
+          employeeHours[op.name] = (employeeHours[op.name] || 0) + hours;
+        }
+      });
+    }
+  }
+  
+  return employeeHours;
+}
+
+function toggleHoursSummary() {
+  const summary = document.getElementById('hoursSummary');
+  const isVisible = summary.style.display !== 'none';
+  
+  if (isVisible) {
+    summary.style.display = 'none';
+    document.getElementById('hoursSummaryToggleText').textContent = 'Mostra ore';
+  } else {
+    const hours = calculateMonthlyHours();
+    let html = '';
+    for (const [name, total] of Object.entries(hours)) {
+      html += `
+        <div class="hours-card">
+          <div class="hours-name">${name}</div>
+          <div class="hours-value">${total.toFixed(1)}h</div>
+          <div class="hours-label">Ore lavorate</div>
+        </div>
+      `;
+    }
+    document.getElementById('hoursGrid').innerHTML = html || '<p style="color:#94a3b8;">Nessun dipendente trovato</p>';
+    summary.style.display = 'block';
+    document.getElementById('hoursSummaryToggleText').textContent = 'Nascondi ore';
+  }
+}
+
+function renderCalendar() {
+  const month = parseInt(document.getElementById('monthFilter').value);
+  const year = parseInt(document.getElementById('yearFilter').value);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  
+  let html = '';
+  
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(year, month, day);
+    const dayOfWeek = date.getDay();
+    const dayName = GIORNI[dayOfWeek === 0 ? 6 : dayOfWeek - 1];
+    const isFestivo = dayOfWeek === 0;
+    const dateKey = `${year}-${month + 1}-${day}`;
+    
+    const dayHours = hoursData[currentEmporio]?.[dayName] || {};
+    const isMattinaChiuso = dayHours.mattina?.chiuso || false;
+    const isPomeriggioChiuso = dayHours.pomeriggio?.chiuso || false;
+    const isClosed = isMattinaChiuso && isPomeriggioChiuso;
+    
+    const turniMattina = turniData[dateKey]?.mattina || [];
+    const turniPomeriggio = turniData[dateKey]?.pomeriggio || [];
+    
+    html += `
+      <div class="day-card ${isClosed ? 'chiuso' : ''}">
+        <div class="date-col ${isFestivo ? 'festivo' : ''}">
+          <div class="day-name ${isFestivo ? 'festivo' : ''}">${dayName.substring(0, 3).toUpperCase()}</div>
+          <div class="day-num ${isFestivo ? 'festivo' : ''}">${day}</div>
+          <div class="day-month ${isFestivo ? 'festivo' : ''}">${['GEN','FEB','MAR','APR','MAG','GIU','LUG','AGO','SET','OTT','NOV','DIC'][month]}</div>
+        </div>
+        
+        <div class="turno-section mattina ${isMattinaChiuso ? 'chiuso' : ''}">
+          <div class="turno-header">
+            <div class="turno-title">Mattina</div>
+            ${isMattinaChiuso ? `
+              <div class="status-badge badge-chiuso">
+                <span class="lock-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
+                  </svg>
+                </span>
+                Chiuso
+              </div>
+            ` : ''}
+          </div>
+          ${!isMattinaChiuso ? `
+            <div class="operators">
+              ${turniMattina.map(op => {
+                const chipClass = op.status === 'ferie' ? 'chip-ferie' : op.status === 'malattia' ? 'chip-malattia' : `chip-mat-${op.role}`;
+                const statusLabel = op.status === 'ferie' ? ' (Ferie)' : op.status === 'malattia' ? ' (Malattia)' : '';
+                return `
+                  <div class="operator-chip ${chipClass}">
+                    ${op.name}${statusLabel}
+                    <i class="fas fa-times" onclick="removeOperator('${dateKey}', 'mattina', '${op.name}')"></i>
+                  </div>
+                `;
+              }).join('')}
+              ${turniMattina.length === 0 ? '<div class="nessun-turno">Nessun turno</div>' : ''}
+              <div class="add-link" onclick="openAddOperator('${dateKey}', 'mattina')">
+                + Aggiungi
+              </div>
+            </div>
+          ` : '<div class="nessun-turno">Nessun turno</div>'}
+        </div>
+        
+        <div class="turno-section pomeriggio ${isPomeriggioChiuso ? 'chiuso' : ''}">
+          <div class="turno-header">
+            <div class="turno-title">Pomeriggio</div>
+            ${isPomeriggioChiuso ? `
+              <div class="status-badge badge-chiuso">
+                <span class="lock-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
+                  </svg>
+                </span>
+                Chiuso
+              </div>
+            ` : ''}
+          </div>
+          ${!isPomeriggioChiuso ? `
+            <div class="operators">
+              ${turniPomeriggio.map(op => {
+                const chipClass = op.status === 'ferie' ? 'chip-ferie' : op.status === 'malattia' ? 'chip-malattia' : `chip-pom-${op.role}`;
+                const statusLabel = op.status === 'ferie' ? ' (Ferie)' : op.status === 'malattia' ? ' (Malattia)' : '';
+                return `
+                  <div class="operator-chip ${chipClass}">
+                    ${op.name}${statusLabel}
+                    <i class="fas fa-times" onclick="removeOperator('${dateKey}', 'pomeriggio', '${op.name}')"></i>
+                  </div>
+                `;
+              }).join('')}
+              ${turniPomeriggio.length === 0 ? '<div class="nessun-turno">Nessun turno</div>' : ''}
+              <div class="add-link" onclick="openAddOperator('${dateKey}', 'pomeriggio')">
+                + Aggiungi
+              </div>
+            </div>
+          ` : '<div class="nessun-turno">Nessun turno</div>'}
+        </div>
+      </div>
+    `;
+  }
+  
+  document.getElementById('calendar').innerHTML = html;
+}
+
+function openAddOperator(dateKey, turno) {
+  currentModalDay = dateKey;
+  currentModalTurno = turno;
+  
+  const operators = EMPORI_OPERATORI[currentEmporio] || [];
+  let html = '';
+  
+  operators.forEach(op => {
+    const roleLabel = op.role === 'dip' ? 'Dipendente' : op.role === 'vol' ? 'Volontario' : 'Servizio civile';
+    html += `
+      <div class="operator-option" onclick="selectOperator('${op.name}', '${op.role}', null)">
+        <span class="operator-option-name">${op.name}</span>
+        <span class="operator-option-role">${roleLabel}</span>
+      </div>
+    `;
+  });
+  
+  html += `
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid #f1f5f9;">
+      <p style="font-size:12px;color:#64748b;margin-bottom:8px;">Oppure seleziona stato:</p>
+      <div class="status-selection">
+        ${operators.filter(op => op.role === 'dip').map(op => `
+          <div>
+            <div class="status-option" onclick="selectOperator('${op.name}', '${op.role}', 'ferie')">
+              ${op.name.split(' ')[0]} - Ferie
+            </div>
+          </div>
+          <div>
+            <div class="status-option" onclick="selectOperator('${op.name}', '${op.role}', 'malattia')">
+              ${op.name.split(' ')[0]} - Malattia
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  
+  document.getElementById('operatorSelection').innerHTML = html;
+  document.getElementById('operatorModal').classList.add('show');
+}
+
+function selectOperator(name, role, status) {
+  if (!turniData[currentModalDay]) turniData[currentModalDay] = { mattina: [], pomeriggio: [] };
+  
+  const alreadyExists = turniData[currentModalDay][currentModalTurno].some(op => op.name === name);
+  if (!alreadyExists) {
+    turniData[currentModalDay][currentModalTurno].push({ name, role, status });
+  }
+  
+  closeOperatorModal();
+  renderCalendar();
+}
+
+function removeOperator(dateKey, turno, name) {
+  if (!turniData[dateKey]) return;
+  turniData[dateKey][turno] = turniData[dateKey][turno].filter(op => op.name !== name);
+  renderCalendar();
+}
+
+function closeOperatorModal() {
+  document.getElementById('operatorModal').classList.remove('show');
+}
+
+// TURNI PREDEFINITI
+function openPresetModal() {
+  renderPresetTable();
+  document.getElementById('presetModal').classList.add('show');
+}
+
+function renderPresetTable() {
+  const operators = EMPORI_OPERATORI[currentEmporio] || [];
+  let html = '';
+  
+  operators.forEach(op => {
+    const presets = presetData[currentEmporio]?.[op.name] || {};
+    const roleLabel = op.role === 'dip' ? 'dip.' : op.role === 'vol' ? 'vol.' : 'SC';
+    
+    html += `
+      <tr>
+        <td>
+          <div class="preset-name">
+            ${op.name}
+            <span class="preset-role">${roleLabel}</span>
+          </div>
+        </td>
+        ${GIORNI.map((day, i) => {
+          const current = presets[day] || '';
+          const hasM = current === 'mattina' || current === 'entrambi';
+          const hasP = current === 'pomeriggio' || current === 'entrambi';
+          
+          return `
+            <td style="text-align:center;padding:4px;">
+              <div style="display:flex;gap:3px;flex-direction:column;align-items:center;">
+                <div class="day-toggle ${hasM ? 'active-m' : ''}" 
+                     onclick="togglePreset('${op.name}', '${day}', 'mattina')">
+                  M
+                </div>
+                <div class="day-toggle ${hasP ? 'active-p' : ''}"
+                     onclick="togglePreset('${op.name}', '${day}', 'pomeriggio')">
+                  P
+                </div>
+              </div>
+            </td>
+          `;
+        }).join('')}
+      </tr>
+    `;
+  });
+  
+  document.getElementById('presetTableBody').innerHTML = html;
+}
+
+function closePresetModal() {
+  document.getElementById('presetModal').classList.remove('show');
+}
+
+function togglePreset(operator, day, turno) {
+  if (!presetData[currentEmporio]) presetData[currentEmporio] = {};
+  if (!presetData[currentEmporio][operator]) presetData[currentEmporio][operator] = {};
+  
+  const current = presetData[currentEmporio][operator][day] || '';
+  
+  if (current === turno) {
+    delete presetData[currentEmporio][operator][day];
+  } else if (current === 'entrambi') {
+    presetData[currentEmporio][operator][day] = turno === 'mattina' ? 'pomeriggio' : 'mattina';
+  } else if (current === 'mattina' && turno === 'pomeriggio') {
+    presetData[currentEmporio][operator][day] = 'entrambi';
+  } else if (current === 'pomeriggio' && turno === 'mattina') {
+    presetData[currentEmporio][operator][day] = 'entrambi';
+  } else {
+    presetData[currentEmporio][operator][day] = turno;
+  }
+  
+  renderPresetTable();
+}
+
+function savePresets(scope) {
+  const month = parseInt(document.getElementById('monthFilter').value);
+  const year = parseInt(document.getElementById('yearFilter').value);
+  
+  const startMonth = scope === 'year' ? 0 : month;
+  const endMonth = scope === 'year' ? 11 : month;
+  
+  for (let m = startMonth; m <= endMonth; m++) {
+    const daysInMonth = new Date(year, m + 1, 0).getDate();
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, m, day);
+      const dayOfWeek = date.getDay();
+      const dayName = GIORNI[dayOfWeek === 0 ? 6 : dayOfWeek - 1];
+      const dateKey = `${year}-${m + 1}-${day}`;
+      
+      if (!turniData[dateKey]) turniData[dateKey] = { mattina: [], pomeriggio: [] };
+      
+      for (const [operator, days] of Object.entries(presetData[currentEmporio] || {})) {
+        const turno = days[dayName];
+        if (!turno) continue;
+        
+        const opData = EMPORI_OPERATORI[currentEmporio].find(op => op.name === operator);
+        if (!opData) continue;
+        
+        if (turno === 'mattina' || turno === 'entrambi') {
+          if (!turniData[dateKey].mattina.some(op => op.name === operator)) {
+            turniData[dateKey].mattina.push({ name: operator, role: opData.role });
+          }
+        }
+        if (turno === 'pomeriggio' || turno === 'entrambi') {
+          if (!turniData[dateKey].pomeriggio.some(op => op.name === operator)) {
+            turniData[dateKey].pomeriggio.push({ name: operator, role: opData.role });
+          }
+        }
+      }
+    }
+  }
+  
+  closePresetModal();
+  renderCalendar();
+  alert(scope === 'year' ? 'Turni applicati a tutto l\'anno!' : 'Turni applicati al mese!');
+}
+
+// MANAGE OPERATORS
+function openManageOperators() {
+  renderOperatorList();
+  document.getElementById('manageOperatorsModal').classList.add('show');
+}
+
+function closeManageOperators() {
+  document.getElementById('manageOperatorsModal').classList.remove('show');
+}
+
+function renderOperatorList() {
+  const operators = EMPORI_OPERATORI[currentEmporio] || [];
+  let html = '';
+  
+  operators.forEach((op, index) => {
+    const roleLabel = op.role === 'dip' ? 'Dipendente' : op.role === 'vol' ? 'Volontario' : 'Servizio civile';
+    html += `
+      <div class="operator-item">
+        <div class="operator-item-info">
+          <span class="operator-item-name">${op.name}</span>
+          <span class="operator-item-role">${roleLabel}</span>
+        </div>
+        <div class="operator-item-actions">
+          <button class="btn-icon" onclick="editOperator(${index})" title="Modifica">
+            <i class="fas fa-pen"></i>
+          </button>
+          <button class="btn-icon" onclick="deleteOperator(${index})" title="Elimina">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  });
+  
+  document.getElementById('operatorList').innerHTML = html;
+}
+
+function showAddOperatorForm() {
+  editingOperatorIndex = null;
+  document.getElementById('editOperatorTitle').textContent = 'Aggiungi operatore';
+  document.getElementById('editOperatorName').value = '';
+  document.getElementById('editOperatorRole').value = 'dip';
+  document.getElementById('editOperatorModal').classList.add('show');
+}
+
+function editOperator(index) {
+  editingOperatorIndex = index;
+  const op = EMPORI_OPERATORI[currentEmporio][index];
+  document.getElementById('editOperatorTitle').textContent = 'Modifica operatore';
+  document.getElementById('editOperatorName').value = op.name;
+  document.getElementById('editOperatorRole').value = op.role;
+  document.getElementById('editOperatorModal').classList.add('show');
+}
+
+function deleteOperator(index) {
+  if (!confirm('Eliminare questo operatore?')) return;
+  EMPORI_OPERATORI[currentEmporio].splice(index, 1);
+  renderOperatorList();
+  renderPresetTable();
+}
+
+function saveOperator() {
+  const name = document.getElementById('editOperatorName').value.trim();
+  const role = document.getElementById('editOperatorRole').value;
+  
+  if (!name) {
+    alert('Inserisci un nome');
+    return;
+  }
+  
+  if (editingOperatorIndex !== null) {
+    EMPORI_OPERATORI[currentEmporio][editingOperatorIndex] = { name, role };
+  } else {
+    EMPORI_OPERATORI[currentEmporio].push({ name, role });
+  }
+  
+  closeEditOperator();
+  renderOperatorList();
+  renderPresetTable();
+}
+
+function closeEditOperator() {
+  document.getElementById('editOperatorModal').classList.remove('show');
+}
+
+// ORARI EMPORIO
+function openHoursModal() {
+  const hours = hoursData[currentEmporio] || initDefaultHours();
+  let html = '';
+  
+  GIORNI.forEach(day => {
+    const h = hours[day] || { mattina: { open: '', close: '', chiuso: false }, pomeriggio: { open: '', close: '', chiuso: false } };
+    html += `
+      <tr>
+        <td>${day}</td>
+        <td style="text-align:center;">
+          <input type="time" class="time-input" value="${h.mattina.open}" id="open-m-${day}" ${h.mattina.chiuso ? 'disabled' : ''}>
+        </td>
+        <td style="text-align:center;">
+          <input type="time" class="time-input" value="${h.mattina.close}" id="close-m-${day}" ${h.mattina.chiuso ? 'disabled' : ''}>
+        </td>
+        <td style="text-align:center;">
+          <label class="closed-checkbox">
+            <input type="checkbox" ${h.mattina.chiuso ? 'checked' : ''} onchange="toggleTurnoChiuso('${day}', 'mattina', this.checked)">
+          </label>
+        </td>
+        <td style="text-align:center;">
+          <input type="time" class="time-input" value="${h.pomeriggio.open}" id="open-p-${day}" ${h.pomeriggio.chiuso ? 'disabled' : ''}>
+        </td>
+        <td style="text-align:center;">
+          <input type="time" class="time-input" value="${h.pomeriggio.close}" id="close-p-${day}" ${h.pomeriggio.chiuso ? 'disabled' : ''}>
+        </td>
+        <td style="text-align:center;">
+          <label class="closed-checkbox">
+            <input type="checkbox" ${h.pomeriggio.chiuso ? 'checked' : ''} onchange="toggleTurnoChiuso('${day}', 'pomeriggio', this.checked)">
+          </label>
+        </td>
+      </tr>
+    `;
+  });
+  
+  document.getElementById('hoursTableBody').innerHTML = html;
+  document.getElementById('hoursModal').classList.add('show');
+}
+
+function closeHoursModal() {
+  document.getElementById('hoursModal').classList.remove('show');
+}
+
+function toggleTurnoChiuso(day, turno, checked) {
+  const openInput = document.getElementById(`open-${turno.charAt(0)}-${day}`);
+  const closeInput = document.getElementById(`close-${turno.charAt(0)}-${day}`);
+  if (openInput) openInput.disabled = checked;
+  if (closeInput) closeInput.disabled = checked;
+}
+
+function saveHours(scope) {
+  const hours = {};
+  
+  GIORNI.forEach(day => {
+    const mattinaChiuso = document.querySelector(`input[type="checkbox"][onchange*="'${day}', 'mattina'"]`).checked;
+    const pomeriggioChiuso = document.querySelector(`input[type="checkbox"][onchange*="'${day}', 'pomeriggio'"]`).checked;
+    
+    hours[day] = {
+      mattina: {
+        open: document.getElementById(`open-m-${day}`).value,
+        close: document.getElementById(`close-m-${day}`).value,
+        chiuso: mattinaChiuso
+      },
+      pomeriggio: {
+        open: document.getElementById(`open-p-${day}`).value,
+        close: document.getElementById(`close-p-${day}`).value,
+        chiuso: pomeriggioChiuso
+      }
+    };
+  });
+  
+  if (scope === 'year') {
+    // Apply to all months
+    hoursData[currentEmporio] = hours;
+  } else {
+    hoursData[currentEmporio] = hours;
+  }
+  
+  closeHoursModal();
+  renderCalendar();
+  alert(scope === 'year' ? 'Orari applicati a tutto l\'anno!' : 'Orari applicati al mese!');
+}
+</script>
+
+<script src="../../scripts/nav-script.js"></script>
+</body>
+</html>
