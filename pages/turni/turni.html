@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -336,7 +337,7 @@ async function loadData() {
 }
 
 async function saveTurno(key, turnoObj) {
-  if (!db) return;
+  if (!db) { showToast('DB non connesso','err'); return; }
   const parts = key.split('|');
   const emporio=parts[0], anno=parseInt(parts[1]), mese=parseInt(parts[2]),
         giorno=parseInt(parts[3]), turno=parts[4];
@@ -344,16 +345,23 @@ async function saveTurno(key, turnoObj) {
   const dayAssenze = Object.fromEntries(Object.entries(assenzeData).filter(([k])=>k.startsWith(dayKey+'|')));
   const dayNote = noteData[dayKey] ?? null;
   try {
-    const { error } = await db.from('turni').upsert({
+    const payload = {
       emporio, anno, mese, giorno, turno,
       aperto: turnoObj.aperto,
       operatori: turnoObj.operatori,
       assenze: dayAssenze,
       note: dayNote
-    }, {onConflict:'emporio,anno,mese,giorno,turno'});
-    if (error) { console.error('saveTurno:', error); showToast('Errore: '+error.message,'err'); }
-    else showToast('Salvato ✓');
-  } catch(e) { console.error('saveTurno ex:', e); showToast('Errore: '+e.message,'err'); }
+    };
+    console.log('[saveTurno] payload:', JSON.stringify(payload));
+    const { data, error } = await db.from('turni').upsert(payload, {onConflict:'emporio,anno,mese,giorno,turno'}).select();
+    if (error) {
+      console.error('[saveTurno] ERROR:', JSON.stringify(error));
+      showToast('Errore: '+error.message,'err');
+    } else {
+      console.log('[saveTurno] OK:', data);
+      showToast('Salvato ✓','ok');
+    }
+  } catch(e) { console.error('[saveTurno] EXCEPTION:', e); showToast('Errore: '+e.message,'err'); }
 }
 
 // ── ORARI DISPLAY ──────────────────────────────────────────────────────────
@@ -679,11 +687,23 @@ async function saveStoreHours() {
     pom_close:document.getElementById('oh-pc').value
   };
   storeHoursData=orari;
+  if (!db) { showToast('DB non connesso','err'); closeModal('modal-orari'); render(); return; }
   try {
-    const {error}=await db.from('turni_orari').upsert({emporio:currentEmporio,orari},{onConflict:'emporio'});
-    if(error) showToast('Errore orari: '+error.message,'err');
-    else showToast('Orari salvati ✓');
-  } catch(e){showToast('Errore: '+e.message,'err');}
+    console.log('[saveStoreHours] payload:', JSON.stringify({emporio:currentEmporio, orari}));
+    const { data, error } = await db.from('turni_orari')
+      .upsert({emporio:currentEmporio, orari}, {onConflict:'emporio'})
+      .select();
+    if(error) {
+      console.error('[saveStoreHours] ERROR:', JSON.stringify(error));
+      showToast('Errore orari: '+error.message,'err');
+    } else {
+      console.log('[saveStoreHours] OK:', data);
+      showToast('Orari salvati ✓','ok');
+    }
+  } catch(e) {
+    console.error('[saveStoreHours] EXCEPTION:', e);
+    showToast('Errore: '+e.message,'err');
+  }
   closeModal('modal-orari');
   render();
 }
@@ -758,6 +778,19 @@ function loadPersonaleLocale(){
 // ── INIT ───────────────────────────────────────────────────────────────────
 loadPersonaleLocale();
 renderEmpGrid();
+// Test connessione Supabase all'avvio
+(async () => {
+  if (!db) { console.error('Supabase non inizializzato'); return; }
+  try {
+    const { error } = await db.from('turni').select('id').limit(1);
+    if (error) {
+      console.error('[INIT] Supabase error:', JSON.stringify(error));
+      showToast('Attenzione: DB non raggiungibile ('+error.message+')','err');
+    } else {
+      console.log('[INIT] Supabase connesso OK');
+    }
+  } catch(e) { console.error('[INIT] exception:', e); }
+})();
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){closeModal('modal-add');closeModal('modal-ass');closeModal('modal-orari');}
 });
