@@ -7,18 +7,25 @@
     <title>M361 - Prezzi da Fare</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --red:#b75252;--red-dark:#8f3d3d;--red-light:#fff1f1;
             --green:#059669;--green-light:#dcfce7;--green-tx:#166534;
             --blue:#3b82f6;--blue-light:#dbeafe;--blue-tx:#1d4ed8;
             --amber:#f59e0b;--amber-light:#fef3c7;--amber-tx:#92400e;
+            /* Meridiano 361 brand tones – warm slate/brick */
+            --m-primary:#7c3d3d;      /* deep brick red */
+            --m-primary-dk:#5e2d2d;
+            --m-primary-lt:#f7eded;
+            --m-secondary:#4a5568;    /* slate */
+            --m-secondary-dk:#2d3748;
+            --m-secondary-lt:#edf2f7;
             --s50:#f8fafc;--s100:#f1f5f9;--s200:#e2e8f0;--s300:#cbd5e1;
             --s400:#94a3b8;--s500:#64748b;--s600:#475569;--s700:#334155;--s800:#1e293b;
         }
         *{box-sizing:border-box}
-        body{font-family:'Inter',sans-serif;background:#f0f2f5}
+        body{font-family:'Inter',sans-serif;background:#f0f2f5;font-size:15px}
         .mono{font-family:'DM Mono',monospace}
 
         /* EMPORIO SELECTOR */
@@ -27,42 +34,49 @@
         .emp-card{background:#fff;border:2px solid var(--s200);border-radius:20px;padding:24px 14px;text-align:center;cursor:pointer;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:10px}
         .emp-card:hover{border-color:var(--red);transform:translateY(-3px);box-shadow:0 6px 20px rgba(183,82,82,.14)}
         .emp-card img{width:52px;height:52px;object-fit:contain;border-radius:12px}
-        .emp-lbl{font-size:13px;font-weight:800;color:var(--s700)}
-        .emp-badge{font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:6px;background:var(--s100);color:var(--s500)}
+        .emp-lbl{font-size:14px;font-weight:800;color:var(--s700)}
+        .emp-badge{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:6px;background:var(--s100);color:var(--s500)}
 
         /* SINTESI ENTRIES */
         .sint-entry{background:#fff;border:2px solid var(--s200);border-radius:18px;padding:18px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:all .16s}
         .sint-entry:hover{border-color:var(--s700);box-shadow:0 4px 14px rgba(0,0,0,.08)}
         .sint-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-        .sint-title{font-size:14px;font-weight:800;color:var(--s700)}
-        .sint-sub{font-size:11px;color:var(--s400);font-weight:600}
+        .sint-title{font-size:15px;font-weight:800;color:var(--s700)}
+        .sint-sub{font-size:12px;color:var(--s400);font-weight:500}
 
         /* SECTION TITLE */
-        .sec-t{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--s400);display:flex;align-items:center;gap:10px;margin-bottom:14px}
+        .sec-t{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--s400);display:flex;align-items:center;gap:10px;margin-bottom:14px}
         .sec-t::before{content:'';width:3px;height:16px;background:var(--red);border-radius:2px;flex-shrink:0}
 
-        /* TYPE TABS */
+        /* TYPE TABS – Meridiano 361 palette */
         .type-tabs{display:flex;gap:5px;background:#fff;padding:4px;border-radius:13px;border:1px solid var(--s200);margin-bottom:14px}
-        .type-tab{flex:1;padding:10px;border-radius:9px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;border:none;background:transparent;color:var(--s400);transition:all .12s;text-align:center}
+        .type-tab{flex:1;padding:10px;border-radius:9px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;border:none;background:transparent;color:var(--s400);transition:all .12s;text-align:center}
         .type-tab:hover{color:var(--s700);background:var(--s50)}
-        .type-tab.t-front{background:var(--blue);color:#fff}
-        .type-tab.t-etich{background:var(--amber);color:#fff}
+        /* Frontalino: deep brick red (M361 primary) */
+        .type-tab.t-front{background:var(--m-primary);color:#fff}
+        /* Etichetta: slate/charcoal (M361 secondary) */
+        .type-tab.t-etich{background:var(--m-secondary);color:#fff}
         .tab-n{font-size:9px;padding:1px 5px;border-radius:5px;margin-left:3px;background:rgba(255,255,255,.25)}
 
         /* CARD & TABLE */
         .card-r{background:#fff;border-radius:18px;border:1px solid var(--s200);box-shadow:0 1px 4px rgba(0,0,0,.05);overflow:hidden}
         .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-        .pz-t{width:100%;border-collapse:collapse;font-size:13px;min-width:500px}
-        .pz-t thead th{padding:7px 10px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--s400);background:var(--s50);border-bottom:1px solid var(--s200);white-space:nowrap;text-align:left}
-        .pz-t tbody td{padding:9px 10px;border-bottom:1px solid var(--s100);vertical-align:middle}
+        .pz-t{width:100%;border-collapse:collapse;font-size:15px;min-width:500px}
+        .pz-t thead th{padding:8px 10px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--s400);background:var(--s50);border-bottom:1px solid var(--s200);white-space:nowrap;text-align:left}
+        .pz-t tbody td{padding:10px 10px;border-bottom:1px solid var(--s100);vertical-align:middle;font-weight:400}
         .pz-t tbody tr:last-child td{border-bottom:none}
         .pz-t tbody tr:hover{background:#fefce8}
         .pz-t tr.done{opacity:.42}
         .pz-t tr.done td{text-decoration:line-through;text-decoration-color:var(--s300)}
         .pz-check{width:18px;height:18px;cursor:pointer;accent-color:var(--green)}
 
+        /* INLINE EDIT */
+        .edit-input{border:none;border-bottom:2px solid var(--m-primary);background:transparent;font-family:'Inter',sans-serif;font-size:15px;font-weight:400;color:var(--s800);outline:none;width:100%;padding:1px 2px}
+        .edit-input.mono-in{font-family:'DM Mono',monospace}
+        .edit-input:focus{background:rgba(124,61,61,.05);border-radius:4px 4px 0 0}
+
         /* PILLS */
-        .pill{font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:6px;white-space:nowrap}
+        .pill{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:6px;white-space:nowrap}
         .p-done{background:var(--green-light);color:var(--green-tx)}
         .p-todo{background:var(--s100);color:var(--s500)}
 
@@ -71,40 +85,39 @@
         .af-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
         @media(min-width:640px){.af-grid{grid-template-columns:1fr 1fr 80px 100px}}
         .f-g{display:flex;flex-direction:column;gap:3px}
-        .f-l{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--s400)}
-        .f-i{border:1px solid var(--s200);border-radius:9px;padding:8px 10px;font-size:14px;font-family:'Inter',sans-serif;outline:none;background:#fff;transition:border .15s;width:100%}
+        .f-l{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--s400)}
+        .f-i{border:1px solid var(--s200);border-radius:9px;padding:9px 10px;font-size:15px;font-family:'Inter',sans-serif;outline:none;background:#fff;transition:border .15s;width:100%}
         .f-i:focus{border-color:var(--red)}
 
         /* FILTERS */
         .fb-bar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
-        .fb{padding:5px 12px;border-radius:8px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;border:1.5px solid var(--s200);background:#fff;color:var(--s500);transition:all .12s}
+        .fb{padding:5px 12px;border-radius:8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;border:1.5px solid var(--s200);background:#fff;color:var(--s500);transition:all .12s}
         .fb.on{background:var(--s800);color:#fff;border-color:var(--s800)}
 
         /* SINT TABLE */
-        .st{width:100%;border-collapse:collapse;font-size:13px;min-width:480px}
-        .st thead th{padding:9px 10px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#fff;background:var(--s800);white-space:nowrap;text-align:left}
-        .st thead th:first-child{border-radius:0}
-        .st tbody td{padding:9px 10px;border-bottom:1px solid var(--s100);vertical-align:middle}
+        .st{width:100%;border-collapse:collapse;font-size:15px;min-width:480px}
+        .st thead th{padding:9px 10px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#fff;background:var(--s800);white-space:nowrap;text-align:left}
+        .st tbody td{padding:10px 10px;border-bottom:1px solid var(--s100);vertical-align:middle;font-weight:400}
         .st tbody tr:hover{background:var(--s50)}
         .st tr.done{opacity:.42}
         .st tr.done td{text-decoration:line-through;text-decoration-color:var(--s300)}
         .st .tot td{background:var(--red);color:#fff;font-weight:900;padding:10px;font-family:'DM Mono',monospace}
         .st .tot td:first-child{font-family:'Inter',sans-serif}
-        .ec{font-size:8px;font-weight:900;text-transform:uppercase;padding:2px 7px;border-radius:6px;white-space:nowrap}
+        .ec{font-size:9px;font-weight:900;text-transform:uppercase;padding:2px 7px;border-radius:6px;white-space:nowrap}
 
         /* BACK */
-        .bk{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;color:var(--s500);background:none;border:none;cursor:pointer;padding:8px 0;margin-bottom:14px;transition:color .15s}
+        .bk{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:var(--s500);background:none;border:none;cursor:pointer;padding:8px 0;margin-bottom:14px;transition:color .15s}
         .bk:hover{color:var(--red)}
 
         /* COUNTER */
-        .fc{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--s800);color:#fff;padding:7px 16px;border-radius:11px;font-size:11px;font-weight:800;z-index:8000;display:flex;align-items:center;gap:8px;box-shadow:0 4px 14px rgba(0,0,0,.25);pointer-events:none}
-        .fc-n{font-family:'DM Mono',monospace;font-size:15px;color:#fbbf24}
+        .fc{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--s800);color:#fff;padding:7px 16px;border-radius:11px;font-size:12px;font-weight:800;z-index:8000;display:flex;align-items:center;gap:8px;box-shadow:0 4px 14px rgba(0,0,0,.25);pointer-events:none}
+        .fc-n{font-family:'DM Mono',monospace;font-size:16px;color:#fbbf24}
 
         /* STATS */
         .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
         .stat{background:#fff;border-radius:12px;border:1px solid var(--s200);padding:12px;text-align:center}
-        .stat-n{font-size:22px;font-weight:900;font-family:'DM Mono',monospace}
-        .stat-l{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--s400)}
+        .stat-n{font-size:24px;font-weight:900;font-family:'DM Mono',monospace}
+        .stat-l{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--s400)}
 
         /* Emporio color helpers */
         .bg-ca{background:#fff3e0}.ca{color:#c78044}
@@ -112,6 +125,12 @@
         .bg-re{background:#e8f5e9}.re{color:#6b8d53}
         .bg-vi{background:#e3f2fd}.vi{color:#4c6d90}
         .dot-ca{background:#c78044}.dot-cr{background:#b75252}.dot-re{background:#6b8d53}.dot-vi{background:#4c6d90}
+
+        /* Action icon buttons in rows */
+        .row-act{border:none;background:none;cursor:pointer;color:var(--s300);padding:3px 5px;border-radius:5px;transition:all .12s}
+        .row-act:hover{background:var(--s100);color:var(--s600)}
+        .row-act.save-btn:hover{background:#dcfce7;color:var(--green)}
+        .row-act.del-btn:hover{background:#fee2e2;color:#ef4444}
 
         @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
     </style>
@@ -127,7 +146,6 @@
 const { createClient } = supabase;
 const db = createClient('https://hsalynvxazxqtmsvjrzc.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8');
 
-// Empori in ordine alfabetico
 const EMPORI = [
     {id:'casalmaggiore',label:'Casalmaggiore',cls:'ca',logo:'logo_casalmaggiore.png'},
     {id:'cremona',      label:'Cremona',      cls:'cr',logo:'logo_cremona.png'},
@@ -141,38 +159,73 @@ const TIPI = {
 };
 
 let items=[], V={page:'home',emp:null,tipo:'frontalino',filt:'tutti'};
+// Track which row is being edited: {id, codice, descrizione, qta, prezzo}
+let editState={};
 
 // ── NAV ──
-const goHome    = ()=>{ V={page:'home',emp:null,tipo:'frontalino',filt:'tutti'}; R(); };
-const goEmp     = e =>{ V={page:'emp', emp:e,   tipo:'frontalino',filt:'tutti'}; R(); };
-const goSintesi = t =>{ V={page:'sint',emp:null, tipo:t,           filt:'tutti'}; R(); };
-const setTipo   = t =>{ V.tipo=t; R(); };
+const goHome    = ()=>{ V={page:'home',emp:null,tipo:'frontalino',filt:'tutti'}; editState={}; R(); };
+const goEmp     = e =>{ V={page:'emp', emp:e,   tipo:'frontalino',filt:'tutti'}; editState={}; R(); };
+const goSintesi = t =>{ V={page:'sint',emp:null, tipo:t,           filt:'tutti'}; editState={}; R(); };
+const setTipo   = t =>{ V.tipo=t; editState={}; R(); };
 const setFilt   = f =>{ V.filt=f; R(); };
 
 // ── CRUD ──
 async function addItem(){
     const cod=g('f-cod').value.trim(), desc=g('f-desc').value.trim();
     const qta=parseInt(g('f-qta').value)||1, prezzo=parseFloat(g('f-prezzo').value)||0;
-    if(!cod&&!desc){ g('af-inner').style.animation='shake .3s'; setTimeout(()=>g('af-inner').style.animation='',400); return alert('Inserisci almeno Codice o Descrizione.'); }
+    if(!cod&&!desc){ g('af-inner').style.animation='shake .3s'; setTimeout(()=>g('af-inner').style.animation='',400); return; }
     const row={emporio:V.emp,tipo:V.tipo,codice:cod,descrizione:desc,qta,prezzo,fatto:false,created_at:new Date().toISOString()};
     const {data,error}=await db.from('prezzi_da_fare').insert([row]).select().single();
     items.push(error?{...row,id:'l'+Date.now()}:data);
     ['f-cod','f-desc','f-prezzo'].forEach(id=>g(id).value='');
     g('f-qta').value='1';
-    R(); g('f-cod')?.focus();
+    R();
+    // Keep form open and re-focus
+    const wrap=g('af-wrap'),btn=g('btn-af');
+    if(wrap){wrap.style.display='block';if(btn)btn.style.display='none';}
+    g('f-cod')?.focus();
 }
+
 async function toggleDone(id,fatto){
     const it=items.find(i=>i.id===id); if(!it)return;
     it.fatto=fatto;
     if(!String(id).startsWith('l'))await db.from('prezzi_da_fare').update({fatto}).eq('id',id);
     R();
 }
+
 async function removeItem(id){
     if(!confirm('Rimuovere?'))return;
     items=items.filter(i=>i.id!==id);
     if(!String(id).startsWith('l'))await db.from('prezzi_da_fare').delete().eq('id',id);
     R();
 }
+
+// ── INLINE EDIT ──
+function startEdit(id){
+    const it=items.find(i=>i.id===id); if(!it)return;
+    editState={id,codice:it.codice||'',descrizione:it.descrizione||'',qta:it.qta||1,prezzo:it.prezzo||0};
+    R();
+    // focus first field
+    const el=document.querySelector('.edit-input');
+    if(el)el.focus();
+}
+
+function editField(field,val){
+    if(editState.id)editState[field]=val;
+}
+
+async function saveEdit(){
+    if(!editState.id)return;
+    const {id,codice,descrizione,qta,prezzo}=editState;
+    const qtaN=parseInt(qta)||1, prezzoN=parseFloat(prezzo)||0;
+    const it=items.find(i=>i.id===id); if(!it)return;
+    it.codice=codice; it.descrizione=descrizione; it.qta=qtaN; it.prezzo=prezzoN;
+    if(!String(id).startsWith('l'))await db.from('prezzi_da_fare').update({codice,descrizione,qta:qtaN,prezzo:prezzoN}).eq('id',id);
+    editState={};
+    R();
+}
+
+function cancelEdit(){ editState={}; R(); }
 
 // ── HELPERS ──
 function g(id){return document.getElementById(id);}
@@ -207,12 +260,12 @@ function rHome(){
     <div class="sec-t">Riepilogo</div>
     <div style="display:flex;flex-direction:column;gap:10px">
         <div class="sint-entry" onclick="goSintesi('frontalino')">
-            <div class="sint-icon" style="background:#dbeafe">📋</div>
+            <div class="sint-icon" style="background:#f7eded">📋</div>
             <div><div class="sint-title">Sintesi Frontalini</div><div class="sint-sub">Alimentari e Cosmesi · ${items.filter(i=>i.tipo==='frontalino').length} voci</div></div>
             <i class="fas fa-chevron-right ml-auto" style="color:var(--s300)"></i>
         </div>
         <div class="sint-entry" onclick="goSintesi('etichetta')">
-            <div class="sint-icon" style="background:#fef3c7">🏷️</div>
+            <div class="sint-icon" style="background:#edf2f7">🏷️</div>
             <div><div class="sint-title">Sintesi Etichette</div><div class="sint-sub">Moda, Casa e Altro · ${items.filter(i=>i.tipo==='etichetta').length} voci</div></div>
             <i class="fas fa-chevron-right ml-auto" style="color:var(--s300)"></i>
         </div>
@@ -227,50 +280,68 @@ function rEmp(){
     const cfr=items.filter(i=>i.emporio===V.emp&&i.tipo==='frontalino'&&!i.fatto).length;
     const cet=items.filter(i=>i.emporio===V.emp&&i.tipo==='etichetta' &&!i.fatto).length;
 
-    const rows=shown.map(it=>`
-    <tr class="${it.fatto?'done':''}">
-        <td style="text-align:center;width:34px"><input type="checkbox" class="pz-check" ${it.fatto?'checked':''} onchange="toggleDone('${it.id}',this.checked)"></td>
-        <td class="mono" style="font-size:12px;color:var(--s500)">${it.codice||'—'}</td>
-        <td style="font-weight:700;color:var(--s700)">${it.descrizione||'—'}</td>
-        <td style="text-align:center;font-weight:700" class="mono">${it.qta}</td>
-        <td style="text-align:right;font-size:12px;color:var(--s600)" class="mono">${it.prezzo?'€ '+it.prezzo.toFixed(2):'—'}</td>
-        <td style="text-align:center"><span class="pill ${it.fatto?'p-done':'p-todo'}">${it.fatto?'Fatto':'Da fare'}</span></td>
-        <td style="text-align:center;width:34px"><button onclick="removeItem('${it.id}')" style="border:none;background:none;cursor:pointer;color:var(--s300)" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--s300)'"><i class="fas fa-trash" style="font-size:11px"></i></button></td>
-    </tr>`).join('');
+    const rows=shown.map(it=>{
+        const isEditing=editState.id===it.id;
+        if(isEditing){
+            return`<tr style="background:#fffbf5">
+                <td style="text-align:center;width:34px"><input type="checkbox" class="pz-check" ${it.fatto?'checked':''} onchange="toggleDone('${it.id}',this.checked)"></td>
+                <td class="mono"><input class="edit-input mono-in" value="${escH(editState.codice)}" placeholder="Codice" oninput="editField('codice',this.value)" onkeydown="handleEditKey(event)"></td>
+                <td><input class="edit-input" value="${escH(editState.descrizione)}" placeholder="Descrizione" oninput="editField('descrizione',this.value)" onkeydown="handleEditKey(event)"></td>
+                <td style="text-align:center"><input class="edit-input mono-in" value="${editState.qta}" type="number" min="1" style="width:54px;text-align:center" oninput="editField('qta',this.value)" onkeydown="handleEditKey(event)"></td>
+                <td style="text-align:right"><input class="edit-input mono-in" value="${editState.prezzo}" type="number" step="0.01" min="0" style="width:80px;text-align:right" oninput="editField('prezzo',this.value)" onkeydown="handleEditKey(event)"></td>
+                <td style="text-align:center"><span class="pill ${it.fatto?'p-done':'p-todo'}">${it.fatto?'Fatto':'Da fare'}</span></td>
+                <td style="text-align:center;white-space:nowrap">
+                    <button class="row-act save-btn" title="Salva (Invio)" onclick="saveEdit()"><i class="fas fa-check" style="font-size:12px"></i></button>
+                    <button class="row-act" title="Annulla (Esc)" onclick="cancelEdit()"><i class="fas fa-times" style="font-size:12px"></i></button>
+                </td>
+            </tr>`;
+        }
+        return`<tr class="${it.fatto?'done':''}">
+            <td style="text-align:center;width:34px"><input type="checkbox" class="pz-check" ${it.fatto?'checked':''} onchange="toggleDone('${it.id}',this.checked)"></td>
+            <td class="mono" style="font-size:14px;color:var(--s500)">${escH(it.codice)||'—'}</td>
+            <td style="color:var(--s700)">${escH(it.descrizione)||'—'}</td>
+            <td style="text-align:center" class="mono">${it.qta}</td>
+            <td style="text-align:right;font-size:14px;color:var(--s600)" class="mono">${it.prezzo?'€ '+it.prezzo.toFixed(2):'—'}</td>
+            <td style="text-align:center"><span class="pill ${it.fatto?'p-done':'p-todo'}">${it.fatto?'Fatto':'Da fare'}</span></td>
+            <td style="text-align:center;white-space:nowrap">
+                <button class="row-act" title="Modifica" onclick="startEdit('${it.id}')"><i class="fas fa-pencil" style="font-size:11px"></i></button>
+                <button class="row-act del-btn" title="Elimina" onclick="removeItem('${it.id}')"><i class="fas fa-trash" style="font-size:11px"></i></button>
+            </td>
+        </tr>`;
+    }).join('');
 
     return`
     <button class="bk" onclick="goHome()"><i class="fas fa-arrow-left"></i> Empori</button>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
         <div style="width:9px;height:9px;border-radius:50%;flex-shrink:0" class="dot-${emp.cls}"></div>
-        <h2 style="font-size:19px;font-weight:900;color:var(--s800);margin:0">${emp.label}</h2>
+        <h2 style="font-size:20px;font-weight:900;color:var(--s800);margin:0">${emp.label}</h2>
     </div>
     <div class="type-tabs">
         <button class="type-tab ${V.tipo==='frontalino'?'t-front':''}" onclick="setTipo('frontalino')">📋 Frontalini <span class="tab-n">${cfr}</span></button>
         <button class="type-tab ${V.tipo==='etichetta'?'t-etich':''}"  onclick="setTipo('etichetta')">🏷️ Etichette <span class="tab-n">${cet}</span></button>
     </div>
-    <div style="font-size:10px;font-weight:700;color:var(--s400);margin-bottom:12px">${ti.sub}</div>
+    <div style="font-size:11px;font-weight:600;color:var(--s400);margin-bottom:12px">${ti.sub}</div>
     <div class="fb-bar">${filterBtns()}</div>
     <div class="card-r mb-4">
         <div class="tscroll">
-            ${shown.length?`<table class="pz-t"><thead><tr><th style="width:34px"></th><th>Codice</th><th>Descrizione</th><th style="text-align:center">Qtà</th><th style="text-align:right">Prezzo</th><th style="text-align:center">Stato</th><th style="width:34px"></th></tr></thead><tbody>${rows}</tbody></table>`
-            :`<div style="padding:32px;text-align:center;color:var(--s400);font-size:12px;font-weight:600">${V.filt!=='tutti'?'Nessun risultato':'Nessun '+ti.label.toLowerCase()+' inserito'}</div>`}
+            ${shown.length?`<table class="pz-t"><thead><tr><th style="width:34px"></th><th>Codice</th><th>Descrizione</th><th style="text-align:center">Qtà</th><th style="text-align:right">Prezzo</th><th style="text-align:center">Stato</th><th style="width:70px"></th></tr></thead><tbody>${rows}</tbody></table>`
+            :`<div style="padding:32px;text-align:center;color:var(--s400);font-size:13px;font-weight:500">${V.filt!=='tutti'?'Nessun risultato':'Nessun '+ti.label.toLowerCase()+' inserito'}</div>`}
         </div>
         <div class="af-wrap" id="af-wrap" style="display:none">
-            <div style="font-size:9px;font-weight:900;text-transform:uppercase;color:var(--s400);letter-spacing:.1em;margin-bottom:10px">➕ Nuovo ${ti.label}</div>
+            <div style="font-size:10px;font-weight:900;text-transform:uppercase;color:var(--s400);letter-spacing:.1em;margin-bottom:10px">➕ Nuovo ${ti.label}</div>
             <div class="af-grid" id="af-inner">
-                <div class="f-g"><span class="f-l">Codice</span><input id="f-cod" class="f-i mono" placeholder="Es: ALI-001" onkeydown="if(event.key==='Enter')addItem()"></div>
-                <div class="f-g"><span class="f-l">Descrizione *</span><input id="f-desc" class="f-i" placeholder="Es: Pasta 500g" onkeydown="if(event.key==='Enter')addItem()"></div>
-                <div class="f-g"><span class="f-l">Qtà</span><input id="f-qta" class="f-i mono" type="number" min="1" value="1" style="text-align:center"></div>
-                <div class="f-g"><span class="f-l">Prezzo €</span><input id="f-prezzo" class="f-i mono" type="number" step="0.01" min="0" placeholder="0.00" style="text-align:right"></div>
+                <div class="f-g"><span class="f-l">Codice</span><input id="f-cod" class="f-i mono" placeholder="Es: ALI-001" onkeydown="handleAddKey(event)"></div>
+                <div class="f-g"><span class="f-l">Descrizione *</span><input id="f-desc" class="f-i" placeholder="Es: Pasta 500g" onkeydown="handleAddKey(event)"></div>
+                <div class="f-g"><span class="f-l">Qtà</span><input id="f-qta" class="f-i mono" type="number" min="1" value="1" style="text-align:center" onkeydown="handleAddKey(event)"></div>
+                <div class="f-g"><span class="f-l">Prezzo €</span><input id="f-prezzo" class="f-i mono" type="number" step="0.01" min="0" placeholder="0.00" style="text-align:right" onkeydown="handleAddKey(event)"></div>
             </div>
             <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-                <button onclick="addItem()" style="background:var(--red);color:#fff;border:none;padding:10px 18px;border-radius:10px;font-size:11px;font-weight:800;cursor:pointer" onmouseover="this.style.background='var(--red-dark)'" onmouseout="this.style.background='var(--red)'"><i class="fas fa-plus"></i> Aggiungi</button>
-                <button onclick="toggleAF()" style="background:var(--s100);color:var(--s500);border:none;padding:10px 14px;border-radius:10px;font-size:11px;font-weight:800;cursor:pointer">Annulla</button>
+                <button onclick="addItem()" style="background:var(--red);color:#fff;border:none;padding:10px 18px;border-radius:10px;font-size:12px;font-weight:800;cursor:pointer" onmouseover="this.style.background='var(--red-dark)'" onmouseout="this.style.background='var(--red)'"><i class="fas fa-plus"></i> Aggiungi</button>
+                <button onclick="toggleAF()" style="background:var(--s100);color:var(--s500);border:none;padding:10px 14px;border-radius:10px;font-size:12px;font-weight:800;cursor:pointer">Annulla</button>
             </div>
-            <div style="font-size:9px;color:var(--s400);margin-top:6px">* Almeno uno tra Codice e Descrizione è obbligatorio</div>
         </div>
     </div>
-    <button onclick="toggleAF()" id="btn-af" style="background:var(--red);color:#fff;border:none;padding:10px 18px;border-radius:11px;font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:7px" onmouseover="this.style.background='var(--red-dark)'" onmouseout="this.style.background='var(--red)'">
+    <button onclick="toggleAF()" id="btn-af" style="background:var(--red);color:#fff;border:none;padding:10px 18px;border-radius:11px;font-size:12px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:7px" onmouseover="this.style.background='var(--red-dark)'" onmouseout="this.style.background='var(--red)'">
         <i class="fas fa-plus-circle"></i> Aggiungi ${ti.label}
     </button>`;
 }
@@ -287,10 +358,10 @@ function rSint(){
         return`<tr class="${it.fatto?'done':''}">
             <td style="text-align:center;width:34px"><input type="checkbox" class="pz-check" ${it.fatto?'checked':''} onchange="toggleDone('${it.id}',this.checked)"></td>
             <td><span class="ec bg-${e.cls} ${e.cls}">${e.label}</span></td>
-            <td class="mono" style="font-size:12px;color:var(--s500)">${it.codice||'—'}</td>
-            <td style="font-weight:700;color:var(--s700)">${it.descrizione||'—'}</td>
-            <td style="text-align:center;font-weight:700" class="mono">${it.qta}</td>
-            <td style="text-align:right;font-size:12px;color:var(--s600)" class="mono">${it.prezzo?'€ '+it.prezzo.toFixed(2):'—'}</td>
+            <td class="mono" style="font-size:14px;color:var(--s500)">${escH(it.codice)||'—'}</td>
+            <td style="color:var(--s700)">${escH(it.descrizione)||'—'}</td>
+            <td style="text-align:center" class="mono">${it.qta}</td>
+            <td style="text-align:right;font-size:14px;color:var(--s600)" class="mono">${it.prezzo?'€ '+it.prezzo.toFixed(2):'—'}</td>
             <td style="text-align:center"><span class="pill ${it.fatto?'p-done':'p-todo'}">${it.fatto?'Fatto':'Da fare'}</span></td>
         </tr>`;
     }).join('');
@@ -302,9 +373,9 @@ function rSint(){
     <button class="bk" onclick="goHome()"><i class="fas fa-arrow-left"></i> Home</button>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
         <span style="font-size:22px">${ti.emoji}</span>
-        <h2 style="font-size:19px;font-weight:900;color:var(--s800);margin:0">Sintesi ${ti.lbl_p}</h2>
+        <h2 style="font-size:20px;font-weight:900;color:var(--s800);margin:0">Sintesi ${ti.lbl_p}</h2>
     </div>
-    <p style="font-size:11px;color:var(--s400);margin-bottom:18px">${ti.sub}</p>
+    <p style="font-size:12px;color:var(--s400);margin-bottom:18px">${ti.sub}</p>
     <div class="stat-grid">
         <div class="stat"><div class="stat-n" style="color:var(--s800)">${nTot}</div><div class="stat-l">Totali</div></div>
         <div class="stat" style="border-color:#fecaca"><div class="stat-n" style="color:var(--red)">${nDf}</div><div class="stat-l">Da fare</div></div>
@@ -318,7 +389,7 @@ function rSint(){
                 <tbody>${rows}</tbody>
                 <tfoot><tr class="tot"><td colspan="4">TOTALE (${shown.length} voci)</td><td style="text-align:center">${totQ}</td><td style="text-align:right">${totP?'€ '+totP.toFixed(2):'—'}</td><td></td></tr></tfoot>
             </table>`:
-            `<div style="padding:40px;text-align:center;color:var(--s400);font-size:13px;font-weight:600">Nessun elemento</div>`}
+            `<div style="padding:40px;text-align:center;color:var(--s400);font-size:14px;font-weight:500">Nessun elemento</div>`}
         </div>
     </div>`;
 }
@@ -328,7 +399,6 @@ function R(){
     const app=document.getElementById('app');
     app.innerHTML=V.page==='home'?rHome():V.page==='emp'?rEmp():rSint();
     document.getElementById('fc-n').textContent=items.filter(i=>!i.fatto).length;
-    // Re-apply form state for emp page
     if(V.page==='emp'){
         const wrap=g('af-wrap'),btn=g('btn-af');
         if(wrap){wrap.style.display='none';}
@@ -342,6 +412,21 @@ function toggleAF(){
     wrap.style.display=open?'none':'block';
     if(btn)btn.style.display=open?'inline-flex':'none';
     if(!open)g('f-cod')?.focus();
+}
+
+// Keyboard handlers
+function handleAddKey(e){
+    if(e.key==='Enter'){e.preventDefault();addItem();}
+}
+function handleEditKey(e){
+    if(e.key==='Enter'){e.preventDefault();saveEdit();}
+    if(e.key==='Escape'){e.preventDefault();cancelEdit();}
+}
+
+// XSS safety
+function escH(s){
+    if(!s)return'';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // ── LOAD ──
