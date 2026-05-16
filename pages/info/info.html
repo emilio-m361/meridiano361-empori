@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
     <link rel="stylesheet" href="../../assets/style/nav-style.css">
@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        :root { --red:#b75252;--red-dark:#8f3d3d;--red-light:#fff1f1;--green:#059669;--green-light:#dcfce7;--slate-50:#f8fafc;--slate-100:#f1f5f9;--slate-200:#e2e8f0;--slate-300:#cbd5e1;--slate-400:#94a3b8;--slate-500:#64748b;--slate-600:#475569;--slate-700:#334155;--slate-800:#1e293b; }
+        :root { --red:#B5453A;--red-dark:#8c362d;--red-light:#fdf1f0;--green:#059669;--green-light:#dcfce7;--slate-50:#f8fafc;--slate-100:#f1f5f9;--slate-200:#e2e8f0;--slate-300:#cbd5e1;--slate-400:#94a3b8;--slate-500:#64748b;--slate-600:#475569;--slate-700:#334155;--slate-800:#1e293b; }
         body { font-family:'Inter',sans-serif; background:#f0f2f5; }
         .font-mono { font-family:'DM Mono',monospace; }
         .sec-t { font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--slate-400);display:flex;align-items:center;gap:10px;margin-bottom:16px; }
@@ -20,7 +20,7 @@
         .emp-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:10px; }
         @media(min-width:640px) { .emp-grid { grid-template-columns:repeat(4,1fr); } }
         .emp-btn { padding:20px 12px;border-radius:16px;border:2px solid var(--slate-200);background:#fff;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:8px; }
-        .emp-btn:hover { border-color:var(--red);transform:translateY(-2px);box-shadow:0 4px 12px rgba(183,82,82,.12); }
+        .emp-btn:hover { border-color:var(--red);transform:translateY(-2px);box-shadow:0 4px 12px rgba(181,69,58,.12); }
         .emp-btn.selected { border-color:var(--red);background:var(--red-light); }
         .emp-btn img { width:48px;height:48px;object-fit:contain;border-radius:12px; }
         .emp-btn span { font-size:12px;font-weight:800;color:var(--slate-700); }
@@ -68,7 +68,7 @@
         .st-new { background:#fef3c7;color:#92400e; }
         .st-replied { background:#d1fae5;color:#065f46; }
         .st-archived { background:var(--slate-100);color:var(--slate-500); }
-        .emp-cr { background:#fce4ec;color:#b75252; }
+        .emp-cr { background:#fce4ec;color:#B5453A; }
         .emp-ca { background:#fff3e0;color:#c78044; }
         .emp-re { background:#e8f5e9;color:#6b8d53; }
         .emp-vi { background:#e3f2fd;color:#4c6d90; }
@@ -91,7 +91,7 @@
                     <span>Casalmaggiore</span>
                 </button>
                 <button class="emp-btn" onclick="selectEmporio('cremona')">
-                    <img src="../../assets/images/logo_cremona.png" alt="CR" onerror="this.outerHTML='<div style=\'width:48px;height:48px;border-radius:12px;background:#fce4ec;display:flex;align-items:center;justify-content:center;font-weight:900;color:#b75252;font-size:16px\'>CR</div>'">
+                    <img src="../../assets/images/logo_cremona.png" alt="CR" onerror="this.outerHTML='<div style=\'width:48px;height:48px;border-radius:12px;background:#fce4ec;display:flex;align-items:center;justify-content:center;font-weight:900;color:#B5453A;font-size:16px\'>CR</div>'">
                     <span>Cremona</span>
                 </button>
                 <button class="emp-btn" onclick="selectEmporio('reggioemilia')">
@@ -116,7 +116,7 @@
                         <i class="fas fa-exchange-alt"></i> Cambia
                     </button>
                 </div>
-                <button onclick="showNewForm()" id="btn-new" class="text-xs font-bold text-white bg-[#b75252] hover:bg-[#8f3d3d] px-4 py-2 rounded-lg transition-all flex items-center gap-2">
+                <button onclick="showNewForm()" id="btn-new" class="text-xs font-bold text-white bg-[#B5453A] hover:bg-[#8c362d] px-4 py-2 rounded-lg transition-all flex items-center gap-2">
                     <i class="fas fa-plus"></i> Nuova Richiesta
                 </button>
             </div>

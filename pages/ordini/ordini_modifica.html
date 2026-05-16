@@ -1,21 +1,22 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M361 - Modifica Ordine</title>
+    <link rel="stylesheet" href="../../assets/style/nav-style.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #f1f5f9; 
-            color: #1e293b; 
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: #1A1A1A;
         }
-        .text-m361-red { color: #b75252; }
-        .bg-m361-red { background-color: #b75252; }
-        .border-m361-red { border-color: #b75252; }
+        .text-m361-red { color: #B5453A; }
+        .bg-m361-red { background-color: #B5453A; }
+        .border-m361-red { border-color: #B5453A; }
         
         input::-webkit-outer-spin-button, 
         input::-webkit-inner-spin-button { 
@@ -33,14 +34,14 @@
 
         .btn-red-big {
             padding: 24px 40px;
-            background-color: #b75252;
+            background-color: #B5453A;
             color: white;
             border-radius: 16px;
             font-weight: 700;
             font-size: 18px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            box-shadow: 0 10px 25px rgba(183, 82, 82, 0.3);
+            box-shadow: 0 10px 25px rgba(181, 69, 58, 0.3);
             transition: all 0.2s;
             display: inline-flex;
             align-items: center;
@@ -57,14 +58,14 @@
         .btn-submit {
             width: 100%;
             padding: 20px;
-            background-color: #b75252;
+            background-color: #B5453A;
             color: white;
             border-radius: 16px;
             font-weight: 800;
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            box-shadow: 0 8px 20px rgba(183, 82, 82, 0.3);
+            box-shadow: 0 8px 20px rgba(181, 69, 58, 0.3);
             transition: all 0.2s;
             border: none;
             cursor: pointer;
@@ -101,7 +102,7 @@
             display: block;
             width: 3px;
             height: 14px;
-            background: #b75252;
+            background: #B5453A;
             border-radius: 2px;
         }
 
@@ -116,7 +117,7 @@
         }
         .form-input:focus {
             outline: none;
-            border-color: #b75252;
+            border-color: #B5453A;
         }
 
         .form-select {
@@ -130,7 +131,7 @@
         }
         .form-select:focus {
             outline: none;
-            border-color: #b75252;
+            border-color: #B5453A;
         }
 
         .product-table th {
@@ -256,6 +257,14 @@
                             </label>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- TITOLO ORDINE -->
+            <div class="section-card py-3">
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">Titolo ordine</span>
+                    <input type="text" id="titolo-ordine" class="form-input flex-1" placeholder="Titolo ordine...">
                 </div>
             </div>
 
@@ -468,7 +477,10 @@
             
             // Note
             setValueSafe('order-notes', order.note);
-            
+
+            // Titolo
+            setValueSafe('titolo-ordine', order.titolo || '');
+
             // Products
             if (order.articoli && Array.isArray(order.articoli)) {
                 // Get unique group IDs
@@ -763,6 +775,7 @@
                     acconto: parseFloat(document.getElementById('acconto').value.replace('€', '').replace(',', '.').trim()) || 0,
                     da_pagare: parseFloat(document.getElementById('saldo-finale').textContent.replace('€', '').replace(',', '.').trim()),
                     note: document.getElementById('order-notes').value,
+                    titolo: document.getElementById('titolo-ordine')?.value || '',
                     articoli: articoli
                 };
 

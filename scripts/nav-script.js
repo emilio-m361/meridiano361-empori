@@ -1,4 +1,4 @@
-/**
+﻿/**
  * nav-script.js — M361 App
  * ─────────────────────────────────────────────────
  * Una sola riga in ogni pagina (fine del <body>):
@@ -144,15 +144,15 @@ body { font-family: 'Inter', sans-serif; padding-top: 56px; padding-bottom: 68px
 #m361-header { position:fixed;top:0;left:0;right:0;height:56px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;padding:0 18px;z-index:9000;box-shadow:0 1px 4px rgba(0,0,0,.05);gap:12px; }
 #m361-header .hd-left { display:flex;align-items:center;gap:0;text-decoration:none;flex:1;min-width:0; }
 #m361-header .hd-logo { height:28px;object-fit:contain;flex-shrink:0; }
-#m361-header .hd-logo-fb { font-weight:900;font-size:15px;color:#b75252;letter-spacing:.08em;flex-shrink:0;display:none; }
+#m361-header .hd-logo-fb { font-weight:900;font-size:15px;color:#B5453A;letter-spacing:.08em;flex-shrink:0;display:none; }
 #m361-header .hd-sep { width:1px;height:22px;background:#e5e7eb;margin:0 12px;flex-shrink:0; }
 #m361-header #header-title { font-size:14px;font-weight:700;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px; }
 #m361-header .hd-right { display:flex;align-items:center;gap:8px;flex-shrink:0; }
 #back-btn { display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#64748b;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:color .15s; }
-#back-btn:hover { color:#b75252; }
+#back-btn:hover { color:#B5453A; }
 #back-btn.hidden { display:none; }
 @media(max-width:480px) { #m361-header #header-title { font-size:12px;max-width:120px; } }
-#m361-nav { position:fixed;bottom:0;left:0;right:0;height:60px;background:#b75252;border-top:2px solid #9e3f3f;z-index:9000;display:flex;align-items:stretch;justify-content:flex-start;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;box-shadow:0 -2px 10px rgba(0,0,0,.15);padding-bottom:env(safe-area-inset-bottom,0px); }
+#m361-nav { position:fixed;bottom:0;left:0;right:0;height:60px;background:#B5453A;border-top:2px solid #9e3f3f;z-index:9000;display:flex;align-items:stretch;justify-content:flex-start;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;box-shadow:0 -2px 10px rgba(0,0,0,.15);padding-bottom:env(safe-area-inset-bottom,0px); }
 #m361-nav::-webkit-scrollbar { display:none; }
 @supports(padding-bottom:env(safe-area-inset-bottom)) { #m361-nav { height:calc(60px + env(safe-area-inset-bottom)); } }
 .mn-sep { width:1px;background:rgba(255,255,255,.18);margin:12px 0;flex-shrink:0; }

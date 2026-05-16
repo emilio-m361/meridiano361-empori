@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
     <link rel="stylesheet" href="../../assets/style/nav-style.css">
@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --red: #b75252; --red-dark: #8f3d3d; --red-light: #fff1f1;
+            --red: #B5453A; --red-dark: #8c362d; --red-light: #fdf1f0;
             --green: #6b8d53; --green-light: #ecfdf5;
             --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0;
             --slate-300: #cbd5e1; --slate-400: #94a3b8; --slate-500: #64748b;
@@ -142,7 +142,7 @@
                 <div class="flex items-center justify-between mb-4">
                     <div class="sec-title-r" style="margin-bottom:0">Prenotazioni Cremona</div>
                     <div class="action-bar">
-                        <button onclick="addRow('cremona')" class="text-xs font-bold text-white bg-[#b75252] hover:bg-[#8f3d3d] px-4 py-2 rounded-lg transition-all flex items-center gap-2">
+                        <button onclick="addRow('cremona')" class="text-xs font-bold text-white bg-[#B5453A] hover:bg-[#8c362d] px-4 py-2 rounded-lg transition-all flex items-center gap-2">
                             <i class="fas fa-plus"></i> Aggiungi cliente
                         </button>
                     </div>
@@ -156,7 +156,7 @@
                 <div class="flex items-center justify-between mb-4">
                     <div class="sec-title-r" style="margin-bottom:0">Prenotazioni Casalmaggiore</div>
                     <div class="action-bar">
-                        <button onclick="addRow('casalmaggiore')" class="text-xs font-bold text-white bg-[#b75252] hover:bg-[#8f3d3d] px-4 py-2 rounded-lg transition-all flex items-center gap-2">
+                        <button onclick="addRow('casalmaggiore')" class="text-xs font-bold text-white bg-[#B5453A] hover:bg-[#8c362d] px-4 py-2 rounded-lg transition-all flex items-center gap-2">
                             <i class="fas fa-plus"></i> Aggiungi cliente
                         </button>
                     </div>
@@ -170,7 +170,7 @@
                 <div class="flex items-center justify-between mb-4">
                     <div class="sec-title-r" style="margin-bottom:0">Prenotazioni Reggio Emilia</div>
                     <div class="action-bar">
-                        <button onclick="addRow('reggioemilia')" class="text-xs font-bold text-white bg-[#b75252] hover:bg-[#8f3d3d] px-4 py-2 rounded-lg transition-all flex items-center gap-2">
+                        <button onclick="addRow('reggioemilia')" class="text-xs font-bold text-white bg-[#B5453A] hover:bg-[#8c362d] px-4 py-2 rounded-lg transition-all flex items-center gap-2">
                             <i class="fas fa-plus"></i> Aggiungi cliente
                         </button>
                     </div>
@@ -184,7 +184,7 @@
                 <div class="flex items-center justify-between mb-4">
                     <div class="sec-title-r" style="margin-bottom:0">Prenotazioni Viadana</div>
                     <div class="action-bar">
-                        <button onclick="addRow('viadana')" class="text-xs font-bold text-white bg-[#b75252] hover:bg-[#8f3d3d] px-4 py-2 rounded-lg transition-all flex items-center gap-2">
+                        <button onclick="addRow('viadana')" class="text-xs font-bold text-white bg-[#B5453A] hover:bg-[#8c362d] px-4 py-2 rounded-lg transition-all flex items-center gap-2">
                             <i class="fas fa-plus"></i> Aggiungi cliente
                         </button>
                     </div>
@@ -250,9 +250,9 @@
         body.innerHTML = products.map((p, i) => `
             <tr class="border-b border-slate-100">
                 <td class="p-2 text-slate-400 font-mono text-xs font-bold">${i + 1}</td>
-                <td class="p-2"><input type="text" value="${p.descrizione}" onchange="products[${i}].descrizione=this.value; renderAllTables()" placeholder="Es: Colomba 750g" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:border-[#b75252] outline-none"></td>
-                <td class="p-2"><input type="text" value="${p.codice}" onchange="products[${i}].codice=this.value; renderAllTables()" placeholder="COD001" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono focus:border-[#b75252] outline-none"></td>
-                <td class="p-2 text-right"><input type="number" step="0.01" value="${p.prezzo}" onchange="products[${i}].prezzo=parseFloat(this.value)||0; renderAllTables()" class="w-24 border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono text-right focus:border-[#b75252] outline-none"></td>
+                <td class="p-2"><input type="text" value="${p.descrizione}" onchange="products[${i}].descrizione=this.value; renderAllTables()" placeholder="Es: Colomba 750g" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:border-[#B5453A] outline-none"></td>
+                <td class="p-2"><input type="text" value="${p.codice}" onchange="products[${i}].codice=this.value; renderAllTables()" placeholder="COD001" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono focus:border-[#B5453A] outline-none"></td>
+                <td class="p-2 text-right"><input type="number" step="0.01" value="${p.prezzo}" onchange="products[${i}].prezzo=parseFloat(this.value)||0; renderAllTables()" class="w-24 border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono text-right focus:border-[#B5453A] outline-none"></td>
                 <td class="p-2 text-center"><button onclick="removeProduct(${i})" class="text-slate-300 hover:text-red-500 transition-colors"><i class="fas fa-trash"></i></button></td>
             </tr>
         `).join('');

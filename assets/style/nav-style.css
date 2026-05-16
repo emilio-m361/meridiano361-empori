@@ -1,4 +1,4 @@
-/*
+﻿/*
  * nav-style.css — M361 App
  * Stili condivisi per header, bottom nav, e componenti base.
  *
@@ -15,9 +15,9 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --red:        #b75252;
-  --red-dark:   #8f3d3d;
-  --red-light:  #fff1f1;
+  --red:        #B5453A;
+  --red-dark:   #8c362d;
+  --red-light:  #fdf1f0;
   --slate-50:   #f8fafc;
   --slate-100:  #f1f5f9;
   --slate-200:  #e2e8f0;
@@ -44,7 +44,7 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   font-family: var(--font-main);
   background: #f0f2f5;
-  color: var(--slate-800);
+  color: #1A1A1A;
   min-height: 100vh;
   padding-top: 56px;    /* header height */
   padding-bottom: 68px; /* nav height */
@@ -174,8 +174,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 .nav-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(183,82,82,.14);
-  border-color: rgba(183,82,82,.2);
+  box-shadow: 0 6px 20px rgba(181,69,58,.14);
+  border-color: rgba(181,69,58,.2);
 }
 .nav-card-icon {
   width: 48px;

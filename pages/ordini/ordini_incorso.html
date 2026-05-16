@@ -1,17 +1,18 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M361 - Ordini in Corso</title>
+    <link rel="stylesheet" href="../../assets/style/nav-style.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #f8fafb; 
-            color: #1e293b; 
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafb;
+            color: #1A1A1A;
         }
         
         .logo {
@@ -25,7 +26,7 @@
         }
         
         .btn-new-order {
-            background: #b75252;
+            background: #B5453A;
             color: white;
             padding: 14px 28px;
             border-radius: 12px;
@@ -37,7 +38,7 @@
             align-items: center;
             gap: 10px;
             text-decoration: none;
-            box-shadow: 0 3px 10px rgba(183, 82, 82, 0.3);
+            box-shadow: 0 3px 10px rgba(181, 69, 58, 0.3);
             transition: all 0.2s;
             border: none;
             cursor: pointer;
@@ -73,11 +74,11 @@
             padding: 12px 18px 12px 44px;
             font-size: 14px;
             width: 100%;
-            min-width: 400px;
+            min-width: 0;
         }
         .search-input:focus {
             outline: none;
-            border-color: #b75252;
+            border-color: #B5453A;
         }
         
         .date-filter-wrapper {
@@ -101,22 +102,22 @@
         }
         .date-input:focus {
             outline: none;
-            border-color: #b75252;
+            border-color: #B5453A;
         }
         
         .order-card {
             background: white;
             border-radius: 16px;
-            padding: 24px 28px;
+            padding: 14px 18px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
             border: 1px solid #f1f5f9;
             transition: all 0.2s;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
             position: relative;
             border-left: 6px solid transparent;
         }
         .order-card.da-avvisare {
-            border-left-color: #b75252;
+            border-left-color: #B5453A;
         }
         .order-card.avvisato {
             background: #f8fafb;
@@ -125,9 +126,9 @@
         
         .status-badge {
             display: inline-block;
-            padding: 8px 16px;
+            padding: 4px 10px;
             border-radius: 8px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -142,17 +143,17 @@
         }
         
         .badge-da-avvisare {
-            background: #b75252;
+            background: #B5453A;
             color: white;
-            padding: 6px 14px;
+            padding: 4px 10px;
             border-radius: 6px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.04em;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
         .badge-da-avvisare i {
             font-size: 8px;
@@ -165,22 +166,22 @@
         
         .order-number {
             font-family: 'DM Mono', monospace;
-            font-size: 14px;
+            font-size: 11px;
             color: #94a3b8;
             font-weight: 600;
         }
         
         .customer-name {
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 800;
             color: #1e293b;
-            margin: 10px 0;
+            margin: 4px 0;
             text-transform: uppercase;
         }
         
         .emporio-name {
             font-size: 15px;
-            color: #b75252;
+            color: #B5453A;
             font-weight: 700;
             text-transform: uppercase;
             margin-top: 4px;
@@ -200,11 +201,11 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: #475569;
             cursor: pointer;
-            padding: 10px 14px;
+            padding: 6px 10px;
             border-radius: 8px;
             transition: all 0.15s;
         }
@@ -219,14 +220,14 @@
         }
         
         .btn-action {
-            padding: 12px;
+            padding: 8px;
             border-radius: 10px;
-            font-size: 18px;
+            font-size: 15px;
             border: none;
             cursor: pointer;
             transition: all 0.15s;
-            width: 48px;
-            height: 48px;
+            width: 38px;
+            height: 38px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -234,8 +235,8 @@
         .btn-ritirato {
             background: #2d3748;
             color: white;
-            padding: 14px 24px;
-            font-size: 14px;
+            padding: 8px 14px;
+            font-size: 12px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.04em;
@@ -253,7 +254,7 @@
             background: #334155;
         }
         .btn-delete {
-            background: #b75252;
+            background: #B5453A;
             color: white;
         }
         .btn-delete:hover {
@@ -265,7 +266,51 @@
             color: #64748b;
             margin: 6px 0;
         }
-    
+
+        .badge-merce-ordinata {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .order-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            font-style: italic;
+            margin-bottom: 2px;
+            margin-left: -4px;
+            padding: 2px 4px;
+            border-radius: 4px;
+            outline: none;
+            cursor: text;
+            transition: background 0.15s;
+            min-height: 18px;
+            line-height: 1.4;
+        }
+        .order-title:hover { background: #f1f5f9; }
+        .order-title:focus { background: #f8fafc; border-bottom: 1px solid #B5453A; }
+
+        .compact-info {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
         /* Bulk Selection */
         .bulk-actions {
             background: white;
@@ -296,7 +341,7 @@
             width: 18px;
             height: 18px;
             cursor: pointer;
-            accent-color: #b75252;
+            accent-color: #B5453A;
         }
 
     </style>
@@ -522,49 +567,96 @@
             });
         }
 
+        function escHtml(str) {
+            return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+
+        function isMerceOrdinata(order) {
+            const articoli = order.articoli;
+            if (!articoli || !Array.isArray(articoli) || articoli.length === 0) return false;
+            return articoli.every(a => {
+                const qta = parseInt(a.qta) || 0;
+                if (qta === 0) return true;
+                const sourced = (parseInt(a.merce_pronta) || 0) +
+                                (parseInt(a.da_forn) || 0) +
+                                (parseInt(a.da_emporio_qta) || 0) +
+                                (parseInt(a.da_altri_qta) || 0);
+                return sourced >= qta;
+            });
+        }
+
+        function generateTitoloOrdine(order) {
+            const nomeCliente = `${order.cliente_nome || ''} ${order.cliente_cognome || ''}`.trim();
+            let categoria = '';
+            const articoli = order.articoli;
+            if (articoli && Array.isArray(articoli) && articoli.length > 0) {
+                const words = (articoli[0].descrizione || '').split(' ');
+                categoria = words.slice(0, 3).join(' ');
+            }
+            const dataStr = order.data_ordine
+                ? new Date(order.data_ordine).toLocaleDateString('it-IT', {day:'2-digit',month:'2-digit',year:'2-digit'})
+                : new Date().toLocaleDateString('it-IT', {day:'2-digit',month:'2-digit',year:'2-digit'});
+            return [nomeCliente, categoria, dataStr].filter(Boolean).join(' – ');
+        }
+
+        async function saveTitolo(orderId, titolo) {
+            try {
+                await _supabase.from('ordini_incorso').update({ titolo }).eq('id', orderId);
+                const order = allOrders.find(o => o.id === orderId);
+                if (order) order.titolo = titolo;
+            } catch (e) {
+                console.error('Error saving titolo:', e);
+            }
+        }
+
+        function saveTitoloFromElement(el) {
+            saveTitolo(el.dataset.orderId, el.textContent.trim());
+        }
+
         function createOrderCard(order) {
             const card = document.createElement('div');
-            
+
             const merce_pronta = order.merce_pronta || false;
             const cliente_avvisato = order.cliente_avvisato || false;
             const da_avvisare = merce_pronta && !cliente_avvisato;
             const avvisato = merce_pronta && cliente_avvisato;
-            
-            const statusClass = merce_pronta ? 'status-merce-pronta' : 'status-da-ordinare';
-            const statusText = merce_pronta ? 'Merce pronta' : 'Merce da ordinare';
-            
+            const merceOrdinata = isMerceOrdinata(order);
+
             card.className = `order-card ${da_avvisare ? 'da-avvisare' : ''} ${avvisato ? 'avvisato' : ''}`;
-            
+
             const dataCreazione = new Date(order.data_creazione).toLocaleDateString('it-IT');
-            
             const deliveryIcon = order.modalita_consegna === 'Spedizione' ? 'fa-truck' : 'fa-box';
             const deliveryText = order.modalita_consegna || 'Ritiro';
+            const titolo = escHtml(order.titolo || generateTitoloOrdine(order));
+            const waHref = `https://wa.me/${(order.cliente_cellulare||'').replace(/[^0-9]/g,'')}`;
 
             card.innerHTML = `
-                <div class="grid grid-cols-12 gap-6 items-center">
-                    
-                    <div class="col-span-12 md:col-span-4">
-                        <div class="flex items-center gap-3 mb-3 flex-wrap">
+                <div class="grid grid-cols-12 gap-4 items-center">
+
+                    <div class="col-span-12 md:col-span-5">
+                        <div class="order-title"
+                             contenteditable="true"
+                             data-order-id="${order.id}"
+                             onblur="saveTitoloFromElement(this)"
+                             onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
+                             >${titolo}</div>
+                        <div class="flex items-center gap-2 flex-wrap mt-1">
                             ${da_avvisare ? '<span class="badge-da-avvisare"><i class="fas fa-circle"></i> DA AVVISARE</span>' : ''}
+                            ${merceOrdinata ? '<span class="badge-merce-ordinata"><i class="fas fa-check-circle"></i> MERCE ORDINATA</span>' : ''}
+                            ${merce_pronta ? '<span class="status-badge status-merce-pronta">MERCE PRONTA</span>' : ''}
                             <span class="order-number">#${order.numero_ordine || order.id.substring(0, 8)}</span>
                         </div>
-                        ${merce_pronta ? '<div class="status-badge status-merce-pronta mb-2">MERCE PRONTA</div>' : ''}
-                        <div class="customer-name">${order.cliente_nome} ${order.cliente_cognome}</div>
-                        ${order.cliente_cellulare ? `
-                        <div class="flex items-center gap-2 mt-1 mb-1">
-                            <i class="fas fa-phone text-slate-400" style="font-size:11px"></i>
-                            <span style="font-size:13px;font-weight:600;color:#475569">${order.cliente_cellulare}</span>
-                            ${order.wa_attivo ? `<a href="https://wa.me/${(order.cliente_cellulare||'').replace(/[^0-9]/g,'')}" target="_blank" style="color:#25D366;margin-left:2px" title="Apri WhatsApp"><i class="fab fa-whatsapp" style="font-size:17px"></i></a>` : ''}
-                        </div>` : ''}
-                        <div class="info-text">Data ordine: ${dataCreazione}</div>
-                        <div class="emporio-name">${order.emporio || order.citta}</div>
-                        <div class="delivery-method">
-                            <i class="fas ${deliveryIcon}"></i>
-                            ${deliveryText}
+                        <div class="customer-name">${escHtml(order.cliente_nome)} ${escHtml(order.cliente_cognome)}</div>
+                        <div class="compact-info">
+                            ${order.cliente_cellulare ? `<span><i class="fas fa-phone" style="font-size:9px"></i> ${escHtml(order.cliente_cellulare)}</span>` : ''}
+                            <span><i class="fas fa-calendar-alt" style="font-size:9px"></i> ${dataCreazione}</span>
+                            <span style="color:#B5453A;font-weight:700">${escHtml(order.emporio || order.citta)}</span>
+                            <span><i class="fas ${deliveryIcon}" style="font-size:9px"></i> ${escHtml(deliveryText)}</span>
+                            ${order.wa_attivo && order.cliente_cellulare ? `<a href="${waHref}" target="_blank" style="color:#25D366"><i class="fab fa-whatsapp" style="font-size:14px"></i></a>` : ''}
                         </div>
                     </div>
-                    
-                    <div class="col-span-12 md:col-span-4 flex flex-col gap-3">
+
+                    <div class="col-span-12 md:col-span-3 flex flex-col gap-1">
                         <label class="checkbox-label">
                             <input type="checkbox" ${merce_pronta ? 'checked' : ''} onchange="toggleMercePronta('${order.id}', this.checked)">
                             <span>Merce pronta</span>
@@ -574,8 +666,8 @@
                             <span>Cliente avvisato</span>
                         </label>
                     </div>
-                    
-                    <div class="col-span-12 md:col-span-4 flex items-center justify-end gap-3">
+
+                    <div class="col-span-12 md:col-span-4 flex items-center justify-end gap-2">
                         <button class="btn-action" onclick="viewOrderSummary('${order.id}')" title="Visualizza riepilogo" style="color:#3b82f6;border-color:#3b82f6;background:#eff6ff">
                             <i class="fas fa-eye"></i>
                         </button>
@@ -589,7 +681,7 @@
                             Ritirato / Spedito
                         </button>
                     </div>
-                    
+
                 </div>
             `;
 
@@ -664,7 +756,8 @@
                     articoli: orderData.articoli,
                     stato: orderData.stato,
                     merce_pronta: orderData.merce_pronta,
-                    cliente_avvisato: orderData.cliente_avvisato
+                    cliente_avvisato: orderData.cliente_avvisato,
+                    titolo: orderData.titolo
                 };
                 
                 const { error: insertError } = await _supabase
@@ -733,7 +826,7 @@
                     <div><div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Data</div>
                         <div style="font-weight:600">${dataOrdine}</div></div>
                     <div><div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Emporio</div>
-                        <div style="font-weight:700;color:#b75252">${order.emporio || order.citta || '—'}</div></div>
+                        <div style="font-weight:700;color:#B5453A">${order.emporio || order.citta || '—'}</div></div>
                     <div><div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Consegna</div>
                         <div style="font-weight:600">${order.modalita_consegna || 'Ritiro'}</div></div>
                 </div>
@@ -766,15 +859,15 @@
                             <tfoot style="border-top:2px solid #e2e8f0;background:#f8fafc">
                                 <tr>
                                     <td colspan="5" style="padding:10px;text-align:right;font-weight:700;color:#475569">TOTALE ORDINE</td>
-                                    <td style="padding:10px;text-align:right;font-weight:900;font-family:monospace;font-size:15px;color:#b75252">€ ${parseFloat(order.totale_ordine||0).toFixed(2)}</td>
+                                    <td style="padding:10px;text-align:right;font-weight:900;font-family:monospace;font-size:15px;color:#B5453A">€ ${parseFloat(order.totale_ordine||0).toFixed(2)}</td>
                                 </tr>
                                 ${(order.acconto > 0) ? `<tr>
                                     <td colspan="5" style="padding:6px 10px;text-align:right;color:#64748b;font-size:12px">Acconto versato</td>
                                     <td style="padding:6px 10px;text-align:right;font-family:monospace;font-size:12px">− € ${parseFloat(order.acconto||0).toFixed(2)}</td>
                                 </tr>
-                                <tr style="background:#fff1f1">
+                                <tr style="background:#fdf1f0">
                                     <td colspan="5" style="padding:10px;text-align:right;font-weight:800;color:#1e293b">DA PAGARE</td>
-                                    <td style="padding:10px;text-align:right;font-weight:900;font-family:monospace;font-size:15px;color:#b75252">€ ${parseFloat(order.da_pagare||0).toFixed(2)}</td>
+                                    <td style="padding:10px;text-align:right;font-weight:900;font-family:monospace;font-size:15px;color:#B5453A">€ ${parseFloat(order.da_pagare||0).toFixed(2)}</td>
                                 </tr>` : ''}
                             </tfoot>
                         </table>
