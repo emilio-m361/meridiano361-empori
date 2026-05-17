@@ -1285,7 +1285,7 @@ function fillForm(data) {
   if(data.pom_corrispettivi!=null) document.getElementById('pom-corrispettivi').value=euro(data.pom_corrispettivi);
   if(data.cassaforte!=null)        document.getElementById('cassaforte').value=euro(data.cassaforte);
   if(data.mat_cassaforte!=null)    document.getElementById('mat-cassaforte').value=euro(data.mat_cassaforte);
-  if(data.global_scontrini!=null)  document.getElementById('global-scontrini').value=data.global_scontrini;
+  if(data.num_scontrini!=null)      document.getElementById('global-scontrini').value=data.num_scontrini;
   if(data.chiuso_da_mat)  document.getElementById('chiuso-da-mat').value=data.chiuso_da_mat;
   if(data.chiuso_da_pom)  document.getElementById('chiuso-da-pom').value=data.chiuso_da_pom;
   if(data.note_mattino)   document.getElementById('nota-mattino').value=data.note_mattino;
@@ -1363,7 +1363,7 @@ async function saveDay() {
     note_pomeriggio: getVal('nota-pomeriggio')||null,
     meteo:           getVal('meteo-label')||null,
     arrivo_merci:    document.getElementById('arrivo-merci').checked,
-    global_scontrini: parseInt(document.getElementById('global-scontrini').value)||null,
+    num_scontrini: parseInt(document.getElementById('global-scontrini').value)||null,
     turno_type:      tipo,
     iva_22:  getNum('iva-22'), iva_10: getNum('iva-10'), iva_4: getNum('iva-4'),
     iva_esente: getNum('iva-esente'),
