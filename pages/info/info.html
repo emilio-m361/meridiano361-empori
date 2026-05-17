@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="../../assets/style/nav-style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M361 - Richieste Info</title>
+    <title>M361 - Richieste informazioni clienti</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
         :root { --red:#B5453A;--red-dark:#8c362d;--red-light:#fdf1f0;--green:#059669;--green-light:#dcfce7;--slate-50:#f8fafc;--slate-100:#f1f5f9;--slate-200:#e2e8f0;--slate-300:#cbd5e1;--slate-400:#94a3b8;--slate-500:#64748b;--slate-600:#475569;--slate-700:#334155;--slate-800:#1e293b; }
         body { font-family:'Inter',sans-serif; background:#f0f2f5; }
         .font-mono { font-family:'DM Mono',monospace; }
-        .sec-t { font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--slate-400);display:flex;align-items:center;gap:10px;margin-bottom:16px; }
+        .sec-t { font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--slate-400);display:flex;align-items:center;gap:10px;margin-bottom:16px; }
         .sec-t::before { content:'';width:3px;height:16px;background:var(--red);border-radius:2px;flex-shrink:0; }
         .card-r { background:#fff;border-radius:20px;border:1px solid var(--slate-200);box-shadow:0 1px 4px rgba(0,0,0,.05); }
 
@@ -35,8 +35,8 @@
         .tab-content.active { display:block; }
 
         /* Form */
-        .f-label { font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--slate-400);margin-bottom:6px;display:block; }
-        .f-input { width:100%;border:1px solid var(--slate-200);border-radius:12px;padding:10px 14px;font-size:14px;font-family:'Inter',sans-serif;color:var(--slate-700);outline:none;transition:border .15s; }
+        .f-label { font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--slate-400);margin-bottom:6px;display:block; }
+        .f-input { width:100%;border:1px solid var(--slate-200);border-radius:12px;padding:10px 14px;font-size:15px;font-family:'Inter',sans-serif;color:var(--slate-700);outline:none;transition:border .15s; }
         .f-input:focus { border-color:var(--red); }
         .f-textarea { min-height:80px;resize:vertical; }
         .f-row { display:grid;gap:12px; }
@@ -50,11 +50,11 @@
         .req-header { padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--slate-100); }
         .req-body { padding:16px 18px; }
         .req-field { margin-bottom:10px; }
-        .req-field-label { font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--slate-400); }
-        .req-field-value { font-size:13px;font-weight:600;color:var(--slate-700);margin-top:2px; }
-        .req-desc { background:var(--slate-50);border-radius:10px;padding:12px;font-size:13px;color:var(--slate-600);line-height:1.5;margin-top:10px; }
-        .req-date { font-size:10px;font-weight:700;color:var(--slate-400);font-family:'DM Mono',monospace; }
-        .req-emp { font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:3px 10px;border-radius:8px; }
+        .req-field-label { font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--slate-400); }
+        .req-field-value { font-size:15px;font-weight:600;color:var(--slate-700);margin-top:2px; }
+        .req-desc { background:var(--slate-50);border-radius:10px;padding:12px;font-size:14px;color:var(--slate-600);line-height:1.5;margin-top:10px; }
+        .req-date { font-size:12px;font-weight:700;color:var(--slate-400);font-family:'DM Mono',monospace; }
+        .req-emp { font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:3px 10px;border-radius:8px; }
 
         /* Response */
         .resp-box { margin-top:12px;padding:12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px; }
@@ -81,6 +81,11 @@
     <script src="../../scripts/nav-script.js"></script>
 
     <main class="max-w-4xl mx-auto p-4 md:p-8">
+
+        <div style="margin-bottom:24px">
+            <h1 style="font-size:24px;font-weight:700;color:var(--slate-800);line-height:1.2">Richieste informazioni da clienti</h1>
+            <p style="font-size:13px;color:var(--slate-400);margin-top:4px">Gestione richieste info e appuntamenti per emporio</p>
+        </div>
 
         <!-- EMPORIO SELECTION -->
         <div id="emporio-selection">
@@ -362,7 +367,7 @@
                     <span class="req-emp ${stClass}" style="font-size:9px;padding:3px 10px;border-radius:8px">${stLabel}</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    ${!isArchived ? `<button onclick="archiveRequest('${r.id}')" class="text-slate-400 hover:text-slate-600 transition-colors" title="Archivia"><i class="fas fa-archive" style="font-size:12px"></i></button>` : ''}
+                    ${!isArchived ? `<button onclick="archiveRequest('${r.id}')" style="font-size:11px;font-weight:700;color:var(--slate-500);border:1px solid var(--slate-200);border-radius:8px;padding:4px 10px;background:#fff;cursor:pointer;white-space:nowrap;transition:all .12s" onmouseover="this.style.borderColor='var(--slate-400)'" onmouseout="this.style.borderColor='var(--slate-200)'">Richiesta da archiviare</button>` : ''}
                     <button onclick="deleteRequest('${r.id}')" class="text-slate-300 hover:text-red-500 transition-colors" title="Elimina"><i class="fas fa-trash" style="font-size:11px"></i></button>
                 </div>
             </div>

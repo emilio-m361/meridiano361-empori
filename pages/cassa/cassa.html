@@ -177,6 +177,8 @@ body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1A1A1A;min-height:
 
 /* ── allinea operatore e note ── */
 .op-note-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px;}
+#turno-mat,#turno-pom{display:flex;flex-direction:column;}
+.op-footer{margin-top:auto;}
 
 /* ══ IVA GIORNALIERA ══ */
 .iva-err-banner{background:#fef2f2;border:1px solid#fca5a5;border-radius:12px;padding:10px 14px;font-size:12px;font-weight:700;color:#e11d48;margin-bottom:14px;display:none;}
@@ -463,30 +465,32 @@ input[type=month].btn-export{min-width:160px;}
             </div>
           </div>
 
-          <hr class="sum-divider">
+          <div class="op-footer">
+            <hr class="sum-divider">
 
-          <div class="op-note-grid">
-            <div>
-              <label class="field-label">Chiusura effettuata da *</label>
-              <div class="op-wrap">
-                <select id="chiuso-da-mat" class="select-input" required></select>
-                <button class="op-add-btn" onclick="toggleOpModal('mat')">
-                  <i class="fas fa-plus"></i> Aggiungi
-                </button>
-              </div>
-              <div id="op-mini-mat" class="op-mini-modal">
-                <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em">Nuovo operatore</p>
-                <div class="op-mini-row">
-                  <input id="op-new-mat" type="text" class="op-mini-input" placeholder="Nome e Cognome">
-                  <button class="op-mini-save" onclick="addOperatore('mat')">Aggiungi</button>
-                  <button class="op-mini-cancel" onclick="toggleOpModal('mat')">✕</button>
+            <div class="op-note-grid">
+              <div>
+                <label class="field-label">Chiusura effettuata da *</label>
+                <div class="op-wrap">
+                  <select id="chiuso-da-mat" class="select-input" required></select>
+                  <button class="op-add-btn" onclick="toggleOpModal('mat')">
+                    <i class="fas fa-plus"></i> Aggiungi
+                  </button>
+                </div>
+                <div id="op-mini-mat" class="op-mini-modal">
+                  <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em">Nuovo operatore</p>
+                  <div class="op-mini-row">
+                    <input id="op-new-mat" type="text" class="op-mini-input" placeholder="Nome e Cognome">
+                    <button class="op-mini-save" onclick="addOperatore('mat')">Aggiungi</button>
+                    <button class="op-mini-cancel" onclick="toggleOpModal('mat')">✕</button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div>
-              <label class="field-label">Note mattino</label>
-              <textarea id="nota-mattino" class="textarea-note" rows="2"></textarea>
+              <div>
+                <label class="field-label">Note mattino</label>
+                <textarea id="nota-mattino" class="textarea-note" rows="2"></textarea>
+              </div>
             </div>
           </div>
         </div>
@@ -558,30 +562,32 @@ input[type=month].btn-export{min-width:160px;}
             </div>
           </div>
 
-          <hr class="sum-divider">
+          <div class="op-footer">
+            <hr class="sum-divider">
 
-          <div class="op-note-grid">
-            <div>
-              <label class="field-label">Chiusura effettuata da *</label>
-              <div class="op-wrap">
-                <select id="chiuso-da-pom" class="select-input" required></select>
-                <button class="op-add-btn" onclick="toggleOpModal('pom')">
-                  <i class="fas fa-plus"></i> Aggiungi
-                </button>
-              </div>
-              <div id="op-mini-pom" class="op-mini-modal">
-                <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em">Nuovo operatore</p>
-                <div class="op-mini-row">
-                  <input id="op-new-pom" type="text" class="op-mini-input" placeholder="Nome e Cognome">
-                  <button class="op-mini-save" onclick="addOperatore('pom')">Aggiungi</button>
-                  <button class="op-mini-cancel" onclick="toggleOpModal('pom')">✕</button>
+            <div class="op-note-grid">
+              <div>
+                <label class="field-label">Chiusura effettuata da *</label>
+                <div class="op-wrap">
+                  <select id="chiuso-da-pom" class="select-input" required></select>
+                  <button class="op-add-btn" onclick="toggleOpModal('pom')">
+                    <i class="fas fa-plus"></i> Aggiungi
+                  </button>
+                </div>
+                <div id="op-mini-pom" class="op-mini-modal">
+                  <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em">Nuovo operatore</p>
+                  <div class="op-mini-row">
+                    <input id="op-new-pom" type="text" class="op-mini-input" placeholder="Nome e Cognome">
+                    <button class="op-mini-save" onclick="addOperatore('pom')">Aggiungi</button>
+                    <button class="op-mini-cancel" onclick="toggleOpModal('pom')">✕</button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div>
-              <label class="field-label">Note pomeriggio</label>
-              <textarea id="nota-pomeriggio" class="textarea-note" rows="2"></textarea>
+              <div>
+                <label class="field-label">Note pomeriggio</label>
+                <textarea id="nota-pomeriggio" class="textarea-note" rows="2"></textarea>
+              </div>
             </div>
           </div>
         </div>
