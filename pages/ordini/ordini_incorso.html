@@ -143,7 +143,8 @@
             color: #fff;
         }
         .badge-da-ordinare    { background: #D97706; }
-        .badge-merce-ordinata { background: #2563EB; }
+        .badge-merce-ordinata { background: #92400E; }
+        .badge-merce-pronta   { background: #16A34A; }
         .badge-da-avvisare    { background: #B5453A; }
         .badge-da-avvisare::before {
             content: '';
@@ -583,10 +584,11 @@
         function createOrderCard(order) {
             const card = document.createElement('div');
 
+            const merce_pronta = order.merce_pronta || false;
             const cliente_avvisato = order.cliente_avvisato || false;
             const merceOrdinata = isMerceOrdinata(order);
-            const da_avvisare = merceOrdinata && !cliente_avvisato;
-            const avvisato = cliente_avvisato;
+            const da_avvisare = merce_pronta && !cliente_avvisato;
+            const avvisato = merce_pronta && cliente_avvisato;
 
             card.className = `order-card ${da_avvisare ? 'da-avvisare' : ''} ${avvisato ? 'avvisato' : ''}`;
 
@@ -608,8 +610,9 @@
                              >${titolo}</div>
                         <div class="order-number mt-1">#${order.numero_ordine || order.id.substring(0, 8)}</div>
                         <div class="order-badges">
-                            ${!merceOrdinata ? '<span class="order-badge badge-da-ordinare">Merce da ordinare</span>' : ''}
-                            ${merceOrdinata && !cliente_avvisato ? '<span class="order-badge badge-merce-ordinata">Merce ordinata</span>' : ''}
+                            ${!merceOrdinata && !merce_pronta ? '<span class="order-badge badge-da-ordinare">Merce da ordinare</span>' : ''}
+                            ${merceOrdinata && !merce_pronta ? '<span class="order-badge badge-merce-ordinata">Merce ordinata</span>' : ''}
+                            ${merce_pronta ? '<span class="order-badge badge-merce-pronta">Merce pronta</span>' : ''}
                             ${da_avvisare ? '<span class="order-badge badge-da-avvisare">Da avvisare</span>' : ''}
                         </div>
                         <div class="customer-name">${escHtml(order.cliente_nome)} ${escHtml(order.cliente_cognome)}</div>
@@ -623,6 +626,10 @@
                     </div>
 
                     <div class="col-span-12 md:col-span-3 flex flex-col gap-1">
+                        <label class="checkbox-label">
+                            <input type="checkbox" ${merce_pronta ? 'checked' : ''} onchange="toggleMercePronta('${order.id}', this.checked)">
+                            <span>Merce pronta</span>
+                        </label>
                         <label class="checkbox-label">
                             <input type="checkbox" ${cliente_avvisato ? 'checked' : ''} onchange="toggleClienteAvvisato('${order.id}', this.checked)">
                             <span>Cliente avvisato</span>
@@ -650,6 +657,20 @@
             return card;
         }
 
+        async function toggleMercePronta(orderId, checked) {
+            try {
+                const { error } = await _supabase
+                    .from('ordini_incorso')
+                    .update({ merce_pronta: checked })
+                    .eq('id', orderId);
+                if (error) throw error;
+                await loadOrders();
+            } catch (error) {
+                console.error('Error updating order:', error);
+                alert('Errore nell\'aggiornamento');
+            }
+        }
+
         async function toggleClienteAvvisato(orderId, checked) {
             try {
                 const { error} = await _supabase
@@ -658,7 +679,7 @@
                     .eq('id', orderId);
 
                 if (error) throw error;
-                
+
                 await loadOrders();
             } catch (error) {
                 console.error('Error updating order:', error);
@@ -874,18 +895,19 @@
 
             if (currentFilter !== 'tutti') {
                 filtered = filtered.filter(order => {
+                    const merce_pronta = order.merce_pronta || false;
                     const cliente_avvisato = order.cliente_avvisato || false;
                     const merceOrdinata = isMerceOrdinata(order);
 
                     switch(currentFilter) {
                         case 'da_ordinare':
-                            return !merceOrdinata;
-                        case 'da_avvisare':
-                            return merceOrdinata && !cliente_avvisato;
-                        case 'avvisati':
-                            return cliente_avvisato;
+                            return !merceOrdinata && !merce_pronta;
                         case 'merce_ordinata':
-                            return merceOrdinata && !cliente_avvisato;
+                            return merceOrdinata && !merce_pronta;
+                        case 'da_avvisare':
+                            return merce_pronta && !cliente_avvisato;
+                        case 'avvisati':
+                            return merce_pronta && cliente_avvisato;
                         default:
                             return true;
                     }
