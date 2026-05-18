@@ -124,37 +124,25 @@
             opacity: 0.85;
         }
         
-        .status-badge {
+        .order-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+        .order-badge {
             display: inline-block;
-            padding: 4px 10px;
-            border-radius: 8px;
             font-size: 11px;
-            font-weight: 800;
+            font-weight: 700;
+            letter-spacing: .06em;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #fff;
         }
-        .status-da-ordinare {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        .status-merce-pronta {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        
-        .badge-da-avvisare {
-            background: #B5453A;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
+        .badge-da-ordinare   { background: #F59E0B; }
+        .badge-merce-ordinata { background: #475569; }
+        .badge-da-avvisare   { background: #B5453A; }
         .badge-da-avvisare i {
             font-size: 8px;
             animation: pulse 2s infinite;
@@ -521,20 +509,6 @@
                 if (error) throw error;
 
                 allOrders = data || [];
-                
-                // Check and update merce_pronta based on articoli
-                for (let order of allOrders) {
-                    await checkAndUpdateMercePronta(order);
-                }
-                
-                // Reload after updates
-                const { data: updatedData } = await _supabase
-                    .from('ordini_incorso')
-                    .select('*')
-                    .order('data_creazione', { ascending: true });
-                
-                allOrders = updatedData || [];
-                
                 renderOrders(allOrders);
                 applyCurrentFilter();
                 
@@ -551,33 +525,6 @@
             }
         }
 
-        async function checkAndUpdateMercePronta(order) {
-            if (!order.articoli || !Array.isArray(order.articoli)) return;
-            
-            // Check if ALL products have merce_pronta === qta
-            let allReady = order.articoli.length > 0;
-            for (let product of order.articoli) {
-                const qta = parseInt(product.qta) || 0;
-                const mercePronta = parseInt(product.merce_pronta) || 0;
-                
-                if (qta > 0 && mercePronta < qta) {
-                    allReady = false;
-                    break;
-                }
-            }
-            
-            // Update if needed
-            if (allReady && !order.merce_pronta) {
-                try {
-                    await _supabase
-                        .from('ordini_incorso')
-                        .update({ merce_pronta: true })
-                        .eq('id', order.id);
-                } catch (error) {
-                    console.error('Error auto-updating merce_pronta:', error);
-                }
-            }
-        }
 
         function renderOrders(orders) {
             const container = document.getElementById('orders-container');
@@ -647,11 +594,10 @@
         function createOrderCard(order) {
             const card = document.createElement('div');
 
-            const merce_pronta = order.merce_pronta || false;
             const cliente_avvisato = order.cliente_avvisato || false;
-            const da_avvisare = merce_pronta && !cliente_avvisato;
-            const avvisato = merce_pronta && cliente_avvisato;
             const merceOrdinata = isMerceOrdinata(order);
+            const da_avvisare = merceOrdinata && !cliente_avvisato;
+            const avvisato = cliente_avvisato;
 
             card.className = `order-card ${da_avvisare ? 'da-avvisare' : ''} ${avvisato ? 'avvisato' : ''}`;
 
@@ -671,11 +617,11 @@
                              onblur="saveTitoloFromElement(this)"
                              onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
                              >${titolo}</div>
-                        <div class="flex items-center gap-2 flex-wrap mt-1">
-                            ${da_avvisare ? '<span class="badge-da-avvisare"><i class="fas fa-circle"></i> DA AVVISARE</span>' : ''}
-                            ${merceOrdinata ? '<span class="badge-merce-ordinata"><i class="fas fa-check-circle"></i> MERCE ORDINATA</span>' : ''}
-                            ${merce_pronta ? '<span class="status-badge status-merce-pronta">MERCE PRONTA</span>' : ''}
-                            <span class="order-number">#${order.numero_ordine || order.id.substring(0, 8)}</span>
+                        <div class="order-number mt-1">#${order.numero_ordine || order.id.substring(0, 8)}</div>
+                        <div class="order-badges">
+                            ${!merceOrdinata ? '<span class="order-badge badge-da-ordinare">Merce da ordinare</span>' : ''}
+                            ${merceOrdinata && !cliente_avvisato ? '<span class="order-badge badge-merce-ordinata">Merce ordinata</span>' : ''}
+                            ${da_avvisare ? '<span class="order-badge badge-da-avvisare"><i class="fas fa-circle"></i> Da avvisare</span>' : ''}
                         </div>
                         <div class="customer-name">${escHtml(order.cliente_nome)} ${escHtml(order.cliente_cognome)}</div>
                         <div class="compact-info">
@@ -688,10 +634,6 @@
                     </div>
 
                     <div class="col-span-12 md:col-span-3 flex flex-col gap-1">
-                        <label class="checkbox-label">
-                            <input type="checkbox" ${merce_pronta ? 'checked' : ''} onchange="toggleMercePronta('${order.id}', this.checked)">
-                            <span>Merce pronta</span>
-                        </label>
                         <label class="checkbox-label">
                             <input type="checkbox" ${cliente_avvisato ? 'checked' : ''} onchange="toggleClienteAvvisato('${order.id}', this.checked)">
                             <span>Cliente avvisato</span>
@@ -717,22 +659,6 @@
             `;
 
             return card;
-        }
-
-        async function toggleMercePronta(orderId, checked) {
-            try {
-                const { error } = await _supabase
-                    .from('ordini_incorso')
-                    .update({ merce_pronta: checked })
-                    .eq('id', orderId);
-
-                if (error) throw error;
-                
-                await loadOrders();
-            } catch (error) {
-                console.error('Error updating order:', error);
-                alert('Errore nell\'aggiornamento');
-            }
         }
 
         async function toggleClienteAvvisato(orderId, checked) {
@@ -959,18 +885,18 @@
 
             if (currentFilter !== 'tutti') {
                 filtered = filtered.filter(order => {
-                    const merce_pronta = order.merce_pronta || false;
                     const cliente_avvisato = order.cliente_avvisato || false;
+                    const merceOrdinata = isMerceOrdinata(order);
 
                     switch(currentFilter) {
                         case 'da_ordinare':
-                            return !isMerceOrdinata(order) && !merce_pronta;
+                            return !merceOrdinata;
                         case 'da_avvisare':
-                            return merce_pronta && !cliente_avvisato;
+                            return merceOrdinata && !cliente_avvisato;
                         case 'avvisati':
-                            return merce_pronta && cliente_avvisato;
+                            return cliente_avvisato;
                         case 'merce_ordinata':
-                            return isMerceOrdinata(order) && !merce_pronta;
+                            return merceOrdinata && !cliente_avvisato;
                         default:
                             return true;
                     }
