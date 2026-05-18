@@ -627,10 +627,6 @@
 
                     <div class="col-span-12 md:col-span-3 flex flex-col gap-1">
                         <label class="checkbox-label">
-                            <input type="checkbox" ${merce_pronta ? 'checked' : ''} onchange="toggleMercePronta('${order.id}', this.checked)">
-                            <span>Merce pronta</span>
-                        </label>
-                        <label class="checkbox-label">
                             <input type="checkbox" ${cliente_avvisato ? 'checked' : ''} onchange="toggleClienteAvvisato('${order.id}', this.checked)">
                             <span>Cliente avvisato</span>
                         </label>
@@ -655,20 +651,6 @@
             `;
 
             return card;
-        }
-
-        async function toggleMercePronta(orderId, checked) {
-            try {
-                const { error } = await _supabase
-                    .from('ordini_incorso')
-                    .update({ merce_pronta: checked })
-                    .eq('id', orderId);
-                if (error) throw error;
-                await loadOrders();
-            } catch (error) {
-                console.error('Error updating order:', error);
-                alert('Errore nell\'aggiornamento');
-            }
         }
 
         async function toggleClienteAvvisato(orderId, checked) {
