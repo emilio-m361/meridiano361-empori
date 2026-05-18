@@ -128,28 +128,31 @@
             display: flex;
             flex-wrap: wrap;
             gap: 4px;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
         .order-badge {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             font-size: 11px;
             font-weight: 700;
-            letter-spacing: .06em;
+            letter-spacing: .05em;
             text-transform: uppercase;
-            padding: 2px 8px;
+            padding: 3px 8px;
             border-radius: 4px;
             color: #fff;
         }
-        .badge-da-ordinare   { background: #F59E0B; }
-        .badge-merce-ordinata { background: #475569; }
-        .badge-da-avvisare   { background: #B5453A; }
-        .badge-da-avvisare i {
-            font-size: 8px;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .badge-da-ordinare    { background: #D97706; }
+        .badge-merce-ordinata { background: #2563EB; }
+        .badge-da-avvisare    { background: #B5453A; }
+        .badge-da-avvisare::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.8);
+            flex-shrink: 0;
         }
         
         .order-number {
@@ -269,20 +272,6 @@
             font-size: 14px;
             color: #64748b;
             margin: 6px 0;
-        }
-
-        .badge-merce-ordinata {
-            background: #B5453A;
-            color: white;
-            padding: 3px 10px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
         }
 
         .order-title {
@@ -621,7 +610,7 @@
                         <div class="order-badges">
                             ${!merceOrdinata ? '<span class="order-badge badge-da-ordinare">Merce da ordinare</span>' : ''}
                             ${merceOrdinata && !cliente_avvisato ? '<span class="order-badge badge-merce-ordinata">Merce ordinata</span>' : ''}
-                            ${da_avvisare ? '<span class="order-badge badge-da-avvisare"><i class="fas fa-circle"></i> Da avvisare</span>' : ''}
+                            ${da_avvisare ? '<span class="order-badge badge-da-avvisare">Da avvisare</span>' : ''}
                         </div>
                         <div class="customer-name">${escHtml(order.cliente_nome)} ${escHtml(order.cliente_cognome)}</div>
                         <div class="compact-info">
