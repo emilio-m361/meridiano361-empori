@@ -233,6 +233,47 @@
         .add-group-btn:hover {
             background: #334155;
         }
+
+        /* ── BOMBONIERE EXTRA ───────────────────────────── */
+        .confez-sub-row td { padding: 2px 4px 6px 16px !important; }
+        .confez-inner { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:6px 10px; background:#faf5ff; border-radius:8px; border:1px solid #e9d5ff; }
+        .confez-toggle-label { display:flex; align-items:center; gap:6px; cursor:pointer; user-select:none; }
+        .confez-toggle-label input[type=checkbox] { width:16px; height:16px; accent-color:#7C3AED; cursor:pointer; flex-shrink:0; }
+        .confez-toggle-label span { font-size:11px; font-weight:700; color:#5b21b6; text-transform:uppercase; letter-spacing:.04em; }
+        .confez-cost-grp { display:none; align-items:center; gap:6px; }
+        .confez-cost-inp { width:80px; border:1px solid #ddd6fe; border-radius:8px; padding:4px 8px; font-size:11px; font-family:'DM Mono',monospace; text-align:right; background:#fff; }
+        .confez-cost-inp:focus { outline:none; border-color:#7C3AED; }
+
+        .omaggio-sub-row td { padding:3px 4px 6px 16px !important; background:#f0fdf4; font-size:11px; color:#166534; border-left:3px solid #16A34A; }
+        .badge-omaggio { display:inline-block; background:#16A34A; color:#fff; font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; padding:2px 7px; border-radius:4px; margin-left:6px; }
+
+        .cartoncino-preview-sub-row td { padding:0 4px 10px 16px !important; background:#faf5ff; }
+        .cartoncino-preview { display:flex; width:400px; max-width:100%; height:120px; border:1.5px solid #94a3b8; border-radius:4px; overflow:hidden; margin-top:8px; font-family:'Georgia',serif; background:#fffdf7; }
+        .cartoncino-faccia { flex:1; padding:8px; display:flex; align-items:center; justify-content:center; }
+        .cartoncino-faccia:first-child { border-right:2px dashed #94a3b8; }
+        .cartoncino-faccia textarea { width:100%; height:100%; border:none; background:transparent; text-align:center; font-family:'Georgia',serif; font-size:13px; color:#1e293b; resize:none; outline:none; line-height:1.4; }
+
+        .breakdown-section { background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:16px 20px; min-width:220px; }
+        .breakdown-row { display:flex; justify-content:space-between; align-items:center; padding:3px 0; font-size:13px; color:#475569; }
+        .breakdown-row .lbl { font-weight:600; }
+        .breakdown-row .val { font-family:'DM Mono',monospace; font-weight:700; }
+        .breakdown-row.bd-total { border-top:2px solid #e2e8f0; margin-top:8px; padding-top:10px; font-size:15px; font-weight:900; color:#1e293b; }
+        .breakdown-row.bd-omaggio .val { color:#16A34A; font-weight:800; }
+
+        .btn-print { background:#1e293b; color:#fff; padding:12px 24px; border-radius:12px; font-weight:800; font-size:11px; text-transform:uppercase; letter-spacing:.08em; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:all .15s; }
+        .btn-print:hover { background:#334155; }
+
+        @media print {
+            body > *:not(#print-area) { display:none !important; }
+            #print-area { display:block !important; padding:24px; font-family:'Inter',sans-serif; color:#1e293b; }
+            #print-area .pr-logo { font-size:10px; color:#B5453A; font-weight:900; text-transform:uppercase; letter-spacing:.14em; margin-bottom:2px; }
+            #print-area .pr-title { font-size:20px; font-weight:900; color:#1e293b; margin-bottom:14px; }
+            #print-area table { width:100%; border-collapse:collapse; font-size:12px; margin-bottom:16px; }
+            #print-area th { background:#1e293b; color:#fff; padding:7px 10px; text-align:left; font-size:10px; text-transform:uppercase; letter-spacing:.06em; }
+            #print-area td { padding:6px 10px; border-bottom:1px solid #e2e8f0; }
+            #print-area .pr-total { font-size:17px; font-weight:900; color:#B5453A; }
+            #print-area .pr-footer { font-size:10px; color:#94a3b8; margin-top:20px; border-top:1px solid #e2e8f0; padding-top:8px; }
+        }
     </style>
 </head>
 <body class="pb-28">
@@ -399,12 +440,28 @@
             <!-- ADD GROUP BUTTON -->
             <div id="add-group-container" class="hidden flex justify-center">
                 <button type="button" id="btn-add-group" class="add-group-btn">
-                    <i class="fas fa-layer-group mr-2"></i> Aggiungi Tipologia Bomboniera
+                    <i class="fas fa-plus mr-2"></i> Aggiungi Tipologia Confetti
+                </button>
+            </div>
+
+            <!-- PRINT BUTTON (bomboniere only) -->
+            <div id="print-btn-container" class="hidden flex justify-end">
+                <button type="button" class="btn-print" onclick="printPreventivo()">
+                    <i class="fas fa-print"></i> Stampa Preventivo PDF
                 </button>
             </div>
 
             <!-- TOTALS -->
             <div class="section-card">
+                <!-- Breakdown (bomboniere only) -->
+                <div id="breakdown-container" class="hidden mb-4">
+                    <div class="breakdown-section">
+                        <div class="breakdown-row"><span class="lbl">Subtotale bomboniere</span><span class="val" id="breakdown-bomb">€ 0,00</span></div>
+                        <div class="breakdown-row"><span class="lbl">Confezionamento totale</span><span class="val" id="breakdown-confez">€ 0,00</span></div>
+                        <div class="breakdown-row bd-omaggio"><span class="lbl">Cartoncini omaggio</span><span class="val">INCLUSI</span></div>
+                        <div class="breakdown-row bd-total"><span class="lbl">TOTALE ORDINE</span><span class="val" id="breakdown-total">€ 0,00</span></div>
+                    </div>
+                </div>
                 <div class="flex flex-col md:flex-row justify-end items-stretch gap-4">
                     <div class="total-box">
                         <span class="total-box-label">Totale Ordine</span>
@@ -431,6 +488,9 @@
                 <i class="fas fa-save mr-2"></i> Salva Ordine
             </button>
         </form>
+
+        <!-- PRINT AREA (hidden, revealed by @media print) -->
+        <div id="print-area" style="display:none"></div>
 
     </main>
 
@@ -508,8 +568,12 @@
                 document.getElementById('order-type-selection').classList.remove('hidden');
                 document.getElementById('header-title').innerText = 'Nuovo Ordine';
                 document.getElementById('back-btn').classList.add('hidden');
+                document.getElementById('add-group-container').classList.add('hidden');
+                document.getElementById('print-btn-container').classList.add('hidden');
+                document.getElementById('breakdown-container').classList.add('hidden');
                 groupCount = 0;
                 document.getElementById('groups-container').innerHTML = '';
+                currentType = 'standard';
             } else {
                 window.location.href = 'ordini_incorso.html';
             }
@@ -530,9 +594,13 @@
             
             if (type === 'bomboniere') {
                 document.getElementById('add-group-container').classList.remove('hidden');
+                document.getElementById('print-btn-container').classList.remove('hidden');
+                document.getElementById('breakdown-container').classList.remove('hidden');
+                addGroup('Mandorla');
+                addGroup('Mandorla e Cioccolato');
+            } else {
+                addGroup();
             }
-            
-            addGroup();
             refreshNumeroOrdinePreview();
         }
 
@@ -629,11 +697,13 @@
         }
 
         // GROUP MANAGEMENT WITH DETAILED PRODUCT TABLE
-        function addGroup() {
+        function addGroup(tipologiaName) {
             groupCount++;
             const groupId = groupCount;
             const container = document.getElementById('groups-container');
-            const groupTitle = currentType === 'bomboniere' ? `Bomboniera Tipologia ${groupId}` : 'Prodotti';
+            const groupTitle = currentType === 'bomboniere'
+                ? (tipologiaName || `Tipologia Confetti ${groupId}`)
+                : 'Prodotti';
             const subtotalSection = currentType === 'bomboniere' ? `
                 <div class="mt-4 flex justify-end border-t pt-4">
                     <div class="text-right">
@@ -646,9 +716,17 @@
             const groupDiv = document.createElement('div');
             groupDiv.id = `group-${groupId}`;
             groupDiv.className = 'section-card';
+
+            const titleHtml = currentType === 'bomboniere'
+                ? `<div class="flex items-center gap-2">
+                       <span class="section-title" style="margin-bottom:0;white-space:nowrap">Tipologia:</span>
+                       <input type="text" value="${groupTitle}" class="form-input" style="max-width:280px;padding:8px 12px;font-weight:700;font-size:14px" id="tipologia-name-${groupId}">
+                   </div>`
+                : `<h3 class="section-title">${groupTitle}</h3>`;
+
             groupDiv.innerHTML = `
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="section-title">${groupTitle}</h3>
+                    ${titleHtml}
                     <button type="button" class="add-row-btn" data-group="${groupId}">
                         <i class="fas fa-plus mr-1"></i> Aggiungi
                     </button>
@@ -731,6 +809,12 @@
             row.querySelector('.emp-q-input').addEventListener('input', () => calcRow(rowId, groupId));
             row.querySelector('.altri-q-input').addEventListener('input', () => calcRow(rowId, groupId));
             row.querySelector('.delete-row-btn').addEventListener('click', () => removeRow(rowId, groupId));
+
+            // Bomboniere: add sub-rows and update omaggio on qty change
+            if (currentType === 'bomboniere') {
+                addBomboniereSubRows(tbody, rowId, groupId);
+                row.querySelector('.qty-input').addEventListener('input', () => updateOmaggio(rowId));
+            }
         }
 
         function calcRow(rowId, groupId) {
@@ -753,10 +837,21 @@
             // Update Da Ord
             row.querySelector('.do-value').textContent = daOrd;
             
+            // Confezionamento (bomboniere only)
+            let confezCost = 0;
+            if (currentType === 'bomboniere') {
+                const confezCb = document.getElementById(`cb-confez-${rowId}`);
+                if (confezCb?.checked) {
+                    const costInp = document.getElementById(`confez-cost-inp-${rowId}`);
+                    confezCost = parseFloat(costInp?.value.replace('€','').replace(',','.').trim()) || 3;
+                }
+                updateOmaggio(rowId);
+            }
+
             // Update row total
-            const rowTotal = qty * price;
+            const rowTotal = qty * (price + confezCost);
             row.querySelector('.row-total').textContent = rowTotal.toFixed(2).replace('.', ',');
-            
+
             if (currentType === 'bomboniere') {
                 calcSubtotal(groupId);
             }
@@ -789,14 +884,15 @@
             document.querySelectorAll('.row-total').forEach(el => {
                 grand += parseFloat(el.textContent.replace(',', '.')) || 0;
             });
-            
+
             document.getElementById('grand-total').textContent = '€ ' + grand.toFixed(2).replace('.', ',');
-            
+
             const accontoText = document.getElementById('acconto').value.replace('€', '').replace(',', '.').trim();
             const acconto = parseFloat(accontoText) || 0;
             const saldo = Math.max(0, grand - acconto);
-            
             document.getElementById('saldo-finale').textContent = '€ ' + saldo.toFixed(2).replace('.', ',');
+
+            if (currentType === 'bomboniere') calcBomboniereBreakdown();
         }
 
         function clearCurrency(input) {
@@ -817,6 +913,10 @@
             const row = document.getElementById(`row-${rowId}`);
             if (row) {
                 row.remove();
+                // Remove bomboniere sub-rows
+                ['confez', 'cartoncino', 'omaggio'].forEach(prefix => {
+                    document.getElementById(`${prefix}-${rowId}`)?.remove();
+                });
                 if (currentType === 'bomboniere') {
                     calcSubtotal(groupId);
                 }
@@ -989,20 +1089,57 @@
                 const articoli = [];
                 document.querySelectorAll('.product-row').forEach(row => {
                     const gruppoId = parseInt(row.closest('[id^="group-"]').id.replace('group-', ''));
+                    const rowId = row.id.replace('row-', '');
+                    const confezCb = document.getElementById(`cb-confez-${rowId}`);
+                    const isConfez = confezCb?.checked || false;
+                    const costInp = document.getElementById(`confez-cost-inp-${rowId}`);
+                    const confezCosto = isConfez ? (parseFloat(costInp?.value.replace('€','').replace(',','.').trim()) || 3) : 0;
+                    const qta = parseInt(row.querySelector('.qty-input').value) || 0;
+
+                    // Get tipologia name from group input
+                    const gruppoEl = document.getElementById(`group-${gruppoId}`);
+                    const tipologiaInput = document.getElementById(`tipologia-name-${gruppoId}`);
+                    const tipologiaNome = tipologiaInput?.value || '';
+
                     articoli.push({
                         gruppo_id: gruppoId,
+                        tipologia: tipologiaNome,
                         codice: row.querySelector('.codice-input').value,
                         descrizione: row.querySelector('.desc-input').value,
                         prezzo: parseFloat(row.querySelector('.price-input').value.replace('€', '').replace(',', '.').trim()) || 0,
-                        qta: parseInt(row.querySelector('.qty-input').value) || 0,
+                        qta,
                         merce_pronta: parseInt(row.querySelector('.pronta-input').value) || 0,
                         da_forn: parseInt(row.querySelector('.forn-input').value) || 0,
                         da_emporio_qta: parseInt(row.querySelector('.emp-q-input').value) || 0,
                         da_emporio_nome: row.querySelector('.emporio-dropdown').value,
                         da_altri_qta: parseInt(row.querySelector('.altri-q-input').value) || 0,
                         da_altri_spec: row.querySelector('.altri-spec-input').value,
-                        totale: parseFloat(row.querySelector('.row-total').textContent.replace(',', '.')) || 0
+                        totale: parseFloat(row.querySelector('.row-total').textContent.replace(',', '.')) || 0,
+                        confezionamento: isConfez,
+                        confez_costo: confezCosto,
+                        cartoncino_fronte: document.getElementById(`cart-fronte-${rowId}`)?.value || '',
+                        cartoncino_interno: document.getElementById(`cart-interno-${rowId}`)?.value || ''
                     });
+
+                    // Add cartoncini omaggio as separate articolo for bomboniere
+                    if (currentType === 'bomboniere') {
+                        articoli.push({
+                            gruppo_id: gruppoId,
+                            tipologia: tipologiaNome,
+                            codice: 'CARTONCINI-OMAGGIO',
+                            descrizione: 'Cartoncini omaggio',
+                            prezzo: 0,
+                            qta,
+                            merce_pronta: 0,
+                            da_forn: qta,
+                            da_emporio_qta: 0,
+                            da_emporio_nome: '',
+                            da_altri_qta: 0,
+                            da_altri_spec: '',
+                            totale: 0,
+                            is_omaggio: true
+                        });
+                    }
                 });
 
                 const orderData = {
@@ -1044,6 +1181,195 @@
             }
 
             return false;
+        }
+
+        // ── BOMBONIERE HELPERS ───────────────────────────────────────────────────
+        function addBomboniereSubRows(tbody, rowId, groupId) {
+            // Confezionamento row
+            const confezRow = document.createElement('tr');
+            confezRow.id = `confez-${rowId}`;
+            confezRow.className = 'confez-sub-row';
+            confezRow.innerHTML = `
+                <td colspan="11">
+                    <div class="confez-inner">
+                        <label class="confez-toggle-label">
+                            <input type="checkbox" id="cb-confez-${rowId}" onchange="toggleConfez('${rowId}',${groupId})">
+                            <span>Confezionamento</span>
+                        </label>
+                        <div class="confez-cost-grp" id="confez-cost-grp-${rowId}">
+                            <span style="font-size:11px;color:#64748b;font-weight:600">Costo:</span>
+                            <input type="text" id="confez-cost-inp-${rowId}" class="confez-cost-inp" value="€ 3,00"
+                                   onfocus="clearCurrency(this)" onblur="formatCurrency(this);calcRow('${rowId}',${groupId})"
+                                   oninput="calcRow('${rowId}',${groupId})">
+                            <span style="font-size:11px;color:#94a3b8">× quantità</span>
+                        </div>
+                    </div>
+                </td>`;
+            tbody.appendChild(confezRow);
+
+            // Cartoncino preview row (hidden until confezionamento checked)
+            const cartRow = document.createElement('tr');
+            cartRow.id = `cartoncino-${rowId}`;
+            cartRow.className = 'cartoncino-preview-sub-row';
+            cartRow.style.display = 'none';
+            cartRow.innerHTML = `
+                <td colspan="11">
+                    <div style="padding:8px 12px 12px;background:#faf5ff;border-radius:8px;border:1px solid #e9d5ff">
+                        <div style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:6px">
+                            Anteprima Cartoncino — fronte / interno
+                        </div>
+                        <div class="cartoncino-preview">
+                            <div class="cartoncino-faccia">
+                                <textarea id="cart-fronte-${rowId}" placeholder="Testo fronte…"></textarea>
+                            </div>
+                            <div class="cartoncino-faccia">
+                                <textarea id="cart-interno-${rowId}" placeholder="Testo interno…"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </td>`;
+            tbody.appendChild(cartRow);
+
+            // Cartoncini omaggio row
+            const omaggioRow = document.createElement('tr');
+            omaggioRow.id = `omaggio-${rowId}`;
+            omaggioRow.className = 'omaggio-sub-row';
+            omaggioRow.innerHTML = `
+                <td colspan="9">
+                    🎁 Cartoncini omaggio: <strong id="omaggio-qty-${rowId}">1</strong> pz — € 0,00
+                    <span class="badge-omaggio">OMAGGIO</span>
+                </td>
+                <td colspan="2" style="text-align:right;padding-right:16px;font-weight:700;color:#16A34A">€ 0,00</td>`;
+            tbody.appendChild(omaggioRow);
+        }
+
+        function toggleConfez(rowId, groupId) {
+            const isChecked = document.getElementById(`cb-confez-${rowId}`)?.checked;
+            const costGrp = document.getElementById(`confez-cost-grp-${rowId}`);
+            const cartRow = document.getElementById(`cartoncino-${rowId}`);
+            if (costGrp) costGrp.style.display = isChecked ? 'flex' : 'none';
+            if (cartRow) cartRow.style.display = isChecked ? '' : 'none';
+            calcRow(rowId, groupId);
+        }
+
+        function updateOmaggio(rowId) {
+            const row = document.getElementById(`row-${rowId}`);
+            if (!row) return;
+            const qty = parseInt(row.querySelector('.qty-input').value) || 0;
+            const qtyEl = document.getElementById(`omaggio-qty-${rowId}`);
+            if (qtyEl) qtyEl.textContent = qty;
+        }
+
+        function calcBomboniereBreakdown() {
+            let subtotBomb = 0, subtotConfez = 0;
+            document.querySelectorAll('.product-row').forEach(row => {
+                const rowId = row.id.replace('row-', '');
+                const qty = parseInt(row.querySelector('.qty-input')?.value) || 0;
+                const price = parseFloat(row.querySelector('.price-input')?.value.replace('€','').replace(',','.').trim()) || 0;
+                subtotBomb += qty * price;
+                const confezCb = document.getElementById(`cb-confez-${rowId}`);
+                if (confezCb?.checked) {
+                    const costInp = document.getElementById(`confez-cost-inp-${rowId}`);
+                    subtotConfez += qty * (parseFloat(costInp?.value.replace('€','').replace(',','.').trim()) || 3);
+                }
+            });
+            const fmt = n => '€ ' + n.toFixed(2).replace('.', ',');
+            const bEl = document.getElementById('breakdown-bomb');
+            const cEl = document.getElementById('breakdown-confez');
+            const tEl = document.getElementById('breakdown-total');
+            if (bEl) bEl.textContent = fmt(subtotBomb);
+            if (cEl) cEl.textContent = fmt(subtotConfez);
+            if (tEl) tEl.textContent = fmt(subtotBomb + subtotConfez);
+        }
+
+        function printPreventivo() {
+            const printArea = document.getElementById('print-area');
+            if (!printArea) return;
+            const today = new Date().toLocaleDateString('it-IT');
+            const prevNum = 'PREV-' + Date.now().toString().slice(-6);
+            const clienteNome = getValueSafe('cust-nome');
+            const clienteCognome = getValueSafe('cust-cognome');
+            const emporio = getValueSafe('select-emporio');
+            const fmt = n => '€ ' + n.toFixed(2).replace('.', ',');
+            let tableRows = '', subtotBomb = 0, subtotConfez = 0;
+
+            document.querySelectorAll('.product-row').forEach(row => {
+                const rowId = row.id.replace('row-', '');
+                const gruppoId = parseInt(row.closest('[id^="group-"]').id.replace('group-', ''));
+                const tipologiaInput = document.getElementById(`tipologia-name-${gruppoId}`);
+                const tipologia = tipologiaInput?.value || row.querySelector('.desc-input')?.value || '—';
+                const qty = parseInt(row.querySelector('.qty-input')?.value) || 0;
+                const price = parseFloat(row.querySelector('.price-input')?.value.replace('€','').replace(',','.').trim()) || 0;
+                const confezCb = document.getElementById(`cb-confez-${rowId}`);
+                const isConfez = confezCb?.checked || false;
+                const costInp = document.getElementById(`confez-cost-inp-${rowId}`);
+                const confezCost = isConfez ? (parseFloat(costInp?.value.replace('€','').replace(',','.').trim()) || 3) : 0;
+                const rowTotal = qty * (price + confezCost);
+                subtotBomb += qty * price;
+                subtotConfez += qty * confezCost;
+                tableRows += `<tr>
+                    <td>${tipologia}</td>
+                    <td style="text-align:center">${qty}</td>
+                    <td style="text-align:right">${fmt(price)}</td>
+                    <td style="text-align:center">${isConfez ? 'Sì — ' + fmt(confezCost) : 'No'}</td>
+                    <td style="text-align:right;font-weight:700">${fmt(rowTotal)}</td>
+                </tr>
+                <tr style="background:#f0fdf4;font-size:11px">
+                    <td colspan="4" style="padding-left:20px;color:#166534">🎁 Cartoncini omaggio: ${qty} pz — inclusi</td>
+                    <td style="text-align:right;color:#166534">€ 0,00</td>
+                </tr>`;
+            });
+
+            let cartoncinoHtml = '';
+            document.querySelectorAll('.product-row').forEach(row => {
+                const rowId = row.id.replace('row-', '');
+                if (document.getElementById(`cb-confez-${rowId}`)?.checked) {
+                    const gruppoId = parseInt(row.closest('[id^="group-"]').id.replace('group-', ''));
+                    const tipologia = document.getElementById(`tipologia-name-${gruppoId}`)?.value || '—';
+                    const fronte = (document.getElementById(`cart-fronte-${rowId}`)?.value || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                    const interno = (document.getElementById(`cart-interno-${rowId}`)?.value || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                    cartoncinoHtml += `<div style="margin-bottom:10px;border:1px solid #e2e8f0;border-radius:6px;padding:10px">
+                        <div style="font-size:9px;font-weight:800;text-transform:uppercase;color:#94a3b8;margin-bottom:6px">Cartoncino — ${tipologia}</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                            <div style="background:#fffdf7;border:1px dashed #94a3b8;border-radius:4px;padding:8px;text-align:center;font-family:Georgia,serif">
+                                <div style="font-size:9px;color:#94a3b8;margin-bottom:4px">FRONTE</div>
+                                <div style="font-size:12px;white-space:pre-wrap">${fronte||'—'}</div>
+                            </div>
+                            <div style="background:#fffdf7;border:1px dashed #94a3b8;border-radius:4px;padding:8px;text-align:center;font-family:Georgia,serif">
+                                <div style="font-size:9px;color:#94a3b8;margin-bottom:4px">INTERNO</div>
+                                <div style="font-size:12px;white-space:pre-wrap">${interno||'—'}</div>
+                            </div>
+                        </div>
+                    </div>`;
+                }
+            });
+
+            const totale = subtotBomb + subtotConfez;
+            printArea.innerHTML = `
+                <div class="pr-logo">Meridiano 361</div>
+                <div class="pr-title">Preventivo Ordine Bomboniere</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;font-size:13px;color:#334155">
+                    <div><strong>Cliente:</strong> ${clienteNome} ${clienteCognome}</div>
+                    <div><strong>Emporio:</strong> ${emporio}</div>
+                    <div><strong>Data:</strong> ${today}</div>
+                    <div><strong>N. Preventivo:</strong> ${prevNum}</div>
+                </div>
+                <table>
+                    <thead><tr>
+                        <th>Tipologia</th><th>Qtà</th><th>Prezzo unit.</th>
+                        <th>Confezionamento</th><th>Subtotale</th>
+                    </tr></thead>
+                    <tbody>${tableRows}</tbody>
+                </table>
+                ${cartoncinoHtml ? `<h3 style="font-size:13px;font-weight:800;text-transform:uppercase;margin:16px 0 8px;color:#1e293b">Testi Cartoncini</h3>${cartoncinoHtml}` : ''}
+                <div style="border-top:2px solid #1e293b;margin-top:20px;padding-top:12px">
+                    <div style="display:flex;justify-content:space-between;font-size:13px;color:#475569;margin-bottom:4px"><span>Subtotale bomboniere:</span><span>${fmt(subtotBomb)}</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;color:#475569;margin-bottom:4px"><span>Confezionamento:</span><span>${fmt(subtotConfez)}</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;color:#166534;margin-bottom:8px"><span>Cartoncini omaggio:</span><span>INCLUSI</span></div>
+                    <div class="pr-total" style="display:flex;justify-content:space-between"><span>TOTALE ORDINE:</span><span>${fmt(totale)}</span></div>
+                </div>
+                <div class="pr-footer">Preventivo non vincolante — meridiano361</div>`;
+            window.print();
         }
 
         // INITIALIZE EVENT LISTENERS
@@ -1091,7 +1417,10 @@
             accontoInput.addEventListener('input', calcGrandTotal);
             
             // Add group button
-            document.getElementById('btn-add-group').addEventListener('click', addGroup);
+            document.getElementById('btn-add-group').addEventListener('click', function() {
+                const nome = prompt('Nome tipologia confetti:');
+                if (nome !== null) addGroup(nome.trim() || undefined);
+            });
             
             // Form submission
             document.getElementById('orderForm').addEventListener('submit', validateSubmission);
