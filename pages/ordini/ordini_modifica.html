@@ -776,7 +776,8 @@
                     da_pagare: parseFloat(document.getElementById('saldo-finale').textContent.replace('€', '').replace(',', '.').trim()),
                     note: document.getElementById('order-notes').value,
                     titolo: document.getElementById('titolo-ordine')?.value || '',
-                    articoli: articoli
+                    articoli: articoli,
+                    stato: articoli.length > 0 && articoli.every(a => (parseInt(a.merce_pronta) || 0) >= (parseInt(a.qta) || 0)) ? 'merce_pronta' : 'in_corso'
                 };
 
                 const src = getSrcFromURL();

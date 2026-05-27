@@ -601,11 +601,11 @@
         function createOrderCard(order) {
             const card = document.createElement('div');
 
-            const merce_pronta = order.merce_pronta || false;
-            const cliente_avvisato = order.cliente_avvisato || false;
+            const mercePronte = order.stato === 'merce_pronta';
+            const cliente_avvisato = order.cliente_avvisato === true;
             const merceOrdinata = isMerceOrdinata(order);
-            const da_avvisare = merce_pronta && !cliente_avvisato;
-            const avvisato = merce_pronta && cliente_avvisato;
+            const da_avvisare = mercePronte && !cliente_avvisato;
+            const avvisato = mercePronte && cliente_avvisato;
 
             card.className = `order-card ${da_avvisare ? 'da-avvisare' : ''} ${avvisato ? 'avvisato' : ''}`;
 
@@ -628,8 +628,8 @@
                                  >${titolo}</div>
                             <div class="order-number mt-1">#${order.numero_ordine || order.id.substring(0, 8)}</div>
                             <div class="order-badges">
-                                ${!merceOrdinata && !merce_pronta ? '<span class="order-badge badge-da-ordinare">Merce da ordinare</span>' : ''}
-                                ${merceOrdinata && !merce_pronta ? '<span class="order-badge badge-merce-ordinata">Merce ordinata</span>' : ''}
+                                ${!merceOrdinata && !mercePronte ? '<span class="order-badge badge-da-ordinare">Merce da ordinare</span>' : ''}
+                                ${merceOrdinata && !mercePronte ? '<span class="order-badge badge-merce-ordinata">Merce ordinata</span>' : ''}
                                 ${da_avvisare ? '<span class="order-badge badge-da-avvisare">Da avvisare</span>' : ''}
                                 ${avvisato ? '<span class="order-badge badge-avvisato">Cliente avvisato</span>' : ''}
                             </div>
@@ -675,14 +675,16 @@
 
         async function toggleClienteAvvisato(orderId, checked) {
             try {
-                const { error} = await _supabase
+                const { error } = await _supabase
                     .from('ordini_incorso')
                     .update({ cliente_avvisato: checked })
                     .eq('id', orderId);
 
                 if (error) throw error;
 
-                await loadOrders();
+                // aggiorna cache locale e re-render senza roundtrip extra
+                allOrders = allOrders.map(o => o.id === orderId ? { ...o, cliente_avvisato: checked } : o);
+                applyCurrentFilter();
             } catch (error) {
                 console.error('Error updating order:', error);
                 alert('Errore nell\'aggiornamento');
@@ -906,19 +908,19 @@
 
             if (currentFilter !== 'tutti') {
                 filtered = filtered.filter(order => {
-                    const merce_pronta = order.merce_pronta || false;
-                    const cliente_avvisato = order.cliente_avvisato || false;
+                    const mercePronte = order.stato === 'merce_pronta';
+                    const cliente_avvisato = order.cliente_avvisato === true;
                     const merceOrdinata = isMerceOrdinata(order);
 
                     switch(currentFilter) {
                         case 'da_ordinare':
-                            return !merceOrdinata && !merce_pronta;
+                            return !merceOrdinata && !mercePronte;
                         case 'merce_ordinata':
-                            return merceOrdinata && !merce_pronta;
+                            return merceOrdinata && !mercePronte;
                         case 'da_avvisare':
-                            return merce_pronta && !cliente_avvisato;
+                            return mercePronte && !cliente_avvisato;
                         case 'avvisati':
-                            return merce_pronta && cliente_avvisato;
+                            return mercePronte && cliente_avvisato;
                         default:
                             return true;
                     }

@@ -1023,7 +1023,7 @@
                     da_pagare: parseFloat((document.getElementById('saldo-finale')?.textContent || '0').replace('€', '').replace(',', '.').trim()) || 0,
                     note: getValueSafe('order-notes'),
                     articoli: articoli,
-                    stato: 'in_corso',
+                    stato: articoli.length > 0 && articoli.every(a => (parseInt(a.merce_pronta) || 0) >= (parseInt(a.qta) || 0)) ? 'merce_pronta' : 'in_corso',
                     titolo: getValueSafe('titolo-ordine'),
                     data_creazione: new Date().toISOString()
                 };
