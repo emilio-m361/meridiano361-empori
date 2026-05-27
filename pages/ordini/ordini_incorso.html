@@ -141,23 +141,15 @@
             font-weight: 700;
             letter-spacing: .05em;
             text-transform: uppercase;
-            padding: 3px 8px;
+            padding: 3px 10px;
             border-radius: 4px;
             color: #fff;
+            margin-bottom: 4px;
         }
-        .badge-da-ordinare    { background: #D97706; }
-        .badge-merce-ordinata { background: #92400E; }
-        .badge-merce-pronta   { background: #16A34A; }
-        .badge-da-avvisare    { background: #B5453A; }
-        .badge-da-avvisare::before {
-            content: '';
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: rgba(255,255,255,.8);
-            flex-shrink: 0;
-        }
+        .badge-da-ordinare    { background: #B5453A; }
+        .badge-merce-ordinata { background: #D97706; }
+        .badge-da-avvisare    { background: #CA8A04; }
+        .badge-avvisato       { background: #16A34A; }
         
         .order-number {
             font-family: 'DM Mono', monospace;
@@ -394,8 +386,8 @@
                 <!-- Filters -->
                 <div class="flex flex-wrap gap-2">
                     <button class="filter-btn active" data-filter="tutti">Tutti</button>
-                    <button class="filter-btn" data-filter="merce_ordinata">Merce ordinata</button>
                     <button class="filter-btn" data-filter="da_ordinare">Merce da ordinare</button>
+                    <button class="filter-btn" data-filter="merce_ordinata">Merce ordinata</button>
                     <button class="filter-btn" data-filter="da_avvisare">Merce pronta → cliente da avvisare</button>
                     <button class="filter-btn" data-filter="avvisati">Merce pronta: cliente avvisato</button>
                 </div>
@@ -638,8 +630,8 @@
                             <div class="order-badges">
                                 ${!merceOrdinata && !merce_pronta ? '<span class="order-badge badge-da-ordinare">Merce da ordinare</span>' : ''}
                                 ${merceOrdinata && !merce_pronta ? '<span class="order-badge badge-merce-ordinata">Merce ordinata</span>' : ''}
-                                ${merce_pronta ? '<span class="order-badge badge-merce-pronta">Merce pronta</span>' : ''}
                                 ${da_avvisare ? '<span class="order-badge badge-da-avvisare">Da avvisare</span>' : ''}
+                                ${avvisato ? '<span class="order-badge badge-avvisato">Cliente avvisato</span>' : ''}
                             </div>
                             <div class="customer-name">${escHtml(order.cliente_nome)} ${escHtml(order.cliente_cognome)}</div>
                             <div class="compact-info">
