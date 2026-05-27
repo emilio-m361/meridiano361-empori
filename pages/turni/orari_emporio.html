@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M361 - Orari Apertura</title>
+<link rel="stylesheet" href="../../assets/style/nav-style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f0f2f5;color:#1A1A1A;padding-bottom:100px}
+.main{max-width:960px;margin:0 auto;padding:20px 16px}
+.page-header{background:#fff;border-bottom:1px solid #e2e8f0;padding:14px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);position:sticky;top:0;z-index:200}
+.page-header h1{font-size:17px;font-weight:900;color:#1e293b}
+.emp-bar{background:#fff;border-bottom:1px solid #e2e8f0;padding:10px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:53px;z-index:190}
+.tab-bar{display:flex;gap:3px;background:#fff;padding:4px;border-radius:14px;border:1px solid #e2e8f0;margin-bottom:20px}
+.tab-btn{flex:1;padding:10px 6px;border-radius:11px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;border:none;background:transparent;color:#94a3b8;transition:all .12s;text-align:center}
+.tab-btn.on{background:#1e293b;color:#fff}
+.tab-panel{display:none}
+.tab-panel.on{display:block}
+.card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:20px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.card-title{font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card-title::before{content:'';width:3px;height:13px;background:#B5453A;border-radius:2px}
+.time-section{background:#f8fafc;border:1px solid #e2e8f0;border-radius:11px;padding:14px;margin-bottom:10px}
+.time-section-title{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#64748b;margin-bottom:10px}
+.time-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.f-grp{display:flex;flex-direction:column;gap:4px}
+.f-lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8}
+.f-inp{border:1px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:14px;font-family:'DM Mono',monospace;color:#334155;background:#fff}
+.f-inp:focus{outline:none;border-color:#B5453A}
+.f-sel{border:1px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;font-family:inherit;color:#334155;background:#fff;min-width:160px}
+.f-sel:focus{outline:none;border-color:#B5453A}
+.toggle-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.toggle{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;inset:0;background:#cbd5e1;border-radius:24px;cursor:pointer;transition:.2s}
+.toggle-slider:before{content:'';position:absolute;height:18px;width:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.toggle input:checked + .toggle-slider{background:#B5453A}
+.toggle input:checked + .toggle-slider:before{transform:translateX(20px)}
+.toggle-label{font-size:13px;font-weight:700;color:#334155}
+.btn-p{background:#B5453A;color:#fff;border:none;border-radius:11px;padding:10px 18px;font-weight:800;font-size:10px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .15s;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
+.btn-p:hover{background:#8c362d}
+.btn-s{background:#fff;color:#64748b;border:1.5px solid #e2e8f0;border-radius:11px;padding:10px 14px;font-weight:800;font-size:10px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .15s;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
+.btn-s:hover{border-color:#94a3b8;background:#f8fafc}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.note-area{width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;font-family:inherit;resize:vertical;min-height:52px;color:#334155}
+.note-area:focus{outline:none;border-color:#B5453A}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:8px}
+.cal-day-name{text-align:center;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;padding:4px 0}
+.cal-day{border-radius:9px;padding:5px 4px;min-height:60px;position:relative;font-size:11px}
+.cal-day .day-num{font-weight:800;font-size:12px;margin-bottom:2px}
+.cal-day .day-time{font-family:'DM Mono',monospace;font-size:8px;line-height:1.5}
+.cal-day.empty{background:transparent;min-height:0}
+.cal-day.lvl-annuale{background:#dcfce7;color:#166534}
+.cal-day.lvl-mensile{background:#fef3c7;color:#92400e}
+.cal-day.lvl-settimanale{background:#dbeafe;color:#1e40af}
+.cal-day.lvl-giornaliero{background:#ede9fe;color:#5b21b6}
+.cal-day.lvl-chiuso{background:#fee2e2;color:#991b1b}
+.cal-day.lvl-nessuno{background:#f1f5f9;color:#64748b}
+.serale-dot{position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%;background:#CA8A04}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:#475569}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.toast{position:fixed;bottom:24px;right:24px;background:#1e293b;color:#fff;padding:10px 18px;border-radius:12px;font-size:12px;font-weight:700;z-index:99999;opacity:0;transform:translateY(10px);transition:all .25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok{background:#166534}
+.toast.err{background:#991b1b}
+@media(max-width:600px){
+  .time-row{gap:8px}
+  .f-inp{font-size:16px}
+  .cal-day{min-height:44px}
+  .cal-day .day-time{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <a href="turni.html" class="btn-s" style="padding:8px 10px"><i class="fas fa-arrow-left"></i></a>
+  <h1><i class="fas fa-clock" style="color:#B5453A;margin-right:4px"></i> Orari Apertura Emporio</h1>
+</div>
+
+<div class="emp-bar">
+  <div class="f-grp">
+    <span class="f-lbl">Emporio</span>
+    <select id="sel-emporio" class="f-sel" onchange="onEmporioChange()">
+      <option value="">— Seleziona emporio —</option>
+      <option>Casalmaggiore</option>
+      <option>Cremona</option>
+      <option>Reggio Emilia</option>
+      <option>Viadana</option>
+    </select>
+  </div>
+  <div id="loading-ind" style="display:none;color:#94a3b8;font-size:12px;font-weight:700">
+    <i class="fas fa-spinner fa-spin"></i> Caricamento…
+  </div>
+</div>
+
+<div class="main" id="main-content" style="display:none">
+
+  <div class="tab-bar">
+    <button class="tab-btn on" onclick="showTab('annuale')"><i class="fas fa-calendar"></i> Annuale</button>
+    <button class="tab-btn" onclick="showTab('mensile')"><i class="fas fa-calendar-alt"></i> Mensile</button>
+    <button class="tab-btn" onclick="showTab('settimanale')"><i class="fas fa-calendar-week"></i> Settimanale</button>
+    <button class="tab-btn" onclick="showTab('giornaliero')"><i class="fas fa-calendar-day"></i> Giornaliero</button>
+  </div>
+
+  <!-- ── TAB ANNUALE ── -->
+  <div class="tab-panel on" id="panel-annuale">
+    <div class="card">
+      <div class="card-title">Orario base — valido tutto l'anno</div>
+      <div class="time-section">
+        <div class="time-section-title"><i class="fas fa-sun"></i> Mattina</div>
+        <div class="time-row">
+          <div class="f-grp"><span class="f-lbl">Apertura</span><input type="time" step="300" class="f-inp" id="ann-mat-ap" value="09:15"></div>
+          <div class="f-grp"><span class="f-lbl">Chiusura</span><input type="time" step="300" class="f-inp" id="ann-mat-ch" value="13:00"></div>
+        </div>
+      </div>
+      <div class="time-section">
+        <div class="time-section-title"><i class="fas fa-cloud-sun"></i> Pomeriggio</div>
+        <div class="time-row">
+          <div class="f-grp"><span class="f-lbl">Apertura</span><input type="time" step="300" class="f-inp" id="ann-pom-ap" value="15:00"></div>
+          <div class="f-grp"><span class="f-lbl">Chiusura</span><input type="time" step="300" class="f-inp" id="ann-pom-ch" value="19:00"></div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-p" onclick="saveAnnuale()"><i class="fas fa-save"></i> Salva orario annuale</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB MENSILE ── -->
+  <div class="tab-panel" id="panel-mensile">
+    <div class="card">
+      <div class="card-title">Personalizza orario per un mese specifico</div>
+      <div style="margin-bottom:14px">
+        <div class="f-grp">
+          <span class="f-lbl">Mese</span>
+          <select id="men-mese" class="f-sel" onchange="populateMensile()">
+            <option value="1">Gennaio</option><option value="2">Febbraio</option>
+            <option value="3">Marzo</option><option value="4">Aprile</option>
+            <option value="5">Maggio</option><option value="6">Giugno</option>
+            <option value="7">Luglio</option><option value="8">Agosto</option>
+            <option value="9">Settembre</option><option value="10">Ottobre</option>
+            <option value="11">Novembre</option><option value="12">Dicembre</option>
+          </select>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <label class="toggle"><input type="checkbox" id="men-chiuso" onchange="toggleWrap('men-chiuso','men-orari-wrap')"><span class="toggle-slider"></span></label>
+        <span class="toggle-label">Mese chiuso</span>
+      </div>
+      <div id="men-orari-wrap">
+        <div class="time-section">
+          <div class="time-section-title"><i class="fas fa-sun"></i> Mattina</div>
+          <div class="time-row">
+            <div class="f-grp"><span class="f-lbl">Apertura</span><input type="time" step="300" class="f-inp" id="men-mat-ap"></div>
+            <div class="f-grp"><span class="f-lbl">Chiusura</span><input type="time" step="300" class="f-inp" id="men-mat-ch"></div>
+          </div>
+        </div>
+        <div class="time-section">
+          <div class="time-section-title"><i class="fas fa-cloud-sun"></i> Pomeriggio</div>
+          <div class="time-row">
+            <div class="f-grp"><span class="f-lbl">Apertura</span><input type="time" step="300" class="f-inp" id="men-pom-ap"></div>
+            <div class="f-grp"><span class="f-lbl">Chiusura</span><input type="time" step="300" class="f-inp" id="men-pom-ch"></div>
+          </div>
+        </div>
+      </div>
+      <div class="f-grp" style="margin-top:10px">
+        <span class="f-lbl">Note</span>
+        <textarea class="note-area" id="men-note" placeholder="Es. Orario ridotto in agosto…"></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn-p" onclick="saveMensile()"><i class="fas fa-save"></i> Salva</button>
+        <button class="btn-s" onclick="resetMensile()"><i class="fas fa-undo"></i> Ripristina orario annuale</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB SETTIMANALE ── -->
+  <div class="tab-panel" id="panel-settimanale">
+    <div class="card">
+      <div class="card-title">Personalizza orario per una settimana specifica</div>
+      <div style="margin-bottom:14px">
+        <div class="f-grp">
+          <span class="f-lbl">Settimana</span>
+          <input type="week" class="f-inp" id="sett-week" onchange="populateSettimanale()">
+        </div>
+      </div>
+      <div class="toggle-row">
+        <label class="toggle"><input type="checkbox" id="sett-chiuso" onchange="toggleWrap('sett-chiuso','sett-orari-wrap')"><span class="toggle-slider"></span></label>
+        <span class="toggle-label">Settimana chiusa (es. Ferragosto)</span>
+      </div>
+      <div id="sett-orari-wrap">
+        <div class="time-section">
+          <div class="time-section-title"><i class="fas fa-sun"></i> Mattina</div>
+          <div class="time-row">
+            <div class="f-grp"><span class="f-lbl">Apertura</span><input type="time" step="300" class="f-inp" id="sett-mat-ap"></div>
+            <div class="f-grp"><span class="f-lbl">Chiusura</span><input type="time" step="300" class="f-inp" id="sett-mat-ch"></div>
+          </div>
+        </div>
+        <div class="time-section">
+          <div class="time-section-title"><i class="fas fa-cloud-sun"></i> Pomeriggio</div>
+          <div class="time-row">
+            <div class="f-grp"><span class="f-lbl">Apertura</span><input type="time" step="300" class="f-inp" id="sett-pom-ap"></div>
+            <div class="f-grp"><span class="f-lbl">Chiusura</span><input type="time" step="300" class="f-inp" id="sett-pom-ch"></div>
+          </div>
+        </div>
+      </div>
+      <div class="f-grp" style="margin-top:10px">
+        <span class="f-lbl">Note</span>
+        <textarea class="note-area" id="sett-note" placeholder="Es. Settimana Ferragosto…"></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn-p" onclick="saveSettimanale()"><i class="fas fa-save"></i> Salva</button>
+        <button class="btn-s" onclick="resetSettimanale()"><i class="fas fa-undo"></i> Ripristina</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB GIORNALIERO ── -->
+  <div class="tab-panel" id="panel-giornaliero">
+    <div class="card">
+      <div class="card-title">Orario speciale o chiusura per un giorno preciso</div>
+      <div style="margin-bottom:14px">
+        <div class="f-grp">
+          <span class="f-lbl">Data</span>
+          <input type="date" class="f-inp" id="giorn-data" onchange="populateGiornaliero()">
+        </div>
+      </div>
+      <div class="toggle-row">
+        <label class="toggle"><input type="checkbox" id="giorn-chiuso" onchange="toggleWrap('giorn-chiuso','giorn-orari-wrap')"><span class="toggle-slider"></span></label>
+        <span class="toggle-label">Giorno chiuso</span>
+      </div>
+      <div id="giorn-orari-wrap">
+        <div class="time-section">
+          <div class="time-section-title"><i class="fas fa-sun"></i> Mattina</div>
+          <div class="time-row">
+            <div class="f-grp"><span class="f-lbl">Apertura</span><input type="time" step="300" class="f-inp" id="giorn-mat-ap"></div>
+            <div class="f-grp"><span class="f-lbl">Chiusura</span><input type="time" step="300" class="f-inp" id="giorn-mat-ch"></div>
+          </div>
+        </div>
+        <div class="time-section">
+          <div class="time-section-title"><i class="fas fa-cloud-sun"></i> Pomeriggio</div>
+          <div class="time-row">
+            <div class="f-grp"><span class="f-lbl">Apertura</span><input type="time" step="300" class="f-inp" id="giorn-pom-ap"></div>
+            <div class="f-grp"><span class="f-lbl">Chiusura</span><input type="time" step="300" class="f-inp" id="giorn-pom-ch"></div>
+          </div>
+        </div>
+        <div class="toggle-row" style="margin-top:12px;margin-bottom:0">
+          <label class="toggle"><input type="checkbox" id="giorn-serale-on" onchange="toggleSerale()"><span class="toggle-slider"></span></label>
+          <span class="toggle-label">Apertura straordinaria serale</span>
+        </div>
+        <div id="giorn-serale-wrap" style="display:none;margin-top:10px">
+          <div class="time-section" style="border-color:#CA8A04;background:#fffbeb">
+            <div class="time-section-title" style="color:#92400e"><i class="fas fa-moon"></i> Sera</div>
+            <div class="time-row">
+              <div class="f-grp"><span class="f-lbl">Apertura</span><input type="time" step="300" class="f-inp" id="giorn-ser-ap" value="20:30"></div>
+              <div class="f-grp"><span class="f-lbl">Chiusura</span><input type="time" step="300" class="f-inp" id="giorn-ser-ch" value="23:00"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="f-grp" style="margin-top:10px">
+        <span class="f-lbl">Note</span>
+        <textarea class="note-area" id="giorn-note" placeholder="Es. Orario speciale 3 agosto…"></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn-p" onclick="saveGiornaliero()"><i class="fas fa-save"></i> Salva</button>
+        <button class="btn-s" onclick="resetGiornaliero()"><i class="fas fa-undo"></i> Ripristina</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CALENDARIO ── -->
+  <div class="card" style="margin-top:20px">
+    <div class="card-title">Calendario mensile — orari effettivi</div>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+      <button class="btn-s" style="padding:7px 12px" onclick="prevMonth()"><i class="fas fa-chevron-left"></i></button>
+      <span id="cal-title" style="font-size:15px;font-weight:900;color:#1e293b;min-width:150px;text-align:center"></span>
+      <button class="btn-s" style="padding:7px 12px" onclick="nextMonth()"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    <div id="cal-grid"></div>
+    <div class="legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#dcfce7;border:1px solid #16A34A"></div> Annuale</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#fef3c7;border:1px solid #D97706"></div> Mensile</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#dbeafe;border:1px solid #2563EB"></div> Settimanale</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#ede9fe;border:1px solid #7C3AED"></div> Giornaliero</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#fee2e2;border:1px solid #B5453A"></div> Chiuso</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#CA8A04;border-radius:50%"></div> Serale</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+const SBURL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
+const SBKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
+let db = null;
+try { db = supabase.createClient(SBURL, SBKEY); } catch(e) { console.error('Supabase init:', e); }
+
+const MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
+              'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const GG = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
+
+let currentEmporio = null;
+let allOrari = [];
+let calAnno = new Date().getFullYear();
+let calMese = new Date().getMonth();
+
+// ── UTILS ──────────────────────────────────────────────────────────────────
+function showToast(msg, type='ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 2500);
+}
+function getISOWeek(d) {
+  const dt = new Date(d); dt.setHours(0,0,0,0);
+  dt.setDate(dt.getDate() + 3 - (dt.getDay()+6)%7);
+  const w1 = new Date(dt.getFullYear(), 0, 4);
+  return 1 + Math.round(((dt - w1)/86400000 - 3 + (w1.getDay()+6)%7)/7);
+}
+function getISOWeekYear(d) {
+  const dt = new Date(d); dt.setDate(dt.getDate() + 3 - (dt.getDay()+6)%7);
+  return dt.getFullYear();
+}
+function toLocalISO(d) {
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function fmtT(t) { return t ? t.substring(0,5) : ''; }
+function v(id) { return document.getElementById(id)?.value || ''; }
+function setV(id, val) { const el=document.getElementById(id); if(el) el.value=val||''; }
+function showEl(id, vis) { const el=document.getElementById(id); if(el) el.style.display=vis?'':'none'; }
+function toggleWrap(cbId, wrapId) {
+  showEl(wrapId, !document.getElementById(cbId).checked);
+}
+function toggleSerale() {
+  showEl('giorn-serale-wrap', document.getElementById('giorn-serale-on').checked);
+}
+
+// ── EMPORIO ────────────────────────────────────────────────────────────────
+async function onEmporioChange() {
+  const emp = v('sel-emporio');
+  if (!emp) { showEl('main-content', false); return; }
+  currentEmporio = emp;
+  showEl('loading-ind', true);
+  await loadOrari();
+  showEl('loading-ind', false);
+  showEl('main-content', true);
+  populateAnnuale();
+  document.getElementById('men-mese').value = new Date().getMonth()+1;
+  populateMensile();
+  initWeekInput();
+  initDateInput();
+  renderCalendar();
+}
+
+// ── LOAD ───────────────────────────────────────────────────────────────────
+async function loadOrari() {
+  if (!db) return;
+  try {
+    const { data, error } = await db.from('orari_emporio').select('*').eq('emporio_id', currentEmporio);
+    if (error) throw error;
+    allOrari = data || [];
+  } catch(e) { showToast('Errore caricamento: '+e.message, 'err'); }
+}
+
+// ── CASCADE ────────────────────────────────────────────────────────────────
+function calcOrarioEffettivo(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  const mese  = d.getMonth() + 1;
+  const sett  = getISOWeek(d);
+  const anno  = getISOWeekYear(d);
+
+  let result = null, level = 'nessuno';
+
+  const ann = allOrari.find(o => o.tipo === 'annuale');
+  if (ann) { result = ann; level = 'annuale'; }
+
+  const men = allOrari.find(o => o.tipo === 'mensile' && o.mese === mese);
+  if (men) { result = men; level = 'mensile'; }
+
+  const set = allOrari.find(o => o.tipo === 'settimanale' && o.settimana === sett && o.anno_settimana === anno);
+  if (set) { result = set; level = 'settimanale'; }
+
+  const gio = allOrari.find(o => o.tipo === 'giornaliero' && o.data_specifica === dateStr);
+  if (gio) { result = gio; level = 'giornaliero'; }
+
+  if (result?.giorno_chiuso) return { chiuso: true, level };
+
+  const ser = allOrari.find(o => o.tipo === 'straordinaria_serale' && o.data_specifica === dateStr);
+  return { chiuso: false, level, result, serale: ser || null };
+}
+
+// ── TABS ───────────────────────────────────────────────────────────────────
+const TABS = ['annuale','mensile','settimanale','giornaliero'];
+function showTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('on', TABS[i]===tab));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('on'));
+  document.getElementById('panel-'+tab).classList.add('on');
+}
+
+// ── ANNUALE ────────────────────────────────────────────────────────────────
+function populateAnnuale() {
+  const r = allOrari.find(o => o.tipo === 'annuale');
+  setV('ann-mat-ap', r?.mattina_apertura   || '09:15');
+  setV('ann-mat-ch', r?.mattina_chiusura   || '13:00');
+  setV('ann-pom-ap', r?.pomeriggio_apertura || '15:00');
+  setV('ann-pom-ch', r?.pomeriggio_chiusura || '19:00');
+}
+async function saveAnnuale() {
+  const p = {
+    emporio_id: currentEmporio, tipo: 'annuale', giorno_chiuso: false,
+    mattina_apertura:    v('ann-mat-ap') || null,
+    mattina_chiusura:    v('ann-mat-ch') || null,
+    pomeriggio_apertura: v('ann-pom-ap') || null,
+    pomeriggio_chiusura: v('ann-pom-ch') || null,
+  };
+  const err = await upsertRecord({tipo:'annuale'}, p);
+  if (!err) { showToast('Orario annuale salvato ✓'); renderCalendar(); }
+  else showToast('Errore: '+err.message, 'err');
+}
+
+// ── MENSILE ────────────────────────────────────────────────────────────────
+function populateMensile() {
+  const mese = parseInt(v('men-mese'));
+  const r = allOrari.find(o => o.tipo === 'mensile' && o.mese === mese);
+  const chiuso = r?.giorno_chiuso || false;
+  document.getElementById('men-chiuso').checked = chiuso;
+  showEl('men-orari-wrap', !chiuso);
+  const ann = allOrari.find(o => o.tipo === 'annuale');
+  setV('men-mat-ap', r?.mattina_apertura    || ann?.mattina_apertura    || '09:15');
+  setV('men-mat-ch', r?.mattina_chiusura    || ann?.mattina_chiusura    || '13:00');
+  setV('men-pom-ap', r?.pomeriggio_apertura || ann?.pomeriggio_apertura || '15:00');
+  setV('men-pom-ch', r?.pomeriggio_chiusura || ann?.pomeriggio_chiusura || '19:00');
+  setV('men-note', r?.note || '');
+}
+async function saveMensile() {
+  const mese = parseInt(v('men-mese'));
+  const chiuso = document.getElementById('men-chiuso').checked;
+  const p = {
+    emporio_id: currentEmporio, tipo: 'mensile', mese, giorno_chiuso: chiuso,
+    mattina_apertura:    chiuso ? null : (v('men-mat-ap') || null),
+    mattina_chiusura:    chiuso ? null : (v('men-mat-ch') || null),
+    pomeriggio_apertura: chiuso ? null : (v('men-pom-ap') || null),
+    pomeriggio_chiusura: chiuso ? null : (v('men-pom-ch') || null),
+    note: v('men-note') || null,
+  };
+  const err = await upsertRecord({tipo:'mensile', mese}, p);
+  if (!err) { showToast('Orario mensile salvato ✓'); renderCalendar(); }
+  else showToast('Errore: '+err.message, 'err');
+}
+async function resetMensile() {
+  const mese = parseInt(v('men-mese'));
+  const err = await deleteRecord({tipo:'mensile', mese});
+  if (!err) { showToast('Override mensile rimosso ✓'); populateMensile(); renderCalendar(); }
+  else showToast('Errore: '+err.message, 'err');
+}
+
+// ── SETTIMANALE ────────────────────────────────────────────────────────────
+function initWeekInput() {
+  const now = new Date();
+  document.getElementById('sett-week').value = now.getFullYear()+'-W'+String(getISOWeek(now)).padStart(2,'0');
+  populateSettimanale();
+}
+function parseWeek() {
+  const val = v('sett-week');
+  if (!val || !val.includes('-W')) return null;
+  const [a, w] = val.split('-W');
+  return { anno: parseInt(a), settimana: parseInt(w) };
+}
+function populateSettimanale() {
+  const pw = parseWeek(); if (!pw) return;
+  const r = allOrari.find(o => o.tipo==='settimanale' && o.settimana===pw.settimana && o.anno_settimana===pw.anno);
+  const chiuso = r?.giorno_chiuso || false;
+  document.getElementById('sett-chiuso').checked = chiuso;
+  showEl('sett-orari-wrap', !chiuso);
+  const ann = allOrari.find(o => o.tipo === 'annuale');
+  setV('sett-mat-ap', r?.mattina_apertura    || ann?.mattina_apertura    || '09:15');
+  setV('sett-mat-ch', r?.mattina_chiusura    || ann?.mattina_chiusura    || '13:00');
+  setV('sett-pom-ap', r?.pomeriggio_apertura || ann?.pomeriggio_apertura || '15:00');
+  setV('sett-pom-ch', r?.pomeriggio_chiusura || ann?.pomeriggio_chiusura || '19:00');
+  setV('sett-note', r?.note || '');
+}
+async function saveSettimanale() {
+  const pw = parseWeek();
+  if (!pw) { showToast('Seleziona una settimana', 'err'); return; }
+  const chiuso = document.getElementById('sett-chiuso').checked;
+  const p = {
+    emporio_id: currentEmporio, tipo: 'settimanale',
+    settimana: pw.settimana, anno_settimana: pw.anno, giorno_chiuso: chiuso,
+    mattina_apertura:    chiuso ? null : (v('sett-mat-ap') || null),
+    mattina_chiusura:    chiuso ? null : (v('sett-mat-ch') || null),
+    pomeriggio_apertura: chiuso ? null : (v('sett-pom-ap') || null),
+    pomeriggio_chiusura: chiuso ? null : (v('sett-pom-ch') || null),
+    note: v('sett-note') || null,
+  };
+  const err = await upsertRecord({tipo:'settimanale', settimana:pw.settimana, anno_settimana:pw.anno}, p);
+  if (!err) { showToast('Orario settimanale salvato ✓'); renderCalendar(); }
+  else showToast('Errore: '+err.message, 'err');
+}
+async function resetSettimanale() {
+  const pw = parseWeek(); if (!pw) return;
+  const err = await deleteRecord({tipo:'settimanale', settimana:pw.settimana, anno_settimana:pw.anno});
+  if (!err) { showToast('Override settimanale rimosso ✓'); populateSettimanale(); renderCalendar(); }
+  else showToast('Errore: '+err.message, 'err');
+}
+
+// ── GIORNALIERO ────────────────────────────────────────────────────────────
+function initDateInput() {
+  document.getElementById('giorn-data').value = toLocalISO(new Date());
+  populateGiornaliero();
+}
+function populateGiornaliero() {
+  const data = v('giorn-data'); if (!data) return;
+  const r  = allOrari.find(o => o.tipo==='giornaliero' && o.data_specifica===data);
+  const rs = allOrari.find(o => o.tipo==='straordinaria_serale' && o.data_specifica===data);
+  const chiuso = r?.giorno_chiuso || false;
+  document.getElementById('giorn-chiuso').checked = chiuso;
+  showEl('giorn-orari-wrap', !chiuso);
+  if (r && !chiuso) {
+    setV('giorn-mat-ap', r.mattina_apertura);
+    setV('giorn-mat-ch', r.mattina_chiusura);
+    setV('giorn-pom-ap', r.pomeriggio_apertura);
+    setV('giorn-pom-ch', r.pomeriggio_chiusura);
+  } else {
+    const eff = calcOrarioEffettivo(data);
+    const base = eff.result;
+    setV('giorn-mat-ap', base?.mattina_apertura    || '09:15');
+    setV('giorn-mat-ch', base?.mattina_chiusura    || '13:00');
+    setV('giorn-pom-ap', base?.pomeriggio_apertura || '15:00');
+    setV('giorn-pom-ch', base?.pomeriggio_chiusura || '19:00');
+  }
+  const hasSerale = !!rs;
+  document.getElementById('giorn-serale-on').checked = hasSerale;
+  showEl('giorn-serale-wrap', hasSerale);
+  if (rs) { setV('giorn-ser-ap', rs.sera_apertura); setV('giorn-ser-ch', rs.sera_chiusura); }
+  setV('giorn-note', r?.note || '');
+}
+async function saveGiornaliero() {
+  const data = v('giorn-data');
+  if (!data) { showToast('Seleziona una data', 'err'); return; }
+  const chiuso = document.getElementById('giorn-chiuso').checked;
+  const p = {
+    emporio_id: currentEmporio, tipo: 'giornaliero', data_specifica: data, giorno_chiuso: chiuso,
+    mattina_apertura:    chiuso ? null : (v('giorn-mat-ap') || null),
+    mattina_chiusura:    chiuso ? null : (v('giorn-mat-ch') || null),
+    pomeriggio_apertura: chiuso ? null : (v('giorn-pom-ap') || null),
+    pomeriggio_chiusura: chiuso ? null : (v('giorn-pom-ch') || null),
+    note: v('giorn-note') || null,
+  };
+  let err = await upsertRecord({tipo:'giornaliero', data_specifica:data}, p);
+  if (err) { showToast('Errore: '+err.message, 'err'); return; }
+
+  if (document.getElementById('giorn-serale-on').checked) {
+    const ps = {
+      emporio_id: currentEmporio, tipo: 'straordinaria_serale', data_specifica: data,
+      sera_apertura: v('giorn-ser-ap') || null,
+      sera_chiusura: v('giorn-ser-ch') || null,
+    };
+    err = await upsertRecord({tipo:'straordinaria_serale', data_specifica:data}, ps);
+  } else {
+    await deleteRecord({tipo:'straordinaria_serale', data_specifica:data});
+  }
+  if (!err) { showToast('Orario giornaliero salvato ✓'); renderCalendar(); }
+  else showToast('Errore serale: '+err.message, 'err');
+}
+async function resetGiornaliero() {
+  const data = v('giorn-data'); if (!data) return;
+  await deleteRecord({tipo:'giornaliero', data_specifica:data});
+  await deleteRecord({tipo:'straordinaria_serale', data_specifica:data});
+  showToast('Override giornaliero rimosso ✓');
+  populateGiornaliero();
+  renderCalendar();
+}
+
+// ── DB HELPERS ─────────────────────────────────────────────────────────────
+async function upsertRecord(filters, payload) {
+  if (!db) return new Error('DB non connesso');
+  try {
+    let q = db.from('orari_emporio').select('id').eq('emporio_id', currentEmporio).eq('tipo', filters.tipo);
+    if (filters.mese          != null) q = q.eq('mese', filters.mese);
+    if (filters.settimana     != null) q = q.eq('settimana', filters.settimana).eq('anno_settimana', filters.anno_settimana);
+    if (filters.data_specifica!= null) q = q.eq('data_specifica', filters.data_specifica);
+    const { data: ex } = await q.maybeSingle();
+    const { error } = ex
+      ? await db.from('orari_emporio').update(payload).eq('id', ex.id)
+      : await db.from('orari_emporio').insert(payload);
+    if (!error) await loadOrari();
+    return error || null;
+  } catch(e) { return e; }
+}
+async function deleteRecord(filters) {
+  if (!db) return new Error('DB non connesso');
+  try {
+    let q = db.from('orari_emporio').delete().eq('emporio_id', currentEmporio).eq('tipo', filters.tipo);
+    if (filters.mese          != null) q = q.eq('mese', filters.mese);
+    if (filters.settimana     != null) q = q.eq('settimana', filters.settimana).eq('anno_settimana', filters.anno_settimana);
+    if (filters.data_specifica!= null) q = q.eq('data_specifica', filters.data_specifica);
+    const { error } = await q;
+    if (!error) await loadOrari();
+    return error || null;
+  } catch(e) { return e; }
+}
+
+// ── CALENDAR ───────────────────────────────────────────────────────────────
+function prevMonth() { calMese--; if(calMese<0){calMese=11;calAnno--;} renderCalendar(); }
+function nextMonth() { calMese++; if(calMese>11){calMese=0;calAnno++;} renderCalendar(); }
+
+function renderCalendar() {
+  document.getElementById('cal-title').textContent = MESI[calMese]+' '+calAnno;
+  const firstDow = new Date(calAnno, calMese, 1).getDay();
+  const totalDays = new Date(calAnno, calMese+1, 0).getDate();
+
+  let html = '<div class="cal-grid">';
+  GG.forEach(g => { html += `<div class="cal-day-name">${g}</div>`; });
+  for (let i=0; i<firstDow; i++) html += '<div class="cal-day empty"></div>';
+
+  for (let d=1; d<=totalDays; d++) {
+    const ds = calAnno+'-'+String(calMese+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const eff = calcOrarioEffettivo(ds);
+    const dow = new Date(calAnno, calMese, d).getDay();
+    const dimmed = dow===0 ? 'opacity:.55;' : '';
+    let cls, body, dot='';
+
+    if (eff.chiuso) {
+      cls = 'lvl-chiuso';
+      body = '<div class="day-time" style="font-weight:800">CHIUSO</div>';
+    } else if (eff.result) {
+      cls = 'lvl-'+eff.level;
+      const r = eff.result;
+      const mat = r.mattina_apertura ? fmtT(r.mattina_apertura)+'–'+fmtT(r.mattina_chiusura) : '';
+      const pom = r.pomeriggio_apertura ? fmtT(r.pomeriggio_apertura)+'–'+fmtT(r.pomeriggio_chiusura) : '';
+      body = [mat,pom].filter(Boolean).map(t=>`<div class="day-time">${t}</div>`).join('');
+      if (eff.serale) dot = '<div class="serale-dot"></div>';
+    } else {
+      cls = 'lvl-nessuno';
+      body = '<div class="day-time" style="opacity:.4">—</div>';
+    }
+
+    html += `<div class="cal-day ${cls}" style="${dimmed}">
+      ${dot}<div class="day-num">${d}</div>${body}
+    </div>`;
+  }
+
+  html += '</div>';
+  document.getElementById('cal-grid').innerHTML = html;
+}
+</script>
+<script src="../../scripts/nav-script.js"></script>
+</body>
+</html>
