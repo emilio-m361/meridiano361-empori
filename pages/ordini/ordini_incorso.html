@@ -515,6 +515,15 @@
 
                 if (error) throw error;
 
+                // DEBUG — rimuovere dopo verifica
+                console.log('ORDINI DAL DB:', JSON.stringify((data || []).map(o => ({
+                    id: o.id,
+                    stato: o.stato,
+                    cliente_avvisato: o.cliente_avvisato,
+                    tipo_stato: typeof o.stato,
+                    tipo_avvisato: typeof o.cliente_avvisato
+                })), null, 2));
+
                 allOrders = data || [];
                 renderOrders(allOrders);
                 applyCurrentFilter();
