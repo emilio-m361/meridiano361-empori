@@ -132,6 +132,10 @@
         .row-act.del-btn:hover{background:#fee2e2;color:#ef4444}
 
         @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+
+        /* ELIMINA TUTTI FATTI */
+        .btn-elimina-tutti{background:#fee2e2;color:#B5453A;border:1px solid #fca5a5;padding:8px 16px;border-radius:6px;font-weight:600;cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:6px;margin-top:10px}
+        .btn-elimina-tutti:hover{background:#B5453A;color:#fff;border-color:#B5453A}
     </style>
 </head>
 <body class="pb-24">
@@ -342,7 +346,9 @@ function rEmp(){
     </div>
     <button onclick="toggleAF()" id="btn-af" style="background:var(--red);color:#fff;border:none;padding:10px 18px;border-radius:11px;font-size:12px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:7px" onmouseover="this.style.background='var(--red-dark)'" onmouseout="this.style.background='var(--red)'">
         <i class="fas fa-plus-circle"></i> Aggiungi ${ti.label}
-    </button>`;
+    </button>
+    ${items.filter(i=>i.emporio===V.emp&&i.fatto).length>0?`<button class="btn-elimina-tutti" onclick="eliminaTuttiPrezziFatti()">🗑 Elimina tutti i prezzi fatti</button>`:''}
+    `;
 }
 
 // ── RENDER SINTESI ──
@@ -426,6 +432,23 @@ function handleEditKey(e){
 function escH(s){
     if(!s)return'';
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── ELIMINA TUTTI I PREZZI FATTI ──
+async function eliminaTuttiPrezziFatti(){
+    const fatti=items.filter(i=>i.emporio===V.emp&&i.fatto);
+    if(fatti.length===0){alert('Nessun prezzo "fatto" da eliminare.');return;}
+    const emp=EMAP[V.emp]?.label||V.emp;
+    if(!confirm(`⚠️ Sei sicuro di voler eliminare TUTTI i ${fatti.length} prezzi fatti per ${emp}?\nQuesta azione non può essere annullata.`))return;
+    if(!confirm('Conferma definitiva: eliminare tutti i prezzi fatti?'))return;
+    const ids=fatti.map(i=>i.id).filter(id=>!String(id).startsWith('l'));
+    if(ids.length>0){
+        const{error}=await db.from('prezzi_da_fare').delete().in('id',ids);
+        if(error){alert('Errore: '+error.message);return;}
+    }
+    items=items.filter(i=>!(i.emporio===V.emp&&i.fatto));
+    R();
+    alert(`✓ ${fatti.length} prezzi fatti eliminati.`);
 }
 
 // ── LOAD ──

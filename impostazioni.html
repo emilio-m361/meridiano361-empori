@@ -46,6 +46,19 @@
         /* Section title */
         .sec-t { font-size: 10px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: #94a3b8; display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
         .sec-t::before { content: ''; width: 3px; height: 16px; background: var(--red); border-radius: 2px; flex-shrink: 0; }
+
+        /* Gruppi emporio */
+        .gruppo-emporio { margin-bottom: 20px; }
+        .gruppo-emporio-header { background: #1e293b; color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 6px 12px; border-radius: 6px 6px 0 0; }
+        .gruppo-emporio-body { border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 6px 6px; padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+
+        /* Sezioni visibili accordion */
+        .sezioni-lista { display: none; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; padding: 8px; background: #f8fafc; border-radius: 8px; border: 1px solid #f1f5f9; }
+        .sezione-check { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; padding: 2px 0; }
+        .sezione-check input { accent-color: var(--red); cursor: pointer; width: 14px; height: 14px; flex-shrink: 0; }
+        .btn-sezioni { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #94a3b8; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 0; font-family: 'Inter', sans-serif; }
+        .btn-sezioni:hover { color: #475569; }
+        .btn-sezioni i { font-size: 9px; transition: transform .2s; }
     </style>
 </head>
 <body class="pb-32">
@@ -103,6 +116,18 @@
     // Solo questi admin possono accedere
     const ADMIN_EMAILS = ['e.mazzolari@meridiano361.it', 'amministrazione@meridiano361.it'];
 
+    const SEZIONI = [
+        { id: 'ordini',       label: 'Ordini' },
+        { id: 'prenotazioni', label: 'Prenotazioni' },
+        { id: 'info',         label: 'Info clienti' },
+        { id: 'turni',        label: 'Turni' },
+        { id: 'cassa',        label: 'Cassa' },
+        { id: 'prezzi',       label: 'Prezzi da fare' },
+        { id: 'preordini',    label: 'Preordini' },
+    ];
+
+    const EMPORI_ORDER = ['cremona','casalmaggiore','reggioemilia','viadana'];
+
     const currentUser = JSON.parse(localStorage.getItem('m361_user') || 'null');
     let hasChanges = false;
 
@@ -123,59 +148,118 @@
         return 'role-volontaria';
     }
 
+    const EMPORI_LABEL = { cremona:'Cremona', casalmaggiore:'Casalmaggiore', reggioemilia:'Reggio Emilia', viadana:'Viadana' };
+
     async function loadUsers() {
         const container = document.getElementById('user-list');
-        const { data: users, error } = await db
-            .from('user_permissions')
-            .select('*')
-            .order('ruolo', { ascending: true });
 
-        if (error) {
-            container.innerHTML = `<div class="text-red-500 p-4 text-sm">Errore: ${error.message}</div>`;
+        const [usersRes, permsRes] = await Promise.all([
+            db.from('user_permissions').select('*').order('ruolo', { ascending: true }),
+            db.from('utenti_permessi').select('*').catch(() => ({ data: null, error: null }))
+        ]);
+
+        if (usersRes.error) {
+            container.innerHTML = `<div class="text-red-500 p-4 text-sm">Errore: ${usersRes.error.message}</div>`;
             return;
         }
 
-        const EMPORI_LABEL = { cremona:'Cremona', casalmaggiore:'Casalmaggiore', reggioemilia:'Reggio Emilia', viadana:'Viadana' };
+        const permMap = {};
+        if (permsRes.data) {
+            permsRes.data.forEach(p => {
+                if (!permMap[p.utente_email]) permMap[p.utente_email] = {};
+                permMap[p.utente_email][p.sezione] = p.visibile;
+            });
+        }
+
+        const users = usersRes.data.filter(u => !ADMIN_EMAILS.includes(u.email));
+
+        const grouped = {};
+        users.forEach(u => {
+            const emp = u.emporio_riferimento || 'altro';
+            if (!grouped[emp]) grouped[emp] = [];
+            grouped[emp].push(u);
+        });
 
         container.innerHTML = '';
-        users.forEach(u => {
-            if (ADMIN_EMAILS.includes(u.email)) return; // Non mostrare gli admin
+        const ordine = [...EMPORI_ORDER, ...Object.keys(grouped).filter(k => !EMPORI_ORDER.includes(k))];
 
-            const emporio = EMPORI_LABEL[u.emporio_riferimento] || u.emporio_riferimento || '';
-            const isReadonly = u.is_readonly || false;
+        ordine.forEach(emp => {
+            if (!grouped[emp]) return;
+            const empLabel = EMPORI_LABEL[emp] || (emp === 'altro' ? 'Senza Emporio' : emp);
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'gruppo-emporio';
+            groupDiv.innerHTML = `<div class="gruppo-emporio-header">${empLabel}</div>
+                <div class="gruppo-emporio-body"></div>`;
+            container.appendChild(groupDiv);
+            const body = groupDiv.querySelector('.gruppo-emporio-body');
 
-            const card = document.createElement('div');
-            card.className = 'user-card';
-            card.innerHTML = `
-                <div class="flex items-center justify-between gap-4">
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 flex-wrap mb-1">
-                            <span class="name">${u.nome_cognome || '—'}</span>
+            grouped[emp].forEach(u => {
+                const isReadonly = u.is_readonly || false;
+                const badgeId = 'badge-' + u.email.replace(/[@.]/g,'_');
+
+                const sezioniHTML = SEZIONI.map(s => {
+                    const vis = permMap[u.email]?.[s.id] !== false;
+                    return `<label class="sezione-check">
+                        <input type="checkbox" ${vis ? 'checked' : ''}
+                               onchange="salvaPermessi('${u.email}', '${s.id}', this.checked)">
+                        ${s.label}
+                    </label>`;
+                }).join('');
+
+                const card = document.createElement('div');
+                card.className = 'user-card';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap mb-1">
+                                <span class="name">${u.nome_cognome || '—'}</span>
+                            </div>
+                            <div class="email mb-2">${u.email}</div>
+                            <div class="flex flex-wrap gap-2 mb-2">
+                                <span class="role-badge ${roleClass(u.ruolo)}">${u.ruolo || '—'}</span>
+                                <span class="role-badge ${isReadonly ? 'readonly-on' : 'readonly-off'}" id="${badgeId}">
+                                    ${isReadonly ? '🔒 Sola Lettura' : '✏️ Modifica'}
+                                </span>
+                            </div>
+                            <div style="border-top:1px solid #f1f5f9;padding-top:8px;margin-top:4px">
+                                <button class="btn-sezioni" onclick="toggleSezioni(this)">
+                                    🔒 Sezioni visibili <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="sezioni-lista">${sezioniHTML}</div>
+                            </div>
                         </div>
-                        <div class="email mb-2">${u.email}</div>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="role-badge ${roleClass(u.ruolo)}">${u.ruolo || '—'}</span>
-                            ${emporio ? `<span class="role-badge" style="background:#f1f5f9;color:#475569">${emporio}</span>` : ''}
-                            <span class="role-badge ${isReadonly ? 'readonly-on' : 'readonly-off'}" id="badge-${u.email.replace(/[@.]/g,'_')}">
-                                ${isReadonly ? '🔒 Sola Lettura' : '✏️ Modifica'}
-                            </span>
+                        <div class="flex flex-col items-center gap-1 flex-shrink-0">
+                            <span class="toggle-label">Sola<br>Lettura</span>
+                            <label class="toggle">
+                                <input type="checkbox" class="readonly-toggle"
+                                       data-email="${u.email}"
+                                       data-badge="${badgeId}"
+                                       ${isReadonly ? 'checked' : ''}
+                                       onchange="onToggleChange(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
                         </div>
                     </div>
-                    <div class="flex flex-col items-center gap-1 flex-shrink-0">
-                        <span class="toggle-label">Sola<br>Lettura</span>
-                        <label class="toggle">
-                            <input type="checkbox" class="readonly-toggle"
-                                   data-email="${u.email}"
-                                   data-badge="badge-${u.email.replace(/[@.]/g,'_')}"
-                                   ${isReadonly ? 'checked' : ''}
-                                   onchange="onToggleChange(this)">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-            `;
-            container.appendChild(card);
+                `;
+                body.appendChild(card);
+            });
         });
+    }
+
+    function toggleSezioni(btn) {
+        const lista = btn.nextElementSibling;
+        const isOpen = lista.style.display === 'grid';
+        lista.style.display = isOpen ? 'none' : 'grid';
+        const icon = btn.querySelector('i');
+        if (icon) icon.style.transform = isOpen ? '' : 'rotate(180deg)';
+    }
+
+    async function salvaPermessi(email, sezione, visibile) {
+        try {
+            await db.from('utenti_permessi')
+                .upsert({ utente_email: email, sezione, visibile },
+                        { onConflict: 'utente_email,sezione' });
+        } catch (e) { console.warn('utenti_permessi non trovata:', e.message); }
     }
 
     function onToggleChange(el) {

@@ -511,7 +511,7 @@
                 const { data, error } = await _supabase
                     .from('ordini_incorso')
                     .select('*')
-                    .order('data_creazione', { ascending: true });
+                    .order('data_creazione', { ascending: false });
 
                 if (error) throw error;
 
