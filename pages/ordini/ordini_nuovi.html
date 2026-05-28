@@ -144,12 +144,37 @@
             text-transform: uppercase;
             padding-bottom: 8px;
         }
-        
+
         .product-table input, .product-table select {
             font-size: 12px;
             padding: 6px 8px;
             border-radius: 8px;
         }
+
+        .riga-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex-shrink: 0;
+        }
+        .btn-sposta {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            width: 24px;
+            height: 24px;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            min-height: 24px;
+            transition: all .12s;
+        }
+        .btn-sposta:hover { background: #1e293b; color: #fff; border-color: #1e293b; }
+        .product-row:first-child .btn-sposta:first-child { opacity: 0.2; pointer-events: none; }
+        .product-row:last-child .btn-sposta:last-child { opacity: 0.2; pointer-events: none; }
 
         .total-box {
             background: #f8fafc;
@@ -736,6 +761,7 @@
                     <table class="w-full text-left border-separate border-spacing-y-2 product-table">
                         <thead>
                             <tr class="text-gray-400 text-center">
+                                <th class="pb-2 w-8"></th>
                                 <th class="pb-2 pl-4 text-left">Codice *</th>
                                 <th class="pb-2 text-left">Descrizione *</th>
                                 <th class="pb-2 w-24">Prezzo</th>
@@ -771,6 +797,12 @@
             row.className = "product-row transition-all";
             row.id = `row-${rowId}`;
             row.innerHTML = `
+                <td class="p-1 text-center">
+                    <div class="riga-controls">
+                        <button type="button" class="btn-sposta" onclick="spostaRiga(this,-1)" title="Sposta su">▲</button>
+                        <button type="button" class="btn-sposta" onclick="spostaRiga(this,1)" title="Sposta giù">▼</button>
+                    </div>
+                </td>
                 <td class="p-1 pl-4"><input type="text" placeholder="Codice" required class="w-full border-gray-200 border rounded-lg p-2 codice-input"></td>
                 <td class="p-1"><input type="text" placeholder="Descrizione" required class="w-full border-gray-200 border rounded-lg p-2 desc-input"></td>
                 <td class="p-1"><input type="text" class="price-input w-full border-gray-200 border rounded-lg p-2 text-right" value="€ 0,00"></td>
@@ -931,6 +963,36 @@
                 }
                 calcGrandTotal();
                 validateGlobal();
+            }
+        }
+
+        function getRowBlock(productRow) {
+            const rowId = productRow.id.replace('row-', '');
+            const result = [productRow];
+            ['confez', 'cartoncino', 'omaggio'].forEach(p => {
+                const el = document.getElementById(`${p}-${rowId}`);
+                if (el) result.push(el);
+            });
+            return result;
+        }
+
+        function spostaRiga(btn, direzione) {
+            const riga = btn.closest('.product-row');
+            const contenitore = riga.parentElement;
+            const righe = [...contenitore.querySelectorAll('.product-row')];
+            const index = righe.indexOf(riga);
+            const nuovoIndex = index + direzione;
+            if (nuovoIndex < 0 || nuovoIndex >= righe.length) return;
+
+            const bloccoCorrente = getRowBlock(riga);
+            const bloccoTarget = getRowBlock(righe[nuovoIndex]);
+
+            if (direzione === -1) {
+                // Sposta su: inserisci il blocco corrente prima del blocco target
+                bloccoCorrente.forEach(el => contenitore.insertBefore(el, bloccoTarget[0]));
+            } else {
+                // Sposta giù: inserisci il blocco target prima del blocco corrente
+                bloccoTarget.forEach(el => contenitore.insertBefore(el, bloccoCorrente[0]));
             }
         }
 
