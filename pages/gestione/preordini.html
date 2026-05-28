@@ -354,6 +354,10 @@
             <button class="btn-tb" onclick="chiudi('modal-importa')">Annulla</button>
             <button class="btn-tb prim" onclick="eseguiImporta()">Importa</button>
         </div>
+        <div style="border-top:1px dashed #e2e8f0;padding-top:12px;margin-top:12px">
+            <p style="font-size:11px;color:#64748b;margin-bottom:8px">Oppure importa da file Excel 2025:</p>
+            <button class="btn-tb" onclick="importaDaJSON()">📂 Importa da Excel 2025 (77 prodotti)</button>
+        </div>
     </div>
 </div>
 
@@ -1112,6 +1116,51 @@ document.addEventListener('click', () => {
     if (!document.getElementById('qty-warn').classList.contains('hidden')) hideQtyWarn();
 });
 document.addEventListener('DOMContentLoaded', init);
+
+// ── IMPORTA DA JSON 2025 ───────────────────────────────────────────────
+async function importaDaJSON() {
+    if (!campagnaCorrente) { alert('Seleziona prima una campagna.'); return; }
+    if (!confirm('Importare i 77 prodotti dal file Excel 2025?\n\nLe righe esistenti NON verranno cancellate.')) return;
+    chiudi('modal-importa');
+    setSave('💾 Import in corso…', 'saving');
+    const res = await fetch('../../scripts/dati_preordini_2025.json');
+    if (!res.ok) { setSave('✗ Errore caricamento JSON', 'err'); return; }
+    const dati = await res.json();
+    const { data: emporiList } = await DB.from('preordini_empori').select('*').eq('campagna_id', campagnaCorrente.id);
+    const empMap = {};
+    emporiList.forEach(e => {
+        empMap[e.nome.toUpperCase().slice(0, 2)] = e.codice;
+        empMap[e.codice.toUpperCase()] = e.codice;
+    });
+    const maxOrd = righe.length > 0 ? Math.max(...righe.map(r => r.ordine_riga || 0)) + 1 : 0;
+    const righeData = dati.prodotti.map((p, i) => ({
+        campagna_id: campagnaCorrente.id, fornitore: p.fornitore,
+        codice: p.codice || null, categoria: p.categoria || null, prodotto: p.prodotto,
+        conf: p.conf || null, pvp_corrente: p.pvp_corrente || null,
+        pvp_precedente: p.pvp_precedente || null, ordine_riga: maxOrd + i,
+    }));
+    const { data: insertedRighe, error: er } = await DB.from('preordini_righe').insert(righeData).select();
+    if (er) { setSave('✗ Errore inserimento righe', 'err'); console.error(er); return; }
+    const qtysData = [];
+    insertedRighe.forEach((riga, i) => {
+        const p = dati.prodotti[i];
+        for (const [jsonKey, q] of Object.entries(p.quantita)) {
+            const empCode = empMap[jsonKey.toUpperCase()] || jsonKey;
+            qtysData.push({
+                riga_id: riga.id, emporio_codice: empCode,
+                ordine_corrente: q.oc || 0, venduto_precedente: q.vp || 0,
+                ordine_precedente: q.op || 0, venduto_corrente: q.vc || 0,
+            });
+        }
+    });
+    if (qtysData.length > 0) {
+        const { error: eq } = await DB.from('preordini_quantita').insert(qtysData);
+        if (eq) { setSave('✗ Errore quantità', 'err'); console.error(eq); return; }
+    }
+    setSave(`✓ ${insertedRighe.length} prodotti importati`, 'saved');
+    setTimeout(clearSave, 3000);
+    await selezionaCampagna(campagnaCorrente.id);
+}
 </script>
 <script src="../../scripts/nav-script.js"></script>
 </body>

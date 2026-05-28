@@ -1,0 +1,705 @@
+{
+  "meta": {
+    "fonte": "Preordini_Natale_vari_anni.xlsx — foglio 2025",
+    "anno_ordini_corrente": 2025,
+    "anno_venduto_precedente": 2024,
+    "anno_ordini_precedente": 2024,
+    "note": "oc=ordine2025, vp=venduto2024, op=ordine2024, vc=0 (non disponibile)",
+    "mapping_empori": { "CR": "Cremona (primi 2 char nome)", "CA": "Casalmaggiore", "VI": "Viadana" }
+  },
+  "prodotti": [
+    {
+      "fornitore": "ALTROMERCATO", "codice": "375", "categoria": "Mini",
+      "prodotto": "Panettoncino", "conf": 36, "pvp_corrente": 3.00, "pvp_precedente": 3.00,
+      "quantita": {
+        "CR": {"oc":20,"vp":72,"op":72,"vc":0},
+        "CA": {"oc":36,"vp":10,"op":36,"vc":0},
+        "VI": {"oc":36,"vp":7,"op":36,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "401", "categoria": "Panettoni",
+      "prodotto": "Panettone uv cioc", "conf": 6, "pvp_corrente": 17.00, "pvp_precedente": 15.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":34,"op":36,"vc":0},
+        "CA": {"oc":12,"vp":10,"op":12,"vc":0},
+        "VI": {"oc":12,"vp":12,"op":12,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "511", "categoria": "Pandori",
+      "prodotto": "Pandoro cioccolato", "conf": 6, "pvp_corrente": 17.00, "pvp_precedente": 15.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":21,"op":12,"vc":0},
+        "CA": {"oc":6,"vp":2,"op":6,"vc":0},
+        "VI": {"oc":6,"vp":6,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "887", "categoria": "Panettoni",
+      "prodotto": "Panettone uvetta", "conf": 6, "pvp_corrente": 15.00, "pvp_precedente": 13.00,
+      "quantita": {
+        "CR": {"oc":3,"vp":50,"op":66,"vc":0},
+        "CA": {"oc":12,"vp":13,"op":24,"vc":0},
+        "VI": {"oc":18,"vp":16,"op":18,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "888", "categoria": "Panettoni",
+      "prodotto": "Panettone cioccolato", "conf": 6, "pvp_corrente": 15.00, "pvp_precedente": 13.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":40,"op":36,"vc":0},
+        "CA": {"oc":18,"vp":15,"op":18,"vc":0},
+        "VI": {"oc":18,"vp":18,"op":18,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "1184", "categoria": "Pandori",
+      "prodotto": "Pandoro classico", "conf": 6, "pvp_corrente": 15.00, "pvp_precedente": 13.00,
+      "quantita": {
+        "CR": {"oc":6,"vp":26,"op":48,"vc":0},
+        "CA": {"oc":12,"vp":28,"op":12,"vc":0},
+        "VI": {"oc":6,"vp":6,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "3454", "categoria": "Panettoni",
+      "prodotto": "Panettone pistacchio", "conf": 6, "pvp_corrente": 25.00, "pvp_precedente": 24.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":36,"op":36,"vc":0},
+        "CA": {"oc":6,"vp":6,"op":6,"vc":0},
+        "VI": {"oc":6,"vp":4,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "3457", "categoria": "Panettoni",
+      "prodotto": "Panettone artigianale trad", "conf": 4, "pvp_corrente": 40.00, "pvp_precedente": 40.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":15,"op":32,"vc":0},
+        "CA": {"oc":2,"vp":2,"op":0,"vc":0},
+        "VI": {"oc":2,"vp":2,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "5077", "categoria": "Panettoni",
+      "prodotto": "Panettone tradizionale", "conf": 6, "pvp_corrente": 25.00, "pvp_precedente": 24.00,
+      "quantita": {
+        "CR": {"oc":3,"vp":53,"op":36,"vc":0},
+        "CA": {"oc":12,"vp":11,"op":12,"vc":0},
+        "VI": {"oc":6,"vp":1,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "5078", "categoria": "Panettoni",
+      "prodotto": "Panettone gianduia", "conf": 6, "pvp_corrente": 25.00, "pvp_precedente": 24.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":19,"op":12,"vc":0},
+        "CA": {"oc":6,"vp":10,"op":6,"vc":0},
+        "VI": {"oc":6,"vp":6,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "6845", "categoria": "Mini",
+      "prodotto": "Pandorino", "conf": 36, "pvp_corrente": 3.00, "pvp_precedente": 3.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":24,"op":72,"vc":0},
+        "CA": {"oc":36,"vp":12,"op":36,"vc":0},
+        "VI": {"oc":36,"vp":16,"op":36,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "6846", "categoria": "Panettoni",
+      "prodotto": "Panettone arancia", "conf": 6, "pvp_corrente": 25.00, "pvp_precedente": 24.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":26,"op":30,"vc":0},
+        "CA": {"oc":6,"vp":8,"op":6,"vc":0},
+        "VI": {"oc":6,"vp":6,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "7617", "categoria": null,
+      "prodotto": "Panettone cioccolato rum", "conf": 6, "pvp_corrente": 25.00, "pvp_precedente": null,
+      "quantita": {
+        "CR": {"oc":2,"vp":0,"op":0,"vc":0},
+        "CA": {"oc":6,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":6,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "7618", "categoria": null,
+      "prodotto": "Panettone cioccolato pesca", "conf": 6, "pvp_corrente": 25.00, "pvp_precedente": null,
+      "quantita": {
+        "CR": {"oc":0,"vp":0,"op":0,"vc":0},
+        "CA": {"oc":6,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":6,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "7620", "categoria": null,
+      "prodotto": "Pandoro cacao", "conf": 6, "pvp_corrente": 24.00, "pvp_precedente": null,
+      "quantita": {
+        "CR": {"oc":0,"vp":0,"op":0,"vc":0},
+        "CA": {"oc":6,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":6,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "327", "categoria": "Torroni",
+      "prodotto": "Torroncini misti", "conf": 8, "pvp_corrente": 7.00, "pvp_precedente": 7.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":24,"op":24,"vc":0},
+        "CA": {"oc":8,"vp":7,"op":8,"vc":0},
+        "VI": {"oc":8,"vp":7,"op":8,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "354", "categoria": "Calendario",
+      "prodotto": "Calendario avvento", "conf": 12, "pvp_corrente": 7.00, "pvp_precedente": 6.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":36,"op":24,"vc":0},
+        "CA": {"oc":12,"vp":10,"op":12,"vc":0},
+        "VI": {"oc":12,"vp":14,"op":12,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "369", "categoria": "Torroni",
+      "prodotto": "Torroncini sacchetto", "conf": 4, "pvp_corrente": 17.50, "pvp_precedente": 16.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":1,"op":4,"vc":0},
+        "CA": {"oc":4,"vp":7,"op":0,"vc":0},
+        "VI": {"oc":0,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "371", "categoria": "Frutta golosa",
+      "prodotto": "Manì", "conf": 30, "pvp_corrente": 2.50, "pvp_precedente": 2.00,
+      "quantita": {
+        "CR": {"oc":10,"vp":29,"op":60,"vc":0},
+        "CA": {"oc":30,"vp":19,"op":30,"vc":0},
+        "VI": {"oc":30,"vp":30,"op":30,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "575", "categoria": "Bevande calde",
+      "prodotto": "Selezione tè legno", "conf": 4, "pvp_corrente": 12.00, "pvp_precedente": 12.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":38,"op":56,"vc":0},
+        "CA": {"oc":8,"vp":7,"op":12,"vc":0},
+        "VI": {"oc":8,"vp":8,"op":16,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "940", "categoria": "Cioccolatini",
+      "prodotto": "Tartufi fondenti", "conf": 14, "pvp_corrente": 8.00, "pvp_precedente": 7.00,
+      "quantita": {
+        "CR": {"oc":22,"vp":31,"op":42,"vc":0},
+        "CA": {"oc":14,"vp":11,"op":14,"vc":0},
+        "VI": {"oc":14,"vp":10,"op":14,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "1056", "categoria": "Bevande calde",
+      "prodotto": "Pausa relax", "conf": 3, "pvp_corrente": 8.00, "pvp_precedente": 8.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":59,"op":54,"vc":0},
+        "CA": {"oc":15,"vp":18,"op":12,"vc":0},
+        "VI": {"oc":15,"vp":15,"op":18,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "1063", "categoria": null,
+      "prodotto": "Torrone morbido", "conf": 12, "pvp_corrente": 4.50, "pvp_precedente": 4.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":0,"op":0,"vc":0},
+        "CA": {"oc":0,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":0,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "1064", "categoria": "Torroni",
+      "prodotto": "Torrone morbido cioccolato", "conf": 12, "pvp_corrente": 4.50, "pvp_precedente": 4.00,
+      "quantita": {
+        "CR": {"oc":13,"vp":4,"op":12,"vc":0},
+        "CA": {"oc":0,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":0,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "1099", "categoria": null,
+      "prodotto": "Cofanetto latta tè", "conf": 4, "pvp_corrente": 19.00, "pvp_precedente": 18.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":0,"op":0,"vc":0},
+        "CA": {"oc":4,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":4,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "1216", "categoria": "Frutta golosa",
+      "prodotto": "Datteri bio", "conf": 18, "pvp_corrente": 6.50, "pvp_precedente": 6.00,
+      "quantita": {
+        "CR": {"oc":5,"vp":103,"op":90,"vc":0},
+        "CA": {"oc":36,"vp":11,"op":36,"vc":0},
+        "VI": {"oc":36,"vp":25,"op":36,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "1273", "categoria": "Cioccolatini",
+      "prodotto": "Nocciolatini dark", "conf": 6, "pvp_corrente": 13.50, "pvp_precedente": 12.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":24,"op":24,"vc":0},
+        "CA": {"oc":12,"vp":10,"op":6,"vc":0},
+        "VI": {"oc":12,"vp":9,"op":12,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "5072", "categoria": "Cioccolatini",
+      "prodotto": "Nocciolatini crisp", "conf": 6, "pvp_corrente": 13.50, "pvp_precedente": 12.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":18,"op":18,"vc":0},
+        "CA": {"oc":6,"vp":5,"op":6,"vc":0},
+        "VI": {"oc":6,"vp":11,"op":12,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "5074", "categoria": "Cioccolatini",
+      "prodotto": "Cremini bigusto", "conf": 6, "pvp_corrente": 13.50, "pvp_precedente": 12.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":28,"op":30,"vc":0},
+        "CA": {"oc":6,"vp":5,"op":6,"vc":0},
+        "VI": {"oc":12,"vp":10,"op":12,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "5075", "categoria": "Cioccolatini",
+      "prodotto": "Nocciolatini crisp 120g", "conf": 10, "pvp_corrente": 5.50, "pvp_precedente": 5.00,
+      "quantita": {
+        "CR": {"oc":10,"vp":74,"op":50,"vc":0},
+        "CA": {"oc":10,"vp":10,"op":20,"vc":0},
+        "VI": {"oc":10,"vp":5,"op":20,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "5081", "categoria": "Torroni",
+      "prodotto": "Torroncini mandorlati", "conf": 10, "pvp_corrente": 6.50, "pvp_precedente": 6.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":10,"op":20,"vc":0},
+        "CA": {"oc":10,"vp":9,"op":10,"vc":0},
+        "VI": {"oc":10,"vp":10,"op":10,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "5082", "categoria": "Torroni",
+      "prodotto": "Torroncini pistacchio", "conf": 10, "pvp_corrente": 6.50, "pvp_precedente": 6.00,
+      "quantita": {
+        "CR": {"oc":10,"vp":17,"op":20,"vc":0},
+        "CA": {"oc":10,"vp":9,"op":10,"vc":0},
+        "VI": {"oc":10,"vp":10,"op":10,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "5083", "categoria": "Cioccolatini",
+      "prodotto": "Nocciolatini selection", "conf": 6, "pvp_corrente": 20.00, "pvp_precedente": 20.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":6,"op":6,"vc":0},
+        "CA": {"oc":0,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":0,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "5954", "categoria": "Bevande calde",
+      "prodotto": "Selezione tè darjeeling", "conf": 4, "pvp_corrente": 25.00, "pvp_precedente": 24.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":4,"op":4,"vc":0},
+        "CA": {"oc":0,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":0,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "5955", "categoria": null,
+      "prodotto": "Calendario tisane", "conf": 6, "pvp_corrente": 15.00, "pvp_precedente": null,
+      "quantita": {
+        "CR": {"oc":0,"vp":0,"op":0,"vc":0},
+        "CA": {"oc":2,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":2,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "6679", "categoria": "Bevande calde",
+      "prodotto": "Tre origini del tè", "conf": 4, "pvp_corrente": 13.50, "pvp_precedente": 13.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":22,"op":12,"vc":0},
+        "CA": {"oc":4,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":4,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "6680", "categoria": null,
+      "prodotto": "Tisana caldo inverno", "conf": 6, "pvp_corrente": 8.00, "pvp_precedente": null,
+      "quantita": {
+        "CR": {"oc":0,"vp":0,"op":0,"vc":0},
+        "CA": {"oc":6,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":6,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "6681", "categoria": "Bevande calde",
+      "prodotto": "Tè Himalaya Chai", "conf": 6, "pvp_corrente": 7.50, "pvp_precedente": 7.50,
+      "quantita": {
+        "CR": {"oc":0,"vp":11,"op":12,"vc":0},
+        "CA": {"oc":0,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":0,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "6682", "categoria": "Bevande calde",
+      "prodotto": "Tè Himalaya Chai (infuso)", "conf": 6, "pvp_corrente": 7.50, "pvp_precedente": 7.50,
+      "quantita": {
+        "CR": {"oc":0,"vp":11,"op":12,"vc":0},
+        "CA": {"oc":0,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":0,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "6830", "categoria": "Cioccolatini",
+      "prodotto": "Tartufi gianduia", "conf": 12, "pvp_corrente": 8.50, "pvp_precedente": 7.50,
+      "quantita": {
+        "CR": {"oc":0,"vp":22,"op":48,"vc":0},
+        "CA": {"oc":12,"vp":11,"op":12,"vc":0},
+        "VI": {"oc":12,"vp":12,"op":12,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "6831", "categoria": "Cioccolatini",
+      "prodotto": "Tartufi bianchi", "conf": 12, "pvp_corrente": 8.50, "pvp_precedente": 7.50,
+      "quantita": {
+        "CR": {"oc":0,"vp":26,"op":24,"vc":0},
+        "CA": {"oc":0,"vp":8,"op":12,"vc":0},
+        "VI": {"oc":0,"vp":4,"op":12,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "6832", "categoria": "Cioccolatini",
+      "prodotto": "Tartufi pistacchio", "conf": 12, "pvp_corrente": 8.50, "pvp_precedente": 7.50,
+      "quantita": {
+        "CR": {"oc":0,"vp":21,"op":24,"vc":0},
+        "CA": {"oc":12,"vp":6,"op":12,"vc":0},
+        "VI": {"oc":12,"vp":12,"op":12,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "6833", "categoria": "Cioccolatini",
+      "prodotto": "Cofanetto tartufi", "conf": 9, "pvp_corrente": 13.00, "pvp_precedente": 12.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":18,"op":18,"vc":0},
+        "CA": {"oc":9,"vp":8,"op":9,"vc":0},
+        "VI": {"oc":9,"vp":10,"op":9,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "6840", "categoria": "Cioccolatini",
+      "prodotto": "Nocciolatini crisp mini", "conf": 21, "pvp_corrente": 4.00, "pvp_precedente": 3.50,
+      "quantita": {
+        "CR": {"oc":0,"vp":14,"op":42,"vc":0},
+        "CA": {"oc":42,"vp":70,"op":21,"vc":0},
+        "VI": {"oc":21,"vp":18,"op":21,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "6844", "categoria": "Torroni",
+      "prodotto": "Cofanetto torroni", "conf": 6, "pvp_corrente": 15.00, "pvp_precedente": 14.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":5,"op":6,"vc":0},
+        "CA": {"oc":6,"vp":1,"op":0,"vc":0},
+        "VI": {"oc":6,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "7614", "categoria": null,
+      "prodotto": "Cofanetto fusion", "conf": 8, "pvp_corrente": 14.50, "pvp_precedente": null,
+      "quantita": {
+        "CR": {"oc":5,"vp":0,"op":0,"vc":0},
+        "CA": {"oc":0,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":0,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "7616", "categoria": null,
+      "prodotto": "Stelline appendibili tè", "conf": 21, "pvp_corrente": 3.00, "pvp_precedente": 3.00,
+      "quantita": {
+        "CR": {"oc":60,"vp":0,"op":0,"vc":0},
+        "CA": {"oc":21,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":21,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "630", "categoria": "Legumi",
+      "prodotto": "Lenticchie essiccate", "conf": 12, "pvp_corrente": 4.00, "pvp_precedente": 4.00,
+      "quantita": {
+        "CR": {"oc":9,"vp":63,"op":84,"vc":0},
+        "CA": {"oc":24,"vp":14,"op":24,"vc":0},
+        "VI": {"oc":24,"vp":14,"op":24,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "845", "categoria": "Vini",
+      "prodotto": "Nero d'avola", "conf": 6, "pvp_corrente": 10.00, "pvp_precedente": 10.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":15,"op":24,"vc":0},
+        "CA": {"oc":0,"vp":4,"op":0,"vc":0},
+        "VI": {"oc":0,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "851", "categoria": "Vini",
+      "prodotto": "Quorum", "conf": 6, "pvp_corrente": 12.50, "pvp_precedente": 12.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":55,"op":36,"vc":0},
+        "CA": {"oc":6,"vp":12,"op":6,"vc":0},
+        "VI": {"oc":6,"vp":7,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "852", "categoria": "Vini",
+      "prodotto": "Moscato", "conf": 6, "pvp_corrente": 11.00, "pvp_precedente": 10.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":20,"op":12,"vc":0},
+        "CA": {"oc":6,"vp":6,"op":6,"vc":0},
+        "VI": {"oc":6,"vp":6,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "1061", "categoria": "Vini",
+      "prodotto": "Giato Bianco", "conf": 6, "pvp_corrente": 9.50, "pvp_precedente": 9.50,
+      "quantita": {
+        "CR": {"oc":6,"vp":25,"op":36,"vc":0},
+        "CA": {"oc":6,"vp":14,"op":12,"vc":0},
+        "VI": {"oc":6,"vp":4,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "1062", "categoria": "Vini",
+      "prodotto": "Giato Rosso", "conf": 6, "pvp_corrente": 9.50, "pvp_precedente": 9.50,
+      "quantita": {
+        "CR": {"oc":0,"vp":39,"op":36,"vc":0},
+        "CA": {"oc":6,"vp":13,"op":12,"vc":0},
+        "VI": {"oc":6,"vp":1,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "1153", "categoria": "Vini",
+      "prodotto": "Genesis", "conf": 6, "pvp_corrente": 12.50, "pvp_precedente": 12.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":11,"op":18,"vc":0},
+        "CA": {"oc":6,"vp":7,"op":6,"vc":0},
+        "VI": {"oc":6,"vp":0,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "1192", "categoria": "Vini",
+      "prodotto": "Sgajo", "conf": 6, "pvp_corrente": 10.00, "pvp_precedente": 12.00,
+      "quantita": {
+        "CR": {"oc":18,"vp":4,"op":12,"vc":0},
+        "CA": {"oc":0,"vp":12,"op":0,"vc":0},
+        "VI": {"oc":0,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "1258", "categoria": "Vini",
+      "prodotto": "Zibibò", "conf": 6, "pvp_corrente": 11.50, "pvp_precedente": 11.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":0,"op":0,"vc":0},
+        "CA": {"oc":6,"vp":4,"op":0,"vc":0},
+        "VI": {"oc":6,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "7901", "categoria": null,
+      "prodotto": "Cofanetto tris ticinensis", "conf": 2, "pvp_corrente": 19.00, "pvp_precedente": null,
+      "quantita": {
+        "CR": {"oc":0,"vp":0,"op":0,"vc":0},
+        "CA": {"oc":2,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":2,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ALTROMERCATO", "codice": "7902", "categoria": null,
+      "prodotto": "Musquè", "conf": 6, "pvp_corrente": 22.00, "pvp_precedente": null,
+      "quantita": {
+        "CR": {"oc":0,"vp":0,"op":0,"vc":0},
+        "CA": {"oc":0,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":0,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ARCOLAIO", "codice": "4261", "categoria": "Salse e condimenti",
+      "prodotto": "Gomasio", "conf": 6, "pvp_corrente": 5.00, "pvp_precedente": 4.50,
+      "quantita": {
+        "CR": {"oc":0,"vp":9,"op":18,"vc":0},
+        "CA": {"oc":6,"vp":6,"op":6,"vc":0},
+        "VI": {"oc":6,"vp":3,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ARCOLAIO", "codice": "4262", "categoria": "Salse e condimenti",
+      "prodotto": "Pesto alle mandorle", "conf": 6, "pvp_corrente": 4.50, "pvp_precedente": 4.50,
+      "quantita": {
+        "CR": {"oc":0,"vp":20,"op":18,"vc":0},
+        "CA": {"oc":6,"vp":0,"op":6,"vc":0},
+        "VI": {"oc":6,"vp":3,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ARCOLAIO", "codice": "4263", "categoria": "Salse e condimenti",
+      "prodotto": "Pesto finocchietto", "conf": 6, "pvp_corrente": 4.50, "pvp_precedente": 4.50,
+      "quantita": {
+        "CR": {"oc":0,"vp":16,"op":18,"vc":0},
+        "CA": {"oc":6,"vp":3,"op":6,"vc":0},
+        "VI": {"oc":6,"vp":3,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ARCOLAIO", "codice": "4249", "categoria": "Frutta golosa",
+      "prodotto": "Mandorle pralinate", "conf": 20, "pvp_corrente": 4.50, "pvp_precedente": 4.50,
+      "quantita": {
+        "CR": {"oc":0,"vp":20,"op":20,"vc":0},
+        "CA": {"oc":20,"vp":11,"op":20,"vc":0},
+        "VI": {"oc":20,"vp":20,"op":20,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ARCOLAIO", "codice": "4251", "categoria": "Frutta golosa",
+      "prodotto": "Arancia ricoperta", "conf": 20, "pvp_corrente": 5.50, "pvp_precedente": 4.50,
+      "quantita": {
+        "CR": {"oc":0,"vp":37,"op":60,"vc":0},
+        "CA": {"oc":20,"vp":11,"op":20,"vc":0},
+        "VI": {"oc":20,"vp":19,"op":20,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ARCOLAIO", "codice": "4252", "categoria": "Frutta golosa",
+      "prodotto": "Limone ricoperto", "conf": 20, "pvp_corrente": 5.50, "pvp_precedente": 4.50,
+      "quantita": {
+        "CR": {"oc":0,"vp":20,"op":20,"vc":0},
+        "CA": {"oc":0,"vp":9,"op":20,"vc":0},
+        "VI": {"oc":0,"vp":9,"op":20,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ARCOLAIO", "codice": "4253", "categoria": "Biscottini",
+      "prodotto": "Pasta mandorle", "conf": 6, "pvp_corrente": 6.00, "pvp_precedente": 6.00,
+      "quantita": {
+        "CR": {"oc":0,"vp":29,"op":30,"vc":0},
+        "CA": {"oc":6,"vp":5,"op":6,"vc":0},
+        "VI": {"oc":6,"vp":6,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "ARCOLAIO", "codice": "4257", "categoria": "Biscottini",
+      "prodotto": "Amaretti", "conf": 6, "pvp_corrente": 5.50, "pvp_precedente": 5.50,
+      "quantita": {
+        "CR": {"oc":0,"vp":18,"op":18,"vc":0},
+        "CA": {"oc":6,"vp":4,"op":6,"vc":0},
+        "VI": {"oc":6,"vp":6,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "LA EQUA", "codice": "HUBLA000640", "categoria": null,
+      "prodotto": "Scatola 4 Tavolette Cioccolato Modica", "conf": 4, "pvp_corrente": 14.00, "pvp_precedente": null,
+      "quantita": {
+        "CR": {"oc":0,"vp":0,"op":16,"vc":0},
+        "CA": {"oc":4,"vp":0,"op":4,"vc":0},
+        "VI": {"oc":4,"vp":0,"op":4,"vc":0}
+      }
+    },
+    {
+      "fornitore": "LA EQUA", "codice": "HUBLALIC001", "categoria": null,
+      "prodotto": "Liquore Cacao", "conf": 6, "pvp_corrente": 15.00, "pvp_precedente": null,
+      "quantita": {
+        "CR": {"oc":0,"vp":0,"op":6,"vc":0},
+        "CA": {"oc":0,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":0,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "LA EQUA", "codice": "HUBLALIC002", "categoria": null,
+      "prodotto": "Liquore Cacao e peperoncino", "conf": 6, "pvp_corrente": 15.00, "pvp_precedente": null,
+      "quantita": {
+        "CR": {"oc":0,"vp":0,"op":6,"vc":0},
+        "CA": {"oc":0,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":0,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "LA EQUA", "codice": "HUBLALIC003", "categoria": null,
+      "prodotto": "Liquore Cacao e Arancia", "conf": 6, "pvp_corrente": 15.00, "pvp_precedente": null,
+      "quantita": {
+        "CR": {"oc":0,"vp":0,"op":6,"vc":0},
+        "CA": {"oc":0,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":0,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "LA EQUA", "codice": "HUBLASFS001", "categoria": null,
+      "prodotto": "Crema nocciole", "conf": 6, "pvp_corrente": 8.00, "pvp_precedente": null,
+      "quantita": {
+        "CR": {"oc":0,"vp":0,"op":18,"vc":0},
+        "CA": {"oc":6,"vp":0,"op":6,"vc":0},
+        "VI": {"oc":6,"vp":0,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "LA EQUA", "codice": "HUBLASFS003", "categoria": null,
+      "prodotto": "Crema mandorla 100%", "conf": 6, "pvp_corrente": 8.00, "pvp_precedente": null,
+      "quantita": {
+        "CR": {"oc":0,"vp":0,"op":18,"vc":0},
+        "CA": {"oc":6,"vp":0,"op":6,"vc":0},
+        "VI": {"oc":6,"vp":0,"op":6,"vc":0}
+      }
+    },
+    {
+      "fornitore": "LA EQUA", "codice": "HUBLASFS004", "categoria": null,
+      "prodotto": "Crema mandorla", "conf": 6, "pvp_corrente": 8.00, "pvp_precedente": null,
+      "quantita": {
+        "CR": {"oc":0,"vp":0,"op":18,"vc":0},
+        "CA": {"oc":0,"vp":0,"op":0,"vc":0},
+        "VI": {"oc":0,"vp":0,"op":0,"vc":0}
+      }
+    },
+    {
+      "fornitore": "BANDA BISCOTTI", "codice": "4243", "categoria": "Biscottini",
+      "prodotto": "Baci di dama integr", "conf": 8, "pvp_corrente": 6.00, "pvp_precedente": 5.50,
+      "quantita": {
+        "CR": {"oc":0,"vp":32,"op":54,"vc":0},
+        "CA": {"oc":16,"vp":15,"op":18,"vc":0},
+        "VI": {"oc":16,"vp":13,"op":18,"vc":0}
+      }
+    },
+    {
+      "fornitore": "BANDA BISCOTTI", "codice": "4244", "categoria": "Biscottini",
+      "prodotto": "Baci di dama cacao", "conf": 8, "pvp_corrente": 6.00, "pvp_precedente": 5.50,
+      "quantita": {
+        "CR": {"oc":0,"vp":32,"op":54,"vc":0},
+        "CA": {"oc":16,"vp":9,"op":18,"vc":0},
+        "VI": {"oc":16,"vp":11,"op":18,"vc":0}
+      }
+    },
+    {
+      "fornitore": "BANDA BISCOTTI", "codice": "4245", "categoria": "Biscottini",
+      "prodotto": "Damotti", "conf": 8, "pvp_corrente": 6.00, "pvp_precedente": 5.50,
+      "quantita": {
+        "CR": {"oc":0,"vp":40,"op":42,"vc":0},
+        "CA": {"oc":16,"vp":9,"op":12,"vc":0},
+        "VI": {"oc":16,"vp":0,"op":12,"vc":0}
+      }
+    },
+    {
+      "fornitore": "BANDA BISCOTTI", "codice": "7942", "categoria": "Biscottini",
+      "prodotto": "Stelle arancia", "conf": 8, "pvp_corrente": 6.00, "pvp_precedente": null,
+      "quantita": {
+        "CR": {"oc":0,"vp":0,"op":42,"vc":0},
+        "CA": {"oc":16,"vp":0,"op":12,"vc":0},
+        "VI": {"oc":16,"vp":0,"op":12,"vc":0}
+      }
+    }
+  ]
+}
