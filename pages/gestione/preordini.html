@@ -17,13 +17,21 @@
             min-height: 52px;
         }
 
+        /* ── SAVE BADGE ── */
+        #save-badge {
+            position: fixed; top: 64px; right: 14px; z-index: 50;
+            padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+            font-family: 'Inter', sans-serif; pointer-events: none; display: none;
+        }
+        #save-badge.saving { display: block; background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+        #save-badge.saved  { display: block; background: #f0fdf4; color: #16A34A; border: 1px solid #bbf7d0; }
+        #save-badge.err    { display: block; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
         /* ── TABLE WRAPPER ── */
         .tabella-wrapper {
-            overflow-x: auto;
-            overflow-y: auto;
+            overflow-x: auto; overflow-y: auto;
             max-height: calc(100vh - 140px);
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 80px;
+            -webkit-overflow-scrolling: touch; padding-bottom: 80px;
         }
 
         /* ── TABLE ── */
@@ -31,18 +39,16 @@
         .tabella-preordini thead { position: sticky; top: 0; z-index: 15; }
         .tabella-preordini td { padding: 2px 3px; border: 1px solid #e2e8f0; vertical-align: middle; }
 
-        /* ── HEADER ROW 1: empori names & info cols ── */
+        /* ── HEADER ROW 1 ── */
         .th-emp {
-            padding: 5px 6px; text-align: center;
-            font-size: 12px; font-weight: 800; text-transform: uppercase;
-            letter-spacing: .06em; white-space: nowrap;
+            padding: 5px 6px; text-align: center; font-size: 12px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: .06em; white-space: nowrap;
             background: #1e293b; color: white; border: 1px solid #334155;
         }
         .th-info {
-            background: #f8fafc; color: #475569;
-            font-size: 9px; font-weight: 800; text-transform: uppercase;
-            letter-spacing: .04em; padding: 5px 6px; text-align: left;
-            border: 1px solid #e2e8f0;
+            background: #f8fafc; color: #475569; font-size: 9px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: .04em; padding: 5px 6px;
+            text-align: left; border: 1px solid #e2e8f0;
         }
         .th-tot {
             padding: 4px 5px; text-align: center; font-size: 9px; font-weight: 800;
@@ -53,7 +59,7 @@
         .th-tot-conf { background: #0f3d1e; color: #86efac; font-size: 8px; }
         .th-tot-vend { background: #1e293b; color: #64748b; }
 
-        /* ── HEADER ROW 2: anni ── */
+        /* ── HEADER ROW 2 ── */
         .th-anno {
             padding: 4px 5px; text-align: center; font-size: 9px; font-weight: 700;
             border: 1px solid #475569; white-space: nowrap;
@@ -61,7 +67,7 @@
         .th-anno-cor  { background: #334155; color: #e2e8f0; }
         .th-anno-prec { background: #475569; color: #94a3b8; }
 
-        /* ── HEADER ROW 3: sub-labels ── */
+        /* ── HEADER ROW 3 ── */
         .th-sub {
             padding: 3px 4px; text-align: center; font-size: 8px; font-weight: 800;
             text-transform: uppercase; letter-spacing: .04em; white-space: nowrap;
@@ -91,8 +97,7 @@
 
         /* ── SUBTOTAL ── */
         .tr-subtotal td {
-            background: #f1f5f9; font-size: 10px; font-weight: 700;
-            color: #475569; padding: 3px 6px;
+            background: #f1f5f9; font-size: 10px; font-weight: 700; color: #475569; padding: 3px 6px;
         }
 
         /* ── TFOOT ── */
@@ -100,15 +105,17 @@
             background: #1e293b; color: white; font-weight: 700; font-size: 12px; padding: 5px 8px;
         }
 
-        /* ── QUANTITY CELLS (readonly) ── */
-        .td-ro { background: #f8fafc; color: #94a3b8; text-align: center; font-size: 12px; font-family: 'DM Mono', monospace; min-width: 44px; }
-        .td-vend-up   { background: #f0fdf4; color: #16A34A; font-weight: 600; text-align: center; font-size: 12px; font-family: 'DM Mono', monospace; min-width: 44px; }
-        .td-vend-down { background: #fef2f2; color: #B5453A; font-weight: 600; text-align: center; font-size: 12px; font-family: 'DM Mono', monospace; min-width: 44px; }
-
-        /* ── ORDINE CORRENTE CELL ── */
-        .td-ord         { background: #fff;     text-align: center; min-width: 50px; }
-        .td-ord.has-val { background: #f0fdf4; }
-        .td-ord.inv-val { background: #fff7ed; }
+        /* ── QUANTITY TDs ── */
+        /* VEND cells — editable, gray bg */
+        .td-vend           { background: #f8fafc; text-align: center; min-width: 44px; }
+        /* ORD.C cell — white, principal */
+        .td-ord            { background: #fff;     text-align: center; min-width: 50px; }
+        .td-ord.has-val    { background: #f0fdf4; }
+        .td-ord.inv-val    { background: #fff7ed; }
+        /* ORD.P cell — gray default, same states as ORD.C */
+        .td-ord-prec       { background: #f8fafc; text-align: center; min-width: 50px; }
+        .td-ord-prec.has-val { background: #f0fdf4; }
+        .td-ord-prec.inv-val { background: #fff7ed; }
 
         /* ── TOTALS ── */
         .td-tot-ord  { background: #f0fdf4; color: #16A34A; font-weight: 700; min-width: 54px; text-align: right; font-family: 'DM Mono', monospace; font-size: 12px; }
@@ -116,20 +123,32 @@
         .td-tot-vend { background: #f8fafc; color: #94a3b8; min-width: 54px; text-align: right; font-family: 'DM Mono', monospace; font-size: 12px; }
         .td-del { width: 26px; text-align: center; }
 
-        /* ── INPUTS ── */
+        /* ── INPUTS (left info cols) ── */
         .inp-r {
             width: 100%; border: none; background: transparent;
-            font-family: 'Inter', sans-serif; font-size: 12px;
-            padding: 2px 3px; outline: none;
+            font-family: 'Inter', sans-serif; font-size: 12px; padding: 2px 3px; outline: none;
         }
         .inp-r:focus { background: #eff6ff; border-radius: 2px; }
-        .cella-ordine {
+
+        /* ── QUANTITY INPUTS (base) ── */
+        .cella-qty {
             width: 46px; border: none; background: transparent;
-            font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 600;
-            text-align: center; padding: 2px 3px; outline: none;
-            display: block; margin: 0 auto;
+            font-family: 'DM Mono', monospace; text-align: center;
+            padding: 2px 3px; outline: none; display: block; margin: 0 auto; cursor: text;
         }
-        .cella-ordine:focus { background: #eff6ff; border-radius: 2px; outline: 2px solid #16A34A; outline-offset: -1px; }
+        .cella-qty:focus { background: #eff6ff; border-radius: 2px; }
+
+        /* VEND input variant — gray text, blue focus */
+        .cella-vend { font-size: 12px; color: #64748b; }
+        .cella-vend:focus { outline: 2px solid #2563EB; outline-offset: -1px; }
+
+        /* ORD.C input variant — bold, green focus */
+        .cella-ord { font-size: 13px; font-weight: 600; color: #1e293b; }
+        .cella-ord:focus { outline: 2px solid #16A34A; outline-offset: -1px; }
+
+        /* ORD.P input variant — gray text, green focus */
+        .cella-ord-prec { font-size: 12px; color: #64748b; }
+        .cella-ord-prec:focus { outline: 2px solid #16A34A; outline-offset: -1px; }
 
         /* ── VALIDATION TOOLTIP ── */
         #qty-warn {
@@ -155,11 +174,6 @@
         .btn-tb.prim:hover { background: #9e3f3f; }
         .btn-tb:disabled { opacity: .38; cursor: not-allowed; pointer-events: none; }
 
-        .save-dot { font-size: 10px; color: #94a3b8; margin-left: 4px; min-width: 80px; }
-        .save-dot.saving { color: #f59e0b; }
-        .save-dot.saved  { color: #10b981; }
-        .save-dot.err    { color: #ef4444; }
-
         /* ── MODALS ── */
         .modal-ov {
             position: fixed; inset: 0; background: rgba(0,0,0,.45);
@@ -174,8 +188,7 @@
         .flabel { display: block; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px; }
         .finput {
             width: 100%; padding: 7px 10px; border: 1px solid #e2e8f0;
-            border-radius: 6px; font-size: 13px; font-family: 'Inter', sans-serif;
-            outline: none; background: white;
+            border-radius: 6px; font-size: 13px; font-family: 'Inter', sans-serif; outline: none; background: white;
         }
         .finput:focus { border-color: #B5453A; }
         .fgroup { margin-bottom: 11px; }
@@ -198,6 +211,9 @@
 </head>
 <body>
 
+<!-- ═══ SAVE BADGE ════════════════════════════════════════════════════ -->
+<div id="save-badge"></div>
+
 <!-- ═══ VALIDATION TOOLTIP ════════════════════════════════════════════ -->
 <div id="qty-warn" class="hidden" onclick="event.stopPropagation()">
     <div class="warn-msg" id="qty-warn-msg"></div>
@@ -213,7 +229,6 @@
         style="padding:5px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;font-weight:700;color:#374151;background:white;outline:none;max-width:230px;cursor:pointer">
         <option value="">— Seleziona campagna —</option>
     </select>
-    <span id="save-dot" class="save-dot"></span>
     <div style="flex:1;min-width:8px"></div>
     <button class="btn-tb prim" onclick="mostraNuovaCampagna()">+ Campagna</button>
     <button class="btn-tb" id="btn-importa" onclick="mostraImporta()" disabled>↓ Importa</button>
@@ -358,6 +373,14 @@ const saveTimers   = {};
 const insertLocks  = {};
 let pendingValidation = null;
 
+// field → td id prefix
+const FIELD_PREFIX = {
+    venduto_corrente:   'vc',
+    ordine_corrente:    'oc',
+    venduto_precedente: 'vp',
+    ordine_precedente:  'op',
+};
+
 // ── INIT ──────────────────────────────────────────────────────────────
 async function init() { await loadCampagne(); }
 
@@ -384,7 +407,7 @@ async function selezionaCampagna(id) {
         btns.forEach(b => document.getElementById(b).disabled = true);
         return;
     }
-    setSave('Caricamento…', 'saving');
+    setSave('💾 Caricamento…', 'saving');
     const [{ data: camp }, { data: emps }, { data: rigs }] = await Promise.all([
         DB.from('preordini_campagne').select('*').eq('id', id).single(),
         DB.from('preordini_empori').select('*').eq('campagna_id', id).order('ordine_visualizzazione'),
@@ -427,27 +450,24 @@ function renderTable() {
     const tbody = document.getElementById('tbody');
     const tfoot = document.getElementById('tfoot');
     const nEmp  = emporiAttivi.length;
-    // 5 left + 4×emp + 4 right (TOT_ORD, TOT_CONF, TOT_VEND, Del)
     const totalCols = 5 + nEmp * 4 + 4;
     const anno = campagnaCorrente?.anno || new Date().getFullYear();
 
-    // ── Header row 1: fixed (rowspan=3) + empori (colspan=4) + tot (rowspan=3) ──
+    // ── Header row 1 ──
     let h1 = '<tr>';
     h1 += '<th rowspan="3" class="th-info col-s0" style="text-align:left;width:70px;min-width:70px">Codice</th>';
     h1 += '<th rowspan="3" class="th-info col-s1" style="text-align:left;width:110px;min-width:110px">Categoria</th>';
     h1 += '<th rowspan="3" class="th-info col-s2" style="text-align:left;min-width:180px">Prodotto</th>';
     h1 += '<th rowspan="3" class="th-info" style="text-align:center;width:46px">Conf</th>';
     h1 += '<th rowspan="3" class="th-info" style="text-align:center;width:56px">PVP</th>';
-    emporiAttivi.forEach(e => {
-        h1 += '<th colspan="4" class="th-emp">' + esc(e.nome) + '</th>';
-    });
+    emporiAttivi.forEach(e => { h1 += '<th colspan="4" class="th-emp">' + esc(e.nome) + '</th>'; });
     h1 += '<th rowspan="3" class="th-tot th-tot-ord">TOT<br>ORD</th>';
     h1 += '<th rowspan="3" class="th-tot th-tot-conf">TOT<br>CONF</th>';
     h1 += '<th rowspan="3" class="th-tot th-tot-vend">TOT<br>VEND</th>';
     h1 += '<th rowspan="3" class="th-tot" style="min-width:26px;background:#1e293b"></th>';
     h1 += '</tr>';
 
-    // ── Header row 2: anni (anno cor | anno prec per emporio) ──
+    // ── Header row 2: anni ──
     let h2 = '<tr>';
     emporiAttivi.forEach(() => {
         h2 += '<th colspan="2" class="th-anno th-anno-cor">' + anno + '</th>';
@@ -455,7 +475,7 @@ function renderTable() {
     });
     h2 += '</tr>';
 
-    // ── Header row 3: sub-col labels ──
+    // ── Header row 3: sub-labels ──
     let h3 = '<tr>';
     emporiAttivi.forEach(() => {
         h3 += '<th class="th-sub th-sub-vend">VEND</th>';
@@ -494,39 +514,57 @@ function renderTable() {
             emporiAttivi.forEach((emp, ei) => {
                 const qt  = q[emp.codice] || {};
                 const vc  = parseFloat(qt.venduto_corrente)   || 0;
-                const ord = parseFloat(qt.ordine_corrente)    || 0;
+                const oc  = parseFloat(qt.ordine_corrente)    || 0;
                 const vp  = parseFloat(qt.venduto_precedente) || 0;
                 const op  = parseFloat(qt.ordine_precedente)  || 0;
-                rowOrd  += ord; rowVend += vp;
-                subEmpOrd[emp.codice]  += ord;
+                rowOrd  += oc; rowVend += vp;
+                subEmpOrd[emp.codice]  += oc;
                 subEmpVend[emp.codice] += vp;
-                const ec  = esc(emp.codice);
+                const ec = esc(emp.codice);
+                const rid = riga.id;
 
-                // VEND.C: color based on comparison with VEND.P
-                let vcCls = 'td-ro';
-                if (vc > 0 || vp > 0) {
-                    if      (vc > vp) vcCls = 'td-vend-up';
-                    else if (vc < vp) vcCls = 'td-vend-down';
-                }
+                // col indices: VC=ei*4+0, OC=ei*4+1, VP=ei*4+2, OP=ei*4+3
+                const colVC = ei * 4 + 0;
+                const colOC = ei * 4 + 1;
+                const colVP = ei * 4 + 2;
+                const colOP = ei * 4 + 3;
 
-                // ORD.C cell state
-                let ordCls = 'td-ord';
-                if (ord > 0) ordCls = (conf > 0 && ord % conf !== 0) ? 'td-ord inv-val' : 'td-ord has-val';
+                const focusAttrs = 'onfocus="this._prev=this.value;this.select()" onkeydown="onQtyKey(event,this)"';
 
-                // Anno corrente: VEND.C | ORD.C
-                empCells += '<td class="' + vcCls + '">' + (vc || '') + '</td>';
-                empCells += '<td class="' + ordCls + '" id="td-oc-' + riga.id + '-' + ec + '">' +
-                    '<input class="cella-ordine" type="number" step="1" min="0" ' +
-                    'value="' + (ord || '') + '" ' +
-                    'data-rid="' + riga.id + '" data-ei="' + ei + '" ' +
-                    'oninput="onOrd(\'' + riga.id + '\',\'' + ec + '\',this,' + conf + ')" ' +
-                    'onkeydown="onOrdKey(event,this)" onfocus="this.select()"></td>';
-                // Anno precedente: VEND.P | ORD.P
-                empCells += '<td class="td-ro">' + (vp || '') + '</td>';
-                empCells += '<td class="td-ro">' + (op || '') + '</td>';
+                // ORD cell class
+                const ocCls = oc > 0 ? ((conf > 0 && oc % conf !== 0) ? 'td-ord inv-val' : 'td-ord has-val') : 'td-ord';
+                const opCls = op > 0 ? ((conf > 0 && op % conf !== 0) ? 'td-ord-prec inv-val' : 'td-ord-prec has-val') : 'td-ord-prec';
+
+                // VEND.C (col 0)
+                empCells += '<td class="td-vend" id="td-vc-' + rid + '-' + ec + '">' +
+                    '<input class="cella-qty cella-vend" type="number" step="1" min="0" value="' + (vc || '') + '" ' +
+                    'data-rid="' + rid + '" data-col="' + colVC + '" ' +
+                    'oninput="onQty(\'' + rid + '\',\'' + ec + '\',\'venduto_corrente\',this,0)" ' +
+                    focusAttrs + '></td>';
+
+                // ORD.C (col 1)
+                empCells += '<td class="' + ocCls + '" id="td-oc-' + rid + '-' + ec + '">' +
+                    '<input class="cella-qty cella-ord" type="number" step="1" min="0" value="' + (oc || '') + '" ' +
+                    'data-rid="' + rid + '" data-col="' + colOC + '" ' +
+                    'oninput="onQty(\'' + rid + '\',\'' + ec + '\',\'ordine_corrente\',this,' + conf + ')" ' +
+                    focusAttrs + '></td>';
+
+                // VEND.P (col 2)
+                empCells += '<td class="td-vend" id="td-vp-' + rid + '-' + ec + '">' +
+                    '<input class="cella-qty cella-vend" type="number" step="1" min="0" value="' + (vp || '') + '" ' +
+                    'data-rid="' + rid + '" data-col="' + colVP + '" ' +
+                    'oninput="onQty(\'' + rid + '\',\'' + ec + '\',\'venduto_precedente\',this,0)" ' +
+                    focusAttrs + '></td>';
+
+                // ORD.P (col 3)
+                empCells += '<td class="' + opCls + '" id="td-op-' + rid + '-' + ec + '">' +
+                    '<input class="cella-qty cella-ord-prec" type="number" step="1" min="0" value="' + (op || '') + '" ' +
+                    'data-rid="' + rid + '" data-col="' + colOP + '" ' +
+                    'oninput="onQty(\'' + rid + '\',\'' + ec + '\',\'ordine_precedente\',this,' + conf + ')" ' +
+                    focusAttrs + '></td>';
             });
-            subOrd += rowOrd; subVend += rowVend;
 
+            subOrd += rowOrd; subVend += rowVend;
             const totConf = conf > 0 && rowOrd > 0 ? Math.ceil(rowOrd / conf) : '';
 
             html += '<tr class="product-row" data-fk="' + fk + '" data-riga-id="' + riga.id + '">';
@@ -609,10 +647,10 @@ function validaQuantita(valore, conf) {
     return { valido: false, inf, sup };
 }
 
-function showQtyWarn(input, val, conf, rigaId, empCode) {
+function showQtyWarn(input, val, conf, rigaId, empCode, field) {
     const res = validaQuantita(val, conf);
     if (res.valido) { hideQtyWarn(); return; }
-    pendingValidation = { rigaId, empCode, input, val, conf, inf: res.inf, sup: res.sup };
+    pendingValidation = { rigaId, empCode, input, val, conf, inf: res.inf, sup: res.sup, field };
     document.getElementById('qty-warn-msg').textContent =
         val + ' non è multiplo di ' + conf + '. Suggerito: ' + res.inf + ' o ' + res.sup;
     const warn = document.getElementById('qty-warn');
@@ -629,78 +667,119 @@ function hideQtyWarn() {
 
 function correggiQty() {
     if (!pendingValidation) return;
-    const { input, rigaId, empCode, conf, inf, sup, val } = pendingValidation;
+    const { input, rigaId, empCode, conf, inf, sup, val, field } = pendingValidation;
     const corrected = Math.abs(val - inf) <= Math.abs(val - sup) ? inf : sup;
     input.value = corrected;
     hideQtyWarn();
-    commitOrd(rigaId, empCode, corrected, input, conf);
+    commitQty(rigaId, empCode, field, corrected, input, conf);
 }
 
 function forzaQty() {
     if (!pendingValidation) return;
-    const { rigaId, empCode, val, input, conf } = pendingValidation;
+    const { rigaId, empCode, val, input, conf, field } = pendingValidation;
     hideQtyWarn();
-    commitOrd(rigaId, empCode, val, input, conf);
+    commitQty(rigaId, empCode, field, val, input, conf);
 }
 
-// ── ORDINE CORRENTE ───────────────────────────────────────────────────
-function onOrd(rigaId, empCode, input, conf) {
+// ── QUANTITY INPUT HANDLER ────────────────────────────────────────────
+// field: 'venduto_corrente' | 'ordine_corrente' | 'venduto_precedente' | 'ordine_precedente'
+// conf: 0 for VEND (no validation), actual conf for ORD
+function onQty(rigaId, empCode, field, input, conf) {
     hideQtyWarn();
     const val = parseFloat(input.value) || 0;
-    clearTimeout(saveTimers['warn-' + rigaId + '-' + empCode]);
-    if (val > 0 && conf > 0 && val % conf !== 0) {
-        saveTimers['warn-' + rigaId + '-' + empCode] = setTimeout(
-            () => showQtyWarn(input, val, conf, rigaId, empCode), 600);
+    clearTimeout(saveTimers['warn-' + rigaId + '-' + empCode + '-' + field]);
+    if (conf > 0 && val > 0 && val % conf !== 0) {
+        saveTimers['warn-' + rigaId + '-' + empCode + '-' + field] = setTimeout(
+            () => showQtyWarn(input, val, conf, rigaId, empCode, field), 600);
     } else {
-        commitOrd(rigaId, empCode, val, input, conf);
+        commitQty(rigaId, empCode, field, val, input, conf);
     }
 }
 
-function commitOrd(rigaId, empCode, val, input, conf) {
+function commitQty(rigaId, empCode, field, val, input, conf) {
     if (!quantitaMap[rigaId]) quantitaMap[rigaId] = {};
     if (!quantitaMap[rigaId][empCode]) quantitaMap[rigaId][empCode] = {
         venduto_precedente: 0, ordine_precedente: 0, venduto_corrente: 0, ordine_corrente: 0
     };
-    quantitaMap[rigaId][empCode].ordine_corrente = val;
+    quantitaMap[rigaId][empCode][field] = val;
 
-    const td = document.getElementById('td-oc-' + rigaId + '-' + empCode);
-    if (td) {
-        if (val > 0) td.className = (conf > 0 && val % conf !== 0) ? 'td-ord inv-val' : 'td-ord has-val';
-        else td.className = 'td-ord';
+    // Update td class for ORD cells
+    const prefix = FIELD_PREFIX[field];
+    const td = document.getElementById('td-' + prefix + '-' + rigaId + '-' + empCode);
+    if (td && (field === 'ordine_corrente' || field === 'ordine_precedente')) {
+        const base = field === 'ordine_corrente' ? 'td-ord' : 'td-ord-prec';
+        if (val > 0) td.className = (conf > 0 && val % conf !== 0) ? base + ' inv-val' : base + ' has-val';
+        else td.className = base;
     }
 
-    updateRowTotals(rigaId);
-    clearTimeout(saveTimers['ord-' + rigaId + '-' + empCode]);
-    setSave('salvataggio…', 'saving');
-    saveTimers['ord-' + rigaId + '-' + empCode] = setTimeout(() => saveQty(rigaId, empCode), 800);
+    // Update totals when OC or VP changes
+    if (field === 'ordine_corrente' || field === 'venduto_precedente') updateRowTotals(rigaId);
+
+    // Debounced save
+    clearTimeout(saveTimers['qty-' + rigaId + '-' + empCode]);
+    setSave('💾 Salvando…', 'saving');
+    saveTimers['qty-' + rigaId + '-' + empCode] = setTimeout(() => saveQty(rigaId, empCode), 800);
 }
 
-// ── KEYBOARD NAV (Excel-like) ─────────────────────────────────────────
-function onOrdKey(e, input) {
-    if (e.key === 'Escape') { hideQtyWarn(); input.blur(); return; }
-    if (e.key !== 'Tab' && e.key !== 'Enter') return;
-    e.preventDefault();
-    hideQtyWarn();
-    const rid  = input.dataset.rid;
-    const ei   = parseInt(input.dataset.ei);
-    const nEmp = emporiAttivi.length;
-    if (e.key === 'Tab') {
-        if (e.shiftKey) navigateCell(rid, ei - 1 >= 0 ? ei - 1 : nEmp - 1, ei - 1 >= 0 ? 0 : -1);
-        else            navigateCell(rid, ei + 1 < nEmp ? ei + 1 : 0,       ei + 1 < nEmp ? 0 :  1);
-    } else {
-        navigateCell(rid, ei, 1);
+// ── KEYBOARD NAVIGATION (Excel-like) ─────────────────────────────────
+function onQtyKey(e, input) {
+    const key = e.key;
+
+    if (key === 'Escape') {
+        input.value = input._prev ?? input.value;
+        hideQtyWarn();
+        input.blur();
+        return;
+    }
+
+    const rid   = input.dataset.rid;
+    const col   = parseInt(input.dataset.col);
+    const nCols = emporiAttivi.length * 4;
+
+    if (key === 'Tab') {
+        e.preventDefault();
+        hideQtyWarn();
+        if (e.shiftKey) {
+            if (col > 0) navigateCell(rid, col - 1, 0);
+            else         navigateCell(rid, nCols - 1, -1);
+        } else {
+            if (col < nCols - 1) navigateCell(rid, col + 1, 0);
+            else                  navigateCell(rid, 0, 1);
+        }
+    } else if (key === 'Enter') {
+        e.preventDefault();
+        hideQtyWarn();
+        navigateCell(rid, col, 1);
+    } else if (key === 'ArrowDown') {
+        e.preventDefault();
+        hideQtyWarn();
+        navigateCell(rid, col, 1);
+    } else if (key === 'ArrowUp') {
+        e.preventDefault();
+        hideQtyWarn();
+        navigateCell(rid, col, -1);
+    } else if (key === 'ArrowRight') {
+        if (input.selectionStart === input.value.length && col < nCols - 1) {
+            e.preventDefault();
+            navigateCell(rid, col + 1, 0);
+        }
+    } else if (key === 'ArrowLeft') {
+        if (input.selectionStart === 0 && col > 0) {
+            e.preventDefault();
+            navigateCell(rid, col - 1, 0);
+        }
     }
 }
 
-function navigateCell(currentRid, targetEi, rowDelta) {
+function navigateCell(currentRid, targetCol, rowDelta) {
     let targetRid = currentRid;
     if (rowDelta !== 0) {
-        const idx = righe.findIndex(r => r.id === currentRid);
+        const idx  = righe.findIndex(r => r.id === currentRid);
         const next = idx + rowDelta;
         if (next < 0 || next >= righe.length) return;
         targetRid = righe[next].id;
     }
-    const t = document.querySelector('[data-rid="' + targetRid + '"][data-ei="' + targetEi + '"]');
+    const t = document.querySelector('[data-rid="' + targetRid + '"][data-col="' + targetCol + '"]');
     if (t) { t.focus(); t.select(); }
 }
 
@@ -723,6 +802,7 @@ function updateRowTotals(rigaId) {
     if (eV) eV.textContent = totVend || '';
 }
 
+// ── SAVE QUANTITY ─────────────────────────────────────────────────────
 async function saveQty(rigaId, empCode) {
     const key = rigaId + '-' + empCode;
     if (insertLocks[key]) return;
@@ -731,23 +811,26 @@ async function saveQty(rigaId, empCode) {
     let error;
     if (q.id) {
         ({ error } = await DB.from('preordini_quantita').update({
-            ordine_corrente: q.ordine_corrente || 0,
+            venduto_corrente:   q.venduto_corrente   || 0,
+            ordine_corrente:    q.ordine_corrente    || 0,
+            venduto_precedente: q.venduto_precedente || 0,
+            ordine_precedente:  q.ordine_precedente  || 0,
         }).eq('id', q.id));
     } else {
         insertLocks[key] = true;
         const { data, error: e } = await DB.from('preordini_quantita').insert({
             riga_id: rigaId, emporio_codice: empCode,
-            venduto_precedente: q.venduto_precedente || 0,
-            ordine_precedente:  q.ordine_precedente  || 0,
             venduto_corrente:   q.venduto_corrente   || 0,
             ordine_corrente:    q.ordine_corrente    || 0,
+            venduto_precedente: q.venduto_precedente || 0,
+            ordine_precedente:  q.ordine_precedente  || 0,
         }).select().single();
         insertLocks[key] = false;
         error = e;
         if (data) quantitaMap[rigaId][empCode].id = data.id;
     }
-    if (error) setSave('errore!', 'err');
-    else { setSave('salvato ✓', 'saved'); setTimeout(clearSave, 2000); }
+    if (error) setSave('✗ Errore', 'err');
+    else { setSave('✓ Salvato', 'saved'); setTimeout(clearSave, 2000); }
 }
 
 // ── RIGA FIELD CHANGE ────────────────────────────────────────────────
@@ -757,7 +840,7 @@ function onRF(rigaId, field, value) {
     riga[field] = value;
     if (field === 'conf') updateRowTotals(rigaId);
     clearTimeout(saveTimers['riga-' + rigaId]);
-    setSave('salvataggio…', 'saving');
+    setSave('💾 Salvando…', 'saving');
     saveTimers['riga-' + rigaId] = setTimeout(() => saveRiga(rigaId), 800);
 }
 
@@ -765,15 +848,12 @@ async function saveRiga(rigaId) {
     const riga = righe.find(r => r.id === rigaId);
     if (!riga) return;
     const { error } = await DB.from('preordini_righe').update({
-        fornitore: riga.fornitore || null,
-        codice: riga.codice || null,
-        categoria: riga.categoria || null,
-        prodotto: riga.prodotto,
-        conf: riga.conf || null,
-        pvp_corrente: riga.pvp_corrente || null,
+        fornitore: riga.fornitore || null, codice: riga.codice || null,
+        categoria: riga.categoria || null, prodotto: riga.prodotto,
+        conf: riga.conf || null, pvp_corrente: riga.pvp_corrente || null,
     }).eq('id', rigaId);
-    if (error) setSave('errore!', 'err');
-    else { setSave('salvato ✓', 'saved'); setTimeout(clearSave, 2000); }
+    if (error) setSave('✗ Errore', 'err');
+    else { setSave('✓ Salvato', 'saved'); setTimeout(clearSave, 2000); }
 }
 
 async function eliminaRiga(rigaId) {
@@ -837,12 +917,8 @@ function mostraAggiungiProdotto() {
     const forniList = [...new Set(righe.map(r => r.fornitore).filter(Boolean))].sort();
     const sel = document.getElementById('mp-forn-sel');
     sel.innerHTML = '<option value="">— Seleziona fornitore —</option>';
-    forniList.forEach(f => {
-        const o = document.createElement('option');
-        o.value = f; o.textContent = f; sel.appendChild(o);
-    });
-    const o = document.createElement('option');
-    o.value = '__nuovo__'; o.textContent = '+ Nuovo fornitore…'; sel.appendChild(o);
+    forniList.forEach(f => { const o = document.createElement('option'); o.value = f; o.textContent = f; sel.appendChild(o); });
+    const o = document.createElement('option'); o.value = '__nuovo__'; o.textContent = '+ Nuovo fornitore…'; sel.appendChild(o);
     document.getElementById('mp-forn-new').style.display = 'none';
     document.getElementById('mp-forn-new').value = '';
     ['mp-cat','mp-cod','mp-prod','mp-conf','mp-pvp'].forEach(id => document.getElementById(id).value = '');
@@ -859,14 +935,11 @@ async function salvaAggiungiProdotto() {
     const prodotto = document.getElementById('mp-prod').value.trim();
     if (!prodotto) { alert('Il campo Prodotto è obbligatorio.'); return; }
     const selVal    = document.getElementById('mp-forn-sel').value;
-    const fornitore = selVal === '__nuovo__'
-        ? document.getElementById('mp-forn-new').value.trim()
-        : selVal;
+    const fornitore = selVal === '__nuovo__' ? document.getElementById('mp-forn-new').value.trim() : selVal;
     if (!fornitore) { alert('Seleziona o inserisci il fornitore.'); return; }
     const maxOrd = righe.length > 0 ? Math.max(...righe.map(r => r.ordine_riga || 0)) + 1 : 0;
     const record = {
-        campagna_id: campagnaCorrente.id,
-        fornitore,
+        campagna_id: campagnaCorrente.id, fornitore,
         codice: document.getElementById('mp-cod').value.trim() || null,
         categoria: document.getElementById('mp-cat').value.trim() || null,
         prodotto,
@@ -905,11 +978,9 @@ async function eseguiImporta() {
     const destCodici = new Set(emporiAttivi.map(e => e.codice));
     const maxOrd = righe.length > 0 ? Math.max(...righe.map(r => r.ordine_riga || 0)) + 1 : 0;
     const nuoveRighe = srcRighe.map((r, i) => ({
-        campagna_id: campagnaCorrente.id,
-        fornitore: r.fornitore, codice: r.codice, categoria: r.categoria,
-        prodotto: r.prodotto, conf: r.conf,
-        pvp_corrente: r.pvp_corrente, pvp_precedente: r.pvp_precedente,
-        ordine_riga: maxOrd + i,
+        campagna_id: campagnaCorrente.id, fornitore: r.fornitore, codice: r.codice,
+        categoria: r.categoria, prodotto: r.prodotto, conf: r.conf,
+        pvp_corrente: r.pvp_corrente, pvp_precedente: r.pvp_precedente, ordine_riga: maxOrd + i,
     }));
     const { data: inserted, error: e2 } = await DB.from('preordini_righe').insert(nuoveRighe).select();
     if (e2) { alert('Errore righe: ' + e2.message); return; }
@@ -918,8 +989,7 @@ async function eseguiImporta() {
     const qtysToInsert = (srcQtys || [])
         .filter(q => destCodici.has(q.emporio_codice) && idMap[q.riga_id])
         .map(q => ({
-            riga_id: idMap[q.riga_id],
-            emporio_codice: q.emporio_codice,
+            riga_id: idMap[q.riga_id], emporio_codice: q.emporio_codice,
             venduto_precedente: parseFloat(q.ordine_corrente) || 0,
             ordine_precedente: 0, venduto_corrente: 0, ordine_corrente: 0,
         }));
@@ -961,9 +1031,7 @@ function renderRiepilogo() {
         html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#64748b">' + (tV || '—') + '</td>';
         html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#16A34A;font-weight:700">' + (tO || '—') + '</td>';
         html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:' + dCol + ';font-weight:600">' + (delta !== null ? delta + '%' : '—') + '</td>';
-        emporiAttivi.forEach(emp => {
-            html += '<td style="text-align:right;font-family:\'DM Mono\',monospace">' + (empO[emp.codice] || '') + '</td>';
-        });
+        emporiAttivi.forEach(emp => { html += '<td style="text-align:right;font-family:\'DM Mono\',monospace">' + (empO[emp.codice] || '') + '</td>'; });
         html += '</tr>';
     });
     const gDelta = gV > 0 ? ((gO - gV) / gV * 100).toFixed(1) : null;
@@ -997,11 +1065,11 @@ function exportCSV() {
         emporiAttivi.forEach(emp => {
             const qt  = q[emp.codice] || {};
             const vc  = parseFloat(qt.venduto_corrente)   || 0;
-            const ord = parseFloat(qt.ordine_corrente)    || 0;
+            const oc  = parseFloat(qt.ordine_corrente)    || 0;
             const vp  = parseFloat(qt.venduto_precedente) || 0;
             const op  = parseFloat(qt.ordine_precedente)  || 0;
-            totOrd += ord; totVend += vp;
-            empData.push(vc, ord, vp, op);
+            totOrd += oc; totVend += vp;
+            empData.push(vc, oc, vp, op);
         });
         const totConf = conf > 0 && totOrd > 0 ? Math.ceil(totOrd / conf) : '';
         rows.push([
@@ -1020,11 +1088,20 @@ function exportCSV() {
 function csvQ(s) { return '"' + String(s || '').replace(/"/g, '""') + '"'; }
 function esc(s)  { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function chiudi(id) { document.getElementById(id).classList.add('hidden'); }
+
+let _saveClearTimer = null;
 function setSave(msg, type) {
-    const el = document.getElementById('save-dot');
-    el.textContent = msg; el.className = 'save-dot ' + (type || '');
+    const el = document.getElementById('save-badge');
+    el.textContent = msg; el.className = type;
+    clearTimeout(_saveClearTimer);
 }
-function clearSave() { setSave(''); }
+function clearSave() {
+    _saveClearTimer = setTimeout(() => {
+        const el = document.getElementById('save-badge');
+        el.className = ''; el.textContent = '';
+    }, 100);
+}
+
 function aggiornaDatalists() {
     const catList = [...new Set(righe.map(r => r.categoria).filter(Boolean))];
     const dl = document.getElementById('dl-cat');
