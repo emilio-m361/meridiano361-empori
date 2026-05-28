@@ -312,6 +312,62 @@
             accent-color: #B5453A;
         }
 
+        /* ── FILTRI RIGA ── */
+        .filtri-riga {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            flex-wrap: wrap;
+        }
+        .filtro-item {
+            flex: 1;
+            min-width: 140px;
+            max-width: 240px;
+        }
+        .filtro-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #1e293b;
+            background: #f8fafc;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+        .filtro-input:focus {
+            border-color: #B5453A;
+            background: #fff;
+        }
+        .btn-reset-filtri {
+            padding: 8px 14px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #94a3b8;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: all .15s;
+        }
+        .btn-reset-filtri:hover {
+            background: #B5453A;
+            color: #fff;
+            border-color: #B5453A;
+        }
+        @media (max-width: 768px) {
+            .filtri-riga { gap: 8px; padding: 8px 12px; }
+            .filtro-item { min-width: 100%; max-width: 100%; }
+            .btn-reset-filtri { width: 100%; }
+        }
+
         .ordine-azioni-icone { display:flex; flex-direction:row; gap:8px; }
         .btn-azione { flex:1; min-height:44px; min-width:44px; border-radius:8px; border:none; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition: opacity .15s; }
         .btn-azione:hover { opacity: .8; }
@@ -380,47 +436,35 @@
 
     <main class="max-w-[1600px] mx-auto p-6">
         
-        <!-- FILTERS AND SEARCH -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
-            <div class="flex flex-wrap gap-4 items-end justify-between">
-                <!-- Filters -->
-                <div class="flex flex-wrap gap-2">
-                    <button class="filter-btn active" data-filter="tutti">Tutti</button>
-                    <button class="filter-btn" data-filter="da_ordinare">Merce da ordinare</button>
-                    <button class="filter-btn" data-filter="merce_ordinata">Merce ordinata</button>
-                    <button class="filter-btn" data-filter="da_avvisare">Merce pronta → cliente da avvisare</button>
-                    <button class="filter-btn" data-filter="avvisati">Merce pronta: cliente avvisato</button>
-                </div>
-                
-                <!-- Search and Date Filter -->
-                <div class="flex gap-3 items-end">
-                    <div class="relative">
-                        <i class="fas fa-search absolute left-4 top-4 text-slate-400"></i>
-                        <input type="text" id="search-input" class="search-input" placeholder="Cerca numero ordine...">
-                    </div>
-                    <div class="date-filter-wrapper">
-                        <label class="date-filter-label">Filtra per data</label>
-                        <input type="date" id="filter-date" class="date-input">
-                    </div>
-                </div>
+        <!-- TAB FILTRI STATO -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-2 p-4">
+            <div class="flex flex-wrap gap-2">
+                <button class="filter-btn active" data-filter="tutti">Tutti</button>
+                <button class="filter-btn" data-filter="da_ordinare">Merce da ordinare</button>
+                <button class="filter-btn" data-filter="merce_ordinata">Merce ordinata</button>
+                <button class="filter-btn" data-filter="da_avvisare">Merce pronta → cliente da avvisare</button>
+                <button class="filter-btn" data-filter="avvisati">Merce pronta: cliente avvisato</button>
             </div>
-            <!-- Second row: client name + emporio filters -->
-            <div class="flex flex-wrap gap-3 items-end mt-3 pt-3 border-t border-slate-100">
-                <div class="date-filter-wrapper">
-                    <label class="date-filter-label">Cliente</label>
-                    <input type="text" id="filter-cliente" class="date-input" style="min-width:200px" placeholder="Cerca per nome cliente...">
-                </div>
-                <div class="date-filter-wrapper">
-                    <label class="date-filter-label">Emporio</label>
-                    <select id="filter-emporio" class="date-input" style="min-width:160px">
-                        <option value="">Tutti gli empori</option>
-                        <option value="Casalmaggiore">Casalmaggiore</option>
-                        <option value="Cremona">Cremona</option>
-                        <option value="Reggio Emilia">Reggio Emilia</option>
-                        <option value="Viadana">Viadana</option>
-                    </select>
-                </div>
+        </div>
+
+        <!-- FILTRI RIGA -->
+        <div class="filtri-riga mb-6">
+            <div class="filtro-item">
+                <input type="text" id="filtro-cliente" placeholder="Cerca cliente..." oninput="applicaFiltri()" class="filtro-input">
             </div>
+            <div class="filtro-item">
+                <select id="filtro-emporio" onchange="applicaFiltri()" class="filtro-input">
+                    <option value="">Tutti gli empori</option>
+                    <option value="Cremona">Cremona</option>
+                    <option value="Casalmaggiore">Casalmaggiore</option>
+                    <option value="Reggio Emilia">Reggio Emilia</option>
+                    <option value="Viadana">Viadana</option>
+                </select>
+            </div>
+            <div class="filtro-item">
+                <input type="date" id="filtro-data" onchange="applicaFiltri()" class="filtro-input">
+            </div>
+            <button class="btn-reset-filtri" onclick="resetFiltri()">× Reset</button>
         </div>
 
         <!-- ORDERS LIST -->
@@ -946,14 +990,7 @@
                 });
             }
 
-            const searchTerm = (document.getElementById('search-input')?.value || '').toLowerCase();
-            if (searchTerm) {
-                filtered = filtered.filter(order =>
-                    (order.numero_ordine || '').toLowerCase().includes(searchTerm)
-                );
-            }
-
-            const filterCliente = (document.getElementById('filter-cliente')?.value || '').toLowerCase().trim();
+            const filterCliente = (document.getElementById('filtro-cliente')?.value || '').toLowerCase().trim();
             if (filterCliente) {
                 filtered = filtered.filter(order => {
                     const nome = `${order.cliente_nome || ''} ${order.cliente_cognome || ''}`.toLowerCase();
@@ -961,12 +998,12 @@
                 });
             }
 
-            const filterEmporio = document.getElementById('filter-emporio')?.value || '';
+            const filterEmporio = document.getElementById('filtro-emporio')?.value || '';
             if (filterEmporio) {
                 filtered = filtered.filter(order => (order.emporio || order.citta || '') === filterEmporio);
             }
 
-            const filterDate = document.getElementById('filter-date')?.value;
+            const filterDate = document.getElementById('filtro-data')?.value;
             if (filterDate) {
                 filtered = filtered.filter(order => {
                     const orderDate = new Date(order.data_creazione).toISOString().split('T')[0];
@@ -977,16 +1014,19 @@
             renderOrders(filtered);
         }
 
+        function applicaFiltri() { applyCurrentFilter(); }
+
+        function resetFiltri() {
+            document.getElementById('filtro-cliente').value = '';
+            document.getElementById('filtro-emporio').value = '';
+            document.getElementById('filtro-data').value = '';
+            applyCurrentFilter();
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.addEventListener('click', () => filterOrders(btn.getAttribute('data-filter')));
             });
-
-            document.getElementById('search-input').addEventListener('input', applyCurrentFilter);
-            document.getElementById('filter-date').addEventListener('change', applyCurrentFilter);
-            document.getElementById('filter-cliente').addEventListener('input', applyCurrentFilter);
-            document.getElementById('filter-emporio').addEventListener('change', applyCurrentFilter);
-
             loadOrders();
         });
     </script>
