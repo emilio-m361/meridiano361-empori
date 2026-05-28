@@ -251,10 +251,6 @@
             </div>
         </div>
         <div class="fgroup">
-            <label class="flabel">Note</label>
-            <textarea id="mc-note" class="finput" rows="2" placeholder="Eventuali note..."></textarea>
-        </div>
-        <div class="fgroup">
             <label class="flabel">Empori partecipanti</label>
             <div id="mc-empori-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
             <button type="button" class="btn-tb" onclick="addEmpRow()" style="font-size:11px;padding:4px 10px">+ Emporio</button>
@@ -643,7 +639,6 @@ function mostraNuovaCampagna() {
     document.getElementById('mc-nome').value = '';
     document.getElementById('mc-anno').value = new Date().getFullYear() + 1;
     document.getElementById('mc-stagione').value = '';
-    document.getElementById('mc-note').value = '';
     const list = document.getElementById('mc-empori-list');
     list.innerHTML = '';
     addEmpRow(); addEmpRow();
@@ -654,8 +649,7 @@ function addEmpRow() {
     const list = document.getElementById('mc-empori-list');
     const d = document.createElement('div');
     d.style.cssText = 'display:flex;gap:6px;align-items:center';
-    d.innerHTML = '<input type="text" placeholder="Codice (es. E01)" class="finput" style="width:110px" data-r="cod">' +
-        '<input type="text" placeholder="Nome emporio" class="finput" style="flex:1" data-r="nome">' +
+    d.innerHTML = '<input type="text" placeholder="Nome emporio (es. Cremona)" class="finput" style="flex:1" data-r="nome">' +
         '<button type="button" onclick="this.parentElement.remove()" ' +
         'style="color:#ef4444;background:none;border:none;cursor:pointer;font-size:18px;line-height:1;padding:0 4px">×</button>';
     list.appendChild(d);
@@ -665,22 +659,20 @@ async function creaCampagna() {
     const nome    = document.getElementById('mc-nome').value.trim();
     const anno    = parseInt(document.getElementById('mc-anno').value);
     const stagione = document.getElementById('mc-stagione').value.trim();
-    const note    = document.getElementById('mc-note').value.trim();
     if (!nome || !anno) { alert('Nome e Anno sono obbligatori.'); return; }
 
     const empori = [];
-    let valid = true;
     document.querySelectorAll('#mc-empori-list > div').forEach((row, i) => {
-        const codice   = row.querySelector('[data-r="cod"]').value.trim();
-        const nomeEmp  = row.querySelector('[data-r="nome"]').value.trim();
-        if (codice && nomeEmp) empori.push({ codice, nome: nomeEmp, ordine_visualizzazione: i });
-        else if (codice || nomeEmp) valid = false;
+        const nomeEmp = row.querySelector('[data-r="nome"]').value.trim();
+        if (nomeEmp) {
+            const codice = nomeEmp.toUpperCase().replace(/\s+/g, '_').slice(0, 20);
+            empori.push({ codice, nome: nomeEmp, ordine_visualizzazione: i });
+        }
     });
-    if (!valid) { alert('Completa tutte le righe emporio (codice e nome).'); return; }
     if (empori.length === 0) { alert('Aggiungi almeno un emporio.'); return; }
 
     const { data: camp, error: e1 } = await DB.from('preordini_campagne')
-        .insert({ nome, anno, stagione: stagione || null, note: note || null }).select().single();
+        .insert({ nome, anno, stagione: stagione || null }).select().single();
     if (e1) { alert('Errore: ' + e1.message); return; }
 
     const { error: e2 } = await DB.from('preordini_empori')
