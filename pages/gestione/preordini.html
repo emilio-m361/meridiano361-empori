@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title>Preordini</title>
+    <link rel="stylesheet" href="../../assets/style/nav-style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; }
+
+        .toolbar {
+            position: sticky;
+            top: 56px;
+            z-index: 20;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,.04);
+            min-height: 52px;
+        }
+
+        .pre-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .pre-table thead { position: sticky; top: 110px; z-index: 15; }
+        .pre-table th {
+            padding: 5px 6px;
+            text-align: center;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            white-space: nowrap;
+            color: #475569;
+        }
+        .pre-table td {
+            padding: 2px 3px;
+            border: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+        .tr-fornitore td {
+            background: #1e293b;
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            padding: 5px 10px;
+        }
+        .tr-subtotal td {
+            background: #f1f5f9;
+            font-size: 10px;
+            font-weight: 600;
+            color: #64748b;
+            padding: 3px 6px;
+        }
+        .pre-table tfoot td {
+            background: #1e293b;
+            color: white;
+            font-weight: 700;
+            font-size: 12px;
+            padding: 5px 8px;
+        }
+        .td-vend { background: #f8fafc; min-width: 48px; text-align: right; }
+        .td-ord { min-width: 48px; }
+        .td-ord.has-value { background: #f0fdf4; }
+        .td-ord.warn-value { background: #fefce8; }
+        .td-tot { min-width: 56px; text-align: right; font-weight: 600; font-family: 'DM Mono', monospace; font-size: 11px; }
+        .td-del { width: 26px; text-align: center; }
+
+        .inp-riga {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            padding: 2px 3px;
+            outline: none;
+        }
+        .inp-riga:focus { background: #eff6ff; border-radius: 2px; }
+        .inp-qty {
+            width: 44px;
+            border: none;
+            background: transparent;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            text-align: right;
+            padding: 2px 4px;
+            outline: none;
+            display: block;
+            margin-left: auto;
+        }
+        .inp-qty:focus { background: #eff6ff; border-radius: 2px; }
+        .inp-vend {
+            width: 44px;
+            border: none;
+            background: transparent;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            text-align: right;
+            padding: 2px 4px;
+            color: #94a3b8;
+            display: block;
+            margin-left: auto;
+        }
+
+        .btn-tb {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 11px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #374151;
+            white-space: nowrap;
+            transition: all .12s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-tb:hover { background: #f8fafc; border-color: #cbd5e1; }
+        .btn-tb.prim { background: #B5453A; color: white; border-color: #B5453A; }
+        .btn-tb.prim:hover { background: #9e3f3f; }
+        .btn-tb:disabled { opacity: .38; cursor: not-allowed; pointer-events: none; }
+
+        .save-dot {
+            font-size: 10px;
+            color: #94a3b8;
+            margin-left: 4px;
+            min-width: 80px;
+        }
+        .save-dot.saving { color: #f59e0b; }
+        .save-dot.saved { color: #10b981; }
+        .save-dot.err { color: #ef4444; }
+
+        .modal-ov {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.45);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-box {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            width: 100%;
+            max-width: 540px;
+            max-height: 82vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,.3);
+        }
+        .modal-title { font-size: 15px; font-weight: 800; color: #1e293b; margin-bottom: 16px; }
+        .flabel { display: block; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px; }
+        .finput {
+            width: 100%;
+            padding: 7px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            background: white;
+        }
+        .finput:focus { border-color: #B5453A; }
+        .fgroup { margin-bottom: 11px; }
+
+        .summary-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .summary-table th { background: #1e293b; color: #94a3b8; padding: 6px 10px; font-size: 9px; font-weight: 800; text-transform: uppercase; text-align: left; letter-spacing: .05em; }
+        .summary-table td { border-bottom: 1px solid #f1f5f9; padding: 5px 10px; }
+        .summary-table tr:hover td { background: #f8fafc; }
+
+        .hidden { display: none !important; }
+
+        @media print {
+            .toolbar, #m361-header, #m361-nav { display: none !important; }
+            body { padding: 0 !important; }
+            .pre-table thead { position: static; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══ TOOLBAR ══════════════════════════════════════════════════════ -->
+<div class="toolbar">
+    <select id="sel-campagna" onchange="selezionaCampagna(this.value)"
+        style="padding:5px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;font-weight:700;color:#374151;background:white;outline:none;max-width:230px;cursor:pointer">
+        <option value="">— Seleziona campagna —</option>
+    </select>
+    <span id="save-dot" class="save-dot"></span>
+    <div style="flex:1;min-width:8px"></div>
+    <button class="btn-tb prim" onclick="mostraNuovaCampagna()">+ Campagna</button>
+    <button class="btn-tb" id="btn-importa" onclick="mostraImporta()" disabled>↓ Importa</button>
+    <button class="btn-tb" id="btn-add-prod" onclick="mostraAggiungiProdotto()" disabled>+ Prodotto</button>
+    <button class="btn-tb" id="btn-riepilogo" onclick="toggleRiepilogo()" disabled>≡ Riepilogo</button>
+    <button class="btn-tb" id="btn-csv" onclick="exportCSV()" disabled>⬇ CSV</button>
+    <button class="btn-tb" id="btn-print" onclick="window.print()" disabled>⎙ Stampa</button>
+</div>
+
+<!-- ═══ EMPTY STATE ══════════════════════════════════════════════════ -->
+<div id="empty-state" style="text-align:center;padding:80px 24px;color:#94a3b8">
+    <div style="font-size:44px;margin-bottom:14px">📋</div>
+    <div style="font-size:15px;font-weight:700;color:#475569;margin-bottom:6px">Nessuna campagna selezionata</div>
+    <div style="font-size:13px">Seleziona una campagna o creane una nuova</div>
+</div>
+
+<!-- ═══ TABLE ════════════════════════════════════════════════════════ -->
+<div id="table-wrap" class="hidden" style="overflow-x:auto;padding-bottom:80px">
+    <table class="pre-table">
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+        <tfoot id="tfoot"></tfoot>
+    </table>
+</div>
+
+<!-- ═══ RIEPILOGO ════════════════════════════════════════════════════ -->
+<div id="riepilogo-wrap" class="hidden" style="padding:20px;max-width:900px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <h3 style="font-size:14px;font-weight:800;color:#1e293b">Riepilogo per Categoria</h3>
+        <button class="btn-tb" onclick="toggleRiepilogo()">← Torna alla tabella</button>
+    </div>
+    <table class="summary-table" id="summary-table"></table>
+</div>
+
+<!-- ═══ MODAL NUOVA CAMPAGNA ═════════════════════════════════════════ -->
+<div id="modal-camp" class="modal-ov hidden" onclick="chiudi('modal-camp')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-title">Nuova Campagna Preordini</div>
+        <div class="fgroup">
+            <label class="flabel">Nome campagna *</label>
+            <input id="mc-nome" class="finput" type="text" placeholder="es. CASA 2027 Primavera/Estate">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="fgroup">
+                <label class="flabel">Anno *</label>
+                <input id="mc-anno" class="finput" type="number" placeholder="2027">
+            </div>
+            <div class="fgroup">
+                <label class="flabel">Stagione</label>
+                <input id="mc-stagione" class="finput" type="text" placeholder="P/E 2027">
+            </div>
+        </div>
+        <div class="fgroup">
+            <label class="flabel">Note</label>
+            <textarea id="mc-note" class="finput" rows="2" placeholder="Eventuali note..."></textarea>
+        </div>
+        <div class="fgroup">
+            <label class="flabel">Empori partecipanti</label>
+            <div id="mc-empori-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
+            <button type="button" class="btn-tb" onclick="addEmpRow()" style="font-size:11px;padding:4px 10px">+ Emporio</button>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid #f1f5f9">
+            <button class="btn-tb" onclick="chiudi('modal-camp')">Annulla</button>
+            <button class="btn-tb prim" onclick="creaCampagna()">Crea Campagna</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ MODAL AGGIUNGI PRODOTTO ══════════════════════════════════════ -->
+<div id="modal-prod" class="modal-ov hidden" onclick="chiudi('modal-prod')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-title">Aggiungi Prodotto</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="fgroup">
+                <label class="flabel">Fornitore *</label>
+                <input id="mp-forn" class="finput" type="text" list="dl-forn" placeholder="es. RM Porcellane">
+            </div>
+            <div class="fgroup">
+                <label class="flabel">Codice</label>
+                <input id="mp-cod" class="finput" type="text" placeholder="es. RM001">
+            </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="fgroup">
+                <label class="flabel">Categoria</label>
+                <input id="mp-cat" class="finput" type="text" list="dl-cat" placeholder="es. Tazze">
+            </div>
+            <div class="fgroup">
+                <label class="flabel">Confezione</label>
+                <input id="mp-conf" class="finput" type="number" placeholder="6" min="1">
+            </div>
+        </div>
+        <div class="fgroup">
+            <label class="flabel">Prodotto *</label>
+            <input id="mp-prod" class="finput" type="text" placeholder="Descrizione prodotto">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:end">
+            <div class="fgroup">
+                <label class="flabel">PVP corrente €</label>
+                <input id="mp-pvp" class="finput" type="number" step="0.01" placeholder="0.00">
+            </div>
+            <div class="fgroup">
+                <label class="flabel">PVP precedente €</label>
+                <input id="mp-pvpp" class="finput" type="number" step="0.01" placeholder="0.00">
+            </div>
+            <div class="fgroup" style="display:flex;align-items:center;gap:6px;padding-bottom:2px">
+                <input id="mp-np" type="checkbox" style="width:15px;height:15px;accent-color:#7c3aed;cursor:pointer">
+                <label for="mp-np" class="flabel" style="margin:0;cursor:pointer">Nuovo prod.</label>
+            </div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid #f1f5f9">
+            <button class="btn-tb" onclick="chiudi('modal-prod')">Annulla</button>
+            <button class="btn-tb prim" onclick="salvaAggiungiProdotto()">Aggiungi</button>
+        </div>
+        <datalist id="dl-forn"></datalist>
+        <datalist id="dl-cat"></datalist>
+    </div>
+</div>
+
+<!-- ═══ MODAL IMPORTA ════════════════════════════════════════════════ -->
+<div id="modal-importa" class="modal-ov hidden" onclick="chiudi('modal-importa')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-title">Importa da Campagna Precedente</div>
+        <p style="font-size:12px;color:#64748b;margin-bottom:16px;line-height:1.5">
+            I prodotti vengono copiati nella campagna corrente. Il <strong>ordine_corrente</strong> sorgente diventa <strong>venduto_precedente</strong> nella nuova campagna.
+        </p>
+        <div class="fgroup">
+            <label class="flabel">Campagna sorgente</label>
+            <select id="imp-sel" class="finput">
+                <option value="">— Seleziona —</option>
+            </select>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid #f1f5f9">
+            <button class="btn-tb" onclick="chiudi('modal-importa')">Annulla</button>
+            <button class="btn-tb prim" onclick="eseguiImporta()">Importa</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPA_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
+const DB = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+let campagnaCorrente = null;
+let emporiAttivi   = [];
+let righe          = [];
+let quantitaMap    = {};
+let campagneList   = [];
+let riepilogoVis   = false;
+const saveTimers   = {};
+const insertLocks  = {};
+
+// ── INIT ──────────────────────────────────────────────────────────────
+async function init() {
+    await loadCampagne();
+}
+
+async function loadCampagne() {
+    const { data } = await DB.from('preordini_campagne').select('*').order('created_at', { ascending: false });
+    campagneList = data || [];
+    const sel = document.getElementById('sel-campagna');
+    sel.innerHTML = '<option value="">— Seleziona campagna —</option>';
+    campagneList.forEach(c => {
+        const o = document.createElement('option');
+        o.value = c.id;
+        o.textContent = c.nome + ' (' + c.anno + (c.stagione ? ' · ' + c.stagione : '') + ')';
+        sel.appendChild(o);
+    });
+}
+
+async function selezionaCampagna(id) {
+    const btns = ['btn-importa','btn-add-prod','btn-riepilogo','btn-csv','btn-print'];
+    if (!id) {
+        campagnaCorrente = null; emporiAttivi = []; righe = []; quantitaMap = {};
+        document.getElementById('empty-state').classList.remove('hidden');
+        document.getElementById('table-wrap').classList.add('hidden');
+        document.getElementById('riepilogo-wrap').classList.add('hidden');
+        btns.forEach(b => document.getElementById(b).disabled = true);
+        return;
+    }
+    setSave('Caricamento…', 'saving');
+    const [{ data: camp }, { data: emps }, { data: rigs }] = await Promise.all([
+        DB.from('preordini_campagne').select('*').eq('id', id).single(),
+        DB.from('preordini_empori').select('*').eq('campagna_id', id).order('ordine_visualizzazione'),
+        DB.from('preordini_righe').select('*').eq('campagna_id', id).order('ordine_riga'),
+    ]);
+    campagnaCorrente = camp;
+    emporiAttivi = emps || [];
+    righe = rigs || [];
+    quantitaMap = {};
+    if (righe.length > 0) {
+        const ids = righe.map(r => r.id);
+        const { data: qtys } = await DB.from('preordini_quantita').select('*').in('riga_id', ids);
+        (qtys || []).forEach(q => {
+            if (!quantitaMap[q.riga_id]) quantitaMap[q.riga_id] = {};
+            quantitaMap[q.riga_id][q.emporio_codice] = {
+                id: q.id,
+                venduto_precedente: parseFloat(q.venduto_precedente) || 0,
+                ordine_corrente:    parseFloat(q.ordine_corrente) || 0,
+            };
+        });
+    }
+    document.getElementById('empty-state').classList.add('hidden');
+    if (riepilogoVis) {
+        document.getElementById('table-wrap').classList.add('hidden');
+        document.getElementById('riepilogo-wrap').classList.remove('hidden');
+    } else {
+        document.getElementById('table-wrap').classList.remove('hidden');
+        document.getElementById('riepilogo-wrap').classList.add('hidden');
+    }
+    btns.forEach(b => document.getElementById(b).disabled = false);
+    renderTable();
+    clearSave();
+}
+
+// ── RENDER TABLE ──────────────────────────────────────────────────────
+function renderTable() {
+    const thead = document.getElementById('thead');
+    const tbody = document.getElementById('tbody');
+    const tfoot = document.getElementById('tfoot');
+    const nEmp  = emporiAttivi.length;
+
+    // Header row 1
+    let h1 = '<tr>';
+    h1 += '<th rowspan="2" style="text-align:left;min-width:68px">Codice</th>';
+    h1 += '<th rowspan="2" style="text-align:left;min-width:88px">Categoria</th>';
+    h1 += '<th rowspan="2" style="text-align:left;min-width:160px">Prodotto</th>';
+    h1 += '<th rowspan="2" style="min-width:42px">Conf</th>';
+    h1 += '<th rowspan="2" style="min-width:52px">PVP</th>';
+    h1 += '<th rowspan="2" style="min-width:28px">NP</th>';
+    emporiAttivi.forEach(e => {
+        h1 += '<th colspan="2" style="background:#1e293b;color:#94a3b8;border-color:#334155">' +
+              esc(e.nome) + '<br><span style="font-size:8px;color:#64748b;font-weight:600">' + esc(e.codice) + '</span></th>';
+    });
+    h1 += '<th rowspan="2" style="min-width:56px;background:#f0fdf4;color:#15803d">TOT<br>ORD</th>';
+    h1 += '<th rowspan="2" style="min-width:56px;background:#f8fafc;color:#94a3b8">TOT<br>VEND</th>';
+    h1 += '<th rowspan="2" style="min-width:26px"></th>';
+    h1 += '</tr>';
+
+    // Header row 2
+    let h2 = '<tr>';
+    emporiAttivi.forEach(() => {
+        h2 += '<th style="background:#f8fafc;color:#94a3b8;min-width:48px">VEND</th>';
+        h2 += '<th style="min-width:48px">ORD</th>';
+    });
+    h2 += '</tr>';
+    thead.innerHTML = h1 + h2;
+
+    // Body
+    const fornitori = [...new Set(righe.map(r => r.fornitore || '—'))];
+    let html = '';
+    let grandOrd = 0, grandVend = 0;
+    const totalCols = 6 + nEmp * 2 + 3;
+
+    fornitori.forEach(forn => {
+        const grp = righe.filter(r => (r.fornitore || '—') === forn);
+        html += '<tr class="tr-fornitore"><td colspan="' + totalCols + '">▸ ' + esc(forn) + '</td></tr>';
+
+        let subOrd = 0, subVend = 0;
+        const subEmpOrd = {}, subEmpVend = {};
+        emporiAttivi.forEach(e => { subEmpOrd[e.codice] = 0; subEmpVend[e.codice] = 0; });
+
+        grp.forEach(riga => {
+            const q = quantitaMap[riga.id] || {};
+            let rowOrd = 0, rowVend = 0;
+            let empCells = '';
+            emporiAttivi.forEach(emp => {
+                const qt = q[emp.codice] || { venduto_precedente: 0, ordine_corrente: 0 };
+                const vend = parseFloat(qt.venduto_precedente) || 0;
+                const ord  = parseFloat(qt.ordine_corrente) || 0;
+                rowOrd += ord; rowVend += vend;
+                subEmpOrd[emp.codice]  += ord;
+                subEmpVend[emp.codice] += vend;
+                const cls = ord > 0 ? (ord < vend ? 'td-ord warn-value' : 'td-ord has-value') : 'td-ord';
+                empCells += '<td class="td-vend"><input class="inp-vend" type="number" step="0.01" value="' + (vend || '') + '" ' +
+                    'onchange="onVend(\'' + riga.id + '\',\'' + esc(emp.codice) + '\',this.value)"></td>';
+                empCells += '<td class="' + cls + '" id="td-ord-' + riga.id + '-' + esc(emp.codice) + '">' +
+                    '<input class="inp-qty" type="number" step="0.01" value="' + (ord || '') + '" ' +
+                    'oninput="onOrd(\'' + riga.id + '\',\'' + esc(emp.codice) + '\',this)"></td>';
+            });
+            subOrd += rowOrd; subVend += rowVend;
+
+            html += '<tr class="product-row" data-riga-id="' + riga.id + '">';
+            html += '<td><input class="inp-riga" type="text" value="' + esc(riga.codice || '') + '" ' +
+                'onchange="onRigaField(\'' + riga.id + '\',\'codice\',this.value)" style="width:62px"></td>';
+            html += '<td><input class="inp-riga" type="text" value="' + esc(riga.categoria || '') + '" list="dl-cat" ' +
+                'onchange="onRigaField(\'' + riga.id + '\',\'categoria\',this.value)" style="width:82px"></td>';
+            html += '<td style="min-width:160px"><input class="inp-riga" type="text" value="' + esc(riga.prodotto || '') + '" ' +
+                'onchange="onRigaField(\'' + riga.id + '\',\'prodotto\',this.value)" style="width:155px"></td>';
+            html += '<td style="text-align:center"><input class="inp-riga" type="number" value="' + (riga.conf || '') + '" ' +
+                'onchange="onRigaField(\'' + riga.id + '\',\'conf\',this.value)" style="width:36px;text-align:center"></td>';
+            html += '<td style="text-align:right"><input class="inp-riga" type="number" step="0.01" value="' + (riga.pvp_corrente || '') + '" ' +
+                'onchange="onRigaField(\'' + riga.id + '\',\'pvp_corrente\',this.value)" style="width:46px;text-align:right"></td>';
+            html += '<td style="text-align:center"><input type="checkbox"' + (riga.nuovo_prodotto ? ' checked' : '') + ' ' +
+                'onchange="onRigaField(\'' + riga.id + '\',\'nuovo_prodotto\',this.checked)" style="accent-color:#7c3aed;width:13px;height:13px;cursor:pointer"></td>';
+            html += empCells;
+            html += '<td class="td-tot" id="tot-ord-' + riga.id + '" style="color:#15803d">' + (rowOrd || '') + '</td>';
+            html += '<td class="td-tot" id="tot-vend-' + riga.id + '" style="color:#94a3b8">' + (rowVend || '') + '</td>';
+            html += '<td class="td-del"><button onclick="eliminaRiga(\'' + riga.id + '\')" ' +
+                'style="background:none;border:none;cursor:pointer;color:#fca5a5;font-size:14px;line-height:1;padding:2px">×</button></td>';
+            html += '</tr>';
+        });
+
+        grandOrd += subOrd; grandVend += subVend;
+
+        // Subtotal row
+        html += '<tr class="tr-subtotal"><td colspan="6" style="text-align:right;font-size:9px">Subtot. ' + esc(forn) + ' →</td>';
+        emporiAttivi.forEach(emp => {
+            html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#94a3b8">' + (subEmpVend[emp.codice] || '') + '</td>';
+            html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#15803d;font-weight:700">' + (subEmpOrd[emp.codice] || '') + '</td>';
+        });
+        html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#15803d;font-weight:700">' + (subOrd || '') + '</td>';
+        html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#94a3b8">' + (subVend || '') + '</td>';
+        html += '<td></td></tr>';
+    });
+
+    tbody.innerHTML = html;
+
+    // Grand total
+    let foot = '<tr><td colspan="6" style="text-align:right;font-size:10px;letter-spacing:.06em">TOTALE GENERALE →</td>';
+    emporiAttivi.forEach(emp => {
+        const totOrdEmp  = righe.reduce((s, r) => s + (parseFloat(quantitaMap[r.id]?.[emp.codice]?.ordine_corrente) || 0), 0);
+        const totVendEmp = righe.reduce((s, r) => s + (parseFloat(quantitaMap[r.id]?.[emp.codice]?.venduto_precedente) || 0), 0);
+        foot += '<td style="text-align:right;color:#94a3b8;font-family:\'DM Mono\',monospace">' + (totVendEmp || '') + '</td>';
+        foot += '<td style="text-align:right;color:#4ade80;font-family:\'DM Mono\',monospace;font-weight:700">' + (totOrdEmp || '') + '</td>';
+    });
+    foot += '<td style="text-align:right;color:#4ade80;font-family:\'DM Mono\',monospace;font-size:13px">' + (grandOrd || '') + '</td>';
+    foot += '<td style="text-align:right;color:#94a3b8;font-family:\'DM Mono\',monospace">' + (grandVend || '') + '</td>';
+    foot += '<td></td></tr>';
+    tfoot.innerHTML = foot;
+
+    aggiornaDatalists();
+}
+
+// ── CHANGES ───────────────────────────────────────────────────────────
+function onOrd(rigaId, empCode, input) {
+    const val = parseFloat(input.value) || 0;
+    if (!quantitaMap[rigaId]) quantitaMap[rigaId] = {};
+    if (!quantitaMap[rigaId][empCode]) quantitaMap[rigaId][empCode] = { venduto_precedente: 0, ordine_corrente: 0 };
+    quantitaMap[rigaId][empCode].ordine_corrente = val;
+    const td = document.getElementById('td-ord-' + rigaId + '-' + empCode);
+    if (td) {
+        const vend = parseFloat(quantitaMap[rigaId][empCode].venduto_precedente) || 0;
+        td.className = val > 0 ? (val < vend ? 'td-ord warn-value' : 'td-ord has-value') : 'td-ord';
+    }
+    updateRowTotals(rigaId);
+    clearTimeout(saveTimers['ord-' + rigaId + '-' + empCode]);
+    setSave('salvataggio…', 'saving');
+    saveTimers['ord-' + rigaId + '-' + empCode] = setTimeout(() => saveQty(rigaId, empCode), 800);
+}
+
+function onVend(rigaId, empCode, value) {
+    const val = parseFloat(value) || 0;
+    if (!quantitaMap[rigaId]) quantitaMap[rigaId] = {};
+    if (!quantitaMap[rigaId][empCode]) quantitaMap[rigaId][empCode] = { venduto_precedente: 0, ordine_corrente: 0 };
+    quantitaMap[rigaId][empCode].venduto_precedente = val;
+    updateRowTotals(rigaId);
+    clearTimeout(saveTimers['vend-' + rigaId + '-' + empCode]);
+    setSave('salvataggio…', 'saving');
+    saveTimers['vend-' + rigaId + '-' + empCode] = setTimeout(() => saveQty(rigaId, empCode), 800);
+}
+
+function updateRowTotals(rigaId) {
+    let totOrd = 0, totVend = 0;
+    emporiAttivi.forEach(emp => {
+        const q = quantitaMap[rigaId]?.[emp.codice] || {};
+        totOrd  += parseFloat(q.ordine_corrente) || 0;
+        totVend += parseFloat(q.venduto_precedente) || 0;
+    });
+    const elO = document.getElementById('tot-ord-'  + rigaId);
+    const elV = document.getElementById('tot-vend-' + rigaId);
+    if (elO) elO.textContent = totOrd  || '';
+    if (elV) elV.textContent = totVend || '';
+}
+
+async function saveQty(rigaId, empCode) {
+    const key = rigaId + '-' + empCode;
+    if (insertLocks[key]) return;
+    const q = quantitaMap[rigaId]?.[empCode];
+    if (!q) return;
+    const payload = {
+        riga_id: rigaId,
+        emporio_codice: empCode,
+        venduto_precedente: q.venduto_precedente || 0,
+        ordine_corrente:    q.ordine_corrente || 0,
+    };
+    let error;
+    if (q.id) {
+        ({ error } = await DB.from('preordini_quantita').update({
+            venduto_precedente: payload.venduto_precedente,
+            ordine_corrente:    payload.ordine_corrente,
+        }).eq('id', q.id));
+    } else {
+        insertLocks[key] = true;
+        const { data, error: e } = await DB.from('preordini_quantita').insert(payload).select().single();
+        insertLocks[key] = false;
+        error = e;
+        if (data) quantitaMap[rigaId][empCode].id = data.id;
+    }
+    if (error) { setSave('errore!', 'err'); }
+    else { setSave('salvato ✓', 'saved'); setTimeout(clearSave, 2000); }
+}
+
+function onRigaField(rigaId, field, value) {
+    const riga = righe.find(r => r.id === rigaId);
+    if (!riga) return;
+    riga[field] = (field === 'nuovo_prodotto') ? !!value : value;
+    clearTimeout(saveTimers['riga-' + rigaId]);
+    setSave('salvataggio…', 'saving');
+    saveTimers['riga-' + rigaId] = setTimeout(() => saveRiga(rigaId), 800);
+}
+
+async function saveRiga(rigaId) {
+    const riga = righe.find(r => r.id === rigaId);
+    if (!riga) return;
+    const { error } = await DB.from('preordini_righe').update({
+        fornitore: riga.fornitore || null,
+        codice: riga.codice || null,
+        categoria: riga.categoria || null,
+        prodotto: riga.prodotto,
+        conf: riga.conf || null,
+        pvp_corrente: riga.pvp_corrente || null,
+        pvp_precedente: riga.pvp_precedente || null,
+        nuovo_prodotto: !!riga.nuovo_prodotto,
+    }).eq('id', rigaId);
+    if (error) setSave('errore!', 'err');
+    else { setSave('salvato ✓', 'saved'); setTimeout(clearSave, 2000); }
+}
+
+async function eliminaRiga(rigaId) {
+    if (!confirm('Eliminare questa riga prodotto?')) return;
+    const { error } = await DB.from('preordini_righe').delete().eq('id', rigaId);
+    if (error) { alert('Errore: ' + error.message); return; }
+    righe = righe.filter(r => r.id !== rigaId);
+    delete quantitaMap[rigaId];
+    renderTable();
+}
+
+// ── NUOVA CAMPAGNA ────────────────────────────────────────────────────
+function mostraNuovaCampagna() {
+    document.getElementById('mc-nome').value = '';
+    document.getElementById('mc-anno').value = new Date().getFullYear() + 1;
+    document.getElementById('mc-stagione').value = '';
+    document.getElementById('mc-note').value = '';
+    const list = document.getElementById('mc-empori-list');
+    list.innerHTML = '';
+    addEmpRow(); addEmpRow();
+    document.getElementById('modal-camp').classList.remove('hidden');
+}
+
+function addEmpRow() {
+    const list = document.getElementById('mc-empori-list');
+    const d = document.createElement('div');
+    d.style.cssText = 'display:flex;gap:6px;align-items:center';
+    d.innerHTML = '<input type="text" placeholder="Codice (es. E01)" class="finput" style="width:110px" data-r="cod">' +
+        '<input type="text" placeholder="Nome emporio" class="finput" style="flex:1" data-r="nome">' +
+        '<button type="button" onclick="this.parentElement.remove()" ' +
+        'style="color:#ef4444;background:none;border:none;cursor:pointer;font-size:18px;line-height:1;padding:0 4px">×</button>';
+    list.appendChild(d);
+}
+
+async function creaCampagna() {
+    const nome    = document.getElementById('mc-nome').value.trim();
+    const anno    = parseInt(document.getElementById('mc-anno').value);
+    const stagione = document.getElementById('mc-stagione').value.trim();
+    const note    = document.getElementById('mc-note').value.trim();
+    if (!nome || !anno) { alert('Nome e Anno sono obbligatori.'); return; }
+
+    const empori = [];
+    let valid = true;
+    document.querySelectorAll('#mc-empori-list > div').forEach((row, i) => {
+        const codice   = row.querySelector('[data-r="cod"]').value.trim();
+        const nomeEmp  = row.querySelector('[data-r="nome"]').value.trim();
+        if (codice && nomeEmp) empori.push({ codice, nome: nomeEmp, ordine_visualizzazione: i });
+        else if (codice || nomeEmp) valid = false;
+    });
+    if (!valid) { alert('Completa tutte le righe emporio (codice e nome).'); return; }
+    if (empori.length === 0) { alert('Aggiungi almeno un emporio.'); return; }
+
+    const { data: camp, error: e1 } = await DB.from('preordini_campagne')
+        .insert({ nome, anno, stagione: stagione || null, note: note || null }).select().single();
+    if (e1) { alert('Errore: ' + e1.message); return; }
+
+    const { error: e2 } = await DB.from('preordini_empori')
+        .insert(empori.map(e => ({ ...e, campagna_id: camp.id, attivo: true })));
+    if (e2) { alert('Errore empori: ' + e2.message); return; }
+
+    chiudi('modal-camp');
+    await loadCampagne();
+    document.getElementById('sel-campagna').value = camp.id;
+    await selezionaCampagna(camp.id);
+}
+
+// ── AGGIUNGI PRODOTTO ─────────────────────────────────────────────────
+function mostraAggiungiProdotto() {
+    ['mp-forn','mp-cod','mp-cat','mp-conf','mp-prod','mp-pvp','mp-pvpp'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('mp-np').checked = false;
+    document.getElementById('modal-prod').classList.remove('hidden');
+}
+
+async function salvaAggiungiProdotto() {
+    const prodotto = document.getElementById('mp-prod').value.trim();
+    const fornitore = document.getElementById('mp-forn').value.trim();
+    if (!prodotto) { alert('Il campo Prodotto è obbligatorio.'); return; }
+
+    const maxOrd = righe.length > 0 ? Math.max(...righe.map(r => r.ordine_riga || 0)) + 1 : 0;
+    const record = {
+        campagna_id: campagnaCorrente.id,
+        fornitore: fornitore || null,
+        codice: document.getElementById('mp-cod').value.trim() || null,
+        categoria: document.getElementById('mp-cat').value.trim() || null,
+        prodotto,
+        conf: parseFloat(document.getElementById('mp-conf').value) || null,
+        pvp_corrente: parseFloat(document.getElementById('mp-pvp').value) || null,
+        pvp_precedente: parseFloat(document.getElementById('mp-pvpp').value) || null,
+        nuovo_prodotto: document.getElementById('mp-np').checked,
+        ordine_riga: maxOrd,
+    };
+
+    const { data, error } = await DB.from('preordini_righe').insert(record).select().single();
+    if (error) { alert('Errore: ' + error.message); return; }
+    righe.push(data);
+    chiudi('modal-prod');
+    renderTable();
+}
+
+// ── IMPORTA ───────────────────────────────────────────────────────────
+function mostraImporta() {
+    const sel = document.getElementById('imp-sel');
+    sel.innerHTML = '<option value="">— Seleziona —</option>';
+    campagneList.filter(c => c.id !== campagnaCorrente?.id).forEach(c => {
+        const o = document.createElement('option');
+        o.value = c.id;
+        o.textContent = c.nome + ' (' + c.anno + (c.stagione ? ' · ' + c.stagione : '') + ')';
+        sel.appendChild(o);
+    });
+    document.getElementById('modal-importa').classList.remove('hidden');
+}
+
+async function eseguiImporta() {
+    const sourceId = document.getElementById('imp-sel').value;
+    if (!sourceId) { alert('Seleziona una campagna sorgente.'); return; }
+    if (!confirm('Importare i prodotti? Le righe esistenti NON verranno cancellate.')) return;
+
+    const { data: srcRighe, error: e1 } = await DB.from('preordini_righe').select('*').eq('campagna_id', sourceId).order('ordine_riga');
+    if (e1) { alert('Errore: ' + e1.message); return; }
+    if (!srcRighe?.length) { alert('Nessun prodotto nella campagna sorgente.'); return; }
+
+    const { data: srcQtys } = await DB.from('preordini_quantita').select('*').in('riga_id', srcRighe.map(r => r.id));
+    const destCodici = new Set(emporiAttivi.map(e => e.codice));
+    const maxOrd = righe.length > 0 ? Math.max(...righe.map(r => r.ordine_riga || 0)) + 1 : 0;
+
+    const nuoveRighe = srcRighe.map((r, i) => ({
+        campagna_id: campagnaCorrente.id,
+        fornitore: r.fornitore, codice: r.codice, categoria: r.categoria,
+        prodotto: r.prodotto, conf: r.conf,
+        pvp_corrente: r.pvp_corrente, pvp_precedente: r.pvp_precedente,
+        nuovo_prodotto: r.nuovo_prodotto, ordine_riga: maxOrd + i,
+    }));
+
+    const { data: inserted, error: e2 } = await DB.from('preordini_righe').insert(nuoveRighe).select();
+    if (e2) { alert('Errore righe: ' + e2.message); return; }
+
+    const idMap = {};
+    srcRighe.forEach((r, i) => { idMap[r.id] = inserted[i].id; });
+
+    const qtysToInsert = (srcQtys || [])
+        .filter(q => destCodici.has(q.emporio_codice) && idMap[q.riga_id])
+        .map(q => ({
+            riga_id: idMap[q.riga_id],
+            emporio_codice: q.emporio_codice,
+            venduto_precedente: parseFloat(q.ordine_corrente) || 0,
+            ordine_corrente: 0,
+        }));
+
+    if (qtysToInsert.length > 0) await DB.from('preordini_quantita').insert(qtysToInsert);
+
+    chiudi('modal-importa');
+    await selezionaCampagna(campagnaCorrente.id);
+}
+
+// ── RIEPILOGO ─────────────────────────────────────────────────────────
+function toggleRiepilogo() {
+    riepilogoVis = !riepilogoVis;
+    document.getElementById('table-wrap').classList.toggle('hidden', riepilogoVis);
+    document.getElementById('riepilogo-wrap').classList.toggle('hidden', !riepilogoVis);
+    if (riepilogoVis) renderRiepilogo();
+}
+
+function renderRiepilogo() {
+    const categorie = [...new Set(righe.map(r => r.categoria || '—'))].sort();
+    let html = '<thead><tr><th>Categoria</th><th style="text-align:right">TOT VEND</th>' +
+        '<th style="text-align:right">TOT ORD</th><th style="text-align:right">Δ%</th>';
+    emporiAttivi.forEach(e => { html += '<th style="text-align:right">' + esc(e.codice) + ' ORD</th>'; });
+    html += '</tr></thead><tbody>';
+
+    let gVend = 0, gOrd = 0;
+    categorie.forEach(cat => {
+        const grp = righe.filter(r => (r.categoria || '—') === cat);
+        let tVend = 0, tOrd = 0;
+        const empOrd = {};
+        grp.forEach(r => {
+            emporiAttivi.forEach(emp => {
+                const q = quantitaMap[r.id]?.[emp.codice] || {};
+                tVend += parseFloat(q.venduto_precedente) || 0;
+                tOrd  += parseFloat(q.ordine_corrente) || 0;
+                empOrd[emp.codice] = (empOrd[emp.codice] || 0) + (parseFloat(q.ordine_corrente) || 0);
+            });
+        });
+        gVend += tVend; gOrd += tOrd;
+        const delta = tVend > 0 ? ((tOrd - tVend) / tVend * 100).toFixed(1) : null;
+        const dCol = delta === null ? '#94a3b8' : (parseFloat(delta) >= 0 ? '#15803d' : '#dc2626');
+        html += '<tr><td style="font-weight:600">' + esc(cat) + '</td>';
+        html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#64748b">' + (tVend || '—') + '</td>';
+        html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#15803d;font-weight:700">' + (tOrd || '—') + '</td>';
+        html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:' + dCol + ';font-weight:600">' + (delta !== null ? delta + '%' : '—') + '</td>';
+        emporiAttivi.forEach(emp => {
+            html += '<td style="text-align:right;font-family:\'DM Mono\',monospace">' + (empOrd[emp.codice] || '') + '</td>';
+        });
+        html += '</tr>';
+    });
+
+    const gDelta = gVend > 0 ? ((gOrd - gVend) / gVend * 100).toFixed(1) : null;
+    html += '<tr style="background:#1e293b;color:white;font-weight:700"><td>TOTALE</td>';
+    html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#94a3b8">' + (gVend || '—') + '</td>';
+    html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#4ade80">' + (gOrd || '—') + '</td>';
+    const gdCol = gDelta === null ? '#94a3b8' : (parseFloat(gDelta) >= 0 ? '#4ade80' : '#fca5a5');
+    html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:' + gdCol + '">' + (gDelta !== null ? gDelta + '%' : '—') + '</td>';
+    emporiAttivi.forEach(emp => {
+        const t = righe.reduce((s, r) => s + (parseFloat(quantitaMap[r.id]?.[emp.codice]?.ordine_corrente) || 0), 0);
+        html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#4ade80">' + (t || '') + '</td>';
+    });
+    html += '</tr></tbody>';
+    document.getElementById('summary-table').innerHTML = html;
+}
+
+// ── EXPORT CSV ────────────────────────────────────────────────────────
+function exportCSV() {
+    const BOM = '﻿';
+    const cols = ['Fornitore','Codice','Categoria','Prodotto','Conf','PVP_corrente','PVP_precedente','NP'];
+    emporiAttivi.forEach(e => { cols.push(e.codice + '_VEND', e.codice + '_ORD'); });
+    cols.push('TOT_ORD','TOT_VEND');
+    const rows = [cols.join(';')];
+    righe.forEach(r => {
+        const q = quantitaMap[r.id] || {};
+        let totOrd = 0, totVend = 0;
+        const empData = [];
+        emporiAttivi.forEach(emp => {
+            const qt = q[emp.codice] || {};
+            const vend = parseFloat(qt.venduto_precedente) || 0;
+            const ord  = parseFloat(qt.ordine_corrente) || 0;
+            totOrd += ord; totVend += vend;
+            empData.push(vend, ord);
+        });
+        rows.push([
+            csvQ(r.fornitore), csvQ(r.codice), csvQ(r.categoria), csvQ(r.prodotto),
+            r.conf || '', r.pvp_corrente || '', r.pvp_precedente || '',
+            r.nuovo_prodotto ? 'SI' : '',
+            ...empData, totOrd, totVend,
+        ].join(';'));
+    });
+    const nome = (campagnaCorrente?.nome || 'preordini').replace(/\s+/g, '_');
+    const blob = new Blob([BOM + rows.join('\n')], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'preordini_' + nome + '.csv';
+    a.click();
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────
+function csvQ(s) { return '"' + String(s || '').replace(/"/g, '""') + '"'; }
+function esc(s)  { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function chiudi(id) { document.getElementById(id).classList.add('hidden'); }
+function setSave(msg, type) {
+    const el = document.getElementById('save-dot');
+    el.textContent = msg;
+    el.className = 'save-dot ' + (type || '');
+}
+function clearSave() { setSave(''); }
+
+function aggiornaDatalists() {
+    const forniList = [...new Set(righe.map(r => r.fornitore).filter(Boolean))];
+    const catList   = [...new Set(righe.map(r => r.categoria).filter(Boolean))];
+    ['dl-forn'].forEach(id => {
+        const dl = document.getElementById(id);
+        if (dl) dl.innerHTML = forniList.map(f => '<option value="' + esc(f) + '">').join('');
+    });
+    ['dl-cat','lista-categorie'].forEach(id => {
+        const dl = document.getElementById(id);
+        if (dl) dl.innerHTML = catList.map(c => '<option value="' + esc(c) + '">').join('');
+    });
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+<script src="../../scripts/nav-script.js"></script>
+</body>
+</html>

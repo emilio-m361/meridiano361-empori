@@ -105,7 +105,8 @@
       { id: 'cassa',        label: 'Cassa',        icon: 'fa-cash-register',  href: 'pages/cassa/cassa.html',        section: 'cassa',   active: true  },
       { id: 'calendario',   label: 'Calendario',   icon: 'fa-calendar-days',  href: 'pages/calendario/index.html',   section: null,      active: false },
       { id: 'rifornimento', label: 'Rifornimento', icon: 'fa-boxes-stacked',  href: 'pages/rifornimento/index.html', section: null,      active: false },
-      { id: 'prezzi',       label: 'Prezzi',       icon: 'fa-tag',            href: 'pages/prezzi/prezzi.html',      section: null,      active: true  },
+      { id: 'prezzi',       label: 'Prezzi',       icon: 'fa-tag',            href: 'pages/prezzi/prezzi.html',          section: null,      active: true  },
+      { id: 'preordini',   label: 'Preordini',   icon: 'fa-clipboard-list', href: 'pages/gestione/preordini.html',     section: null,      active: true  },
     ]},
     { group: null, items: [
       { id: 'logout', label: 'Esci', icon: 'fa-right-from-bracket', href: '#', section: null, active: true, isLogout: true },
