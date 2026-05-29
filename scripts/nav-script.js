@@ -501,42 +501,34 @@ function buildNav() {
     const perm = mappa[currentId];
     if (!perm) return;
 
+    // Helper: esegue fn subito se DOM già pronto, altrimenti aspetta DOMContentLoaded
+    const whenReady = (fn) => {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', fn, { once: true });
+      } else {
+        fn();
+      }
+    };
+
     if (perm.vede === false) {
-      // Sostituisce il corpo con una schermata di accesso negato
-      const base = getBase();
-      document.addEventListener('DOMContentLoaded', () => {
-        document.body.innerHTML = `
-          <div style="display:flex;flex-direction:column;align-items:center;
-                      justify-content:center;height:100vh;font-family:Inter,sans-serif;
-                      text-align:center;padding:40px">
-            <div style="font-size:48px;margin-bottom:16px">🔒</div>
-            <h2 style="color:#B5453A;margin:0 0 8px">Accesso non autorizzato</h2>
-            <p style="color:#64748b;margin:0 0 24px">
-              Non hai i permessi per visualizzare questa sezione.
-            </p>
-            <a href="${base}index.html"
-               style="background:#B5453A;color:#fff;padding:10px 20px;
-                      border-radius:8px;text-decoration:none;font-weight:600">
-              ← Torna alla home
-            </a>
-          </div>`;
-      });
+      // Redirect immediato alla home — più pulito della sostituzione del body
+      whenReady(() => { window.location.href = getBase() + 'index.html'; });
       return;
     }
 
     if (perm.opera === false) {
-      document.addEventListener('DOMContentLoaded', () => {
+      whenReady(() => {
         applyReadonlyMode();
-        // Aggiunge banner sola lettura in cima
         if (!document.getElementById('m361-readonly-banner')) {
           const banner = document.createElement('div');
           banner.id = 'm361-readonly-banner';
           banner.style.cssText =
             'background:#fef3c7;border-bottom:2px solid #f59e0b;padding:10px 20px;' +
             'font-size:14px;font-weight:600;color:#92400e;text-align:center;' +
-            'position:sticky;top:0;z-index:9999';
+            'position:sticky;top:56px;z-index:8999';
           banner.textContent = '👁 Modalità sola lettura — non puoi modificare questa sezione';
-          document.body.prepend(banner);
+          document.body.insertBefore(banner,
+            document.getElementById('m361-header')?.nextSibling || document.body.firstChild);
         }
       });
     }
