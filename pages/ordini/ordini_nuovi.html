@@ -850,14 +850,14 @@ document.getElementById('numero-ordine-preview').value = '';
         addRow(groupId);
     });
     addRow(groupId);
-}
 
-if (currentType === 'bomboniere') {
-    addBomboniereSubRows(
-        document.getElementById(`rows-container-${groupId}`),
-        groupId
-    );
-}
+    if (currentType === 'bomboniere') {
+        addBomboniereSubRows(
+            document.getElementById(`rows-container-${groupId}`),
+            groupId
+        );
+    }
+}   // ← chiusura corretta di addGroup
         
 function removeGroup(groupId) {
     if (!confirm('Rimuovere questa tipologia bomboniera?')) return;
@@ -919,14 +919,15 @@ function removeGroup(groupId) {
             row.querySelector('.altri-q-input').addEventListener('input', () => calcRow(rowId, groupId));
             row.querySelector('.delete-row-btn').addEventListener('click', () => removeRow(rowId, groupId));
 
-            if (currentType === 'bomboniere') {
-    // Aggiorna omaggio quando cambia la qty
-    row.querySelector('.qty-input').addEventListener('input', () => {
-        syncConfezOmaggio(groupId);
-    });
-}
+                  if (currentType === 'bomboniere') {
+                row.querySelector('.qty-input').addEventListener('input', () => {
+                    syncConfezOmaggio(groupId);
+                });
+            }
+        }   // ← chiusura corretta di addRow
 
         function calcRow(rowId, groupId) {
+            
             const row = document.getElementById(`row-${rowId}`);
             if (!row) return;
             
@@ -1325,7 +1326,7 @@ function calcSubtotal(groupId) {
                     emporio: getValueSafe('select-emporio'),
                     canale: document.getElementById('select-canale')?.value || null,
                     operatore: getValueSafe('select-operatore'),
-                    data_ordine: getValueSafe('order-date'),
+                    data_ordine: document.getElementById('order-date').value = today;
                     cliente_nome: getValueSafe('cust-nome'),
                     cliente_cognome: getValueSafe('cust-cognome'),
                     cliente_cellulare: getValueSafe('cust-cel'),
