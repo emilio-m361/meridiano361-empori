@@ -549,16 +549,25 @@
 
         <!-- Modal avviso uscita (BLOCCO 5) -->
         <div id="modal-uscita" class="hidden fixed inset-0 z-[9100] flex items-center justify-center bg-black/40">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-sm mx-4 p-6">
-                <h3 class="font-bold text-lg text-slate-800 mb-2">Modifiche non salvate</h3>
-                <p class="text-sm text-slate-500 mb-6">Hai inserito dei dati che non sono stati salvati. Vuoi davvero tornare indietro?</p>
-                <div class="flex gap-3 justify-end">
-                    <button onclick="chiudiModalUscita()" class="text-sm font-bold border border-slate-200 rounded-xl px-4 py-2 text-slate-600 hover:bg-slate-50 transition-colors">Resta qui</button>
-                    <button onclick="confermUscita()" class="text-sm font-bold bg-[#B5453A] text-white rounded-xl px-4 py-2 hover:bg-[#9c3a30] transition-colors">Esci senza salvare</button>
-                </div>
-            </div>
+    <div class="bg-white rounded-2xl shadow-2xl max-w-sm mx-4 p-6">
+        <h3 class="font-bold text-lg text-slate-800 mb-2">⚠️ Dati non salvati</h3>
+        <p class="text-sm text-slate-500 mb-6">Hai inserito dati che non sono stati salvati. Cosa vuoi fare?</p>
+        <div class="flex flex-col gap-3">
+            <button onclick="document.getElementById('submit-btn').click(); chiudiModalUscita();"
+                class="text-sm font-bold bg-[#B5453A] text-white rounded-xl px-4 py-3 hover:bg-[#9c3a30] transition-colors flex items-center justify-center gap-2">
+                <i class="fas fa-save"></i> Sì, salva l'ordine
+            </button>
+            <button onclick="confermUscita()"
+                class="text-sm font-bold border-2 border-slate-300 rounded-xl px-4 py-3 text-slate-600 hover:bg-slate-50 transition-colors">
+                No, esci senza salvare
+            </button>
+            <button onclick="chiudiModalUscita()"
+                class="text-xs text-slate-400 hover:text-slate-600 py-1 transition-colors">
+                Annulla — resta qui
+            </button>
         </div>
-
+    </div>
+</div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
