@@ -27,12 +27,19 @@
         .impostazioni-operatori { display: flex; flex-direction: column; gap: 20px; padding: 20px 24px; max-width: 100%; }
 
         .emporio-gruppo { border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
-        .emporio-gruppo-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: #1e293b; color: #fff; }
+        .emporio-riga-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #1e293b; color: #fff; cursor: pointer; user-select: none; gap: 12px; }
+        .emporio-riga-header:hover { background: #0f172a; }
+        .emporio-riga-sx { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+        .emporio-riga-dx { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .emporio-freccia { font-size: 10px; color: #94a3b8; width: 14px; text-align: center; transition: transform .2s; flex-shrink: 0; }
         .emporio-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-        .emporio-nome { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; flex: 1; }
+        .emporio-nome { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; }
         .emporio-count { font-size: 11px; color: #94a3b8; }
+        .emporio-corpo { display: none; }
         .btn-aggiungi-op { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); color: #fff; padding: 4px 10px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
         .btn-aggiungi-op:hover { background: #B5453A; border-color: #B5453A; }
+        .btn-permessi-tutti { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); color: #fff; padding: 4px 10px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+        .btn-permessi-tutti:hover { background: rgba(255,255,255,.25); }
 
         .tabella-operatori { width: 100%; border-collapse: collapse; font-size: 13px; }
         .tabella-operatori thead tr { background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
@@ -505,7 +512,7 @@
         const container = document.getElementById('impostazioni-operatori');
         container.innerHTML = '';
 
-        // Raggruppa per emporio (normalizza a chiave lowercase)
+        // Raggruppa per emporio
         const gruppi = {};
         operatori.forEach(op => {
             const chiave = normalizzaEmporio(op.emporio);
@@ -513,38 +520,82 @@
             gruppi[chiave].push(op);
         });
 
-        const ordineChiavi = [...EMPORI_ORDER, ...Object.keys(gruppi).filter(k => !EMPORI_ORDER.includes(k))];
+        // MODIFICA 1: ordine alfabetico per display name
+        const ordineChiavi = Object.keys(gruppi).sort((a, b) => {
+            const la = EMPORI_LABEL[a] || a;
+            const lb = EMPORI_LABEL[b] || b;
+            return la.localeCompare(lb, 'it');
+        });
 
         ordineChiavi.forEach(chiave => {
-            if (!gruppi[chiave]) return;
             const ops      = gruppi[chiave];
             const empLabel = EMPORI_LABEL[chiave] || (chiave === 'altro' ? 'Non assegnato' : chiave);
             const colore   = coloreEmporio(chiave);
+            const safeId   = chiave; // già lowercase, senza spazi
+
+            // MODIFICA 1: operatori in ordine alfabetico per nome
+            ops.sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'it'));
 
             const div = document.createElement('div');
             div.className = 'emporio-gruppo';
+            div.dataset.emporio = chiave;
+
+            // MODIFICA 2: accordion
             div.innerHTML = `
-                <div class="emporio-gruppo-header">
-                    <span class="emporio-dot" style="background:${colore}"></span>
-                    <span class="emporio-nome">${empLabel}</span>
-                    <span class="emporio-count">${ops.length} operator${ops.length === 1 ? 'e' : 'i'}</span>
-                    <button class="btn-aggiungi-op" onclick="nuovoOperatore('${chiave}')">+ Aggiungi</button>
+                <div class="emporio-riga-header"
+                     onclick="toggleEmporio('${safeId}')"
+                     id="header-${safeId}">
+                    <div class="emporio-riga-sx">
+                        <span class="emporio-freccia" id="freccia-${safeId}">▶</span>
+                        <span class="emporio-dot" style="background:${colore}"></span>
+                        <span class="emporio-nome">${empLabel}</span>
+                        <span class="emporio-count">${ops.length} operator${ops.length === 1 ? 'e' : 'i'}</span>
+                    </div>
+                    <div class="emporio-riga-dx">
+                        <button class="btn-permessi-tutti"
+                                onclick="event.stopPropagation(); apriPermessiEmporio('${chiave}', '${empLabel}')"
+                                title="Modifica accessi di tutti gli operatori di ${empLabel}">
+                            🔒 Accessi gruppo
+                        </button>
+                        <button class="btn-aggiungi-op"
+                                onclick="event.stopPropagation(); nuovoOperatore('${chiave}')">
+                            + Aggiungi
+                        </button>
+                    </div>
                 </div>
-                <table class="tabella-operatori">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Ruolo</th>
-                            <th>Empori aggiuntivi</th>
-                            <th>Telefono</th>
-                            <th style="text-align:right">Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody>${ops.map(u => rigaOperatore(u)).join('')}</tbody>
-                </table>
+                <div class="emporio-corpo" id="corpo-${safeId}">
+                    <table class="tabella-operatori">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Ruolo</th>
+                                <th>Empori aggiuntivi</th>
+                                <th>Telefono</th>
+                                <th style="text-align:right">Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>${ops.map(op => rigaOperatore(op)).join('')}</tbody>
+                    </table>
+                </div>
             `;
             container.appendChild(div);
         });
+    }
+
+    function toggleEmporio(chiave) {
+        const corpo   = document.getElementById('corpo-' + chiave);
+        const freccia = document.getElementById('freccia-' + chiave);
+        if (!corpo) return;
+        const isOpen = corpo.style.display === 'block';
+        corpo.style.display = isOpen ? 'none' : 'block';
+        freccia.textContent = isOpen ? '▶' : '▼';
+    }
+
+    function apriPermessiEmporio(chiave, empLabel) {
+        // Apre i permessi in sequenza per tutti gli operatori dell'emporio
+        const ops = utentiCache.filter(op => normalizzaEmporio(op.emporio) === chiave && !ADMIN_EMAILS.includes(op.email));
+        if (ops.length === 0) { alert(`Nessun operatore in ${empLabel}.`); return; }
+        alert(`Funzione "Accessi gruppo ${empLabel}" — apre i permessi per ${ops.length} operatori.\n\nUsa il bottone 🔒 su ogni riga per gestirli singolarmente.`);
     }
 
     function rigaOperatore(op) {
