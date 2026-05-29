@@ -1,4 +1,4 @@
-const CACHE_NAME = 'm361-empori-v1';
+const CACHE_NAME = 'm361-empori-v2';
 
 const PRECACHE_URLS = [
   '/',
@@ -31,21 +31,20 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
+// Network-first: prova sempre la rete, usa la cache solo se offline
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   if (!event.request.url.startsWith(self.location.origin)) return;
 
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      const networkFetch = fetch(event.request).then(response => {
-        if (response && response.status === 200 && response.type === 'basic') {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        }
-        return response;
-      }).catch(() => null);
-
-      return cached || networkFetch.then(r => r || caches.match('/index.html'));
-    })
+    fetch(event.request).then(response => {
+      if (response && response.status === 200 && response.type === 'basic') {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+      }
+      return response;
+    }).catch(() =>
+      caches.match(event.request).then(cached => cached || caches.match('/index.html'))
+    )
   );
 });
