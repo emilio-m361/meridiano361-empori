@@ -435,7 +435,18 @@ function buildNav() {
     buildNav();
     injectGuide();
 
-    // 5. Controllo Sola Lettura (Async)
+    // 5a. Check sincrono da sessionStorage (fast path — da pagina precedente)
+    const cachedPermessi = sessionStorage.getItem('permessi');
+    const cachedRuolo = sessionStorage.getItem('ruolo') || '';
+    if (cachedPermessi && !['admin', 'dipendente'].includes(cachedRuolo)) {
+      try {
+        const mappaCached = JSON.parse(cachedPermessi);
+        const currentId = typeof getCurrentId === 'function' ? getCurrentId() : '';
+        applicaPermessiPagina(mappaCached, currentId);
+      } catch {}
+    }
+
+    // 5b. Controllo Permessi aggiornato dal DB (Async — aggiorna sessionStorage)
     await checkPermissionsAndApply(user);
   }
 
@@ -447,12 +458,32 @@ function buildNav() {
     const _supabase = getSupabase();
     if (!_supabase || !user.id) return;
 
+    // Salva ruolo in sessionStorage
+    const ruolo = (user.ruolo || '').toLowerCase();
+    sessionStorage.setItem('ruolo', ruolo);
+
+    // Admin e dipendenti: accesso completo, nessun limite
+    if (['admin', 'dipendente'].includes(ruolo)) {
+      sessionStorage.removeItem('permessi');
+      return;
+    }
+
     const { data: permessi } = await _supabase
       .from('utenti_permessi')
       .select('sezione, può_vedere, può_operare')
       .eq('utente_id', user.id);
 
-    if (!permessi?.length) return; // Nessun limite impostato = accesso completo
+    if (!permessi?.length) {
+      sessionStorage.removeItem('permessi');
+      return; // Nessun limite impostato = accesso completo
+    }
+
+    // Costruisce mappa e salva in sessionStorage per uso sincrono sulle pagine
+    const mappa = {};
+    permessi.forEach(p => {
+      mappa[p.sezione] = { vede: p['può_vedere'], opera: p['può_operare'] };
+    });
+    sessionStorage.setItem('permessi', JSON.stringify(mappa));
 
     // Nascondi voci di menu per sezioni non visibili
     permessi.filter(p => !p['può_vedere']).forEach(p => {
@@ -460,19 +491,54 @@ function buildNav() {
         .forEach(el => { el.style.display = 'none'; });
     });
 
-    // Controlla permessi per la sezione corrente
+    // Applica permessi alla pagina corrente
     const currentId = typeof getCurrentId === 'function' ? getCurrentId() : '';
-    if (!currentId) return;
+    applicaPermessiPagina(mappa, currentId);
+  }
 
-    const permCorrente = permessi.find(p => p.sezione === currentId);
-    if (!permCorrente) return;
+  function applicaPermessiPagina(mappa, currentId) {
+    if (!currentId || !mappa) return;
+    const perm = mappa[currentId];
+    if (!perm) return;
 
-    if (!permCorrente['può_vedere']) {
-      window.location.href = getBase() + 'index.html';
+    if (perm.vede === false) {
+      // Sostituisce il corpo con una schermata di accesso negato
+      const base = getBase();
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.innerHTML = `
+          <div style="display:flex;flex-direction:column;align-items:center;
+                      justify-content:center;height:100vh;font-family:Inter,sans-serif;
+                      text-align:center;padding:40px">
+            <div style="font-size:48px;margin-bottom:16px">🔒</div>
+            <h2 style="color:#B5453A;margin:0 0 8px">Accesso non autorizzato</h2>
+            <p style="color:#64748b;margin:0 0 24px">
+              Non hai i permessi per visualizzare questa sezione.
+            </p>
+            <a href="${base}index.html"
+               style="background:#B5453A;color:#fff;padding:10px 20px;
+                      border-radius:8px;text-decoration:none;font-weight:600">
+              ← Torna alla home
+            </a>
+          </div>`;
+      });
       return;
     }
-    if (!permCorrente['può_operare']) {
-      applyReadonlyMode();
+
+    if (perm.opera === false) {
+      document.addEventListener('DOMContentLoaded', () => {
+        applyReadonlyMode();
+        // Aggiunge banner sola lettura in cima
+        if (!document.getElementById('m361-readonly-banner')) {
+          const banner = document.createElement('div');
+          banner.id = 'm361-readonly-banner';
+          banner.style.cssText =
+            'background:#fef3c7;border-bottom:2px solid #f59e0b;padding:10px 20px;' +
+            'font-size:14px;font-weight:600;color:#92400e;text-align:center;' +
+            'position:sticky;top:0;z-index:9999';
+          banner.textContent = '👁 Modalità sola lettura — non puoi modificare questa sezione';
+          document.body.prepend(banner);
+        }
+      });
     }
   }
 

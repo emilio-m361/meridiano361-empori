@@ -251,6 +251,12 @@
                     <i class="fas fa-download mr-2"></i> Esporta ordini in corso (CSV)
                 </button>
                 <div id="export-status" class="text-sm mt-3 text-slate-400"></div>
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                    <p class="text-sm text-slate-500 mb-3">Dopo aver invitato nuovi operatori su Supabase Auth, esegui la sincronizzazione per collegare i loro account.</p>
+                    <button class="btn-esporta" onclick="mostraSyncSQL()" style="background:#1e40af">
+                        <i class="fas fa-rotate mr-2"></i> 🔄 Sincronizza Auth operatori
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1035,6 +1041,23 @@
         } catch {
             container.innerHTML = '<span class="text-slate-400 text-sm italic">Nessuna categoria trovata.</span>';
         }
+    }
+
+    // ── SYNC AUTH ─────────────────────────────────────────────────────────
+    function mostraSyncSQL() {
+        const sql =
+            'Dopo aver invitato operatori su Supabase → Authentication → Users,\n' +
+            'esegui questo SQL nel SQL Editor per collegare i loro account:\n\n' +
+            'UPDATE operatori o\n' +
+            'SET auth_id = au.id\n' +
+            'FROM auth.users au\n' +
+            'WHERE au.email = o.email\n' +
+            'AND o.auth_id IS NULL;\n\n' +
+            '-- Verifica il risultato:\n' +
+            'SELECT nome, email, auth_id\n' +
+            'FROM operatori\n' +
+            'ORDER BY nome;';
+        alert(sql);
     }
 
     // ── BACKUP CSV ────────────────────────────────────────────────────────
