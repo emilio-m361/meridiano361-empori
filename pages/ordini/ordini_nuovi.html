@@ -1761,7 +1761,7 @@ function toggleGusto(groupId) {
 
             // Set today's date
             const today = new Date().toISOString().split('T')[0];
-            getValueSafe('order-date') = today;
+            document.getElementById('order-date').value = today;
 
             // BLOCCO 5: track unsaved changes
             document.getElementById('orderForm').addEventListener('input', marcaModificato, true);
