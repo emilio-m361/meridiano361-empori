@@ -111,7 +111,7 @@
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 12px 14px;
-            font-size: 13px;
+            font-size: 16px;
             color: #334155;
             background: #fff;
         }
@@ -125,7 +125,7 @@
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 12px 14px;
-            font-size: 13px;
+            font-size: 16px;
             color: #334155;
             background: #fff;
         }
@@ -143,8 +143,8 @@
         }
 
         .product-table input, .product-table select {
-            font-size: 12px;
-            padding: 6px 8px;
+            font-size: 14px;
+            padding: 8px 10px;
             border-radius: 8px;
         }
 
@@ -320,6 +320,18 @@
                 <i class="fas fa-sync-alt mr-2"></i> Aggiorna Ordine
             </button>
         </form>
+
+        <!-- Modal avviso uscita (BLOCCO 5) -->
+        <div id="modal-uscita" class="hidden fixed inset-0 z-[9100] flex items-center justify-center bg-black/40">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-sm mx-4 p-6">
+                <h3 class="font-bold text-lg text-slate-800 mb-2">Modifiche non salvate</h3>
+                <p class="text-sm text-slate-500 mb-6">Hai delle modifiche non salvate. Vuoi davvero uscire?</p>
+                <div class="flex gap-3 justify-end">
+                    <button onclick="document.getElementById('modal-uscita').classList.add('hidden')" class="text-sm font-bold border border-slate-200 rounded-xl px-4 py-2 text-slate-600 hover:bg-slate-50 transition-colors">Resta qui</button>
+                    <button onclick="_confermUscita()" class="text-sm font-bold bg-[#B5453A] text-white rounded-xl px-4 py-2 hover:bg-[#9c3a30] transition-colors">Esci senza salvare</button>
+                </div>
+            </div>
+        </div>
 
     </main>
 
@@ -837,6 +849,7 @@
 
                 if (error) throw error;
 
+                modificheNonSalvate = false;
                 alert('Ordine aggiornato con successo!');
                 window.location.href = backPage;
             } catch (error) {
@@ -848,6 +861,25 @@
 
             return false;
         }
+
+        // ── BLOCCO 5: Avviso modifiche non salvate ──────────────────────────
+        let modificheNonSalvate = false;
+        let _uscitaUrl = null;
+
+        window.addEventListener('beforeunload', function(e) {
+            if (modificheNonSalvate) {
+                e.preventDefault();
+                return (e.returnValue = '');
+            }
+        });
+
+        function _confermUscita() {
+            modificheNonSalvate = false;
+            document.getElementById('modal-uscita').classList.add('hidden');
+            if (_uscitaUrl) window.location.href = _uscitaUrl;
+            _uscitaUrl = null;
+        }
+        // ────────────────────────────────────────────────────────────────────
 
         // INITIALIZE
         document.addEventListener('DOMContentLoaded', function() {
@@ -864,7 +896,11 @@
             accontoInput.addEventListener('input', calcGrandTotal);
             
             document.getElementById('orderForm').addEventListener('submit', validateUpdate);
-            
+
+            // BLOCCO 5: track unsaved changes (after form load)
+            document.getElementById('orderForm').addEventListener('input', () => { modificheNonSalvate = true; }, true);
+            document.getElementById('orderForm').addEventListener('change', () => { modificheNonSalvate = true; }, true);
+
             loadOrderData();
         });
     </script>

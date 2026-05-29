@@ -113,7 +113,7 @@
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 12px 14px;
-            font-size: 13px;
+            font-size: 16px;
             color: #334155;
             background: #fff;
         }
@@ -127,7 +127,7 @@
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 12px 14px;
-            font-size: 13px;
+            font-size: 16px;
             color: #334155;
             background: #fff;
         }
@@ -146,8 +146,8 @@
         }
 
         .product-table input, .product-table select {
-            font-size: 12px;
-            padding: 6px 8px;
+            font-size: 14px;
+            padding: 8px 10px;
             border-radius: 8px;
         }
 
@@ -518,6 +518,18 @@
         <!-- PRINT AREA (hidden, revealed by @media print) -->
         <div id="print-area" style="display:none"></div>
 
+        <!-- Modal avviso uscita (BLOCCO 5) -->
+        <div id="modal-uscita" class="hidden fixed inset-0 z-[9100] flex items-center justify-center bg-black/40">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-sm mx-4 p-6">
+                <h3 class="font-bold text-lg text-slate-800 mb-2">Modifiche non salvate</h3>
+                <p class="text-sm text-slate-500 mb-6">Hai inserito dei dati che non sono stati salvati. Vuoi davvero tornare indietro?</p>
+                <div class="flex gap-3 justify-end">
+                    <button onclick="chiudiModalUscita()" class="text-sm font-bold border border-slate-200 rounded-xl px-4 py-2 text-slate-600 hover:bg-slate-50 transition-colors">Resta qui</button>
+                    <button onclick="confermUscita()" class="text-sm font-bold bg-[#B5453A] text-white rounded-xl px-4 py-2 hover:bg-[#9c3a30] transition-colors">Esci senza salvare</button>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -590,16 +602,24 @@
 
         function goBack() {
             if (!document.getElementById('orderForm').classList.contains('hidden')) {
-                document.getElementById('orderForm').classList.add('hidden');
-                document.getElementById('order-type-selection').classList.remove('hidden');
-                document.getElementById('header-title').innerText = 'Nuovo Ordine';
-                document.getElementById('back-btn').classList.add('hidden');
-                document.getElementById('add-group-container').classList.add('hidden');
-                document.getElementById('print-btn-container').classList.add('hidden');
-                document.getElementById('breakdown-container').classList.add('hidden');
-                groupCount = 0;
-                document.getElementById('groups-container').innerHTML = '';
-                currentType = 'standard';
+                const doReset = () => {
+                    modificheNonSalvate = false;
+                    document.getElementById('orderForm').classList.add('hidden');
+                    document.getElementById('order-type-selection').classList.remove('hidden');
+                    document.getElementById('header-title').innerText = 'Nuovo Ordine';
+                    document.getElementById('back-btn').classList.add('hidden');
+                    document.getElementById('add-group-container').classList.add('hidden');
+                    document.getElementById('print-btn-container').classList.add('hidden');
+                    document.getElementById('breakdown-container').classList.add('hidden');
+                    groupCount = 0;
+                    document.getElementById('groups-container').innerHTML = '';
+                    currentType = 'standard';
+                };
+                if (modificheNonSalvate) {
+                    apriModalUscita(doReset);
+                } else {
+                    doReset();
+                }
             } else {
                 window.location.href = 'ordini_incorso.html';
             }
@@ -1247,6 +1267,7 @@
 
                 if (error) throw error;
 
+                modificheNonSalvate = false;
                 alert('Ordine salvato con successo!');
                 window.location.href = 'ordini_incorso.html';
             } catch (error) {
@@ -1500,6 +1521,39 @@
             window.print();
         }
 
+        // ── BLOCCO 5: Avviso modifiche non salvate ──────────────────────────
+        let modificheNonSalvate = false;
+        let _uscitaCallback = null;
+
+        function marcaModificato() {
+            if (!document.getElementById('orderForm').classList.contains('hidden')) {
+                modificheNonSalvate = true;
+            }
+        }
+
+        window.addEventListener('beforeunload', function(e) {
+            if (modificheNonSalvate) {
+                e.preventDefault();
+                return (e.returnValue = '');
+            }
+        });
+
+        function apriModalUscita(callback) {
+            _uscitaCallback = callback;
+            document.getElementById('modal-uscita').classList.remove('hidden');
+        }
+        function chiudiModalUscita() {
+            document.getElementById('modal-uscita').classList.add('hidden');
+            _uscitaCallback = null;
+        }
+        function confermUscita() {
+            modificheNonSalvate = false;
+            document.getElementById('modal-uscita').classList.add('hidden');
+            if (_uscitaCallback) { _uscitaCallback(); }
+            _uscitaCallback = null;
+        }
+        // ────────────────────────────────────────────────────────────────────
+
         // INITIALIZE EVENT LISTENERS
         document.addEventListener('DOMContentLoaded', function() {
             // Order type buttons
@@ -1552,10 +1606,14 @@
             
             // Form submission
             document.getElementById('orderForm').addEventListener('submit', validateSubmission);
-            
+
             // Set today's date
             const today = new Date().toISOString().split('T')[0];
             getValueSafe('order-date') = today;
+
+            // BLOCCO 5: track unsaved changes
+            document.getElementById('orderForm').addEventListener('input', marcaModificato, true);
+            document.getElementById('orderForm').addEventListener('change', marcaModificato, true);
         });
     </script>
     <script src="../../scripts/nav-script.js"></script>

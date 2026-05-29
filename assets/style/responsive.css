@@ -1,0 +1,132 @@
+/* ── M361 Responsive CSS ──────────────────────────────────────────── */
+
+/* Touch-friendly tap highlight */
+* { -webkit-tap-highlight-color: transparent; }
+
+/* Prevent iOS zoom on input focus (needs font-size >= 16px) */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="date"],
+  input[type="tel"],
+  input[type="search"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Safe area insets (iPhone notch / Dynamic Island) */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: calc(68px + env(safe-area-inset-bottom)) !important;
+  }
+  #m361-nav {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/* Smooth scrolling on mobile */
+@media (max-width: 768px) {
+  .overflow-x-auto,
+  .table-scroll-wrapper {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Section cards more compact on mobile */
+  .section-card {
+    padding: 16px !important;
+    border-radius: 16px !important;
+  }
+
+  /* Product table wraps nicely */
+  .product-table th,
+  .product-table td {
+    white-space: nowrap;
+  }
+
+  /* Form grids collapse to single column */
+  .grid.lg\:grid-cols-4 {
+    grid-template-columns: 1fr;
+  }
+  .grid.md\:grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Totals stack vertically */
+  .flex.md\:flex-row {
+    flex-direction: column;
+  }
+
+  /* Total boxes full width on mobile */
+  .total-box,
+  .saldo-box {
+    min-width: unset;
+    width: 100%;
+  }
+
+  /* Buttons easier to tap */
+  .btn-submit,
+  .btn-red-big {
+    min-height: 52px;
+  }
+
+  /* Header title shorter */
+  #m361-header #header-title {
+    font-size: 12px !important;
+    max-width: 100px !important;
+  }
+}
+
+/* Medium screens */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .grid.lg\:grid-cols-4 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Large screen refinements */
+@media (min-width: 1024px) {
+  .section-card {
+    padding: 28px;
+  }
+}
+
+/* Modals: sheet style on small screens */
+@media (max-width: 480px) {
+  #modal-modifica-operatore,
+  #modal-permessi,
+  #modal-elimina-op,
+  #modal-uscita,
+  [id^="modal-"] {
+    align-items: flex-end !important;
+  }
+  #modal-modifica-operatore > div,
+  #modal-permessi > div,
+  #modal-elimina-op > div,
+  #modal-uscita > div,
+  [id^="modal-"] > div:last-child {
+    border-radius: 20px 20px 0 0 !important;
+    max-height: 88vh;
+    overflow-y: auto;
+    width: 100%;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+}
+
+/* Print: hide nav/guide/install elements */
+@media print {
+  #m361-header,
+  #m361-nav,
+  #m361-guide-drawer,
+  #m361-guide-btn,
+  #m361-install-btn {
+    display: none !important;
+  }
+  body {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+}

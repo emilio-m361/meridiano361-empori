@@ -1,0 +1,51 @@
+const CACHE_NAME = 'm361-empori-v1';
+
+const PRECACHE_URLS = [
+  '/',
+  '/index.html',
+  '/login.html',
+  '/manifest.json',
+  '/assets/style/nav-style.css',
+  '/assets/style/responsive.css',
+  '/scripts/nav-script.js',
+  '/scripts/guide.js',
+  '/assets/images/logom361_rosso.jpg',
+  '/faviconm361.png',
+];
+
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(PRECACHE_URLS.map(u => new Request(u, { cache: 'reload' }))))
+      .catch(() => {})
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(names =>
+      Promise.all(names.filter(n => n !== CACHE_NAME).map(n => caches.delete(n)))
+    )
+  );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
+  if (!event.request.url.startsWith(self.location.origin)) return;
+
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      const networkFetch = fetch(event.request).then(response => {
+        if (response && response.status === 200 && response.type === 'basic') {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        }
+        return response;
+      }).catch(() => null);
+
+      return cached || networkFetch.then(r => r || caches.match('/index.html'));
+    })
+  );
+});

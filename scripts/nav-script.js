@@ -181,6 +181,101 @@ body { font-family: 'Inter', sans-serif; padding-top: 56px; padding-bottom: 68px
   }
 
   /* ═══════════════════════════════════════
+     PWA — meta tags, manifest, SW, install
+  ═══════════════════════════════════════ */
+  function injectPWA() {
+    if (!document.querySelector('link[rel="manifest"]')) {
+      const l = document.createElement('link');
+      l.rel = 'manifest'; l.href = BASE + 'manifest.json';
+      document.head.appendChild(l);
+    }
+    if (!document.querySelector('meta[name="theme-color"]')) {
+      const m = document.createElement('meta');
+      m.name = 'theme-color'; m.content = '#B5453A';
+      document.head.appendChild(m);
+    }
+    [
+      ['apple-mobile-web-app-capable', 'yes'],
+      ['apple-mobile-web-app-status-bar-style', 'default'],
+      ['apple-mobile-web-app-title', 'M361'],
+    ].forEach(([n, v]) => {
+      if (!document.querySelector(`meta[name="${n}"]`)) {
+        const m = document.createElement('meta'); m.name = n; m.content = v;
+        document.head.appendChild(m);
+      }
+    });
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register(BASE + 'service-worker.js').catch(() => {});
+    }
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      window.__m361_installPrompt = e;
+      const btn = document.getElementById('m361-install-btn');
+      if (btn) btn.style.display = 'flex';
+    });
+    window.__m361InstallApp = async function () {
+      const p = window.__m361_installPrompt;
+      if (!p) return;
+      p.prompt();
+      const { outcome } = await p.userChoice;
+      if (outcome === 'accepted') {
+        window.__m361_installPrompt = null;
+        const btn = document.getElementById('m361-install-btn');
+        if (btn) btn.style.display = 'none';
+      }
+    };
+    window.addEventListener('appinstalled', () => {
+      window.__m361_installPrompt = null;
+      const btn = document.getElementById('m361-install-btn');
+      if (btn) btn.style.display = 'none';
+    });
+  }
+
+  /* ═══════════════════════════════════════
+     RESPONSIVE CSS
+  ═══════════════════════════════════════ */
+  function injectResponsiveCSS() {
+    if (document.getElementById('m361-responsive-css')) return;
+    const l = document.createElement('link');
+    l.id = 'm361-responsive-css'; l.rel = 'stylesheet';
+    l.href = BASE + 'assets/style/responsive.css';
+    document.head.appendChild(l);
+  }
+
+  /* ═══════════════════════════════════════
+     GUIDE SYSTEM
+  ═══════════════════════════════════════ */
+  function injectGuide() {
+    if (!window.PAGE_SECTION) {
+      const id = getCurrentId();
+      const map = {
+        ordini: 'ordini', cassa: 'cassa', turni: 'turni',
+        preordini: 'preordini', info: 'info', prenotazioni: 'prenotazioni',
+      };
+      if (map[id]) window.PAGE_SECTION = map[id];
+    }
+    if (!window.PAGE_SECTION) return;
+    if (!document.getElementById('m361-guide-script')) {
+      const s = document.createElement('script');
+      s.id = 'm361-guide-script';
+      s.src = BASE + 'scripts/guide.js';
+      document.body.appendChild(s);
+    }
+    const hdRight = document.querySelector('#m361-header .hd-right');
+    if (hdRight && !document.getElementById('m361-guide-btn')) {
+      const btn = document.createElement('button');
+      btn.id = 'm361-guide-btn';
+      btn.title = 'Guida pagina';
+      btn.innerHTML = '<i class="fas fa-circle-question"></i>';
+      btn.style.cssText = 'background:none;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;color:#94a3b8;font-size:13px;padding:5px 8px;transition:all .15s;font-family:Inter,sans-serif;line-height:1;display:flex;align-items:center;min-height:32px;flex-shrink:0';
+      btn.onmouseenter = () => { btn.style.color = '#B5453A'; btn.style.borderColor = '#B5453A'; };
+      btn.onmouseleave = () => { btn.style.color = '#94a3b8'; btn.style.borderColor = '#e2e8f0'; };
+      btn.onclick = () => { if (typeof window.__m361ToggleGuida === 'function') window.__m361ToggleGuida(); };
+      hdRight.insertBefore(btn, hdRight.firstChild);
+    }
+  }
+
+  /* ═══════════════════════════════════════
      PAGINA CORRENTE
   ═══════════════════════════════════════ */
   function getCurrentId() {
@@ -231,6 +326,7 @@ body { font-family: 'Inter', sans-serif; padding-top: 56px; padding-bottom: 68px
         <span id="header-title">${pageTitle}</span>
       </a>
       <div class="hd-right">
+        <button id="m361-install-btn" onclick="window.__m361InstallApp&&window.__m361InstallApp()" style="display:none;align-items:center;gap:4px;font-size:10px;font-weight:700;background:#B5453A;color:#fff;border:none;border-radius:8px;padding:5px 10px;cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0;line-height:1"><i class="fas fa-download"></i> Installa</button>
         ${nomeBreve ? '<span style="font-size:11px;font-weight:700;color:#94a3b8;white-space:nowrap">'+nomeBreve+'</span>' : ''}
         <button id="back-btn" ${isHome ? 'class="hidden"' : ''} onclick="history.back()">
           <i class="fas fa-arrow-left"></i> Indietro
@@ -333,8 +429,11 @@ function buildNav() {
     // 4. Caricamento Interfaccia (Eseguito solo se loggati)
     injectDeps();
     injectStyles();
+    injectPWA();
+    injectResponsiveCSS();
     buildHeader();
     buildNav();
+    injectGuide();
 
     // 5. Controllo Sola Lettura (Async)
     await checkPermissionsAndApply(user);
