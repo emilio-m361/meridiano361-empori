@@ -197,7 +197,6 @@
             font-size: 24px;
             font-weight: 900;
             color: #B5453A;
-            font-family: 'DM Mono', monospace;
         }
         .acconto-box {
     background: #ffffff;
@@ -228,7 +227,6 @@
             font-size: 24px;
             font-weight: 900;
             color: white;
-            font-family: 'DM Mono', monospace;
         }
 
         .add-row-btn {
@@ -276,7 +274,7 @@
 .confez-toggle-label input[type=checkbox] { width:16px; height:16px; accent-color:#94a3b8; cursor:pointer; flex-shrink:0; }
 .confez-toggle-label span { font-size:11px; font-weight:700; color:#334155; text-transform:uppercase; letter-spacing:.04em; }
 .confez-cost-grp { display:none; align-items:center; gap:6px; }
-.confez-cost-inp { width:80px; border:1px solid #475569; border-radius:8px; padding:4px 8px; font-size:12px; font-family:'DM Mono',monospace; text-align:right; background:#fff; color:#1e293b; }
+.confez-cost-inp { width:80px; border:1px solid #475569; border-radius:8px; padding:4px 8px; font-size:12px; text-align:right; background:#fff; color:#1e293b; }
 .confez-cost-inp:focus { outline:none; border-color:#94a3b8; }
 .confez-gusto-grp { display:none; align-items:center; gap:6px; margin-left:8px; }
 .confez-gusto-sel { border:1px solid #475569; border-radius:8px; padding:4px 8px; font-size:11px; background:#fff; color:#1e293b; cursor:pointer; }
@@ -284,12 +282,12 @@
 
 /* Colonne allineate confez / omaggio */
 .confez-cell { padding:0 4px !important; vertical-align:middle; }
-.confez-inp-sm { width:100%; border:1px solid #4b5563; border-radius:6px; padding:5px 7px; font-size:12px; background:#fff; color:#1e293b; font-family:'DM Mono',monospace; }
+.confez-inp-sm { width:100%; border:1px solid #4b5563; border-radius:6px; padding:5px 7px; font-size:12px; background:#fff; color:#1e293b; }
 .confez-inp-sm:focus { outline:none; border-color:#94a3b8; }
 
 /* Omaggio — sfondo rosso M361 */
 .omaggio-sub-row td { padding:3px 4px !important; font-size:12px; color:#B5453A; background:rgba(181,69,58,0.12); vertical-align:middle; }
-.omaggio-inp-sm { width:100%; border:1px solid rgba(181,69,58,0.4); border-radius:6px; padding:5px 7px; font-size:12px; background:rgba(255,255,255,0.7); color:#B5453A; font-family:'DM Mono',monospace; text-align:center; }
+.omaggio-inp-sm { width:100%; border:1px solid rgba(181,69,58,0.4); border-radius:6px; padding:5px 7px; font-size:12px; background:rgba(255,255,255,0.7); color:#B5453A; text-align:center; }
 .omaggio-inp-sm:focus { outline:none; background:rgba(255,255,255,0.9); }
 .badge-omaggio { display:inline-block; background:rgba(181,69,58,0.2); color:#B5453A; font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; padding:2px 7px; border-radius:4px; margin-left:4px; }
 
@@ -301,7 +299,7 @@
         .breakdown-section { background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:16px 20px; min-width:220px; }
         .breakdown-row { display:flex; justify-content:space-between; align-items:center; padding:3px 0; font-size:13px; color:#475569; }
         .breakdown-row .lbl { font-weight:600; }
-        .breakdown-row .val { font-family:'DM Mono',monospace; font-weight:700; }
+        .breakdown-row .val { font-weight:700; }
         .breakdown-row.bd-total { border-top:2px solid #e2e8f0; margin-top:8px; padding-top:10px; font-size:15px; font-weight:900; color:#1e293b; }
         .breakdown-row.bd-omaggio .val { color:#16A34A; font-weight:800; }
 
@@ -499,13 +497,6 @@
                 </button>
             </div>
 
-            <!-- PRINT BUTTON (bomboniere only) -->
-            <div id="print-btn-container" class="hidden flex justify-end">
-                <button type="button" class="btn-print" onclick="printPreventivo()">
-                    <i class="fas fa-print"></i> Stampa Preventivo PDF
-                </button>
-            </div>
-
             <!-- TOTALS -->
             <div class="section-card">
                 <!-- Breakdown (bomboniere only) -->
@@ -536,6 +527,13 @@
             <!-- NOTES -->
             <div class="section-card">
                 <textarea id="order-notes" rows="2" class="form-input" placeholder="Note..."></textarea>
+            </div>
+
+            <!-- PRINT BUTTON (bomboniere only) -->
+            <div id="print-btn-container" class="hidden flex justify-end mb-3">
+                <button type="button" class="btn-print" onclick="printPreventivo()">
+                    <i class="fas fa-print"></i> Stampa Preventivo PDF
+                </button>
             </div>
 
             <!-- SUBMIT BUTTON -->
@@ -948,17 +946,9 @@ function removeGroup(groupId) {
             // Update Da Ord
             row.querySelector('.do-value').textContent = daOrd;
             
-            // Confezionamento (bomboniere only) — total shown in separate sub-row
+            // Confezionamento (bomboniere only) — handled per group via calcConfezOmaggio
             if (currentType === 'bomboniere') {
-                const confezCb = document.getElementById(`cb-confez-${rowId}`);
-                let confezCost = 0;
-                if (confezCb?.checked) {
-                    const costInp = document.getElementById(`confez-cost-inp-${rowId}`);
-                    confezCost = parseFloat(costInp?.value.replace('€','').replace(',','.').trim()) || 3;
-                }
-                const confezTotalEl = document.getElementById(`confez-total-${rowId}`);
-                if (confezTotalEl) confezTotalEl.textContent = (qty * confezCost).toFixed(2).replace('.', ',');
-                updateOmaggio(rowId);
+                calcConfezOmaggio(groupId);
             }
 
             // Update row total — product cost only; confez is tracked separately
@@ -1261,13 +1251,14 @@ function calcSubtotal(groupId) {
             
             try {
                 const articoli = [];
+                const groupsSavedOmaggio = new Set();
                 document.querySelectorAll('.product-row').forEach(row => {
                     const gruppoId = parseInt(row.closest('[id^="group-"]').id.replace('group-', ''));
                     const rowId = row.id.replace('row-', '');
-                    const confezCb = document.getElementById(`cb-confez-${rowId}`);
-                    const isConfez = confezCb?.checked || false;
-                    const costInp = document.getElementById(`confez-cost-inp-${rowId}`);
-                    const confezCosto = isConfez ? (parseFloat(costInp?.value.replace('€','').replace(',','.').trim()) || 3) : 0;
+                    const confezTipo = document.querySelector(`input[name="confez-tipo-${gruppoId}"]:checked`)?.value || 'completo';
+                    const isConfez = true;
+                    const costInp = document.getElementById(`confez-cost-inp-${gruppoId}`);
+                    const confezCosto = parseFloat(costInp?.value.replace('€','').replace(',','.').trim()) || 0;
                     const qta = parseInt(row.querySelector('.qty-input').value) || 0;
 
                     // Get tipologia name from group input
@@ -1290,18 +1281,20 @@ function calcSubtotal(groupId) {
                         da_altri_spec: row.querySelector('.altri-spec-input').value,
                         totale: parseFloat(row.querySelector('.row-total').textContent.replace(',', '.')) || 0,
                         confezionamento: isConfez,
+                        confez_tipo: confezTipo,
                         confez_costo: confezCosto,
-                        cartoncino_fronte: document.getElementById(`cart-fronte-${rowId}`)?.value || '',
-                        cartoncino_interno: document.getElementById(`cart-interno-${rowId}`)?.value || ''
+                        cartoncino_fronte: document.getElementById(`cart-fronte-${gruppoId}`)?.value || '',
+                        cartoncino_interno: document.getElementById(`cart-interno-${gruppoId}`)?.value || ''
                     });
 
-                    // Add cartoncini omaggio as separate articolo for bomboniere
-                    if (currentType === 'bomboniere') {
-                        const oQta    = parseInt(document.getElementById(`omaggio-qty-${rowId}`)?.value) || qta;
-                        const oPronte = parseInt(document.getElementById(`omaggio-pronta-${rowId}`)?.value) || 0;
-                        const oForn   = parseInt(document.getElementById(`omaggio-forn-${rowId}`)?.value) || 0;
-                        const oEmp    = parseInt(document.getElementById(`omaggio-emp-${rowId}`)?.value) || 0;
-                        const oAltri  = parseInt(document.getElementById(`omaggio-altri-${rowId}`)?.value) || 0;
+                    // Add cartoncini omaggio once per group
+                    if (currentType === 'bomboniere' && !groupsSavedOmaggio.has(gruppoId)) {
+                        groupsSavedOmaggio.add(gruppoId);
+                        const oQta    = parseInt(document.getElementById(`omaggio-qty-${gruppoId}`)?.value) || qta;
+                        const oPronte = parseInt(document.getElementById(`omaggio-pronta-${gruppoId}`)?.value) || 0;
+                        const oForn   = parseInt(document.getElementById(`omaggio-forn-${gruppoId}`)?.value) || 0;
+                        const oEmp    = parseInt(document.getElementById(`omaggio-emp-${gruppoId}`)?.value) || 0;
+                        const oAltri  = parseInt(document.getElementById(`omaggio-altri-${gruppoId}`)?.value) || 0;
                         articoli.push({
                             gruppo_id: gruppoId,
                             tipologia: tipologiaNome,
@@ -1372,17 +1365,26 @@ function calcSubtotal(groupId) {
     confezRow.className = 'confez-sub-row';
     confezRow.innerHTML = `
         <td style="background:rgba(51,65,85,0.15);width:32px;text-align:center;vertical-align:middle;padding:4px !important">
-            <input type="checkbox" id="cb-confez-${groupId}" onchange="toggleConfez('${groupId}')" style="width:16px;height:16px;accent-color:#94a3b8;cursor:pointer">
+            <span style="font-size:9px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.06em">CB</span>
         </td>
         <td class="confez-cell" style="background:rgba(51,65,85,0.15);min-width:80px">
             <input type="text" id="confez-cod-${groupId}" value="CB" class="confez-inp-sm" style="width:70px">
         </td>
         <td class="confez-cell" style="background:rgba(51,65,85,0.15)">
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-                <label class="confez-toggle-label" for="cb-confez-${groupId}">
-                    <span>Confezionamento</span>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                <label style="display:flex;align-items:center;gap:4px;cursor:pointer">
+                    <input type="radio" name="confez-tipo-${groupId}" value="completo"
+                           id="confez-completo-${groupId}" checked
+                           onchange="toggleConfezTipo('${groupId}')">
+                    <span style="font-size:11px;font-weight:700;color:#334155">Completo</span>
                 </label>
-                <div class="confez-gusto-grp" id="confez-gusto-grp-${groupId}">
+                <label style="display:flex;align-items:center;gap:4px;cursor:pointer">
+                    <input type="radio" name="confez-tipo-${groupId}" value="senza_confetti"
+                           id="confez-senza-${groupId}"
+                           onchange="toggleConfezTipo('${groupId}')">
+                    <span style="font-size:11px;font-weight:700;color:#334155">Senza confetti</span>
+                </label>
+                <div class="confez-gusto-grp" id="confez-gusto-grp-${groupId}" style="display:flex">
                     <select class="confez-gusto-sel" id="confez-gusto-${groupId}"
                             onchange="toggleGusto('${groupId}')">
                         <option value="mandorla">Mandorla</option>
@@ -1406,8 +1408,11 @@ function calcSubtotal(groupId) {
                    oninput="calcConfezOmaggio(${groupId})"
                    class="confez-inp-sm" style="width:60px;text-align:center">
         </td>
-        <td colspan="5" style="background:rgba(51,65,85,0.15)"></td>
-        <td style="background:rgba(51,65,85,0.15);text-align:right;padding:0 16px 0 4px;font-weight:700;color:#334155;font-family:'DM Mono',monospace;font-size:12px"
+        <td class="confez-cell" style="background:rgba(51,65,85,0.15);text-align:center">
+            <input type="checkbox" id="confez-pronta-${groupId}" style="width:16px;height:16px;accent-color:#166534;cursor:pointer">
+        </td>
+        <td colspan="4" style="background:rgba(51,65,85,0.15)"></td>
+        <td style="background:rgba(51,65,85,0.15);text-align:right;padding:0 16px 0 4px;font-weight:700;color:#334155;font-size:12px"
             id="confez-total-${groupId}">0,00</td>
         <td style="background:rgba(51,65,85,0.15)"></td>`;
     tbody.appendChild(confezRow);
@@ -1474,8 +1479,8 @@ function calcSubtotal(groupId) {
                    oninput="calcOmaggioDisp(${groupId})" class="omaggio-inp-sm" style="text-align:center">
         </td>
         <td id="omaggio-daord-${groupId}"
-            style="background:rgba(155,53,48,0.25);padding:3px 4px !important;text-align:center;font-weight:800;color:#B5453A;font-family:'DM Mono',monospace">0</td>
-        <td style="background:rgba(181,69,58,0.12);padding:3px 16px 3px 4px !important;text-align:right;font-weight:700;color:#B5453A;font-family:'DM Mono',monospace">€ 0,00</td>
+            style="background:rgba(155,53,48,0.25);padding:3px 4px !important;text-align:center;font-weight:800;color:#B5453A;font-family:'Inter',sans-serif">0</td>
+        <td style="background:rgba(181,69,58,0.12);padding:3px 16px 3px 4px !important;text-align:right;font-weight:700;color:#B5453A;font-family:'Inter',sans-serif">€ 0,00</td>
         <td style="background:rgba(181,69,58,0.12);padding:3px 4px !important"></td>`;
     tbody.appendChild(omaggioRow);
 }
@@ -1496,11 +1501,8 @@ function syncConfezOmaggio(groupId) {
 
 // Ricalcola totale confezionamento
 function calcConfezOmaggio(groupId) {
-    const isChecked = document.getElementById(`cb-confez-${groupId}`)?.checked;
     const qty = parseInt(document.getElementById(`confez-qty-${groupId}`)?.value) || 0;
-    const cost = isChecked
-        ? (parseFloat(document.getElementById(`confez-cost-inp-${groupId}`)?.value.replace('€','').replace(',','.').trim()) || 3)
-        : 0;
+    const cost = parseFloat(document.getElementById(`confez-cost-inp-${groupId}`)?.value.replace('€','').replace(',','.').trim()) || 0;
     const totalEl = document.getElementById(`confez-total-${groupId}`);
     if (totalEl) totalEl.textContent = (qty * cost).toFixed(2).replace('.', ',');
     calcOmaggioDisp(groupId);
@@ -1519,12 +1521,27 @@ function calcOmaggioDisp(groupId) {
     if (el) el.textContent = daOrd;
 }
             
-      function toggleConfez(groupId) {
-    const isChecked = document.getElementById(`cb-confez-${groupId}`)?.checked;
+      function toggleConfezTipo(groupId) {
+    const tipo = document.querySelector(`input[name="confez-tipo-${groupId}"]:checked`)?.value;
     const gustoGrp = document.getElementById(`confez-gusto-grp-${groupId}`);
     const cartRow  = document.getElementById(`cartoncino-${groupId}`);
-    if (gustoGrp) gustoGrp.style.display = isChecked ? 'flex' : 'none';
-    if (cartRow)  cartRow.style.display   = isChecked ? '' : 'none';
+    const costInp  = document.getElementById(`confez-cost-inp-${groupId}`);
+
+    if (tipo === 'senza_confetti') {
+        if (gustoGrp) gustoGrp.style.display = 'none';
+        if (cartRow)  cartRow.style.display   = 'none';
+        if (costInp) {
+            const curr = parseFloat(costInp.value.replace('€','').replace(',','.').trim());
+            if (!isNaN(curr) && curr !== 2) costInp.dataset.prevPrice = curr;
+            costInp.value = '€ 2,00';
+        }
+    } else {
+        if (gustoGrp) gustoGrp.style.display = 'flex';
+        if (costInp) {
+            const prev = parseFloat(costInp.dataset.prevPrice) || 3;
+            costInp.value = '€ ' + prev.toFixed(2).replace('.', ',');
+        }
+    }
     calcConfezOmaggio(groupId);
 }
 
@@ -1567,15 +1584,12 @@ function toggleGusto(groupId) {
         function calcBomboniereBreakdown() {
             let subtotBomb = 0, subtotConfez = 0;
             document.querySelectorAll('.product-row').forEach(row => {
-                const rowId = row.id.replace('row-', '');
                 const qty = parseInt(row.querySelector('.qty-input')?.value) || 0;
                 const price = parseFloat(row.querySelector('.price-input')?.value.replace('€','').replace(',','.').trim()) || 0;
                 subtotBomb += qty * price;
-                const confezCb = document.getElementById(`cb-confez-${rowId}`);
-                if (confezCb?.checked) {
-                    const costInp = document.getElementById(`confez-cost-inp-${rowId}`);
-                    subtotConfez += qty * (parseFloat(costInp?.value.replace('€','').replace(',','.').trim()) || 3);
-                }
+            });
+            document.querySelectorAll('[id^="confez-total-"]').forEach(el => {
+                subtotConfez += parseFloat(el.textContent.replace(',', '.')) || 0;
             });
             const fmt = n => '€ ' + n.toFixed(2).replace('.', ',');
             const bEl = document.getElementById('breakdown-bomb');
@@ -1596,26 +1610,34 @@ function toggleGusto(groupId) {
             const emporio = getValueSafe('select-emporio');
             const fmt = n => '€ ' + n.toFixed(2).replace('.', ',');
             let tableRows = '', subtotBomb = 0, subtotConfez = 0;
+            const groupsSeen = new Set();
 
             document.querySelectorAll('.product-row').forEach(row => {
-                const rowId = row.id.replace('row-', '');
                 const gruppoId = parseInt(row.closest('[id^="group-"]').id.replace('group-', ''));
                 const tipologiaInput = document.getElementById(`tipologia-name-${gruppoId}`);
                 const tipologia = tipologiaInput?.value || row.querySelector('.desc-input')?.value || '—';
                 const qty = parseInt(row.querySelector('.qty-input')?.value) || 0;
                 const price = parseFloat(row.querySelector('.price-input')?.value.replace('€','').replace(',','.').trim()) || 0;
-                const confezCb = document.getElementById(`cb-confez-${rowId}`);
-                const isConfez = confezCb?.checked || false;
-                const costInp = document.getElementById(`confez-cost-inp-${rowId}`);
-                const confezCost = isConfez ? (parseFloat(costInp?.value.replace('€','').replace(',','.').trim()) || 3) : 0;
                 const rowTotal = qty * price;
-                subtotBomb += qty * price;
-                subtotConfez += qty * confezCost;
+                subtotBomb += rowTotal;
+
+                // Confez: count once per group
+                if (!groupsSeen.has(gruppoId)) {
+                    groupsSeen.add(gruppoId);
+                    const confezTotEl = document.getElementById(`confez-total-${gruppoId}`);
+                    subtotConfez += parseFloat(confezTotEl?.textContent.replace(',', '.')) || 0;
+                }
+
+                const costInp = document.getElementById(`confez-cost-inp-${gruppoId}`);
+                const confezCost = parseFloat(costInp?.value.replace('€','').replace(',','.').trim()) || 0;
+                const tipo = document.querySelector(`input[name="confez-tipo-${gruppoId}"]:checked`)?.value || 'completo';
+                const confezLabel = tipo === 'senza_confetti' ? `Senza confetti — ${fmt(confezCost)}` : `Completo — ${fmt(confezCost)}`;
+
                 tableRows += `<tr>
                     <td>${tipologia}</td>
                     <td style="text-align:center">${qty}</td>
                     <td style="text-align:right">${fmt(price)}</td>
-                    <td style="text-align:center">${isConfez ? 'Sì — ' + fmt(confezCost) : 'No'}</td>
+                    <td style="text-align:center">${confezLabel}</td>
                     <td style="text-align:right;font-weight:700">${fmt(rowTotal)}</td>
                 </tr>
                 <tr style="background:#f0fdf4;font-size:11px">
@@ -1625,27 +1647,29 @@ function toggleGusto(groupId) {
             });
 
             let cartoncinoHtml = '';
+            const groupsCart = new Set();
             document.querySelectorAll('.product-row').forEach(row => {
-                const rowId = row.id.replace('row-', '');
-                if (document.getElementById(`cb-confez-${rowId}`)?.checked) {
-                    const gruppoId = parseInt(row.closest('[id^="group-"]').id.replace('group-', ''));
-                    const tipologia = document.getElementById(`tipologia-name-${gruppoId}`)?.value || '—';
-                    const fronte = (document.getElementById(`cart-fronte-${rowId}`)?.value || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-                    const interno = (document.getElementById(`cart-interno-${rowId}`)?.value || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-                    cartoncinoHtml += `<div style="margin-bottom:10px;border:1px solid #e2e8f0;border-radius:6px;padding:10px">
-                        <div style="font-size:9px;font-weight:800;text-transform:uppercase;color:#94a3b8;margin-bottom:6px">Cartoncino — ${tipologia}</div>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-                            <div style="background:#fffdf7;border:1px dashed #94a3b8;border-radius:4px;padding:8px;text-align:center;font-family:Georgia,serif">
-                                <div style="font-size:9px;color:#94a3b8;margin-bottom:4px">LATO SINISTRO</div>
-                                <div style="font-size:12px;white-space:pre-wrap">${fronte||'—'}</div>
-                            </div>
-                            <div style="background:#fffdf7;border:1px dashed #94a3b8;border-radius:4px;padding:8px;text-align:center;font-family:Georgia,serif">
-                                <div style="font-size:9px;color:#94a3b8;margin-bottom:4px">LATO DESTRO</div>
-                                <div style="font-size:12px;white-space:pre-wrap">${interno||'—'}</div>
-                            </div>
+                const gruppoId = parseInt(row.closest('[id^="group-"]').id.replace('group-', ''));
+                if (groupsCart.has(gruppoId)) return;
+                const cartRow = document.getElementById(`cartoncino-${gruppoId}`);
+                if (!cartRow || cartRow.style.display === 'none') return;
+                groupsCart.add(gruppoId);
+                const tipologia = document.getElementById(`tipologia-name-${gruppoId}`)?.value || '—';
+                const fronte = (document.getElementById(`cart-fronte-${gruppoId}`)?.value || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                const interno = (document.getElementById(`cart-interno-${gruppoId}`)?.value || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                cartoncinoHtml += `<div style="margin-bottom:10px;border:1px solid #e2e8f0;border-radius:6px;padding:10px">
+                    <div style="font-size:9px;font-weight:800;text-transform:uppercase;color:#94a3b8;margin-bottom:6px">Cartoncino — ${tipologia}</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                        <div style="background:#fffdf7;border:1px dashed #94a3b8;border-radius:4px;padding:8px;text-align:center;font-family:Georgia,serif">
+                            <div style="font-size:9px;color:#94a3b8;margin-bottom:4px">LATO SINISTRO</div>
+                            <div style="font-size:12px;white-space:pre-wrap">${fronte||'—'}</div>
                         </div>
-                    </div>`;
-                }
+                        <div style="background:#fffdf7;border:1px dashed #94a3b8;border-radius:4px;padding:8px;text-align:center;font-family:Georgia,serif">
+                            <div style="font-size:9px;color:#94a3b8;margin-bottom:4px">LATO DESTRO</div>
+                            <div style="font-size:12px;white-space:pre-wrap">${interno||'—'}</div>
+                        </div>
+                    </div>
+                </div>`;
             });
 
             const totale = subtotBomb + subtotConfez;
