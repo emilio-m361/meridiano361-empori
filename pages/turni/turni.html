@@ -162,9 +162,217 @@ input[type="time"]{font-size:15px!important}
   .negozio-orari{gap:10px}
   .orario-campo input[type="time"]{width:100%}
 }
+
+/* === FONT AUMENTATO TURNI === */
+.turni-page,
+.turni-page * {
+  font-size: 16px;
+}
+.turni-page h1,
+.turni-page h2,
+.turni-page .page-title {
+  font-size: 22px !important;
+  font-weight: 800 !important;
+}
+.turni-page h3,
+.turni-page .section-title,
+.turni-page .giorno-label,
+.turni-page .data-turno {
+  font-size: 19px !important;
+  font-weight: 700 !important;
+}
+.turni-page .tab-btn,
+.turni-page .nav-tab {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  padding: 10px 18px !important;
+}
+.turni-page input,
+.turni-page select,
+.turni-page textarea {
+  font-size: 16px !important;
+}
+.turni-page label,
+.turni-page .label,
+.turni-page th {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+.turni-page td,
+.turni-page .turno-item,
+.turni-page .operatore-nome {
+  font-size: 15px !important;
+}
+.turni-page button {
+  font-size: 15px !important;
+}
+.turni-page input[type="time"] {
+  font-size: 17px !important;
+  font-weight: 600 !important;
+}
+
+/* === MOBILE TURNI === */
+@media (max-width: 768px) {
+  .turni-tabs,
+  .nav-tabs {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 6px;
+    padding-bottom: 4px;
+  }
+  .turni-tabs::-webkit-scrollbar { display: none; }
+  .turni-tabs .tab-btn,
+  .turni-tabs .nav-tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-height: 44px;
+    padding: 10px 14px !important;
+  }
+  .giorno-turno {
+    margin: 0 0 12px !important;
+    border-radius: 10px !important;
+  }
+  .giorno-header {
+    padding: 14px 16px !important;
+  }
+  .data-turno {
+    font-size: 18px !important;
+  }
+  .fascia-turno {
+    padding: 12px 14px !important;
+  }
+  .turno-sezione {
+    padding: 10px 12px !important;
+  }
+  .negozio-orari {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .orario-campo {
+    width: 100%;
+  }
+  .orario-campo input[type="time"] {
+    width: 100% !important;
+    padding: 10px !important;
+  }
+  .chip-operatore {
+    font-size: 14px !important;
+    padding: 7px 12px !important;
+  }
+  .btn-aggiungi-op-turno {
+    min-height: 44px !important;
+    font-size: 14px !important;
+    padding: 10px 16px !important;
+  }
+  .riga-giorno-default {
+    grid-template-columns: 90px 1fr 1fr 1fr !important;
+    gap: 6px !important;
+    padding: 8px 10px !important;
+    font-size: 14px !important;
+  }
+  .assenza-card {
+    padding: 12px !important;
+  }
+  .assenza-form {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  .assenza-form > * {
+    width: 100% !important;
+  }
+  .giorno-azioni {
+    gap: 6px !important;
+  }
+  .giorno-azioni button {
+    min-height: 40px !important;
+    min-width: 40px !important;
+    font-size: 14px !important;
+  }
+}
+@media (max-width: 480px) {
+  .riga-giorno-default {
+    grid-template-columns: 75px 1fr 1fr 1fr !important;
+    font-size: 13px !important;
+  }
+  .data-turno {
+    font-size: 16px !important;
+  }
+}
+
+/* === ORE ASSENZA === */
+.ore-assenza-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.ore-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ore-sublabel {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.input-ore {
+  width: 80px;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 18px !important;
+  font-weight: 700;
+  text-align: center;
+  color: #1e293b;
+}
+.input-minuti {
+  width: 90px;
+  padding: 10px 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 16px !important;
+  font-weight: 600;
+  color: #1e293b;
+}
+.ore-valore {
+  background: #f1f5f9;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 20px !important;
+  font-weight: 800;
+  color: #B5453A;
+  min-width: 80px;
+  text-align: center;
+}
+.ore-legenda {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.ore-legenda span {
+  font-size: 12px !important;
+  color: #94a3b8;
+  background: #f8fafc;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+@media (max-width: 480px) {
+  .ore-assenza-wrapper { gap: 8px; }
+  .input-ore { width: 70px; }
+  .ore-valore { min-width: 70px; }
+}
 </style>
 </head>
-<body>
+<body class="turni-page">
 <script src="../../scripts/auth.js"></script>
 <script src="../../scripts/nav-script.js"></script>
 <div class="main" id="app">
@@ -218,6 +426,36 @@ input[type="time"]{font-size:15px!important}
 <div class="modal-bg" id="modal-ass" onclick="if(event.target===this)closeModal('modal-ass')">
   <div class="modal-box">
     <h3>Segna Assenza</h3>
+    <div style="margin-bottom:12px;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:8px">ORE DI ASSENZA</div>
+      <div class="ore-assenza-wrapper">
+        <div class="ore-input-group">
+          <label class="ore-sublabel">Ore</label>
+          <input type="number" id="assenza-ore" min="0" max="24" value="0"
+                 oninput="calcolaOreAssenza()" class="input-ore">
+        </div>
+        <div class="ore-input-group">
+          <label class="ore-sublabel">Minuti</label>
+          <select id="assenza-minuti" onchange="calcolaOreAssenza()" class="input-minuti">
+            <option value="0">00</option>
+            <option value="15">15</option>
+            <option value="30">30</option>
+            <option value="45">45</option>
+          </select>
+        </div>
+        <div class="ore-input-group">
+          <label class="ore-sublabel">Valore</label>
+          <div class="ore-valore" id="ore-valore-display">0.00</div>
+        </div>
+      </div>
+      <div class="ore-legenda">
+        <span>0 min = .00</span>
+        <span>15 min = .25</span>
+        <span>30 min = .50</span>
+        <span>45 min = .75</span>
+      </div>
+      <input type="hidden" id="assenza-ore-valore" value="0">
+    </div>
     <div id="modal-ass-list"></div>
     <button onclick="closeModal('modal-ass')" class="btn-s" style="margin-top:12px;width:100%;justify-content:center">Chiudi</button>
   </div>
@@ -466,7 +704,7 @@ function renderMonth() {
     const mD = turniData[mk] || {aperto:!isSun, operatori:[]};
     const pD = turniData[pk] || {aperto:!isSun, operatori:[]};
     const dayKey = `${currentEmporio}|${currentAnno}|${currentMese+1}|${d}`;
-    const dayAssenze = Object.entries(assenzeData).filter(([k])=>k.startsWith(dayKey+'|')).map(([k,v])=>({nome:k.split('|').slice(4).join('|'),tipo:v}));
+    const dayAssenze = Object.entries(assenzeData).filter(([k])=>k.startsWith(dayKey+'|')).map(([k,v])=>({nome:k.split('|').slice(4).join('|'),tipo:getAssenzaTipo(v),ore:getAssenzaOre(v)}));
     const note = noteData[dayKey]||'';
 
     const renderOps = (key, td) => {
@@ -514,10 +752,12 @@ function renderHours() {
       const dayKey=`${currentEmporio}|${currentAnno}|${currentMese+1}|${d}`;
       const assKey=`${dayKey}|${p.nome}`;
       if(assenzeData[assKey]){
-        const tipo=assenzeData[assKey];
-        if(tipo==='ferie') oreFerie+=matH+pomH;
-        else if(tipo==='malattia') oreMalattia+=matH+pomH;
-        else if(tipo==='permesso') orePermesso+=matH+pomH;
+        const tipo=getAssenzaTipo(assenzeData[assKey]);
+        const oreAss=getAssenzaOre(assenzeData[assKey]);
+        const addOre = oreAss > 0 ? oreAss : matH+pomH;
+        if(tipo==='ferie') oreFerie+=addOre;
+        else if(tipo==='malattia') oreMalattia+=addOre;
+        else if(tipo==='permesso') orePermesso+=addOre;
         continue;
       }
       const mD=turniData[mk]; const pD=turniData[pk];
@@ -676,10 +916,17 @@ function setOre(key,idx,val) {
 }
 
 function openAssenzaModal(dayKey) {
+  // Reset ore fields
+  const oreEl = document.getElementById('assenza-ore');
+  const minEl = document.getElementById('assenza-minuti');
+  if (oreEl) oreEl.value = 0;
+  if (minEl) minEl.value = 0;
+  calcolaOreAssenza();
+
   const pers=PERSONALE[currentEmporio]||[];
   document.getElementById('modal-ass-list').innerHTML=pers.map(p=>{
     const assKey=`${dayKey}|${p.nome}`;
-    const current=assenzeData[assKey]||null;
+    const current=getAssenzaTipo(assenzeData[assKey]);
     return `<div style="padding:8px 12px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center">
       <span style="font-size:12px;font-weight:700">${p.nome}</span>
       <div style="display:flex;gap:3px">
@@ -694,7 +941,8 @@ function openAssenzaModal(dayKey) {
 }
 
 function setAssenza(assKey,tipo) {
-  assenzeData[assKey]=tipo;
+  const ore = calcolaOreAssenza();
+  assenzeData[assKey] = ore > 0 ? {tipo, ore} : tipo;
   const parts=assKey.split('|');
   const mk=`${parts[0]}|${parts[1]}|${parts[2]}|${parts[3]}|mattina`;
   if(!turniData[mk]) turniData[mk]={aperto:true,operatori:[]};
@@ -1211,6 +1459,51 @@ if (typeof isAdmin === 'function' && !isAdmin()) {
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){closeModal('modal-add');closeModal('modal-ass');closeModal('modal-copia');}
 });
+
+// ── ORE ASSENZA ─────────────────────────────────────────────────────────────
+
+// Helper per leggere tipo da valore assenzeData (stringa legacy o oggetto {tipo,ore})
+function getAssenzaTipo(val) {
+  if (!val) return null;
+  if (typeof val === 'object') return val.tipo || null;
+  return val;
+}
+function getAssenzaOre(val) {
+  if (!val) return 0;
+  if (typeof val === 'object') return parseFloat(val.ore) || 0;
+  return 0;
+}
+
+const MINUTI_A_DECIMALE = { 0: '.00', 15: '.25', 30: '.50', 45: '.75' };
+
+function calcolaOreAssenza() {
+  const ore = parseInt(document.getElementById('assenza-ore')?.value || 0);
+  const minuti = parseInt(document.getElementById('assenza-minuti')?.value || 0);
+  const decimale = MINUTI_A_DECIMALE[minuti] ?? '.00';
+  const valore = parseFloat(ore + decimale);
+  const display = document.getElementById('ore-valore-display');
+  if (display) display.textContent = valore.toFixed(2);
+  const hidden = document.getElementById('assenza-ore-valore');
+  if (hidden) hidden.value = valore;
+  return valore;
+}
+
+// Calcola totale ore assenza per operatore nell'anno (da dati in memoria)
+function calcolaTotaleOreOperatore(nomeOperatore, anno) {
+  const totali = { ferie: 0, malattia: 0, permesso: 0, assenza: 0, totale: 0 };
+  const prefix = `${currentEmporio}|${anno}|`;
+  Object.entries(assenzeData).forEach(([k, v]) => {
+    if (!k.startsWith(prefix)) return;
+    const parts = k.split('|');
+    const nome = parts.slice(4).join('|');
+    if (nome !== nomeOperatore) return;
+    const tipo = getAssenzaTipo(v) || 'assenza';
+    const ore = getAssenzaOre(v);
+    totali[tipo] = (totali[tipo] || 0) + ore;
+    totali.totale += ore;
+  });
+  return totali;
+}
 </script>
 <script src="../../scripts/nav-script.js"></script>
 </body>
