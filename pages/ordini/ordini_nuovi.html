@@ -343,6 +343,9 @@
             <button id="back-btn" class="hidden text-sm font-bold text-slate-500 hover:text-m361-red transition-colors flex items-center gap-2">
                 <i class="fas fa-arrow-left"></i> Indietro
             </button>
+            <button id="print-btn-header" class="hidden text-sm font-bold bg-slate-700 text-white px-3 py-2 rounded-lg flex items-center gap-2 hover:bg-slate-600 transition-colors" onclick="printPreventivo()">
+                <i class="fas fa-print"></i> Preventivo
+            </button>
             <a href="ordini_incorso.html" class="text-xs font-bold text-slate-500 hover:text-m361-red transition-colors px-3 py-2 rounded-lg border border-slate-200 hover:border-m361-red flex items-center gap-2">
                 <i class="fas fa-clock"></i> In Corso
             </a>
@@ -532,13 +535,6 @@
                 <textarea id="order-notes" rows="2" class="form-input" placeholder="Note..."></textarea>
             </div>
 
-            <!-- PRINT BUTTON (bomboniere only) -->
-            <div id="print-btn-container" class="hidden flex justify-end mb-3">
-                <button type="button" class="btn-print" onclick="printPreventivo()">
-                    <i class="fas fa-print"></i> Stampa Preventivo PDF
-                </button>
-            </div>
-
             <!-- SUBMIT BUTTON -->
             <button type="submit" id="submit-btn" class="btn-submit">
                 <i class="fas fa-save mr-2"></i> Salva Ordine
@@ -648,7 +644,7 @@ document.getElementById('numero-ordine-preview').value = '';
                     document.getElementById('header-title').innerText = 'Nuovo Ordine';
                     document.getElementById('back-btn').classList.add('hidden');
                     document.getElementById('add-group-container').classList.add('hidden');
-                    document.getElementById('print-btn-container').classList.add('hidden');
+                    document.getElementById('print-btn-header').classList.add('hidden');
                     document.getElementById('breakdown-container').classList.add('hidden');
                     groupCount = 0;
                     document.getElementById('groups-container').innerHTML = '';
@@ -679,7 +675,7 @@ document.getElementById('numero-ordine-preview').value = '';
             
             if (type === 'bomboniere') {
                 document.getElementById('add-group-container').classList.remove('hidden');
-                document.getElementById('print-btn-container').classList.remove('hidden');
+                document.getElementById('print-btn-header').classList.remove('hidden');
                 document.getElementById('breakdown-container').classList.remove('hidden');
                addGroup('');
             } else {
@@ -861,7 +857,6 @@ document.getElementById('numero-ordine-preview').value = '';
 }   // ← chiusura corretta di addGroup
         
 function removeGroup(groupId) {
-    if (!confirm('Rimuovere questa tipologia bomboniera?')) return;
     const g = document.getElementById(`group-${groupId}`);
     if (g) g.remove();
     calcGrandTotal();
@@ -1368,12 +1363,45 @@ function calcSubtotal(groupId) {
     confezRow.className = 'confez-sub-row';
     confezRow.innerHTML = `
         <td style="background:rgba(51,65,85,0.15);width:32px;text-align:center;vertical-align:middle;padding:4px !important">
-            <span style="font-size:9px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.06em">CB</span>
+            <input type="checkbox" id="check-conf-${groupId}"
+                   onchange="toggleConfezOptions(${groupId})"
+                   style="width:16px;height:16px;accent-color:#475569;cursor:pointer">
         </td>
         <td class="confez-cell" style="background:rgba(51,65,85,0.15);min-width:80px">
             <input type="text" id="confez-cod-${groupId}" value="CB" class="confez-inp-sm" style="width:70px">
         </td>
         <td class="confez-cell" style="background:rgba(51,65,85,0.15)">
+            <span style="font-size:13px;font-weight:600;color:#334155;padding-left:8px">Confezionamento</span>
+        </td>
+        <td class="confez-cell" style="background:rgba(51,65,85,0.15);text-align:right">
+            <input type="text" id="confez-cost-inp-${groupId}" class="confez-inp-sm" value="€ 3,00"
+                   style="width:80px;text-align:right"
+                   onfocus="clearCurrency(this)"
+                   onblur="formatCurrency(this);calcConfezOmaggio(${groupId})"
+                   oninput="calcConfezOmaggio(${groupId})">
+        </td>
+        <td class="confez-cell" style="background:rgba(51,65,85,0.15);text-align:center">
+            <input type="number" id="confez-qty-${groupId}" value="1" min="0"
+                   oninput="calcConfezOmaggio(${groupId})"
+                   class="confez-inp-sm" style="width:60px;text-align:center">
+        </td>
+        <td class="confez-cell" style="background:rgba(51,65,85,0.15);text-align:center">
+            <input type="checkbox" id="confez-pronta-${groupId}" style="width:16px;height:16px;accent-color:#166534;cursor:pointer">
+        </td>
+        <td colspan="4" style="background:rgba(51,65,85,0.15)"></td>
+        <td style="background:rgba(51,65,85,0.15);text-align:right;padding:0 16px 0 4px;font-weight:700;color:#334155;font-size:12px"
+            id="confez-total-${groupId}">0,00</td>
+        <td style="background:rgba(51,65,85,0.15)"></td>`;
+    tbody.appendChild(confezRow);
+
+    // ── Riga OPZIONI CONFETTI (visibile solo quando checkbox CB è checked) ──
+    const confOpsRow = document.createElement('tr');
+    confOpsRow.id = `confez-opts-${groupId}`;
+    confOpsRow.style.display = 'none';
+    confOpsRow.innerHTML = `
+        <td style="background:rgba(51,65,85,0.08)"></td>
+        <td style="background:rgba(51,65,85,0.08)"></td>
+        <td colspan="10" style="background:rgba(51,65,85,0.08);padding:6px 12px !important">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
                 <label style="display:flex;align-items:center;gap:4px;cursor:pointer">
                     <input type="radio" name="confez-tipo-${groupId}" value="completo"
@@ -1398,27 +1426,8 @@ function calcSubtotal(groupId) {
                            placeholder="Specifica gusto…">
                 </div>
             </div>
-        </td>
-        <td class="confez-cell" style="background:rgba(51,65,85,0.15);text-align:right">
-            <input type="text" id="confez-cost-inp-${groupId}" class="confez-inp-sm" value="€ 3,00"
-                   style="width:80px;text-align:right"
-                   onfocus="clearCurrency(this)"
-                   onblur="formatCurrency(this);calcConfezOmaggio(${groupId})"
-                   oninput="calcConfezOmaggio(${groupId})">
-        </td>
-        <td class="confez-cell" style="background:rgba(51,65,85,0.15);text-align:center">
-            <input type="number" id="confez-qty-${groupId}" value="1" min="0"
-                   oninput="calcConfezOmaggio(${groupId})"
-                   class="confez-inp-sm" style="width:60px;text-align:center">
-        </td>
-        <td class="confez-cell" style="background:rgba(51,65,85,0.15);text-align:center">
-            <input type="checkbox" id="confez-pronta-${groupId}" style="width:16px;height:16px;accent-color:#166534;cursor:pointer">
-        </td>
-        <td colspan="4" style="background:rgba(51,65,85,0.15)"></td>
-        <td style="background:rgba(51,65,85,0.15);text-align:right;padding:0 16px 0 4px;font-weight:700;color:#334155;font-size:12px"
-            id="confez-total-${groupId}">0,00</td>
-        <td style="background:rgba(51,65,85,0.15)"></td>`;
-    tbody.appendChild(confezRow);
+        </td>`;
+    tbody.appendChild(confOpsRow);
 
     // ── Riga ANTEPRIMA CARTONCINO ──
     const cartRow = document.createElement('tr');
@@ -1433,10 +1442,10 @@ function calcSubtotal(groupId) {
                 </div>
                 <div class="cartoncino-preview">
                     <div class="cartoncino-faccia">
-                        <textarea id="cart-fronte-${groupId}" placeholder="Testo lato sinistro…"></textarea>
+                        <textarea id="cart-fronte-${groupId}" placeholder="Fronte…"></textarea>
                     </div>
                     <div class="cartoncino-faccia">
-                        <textarea id="cart-interno-${groupId}" placeholder="Testo lato destro…"></textarea>
+                        <textarea id="cart-interno-${groupId}" placeholder="Retro…"></textarea>
                     </div>
                 </div>
             </div>
@@ -1524,11 +1533,21 @@ function calcOmaggioDisp(groupId) {
     if (el) el.textContent = daOrd;
 }
             
-      function toggleConfezTipo(groupId) {
+function toggleConfezOptions(groupId) {
+    const checked = document.getElementById(`check-conf-${groupId}`)?.checked;
+    const optsRow = document.getElementById(`confez-opts-${groupId}`);
+    const cartRow = document.getElementById(`cartoncino-${groupId}`);
+    if (optsRow) optsRow.style.display = checked ? 'table-row' : 'none';
+    if (!checked && cartRow) cartRow.style.display = 'none';
+    if (checked) toggleConfezTipo(groupId);
+}
+
+function toggleConfezTipo(groupId) {
     const tipo = document.querySelector(`input[name="confez-tipo-${groupId}"]:checked`)?.value;
     const gustoGrp = document.getElementById(`confez-gusto-grp-${groupId}`);
     const cartRow  = document.getElementById(`cartoncino-${groupId}`);
     const costInp  = document.getElementById(`confez-cost-inp-${groupId}`);
+    const flagChecked = document.getElementById(`check-conf-${groupId}`)?.checked;
 
     if (tipo === 'senza_confetti') {
         if (gustoGrp) gustoGrp.style.display = 'none';
@@ -1540,6 +1559,7 @@ function calcOmaggioDisp(groupId) {
         }
     } else {
         if (gustoGrp) gustoGrp.style.display = 'flex';
+        if (flagChecked && cartRow) cartRow.style.display = 'table-row';
         if (costInp) {
             const prev = parseFloat(costInp.dataset.prevPrice) || 3;
             costInp.value = '€ ' + prev.toFixed(2).replace('.', ',');
@@ -1664,11 +1684,9 @@ function toggleGusto(groupId) {
                     <div style="font-size:9px;font-weight:800;text-transform:uppercase;color:#94a3b8;margin-bottom:6px">Cartoncino — ${tipologia}</div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
                         <div style="background:#fffdf7;border:1px dashed #94a3b8;border-radius:4px;padding:8px;text-align:center;font-family:Georgia,serif">
-                            <div style="font-size:9px;color:#94a3b8;margin-bottom:4px">LATO SINISTRO</div>
                             <div style="font-size:12px;white-space:pre-wrap">${fronte||'—'}</div>
                         </div>
                         <div style="background:#fffdf7;border:1px dashed #94a3b8;border-radius:4px;padding:8px;text-align:center;font-family:Georgia,serif">
-                            <div style="font-size:9px;color:#94a3b8;margin-bottom:4px">LATO DESTRO</div>
                             <div style="font-size:12px;white-space:pre-wrap">${interno||'—'}</div>
                         </div>
                     </div>
