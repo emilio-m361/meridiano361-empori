@@ -1555,8 +1555,8 @@ function renderMonthBars() {
 async function reload() {
   renderMonthLabel();
   await loadData();
-  await applicaTurniMese(true);
   render();
+  applicaTurniMese(true);
 }
 
 async function loadData() {
@@ -2462,7 +2462,7 @@ if (typeof isAdmin === 'function' && !isAdmin()) {
 mostraSeraGlobale = localStorage.getItem('turni_mostra_sera') === 'true';
 const _chk = document.getElementById('mostra-sera');
 if (_chk) _chk.checked = mostraSeraGlobale;
-reload().then(() => prePopolaDaGiugno());
+reload();
 // Test connessione Supabase all'avvio
 (async () => {
   if (!db) { console.error('Supabase non inizializzato'); return; }
@@ -3246,29 +3246,21 @@ function selezionaOpTurno(opId, nome, ruolo, data, fascia) {
 }
 
 // ── APPLICA TURNI PREDEFINITI MESE ────────────────────────────────────────
-// Cache predefiniti condivisa per evitare query ripetute nella pre-popolazione
-let _predCache = null;
-
-async function _caricaPredefiniti() {
-  if (_predCache) return _predCache;
-  const { data, error } = await db.from('turni_predefiniti')
-    .select('*, operatori(nome, ruolo)');
-  if (error) throw error;
-  // Filtro JS: esclude non_disponibile (true), include NULL/false; richiede join valido
-  _predCache = (data || []).filter(p => !p.non_disponibile && p.operatori);
-  return _predCache;
-}
-
-async function applicaTurniMese(silenzioso = false, anno = currentAnno, mese = currentMese + 1, datiTurni = null) {
-  if (!db) { if (!silenzioso) showToast('DB non connesso', 'err'); return 0; }
+async function applicaTurniMese(silenzioso = false) {
+  if (!db) { if (!silenzioso) showToast('DB non connesso', 'err'); return; }
   const emporio = currentEmporio;
+  const anno = currentAnno;
+  const mese = currentMese + 1;
   try {
-    const predValidi = await _caricaPredefiniti();
+    const { data: pred, error } = await db.from('turni_predefiniti')
+      .select('*, operatori(nome, ruolo)');
+    if (error) throw error;
+    // Filtro JS: !non_disponibile gestisce sia false che NULL
+    const predValidi = (pred || []).filter(p => !p.non_disponibile && p.operatori);
     if (!predValidi.length) {
       if (!silenzioso) showToast('Nessun turno predefinito nel DB', 'err');
-      return 0;
+      return;
     }
-    const td = datiTurni || turniData;
     const giorniMese = new Date(anno, mese, 0).getDate();
     const NOMI_GIORNO = ['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
     let count = 0;
@@ -3280,50 +3272,25 @@ async function applicaTurniMese(silenzioso = false, anno = currentAnno, mese = c
         for (const fascia of ['mattina', 'pomeriggio']) {
           if (!p[fascia]) continue;
           const key = `${emporio}|${anno}|${mese}|${g}|${fascia}`;
-          if (!td[key]) td[key] = { aperto: true, operatori: [] };
-          if (!td[key].operatori.find(o => o.nome === op.nome)) {
-            td[key].operatori.push({ nome: op.nome, ruolo: op.ruolo });
-            await saveTurno(key, td[key], true);
+          if (!turniData[key]) turniData[key] = { aperto: true, operatori: [] };
+          if (!turniData[key].operatori.find(o => o.nome === op.nome)) {
+            turniData[key].operatori.push({ nome: op.nome, ruolo: op.ruolo });
+            await saveTurno(key, turniData[key], true);
             count++;
           }
         }
       }
     }
-    if (!silenzioso && count > 0) showToast(`✓ ${count} turni predefiniti applicati`);
-    return count;
+    if (count > 0) {
+      render();
+      if (!silenzioso) showToast(`✓ ${count} turni predefiniti applicati`);
+    } else if (!silenzioso) {
+      showToast('Turni predefiniti già presenti ✓');
+    }
   } catch(e) {
     console.error('[predefiniti]', e);
     if (!silenzioso) showToast('Errore: ' + e.message, 'err');
-    return 0;
   }
-}
-
-// Pre-popola i mesi da giugno 2026 in avanti (eseguita una volta al caricamento)
-async function prePopolaDaGiugno() {
-  if (!db) return;
-  try {
-    await _caricaPredefiniti(); // carica cache una volta sola
-    const oggi = new Date();
-    const emporio = currentEmporio;
-    // Popola i prossimi 7 mesi a partire da giugno 2026
-    const start = new Date(2026, 5, 1); // giugno 2026
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(start.getFullYear(), start.getMonth() + i, 1);
-      const a = d.getFullYear();
-      const m = d.getMonth() + 1;
-      // Carica turni già esistenti per questo mese
-      const { data: rows } = await db.from('turni').select('*')
-        .eq('emporio', emporio).eq('anno', a).eq('mese', m);
-      const td = {};
-      (rows || []).forEach(r => {
-        td[`${r.emporio}|${r.anno}|${r.mese}|${r.giorno}|${r.turno}`] = { aperto: r.aperto, operatori: r.operatori || [] };
-      });
-      await applicaTurniMese(true, a, m, td);
-    }
-    // Ricarica il mese corrente nel calendario
-    await loadData();
-    render();
-  } catch(e) { console.error('[prePopola]', e); }
 }
 </script>
 <script src="../../scripts/auth.js"></script>
