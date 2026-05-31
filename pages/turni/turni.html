@@ -2154,12 +2154,13 @@ async function aggiungiOperatoreTurno(data, fascia, btnEl = null) {
   try {
     const { data: ops } = await db.from('operatori')
       .select('id,nome,ruolo,emporio,empori_aggiuntivi')
-      .eq('attivo', true)
+      .neq('attivo', false)  // include attivo=true e attivo=null
       .order('nome');
     const emporio = currentEmporio;
     const filtrati = (ops || []).filter(o =>
       o.emporio === emporio || (o.empori_aggiuntivi || []).includes(emporio)
     );
+    console.log('[dropdown] operatori per', emporio, ':', filtrati.map(o => o.nome));
     if (!filtrati.length) {
       showToast('Nessun operatore per ' + emporio, 'err'); return;
     }
@@ -3110,15 +3111,17 @@ async function aggiungiOpEmporio() {
 
 async function rimuoviOpEmporio(opId, nome) {
   const emporio = currentEmporio;
-  if (!confirm(`Rimuovere ${nome} dall'emporio?`)) return;
+  if (!confirm(`Rimuovere ${nome} dall'emporio ${emporio}?\n\nSe è il suo emporio principale, verrà impostato come "Non assegnato".`)) return;
   try {
     const { data: op } = await db.from('operatori').select('emporio,empori_aggiuntivi').eq('id', opId).single();
+    let aggiornamento;
     if (op?.emporio === emporio) {
-      alert('Non puoi rimuovere un operatore dal suo emporio principale. Vai in Impostazioni per cambiare emporio principale.');
-      return;
+      aggiornamento = { emporio: 'Non assegnato' };
+    } else {
+      const extra = (op?.empori_aggiuntivi || []).filter(e => e !== emporio);
+      aggiornamento = { empori_aggiuntivi: extra };
     }
-    const extra = (op?.empori_aggiuntivi || []).filter(e => e !== emporio);
-    const { error } = await db.from('operatori').update({ empori_aggiuntivi: extra }).eq('id', opId);
+    const { error } = await db.from('operatori').update(aggiornamento).eq('id', opId);
     if (error) throw error;
     showToast("Operatore rimosso dall'emporio ✓");
     caricaAnagraficaOperatori();
