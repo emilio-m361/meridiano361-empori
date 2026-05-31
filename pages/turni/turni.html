@@ -832,6 +832,86 @@ input:focus, select:focus, textarea:focus {
 .chip-operatore-turno { border-radius: 10px !important; }
 .chip-nome-cal { border-radius: 5px !important; }
 
+/* ── CELLA STATO: VERDE/ROSSO PIENO ──────────────────────────────────────── */
+.col-stato-cell {
+  width: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  padding: 0 !important;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+}
+.col-stato-cell.aperto { background: #16A34A !important; }
+.col-stato-cell.chiuso { background: #B5453A !important; }
+.col-stato-cell .stato-icon {
+  background: transparent !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 40px !important;
+  border-radius: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Stato nella legenda — mantieni il vecchio stile */
+.legenda-item .stato-icon {
+  background: rgba(22,163,74,0.12) !important;
+  color: #16A34A !important;
+  border: 2px solid rgba(22,163,74,0.3) !important;
+  border-radius: 50% !important;
+  width: 18px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+}
+.legenda-item .stato-icon.chiuso {
+  background: var(--m-rosso-light) !important;
+  color: var(--m-rosso) !important;
+  border-color: rgba(181,69,58,0.3) !important;
+}
+
+/* ── CHIP NOME OPERATORE: GRIGIO UNIFORME ────────────────────────────────── */
+.chip-nome-cal {
+  display: inline-block !important;
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 5px !important;
+  padding: 2px 7px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #475569 !important;
+  margin: 1px 2px !important;
+  white-space: nowrap !important;
+}
+.col-mattina .chip-nome-cal,
+.col-pomeriggio .chip-nome-cal,
+.col-sera .chip-nome-cal,
+.col-nomi .chip-nome-cal {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #475569 !important;
+}
+.chip-nome-cal::before { display: none !important; }
+
+/* ── RIGHE CALENDARIO PULITE ─────────────────────────────────────────────── */
+tr.riga-giorno.tutto-aperto,
+tr.riga-giorno.parzialmente-aperto,
+tr.riga-giorno.tutto-chiuso { background: transparent !important; }
+.riga-giorno td {
+  background: transparent !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  vertical-align: middle !important;
+}
+.riga-giorno:nth-child(even) td { background: #fafafa !important; }
+.riga-giorno:hover td { background: #f8fafc !important; }
+.riga-giorno.festivo td { background: transparent !important; }
+.riga-giorno.festivo:nth-child(even) td { background: #fafafa !important; }
+.riga-giorno.festivo .giorno-numero { color: #B5453A !important; }
+
 /* === GESTIONE OPERATORI SUB-TABS === */
 .op-sub-tabs {
   display: flex; gap: 4px; margin-bottom: 16px;
@@ -885,12 +965,12 @@ input:focus, select:focus, textarea:focus {
             <th rowspan="2">Note</th>
           </tr>
           <tr>
-            <th class="col-stato">St.</th>
-            <th class="col-nomi">Op.</th>
-            <th class="col-stato col-pom">St.</th>
-            <th class="col-nomi col-pom">Op.</th>
-            <th class="col-stato col-sera">St.</th>
-            <th class="col-nomi col-sera">Op.</th>
+            <th class="col-stato"></th>
+            <th class="col-nomi"></th>
+            <th class="col-stato col-pom"></th>
+            <th class="col-nomi col-pom"></th>
+            <th class="col-stato col-sera"></th>
+            <th class="col-nomi col-sera"></th>
           </tr>
         </thead>
         <tbody id="cal-tbody"></tbody>
@@ -899,9 +979,7 @@ input:focus, select:focus, textarea:focus {
         <div class="legenda-item"><span class="stato-icon aperto" style="pointer-events:none;font-size:10px;width:18px;height:18px">✓</span><span>Aperto</span></div>
         <div class="legenda-item"><span class="stato-icon chiuso" style="pointer-events:none;font-size:10px;width:18px;height:18px">✗</span><span>Chiuso</span></div>
         <div class="legenda-item"><span class="legenda-dot" style="background:#D97706"></span><span>Parziale</span></div>
-        <div class="legenda-item"><span class="chip-nome-cal" style="background:#fef9c3;color:#92400e;border-color:#fde68a;pointer-events:none">Mat.</span></div>
-        <div class="legenda-item"><span class="chip-nome-cal" style="background:#ede9fe;color:var(--m-scuro);border-color:#c4b5fd;pointer-events:none">Pom.</span></div>
-        <div class="legenda-item"><span class="chip-nome-cal" style="background:#d1fae5;color:var(--m-scuro);border-color:#a7f3d0;pointer-events:none">Ser.</span></div>
+        <div class="legenda-item"><span class="chip-nome-cal" style="pointer-events:none">Op.</span></div>
       </div>
     </div>
   </div>
@@ -1324,22 +1402,25 @@ function renderMonth() {
       ).join('')+`<span class="op-add" onclick="openAddModal('${key}','${fasciaLabel} ${d} ${MESISHORT[currentMese]}')"><i class="fas fa-plus"></i></span>`;
     };
 
+    const stM = mD.aperto ? 'aperto' : 'chiuso';
+    const stP = pD.aperto ? 'aperto' : 'chiuso';
+    const stS = sD.aperto ? 'aperto' : 'chiuso';
     rows.push(`
-      <tr class="riga-giorno ${statoGiorno}${isSun?' festivo':''}">
+      <tr class="riga-giorno${isSun?' festivo':''}">
         <td class="col-giorno">
           <div class="giorno-numero">${d}</div>
           <div class="giorno-nome">${GIORNI[dow]}</div>
         </td>
-        <td class="col-stato" onclick="toggleShift('${mk}')">
-          <span class="stato-icon ${mD.aperto?'aperto':'chiuso'}">${mD.aperto?'✓':'✗'}</span>
+        <td class="col-stato-cell ${stM}" onclick="toggleShift('${mk}')">
+          <span class="stato-icon">${mD.aperto?'✓':'✗'}</span>
         </td>
         <td class="col-nomi col-mattina"><div class="op-list">${renderOps(mk,mD,'Mattina')}</div></td>
-        <td class="col-stato col-pom" onclick="toggleShift('${pk}')">
-          <span class="stato-icon ${pD.aperto?'aperto':'chiuso'}">${pD.aperto?'✓':'✗'}</span>
+        <td class="col-stato-cell col-pom ${stP}" onclick="toggleShift('${pk}')">
+          <span class="stato-icon">${pD.aperto?'✓':'✗'}</span>
         </td>
         <td class="col-nomi col-pom col-pomeriggio"><div class="op-list">${renderOps(pk,pD,'Pomeriggio')}</div></td>
-        <td class="col-stato col-sera" onclick="toggleShift('${sk}')">
-          <span class="stato-icon ${sD.aperto?'aperto':'chiuso'}">${sD.aperto?'✓':'✗'}</span>
+        <td class="col-stato-cell col-sera ${stS}" onclick="toggleShift('${sk}')">
+          <span class="stato-icon">${sD.aperto?'✓':'✗'}</span>
         </td>
         <td class="col-nomi col-sera"><div class="op-list">${renderOps(sk,sD,'Sera')}</div></td>
         <td>
