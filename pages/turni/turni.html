@@ -2153,12 +2153,20 @@ function salvaOrario(data, fascia, campo, valore) {
 async function aggiungiOperatoreTurno(data, fascia, btnEl = null) {
   try {
     const { data: ops, error: dbErr } = await db.from('operatori')
-      .select('id,nome,ruolo')
+      .select('id,nome,ruolo,emporio,empori_aggiuntivi')
       .neq('attivo', false)
       .order('nome');
     if (dbErr) throw dbErr;
-    if (!ops?.length) { showToast('Nessun operatore nel DB', 'err'); return; }
-    mostraDropdownOperatori(data, fascia, ops, btnEl);
+    const emporio = currentEmporio;
+    const filtrati = (ops || []).filter(o => {
+      const emp = (o.emporio || '').trim();
+      const aggiuntivi = Array.isArray(o.empori_aggiuntivi) ? o.empori_aggiuntivi : [];
+      return emp === emporio || aggiuntivi.includes(emporio);
+    });
+    if (!filtrati.length) {
+      showToast(`Nessun operatore assegnato a ${emporio}`, 'err'); return;
+    }
+    mostraDropdownOperatori(data, fascia, filtrati, btnEl);
   } catch(e) { showToast('Errore: ' + e.message, 'err'); }
 }
 
