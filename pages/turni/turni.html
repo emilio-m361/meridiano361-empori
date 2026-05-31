@@ -1553,6 +1553,8 @@ async function reload() {
   renderMonthLabel();
   await loadData();
   render();
+  // Applica predefiniti in background (silenzioso, non blocca il rendering)
+  applicaTurniMese(true);
 }
 
 async function loadData() {
@@ -3125,24 +3127,41 @@ function selezionaOpTurno(opId, nome, ruolo, data, fascia) {
 }
 
 // ── APPLICA TURNI PREDEFINITI MESE (Problema 5) ───────────────────────────
-async function applicaTurniMese() {
-  if (!db) { showToast('DB non connesso', 'err'); return; }
+async function applicaTurniMese(silenzioso = false) {
+  if (!db) { if (!silenzioso) showToast('DB non connesso', 'err'); return; }
   const emporio = currentEmporio;
   const anno = currentAnno;
   const mese = currentMese + 1;
   try {
-    const { data: pred } = await db.from('turni_predefiniti')
-      .select('*, operatori!inner(id,nome,ruolo,emporio,empori_aggiuntivi)')
-      .eq('non_disponibile', false);
-    if (!pred?.length) { showToast('Nessun turno predefinito trovato', 'err'); return; }
+    // Senza !inner (include righe anche se join è null)
+    // Senza .eq('non_disponibile',false) perché NULL ≠ false in Supabase
+    const { data: pred, error } = await db.from('turni_predefiniti')
+      .select('*, operatori(id,nome,ruolo,emporio,empori_aggiuntivi)');
+    if (error) throw error;
+    console.log('[predefiniti] totale righe DB:', pred?.length, 'emporio:', emporio);
+
+    if (!pred?.length) {
+      if (!silenzioso) showToast('Nessun turno predefinito nel DB', 'err');
+      return;
+    }
+
+    // Filtro in JS: esclude non_disponibile (anche NULL=false), richiede operatori validi
     const predEmporio = pred.filter(p =>
-      p.operatori?.emporio === emporio ||
-      (p.operatori?.empori_aggiuntivi || []).includes(emporio)
+      !p.non_disponibile &&
+      p.operatori &&
+      (p.operatori.emporio === emporio || (p.operatori.empori_aggiuntivi || []).includes(emporio))
     );
-    if (!predEmporio.length) { showToast('Nessun predefinito per ' + emporio, 'err'); return; }
+    console.log('[predefiniti] per emporio', emporio, ':', predEmporio.length);
+
+    if (!predEmporio.length) {
+      if (!silenzioso) showToast('Nessun predefinito per ' + emporio, 'err');
+      return;
+    }
+
     const giorniMese = new Date(anno, mese, 0).getDate();
     const NOMI_GIORNO = ['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
     let count = 0;
+
     for (let g = 1; g <= giorniMese; g++) {
       const ds = `${anno}-${String(mese).padStart(2,'0')}-${String(g).padStart(2,'0')}`;
       const nomeGiorno = NOMI_GIORNO[new Date(ds + 'T12:00:00').getDay()];
@@ -3161,9 +3180,18 @@ async function applicaTurniMese() {
         }
       }
     }
-    showToast(`✓ Predefiniti applicati: ${count} turni aggiunti`);
-    render();
-  } catch(e) { showToast('Errore: ' + e.message, 'err'); }
+
+    console.log('[predefiniti] turni aggiunti:', count);
+    if (count > 0) {
+      render();
+      if (!silenzioso) showToast(`✓ Predefiniti applicati: ${count} turni aggiunti`);
+    } else if (!silenzioso) {
+      showToast('Tutti i turni predefiniti già presenti ✓');
+    }
+  } catch(e) {
+    console.error('[predefiniti] errore:', e);
+    if (!silenzioso) showToast('Errore: ' + e.message, 'err');
+  }
 }
 </script>
 <script src="../../scripts/auth.js"></script>
