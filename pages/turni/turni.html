@@ -1412,7 +1412,7 @@ let currentAnno = new Date().getFullYear();
 let currentView = 'mese';
 let currentSubSezione = 'calendario';
 let mostraSeraGlobale = false;
-let turniData = {}, assenzeData = {}, noteData = {};
+let turniData = {}, assenzeData = {}, noteData = {}, rimossiData = {};
 let storeHoursData = {...DEFAULTHOURS};
 let yearData = {}, yearAssenzeData = {}, yearNoteData = {};
 
@@ -1565,7 +1565,7 @@ async function reload() {
 
 async function loadData() {
   if (!db) { showToast('DB non disponibile','err'); return; }
-  turniData = {}; assenzeData = {}; noteData = {};
+  turniData = {}; assenzeData = {}; noteData = {}; rimossiData = {};
   try {
     const { data, error } = await db.from('turni').select('*')
       .eq('emporio', currentEmporio)
@@ -1575,6 +1575,7 @@ async function loadData() {
     (data||[]).forEach(r => {
       const key = `${r.emporio}|${r.anno}|${r.mese}|${r.giorno}|${r.turno}`;
       turniData[key] = {aperto: r.aperto, operatori: r.operatori||[]};
+      if (r.rimossi_manuali?.length) rimossiData[key] = new Set(r.rimossi_manuali);
       const dayKey = `${r.emporio}|${r.anno}|${r.mese}|${r.giorno}`;
       if (r.assenze) Object.assign(assenzeData, r.assenze);
       if (r.note) noteData[dayKey] = r.note;
@@ -1600,7 +1601,8 @@ async function saveTurno(key, turnoObj, quiet = false) {
       aperto: turnoObj.aperto,
       operatori: turnoObj.operatori,
       assenze: dayAssenze,
-      note: dayNote
+      note: dayNote,
+      rimossi_manuali: [...(rimossiData[key] || [])]
     };
     console.log('[saveTurno] payload:', JSON.stringify(payload));
     const { data, error } = await db.from('turni').upsert(payload, {onConflict:'emporio,anno,mese,giorno,turno'}).select();
@@ -1877,7 +1879,10 @@ function addOp(key,nome,ruolo,withManualHrs) {
 }
 
 function removeOp(key,idx) {
+  const nomeRimosso = turniData[key].operatori[idx].nome;
   turniData[key].operatori.splice(idx,1);
+  if (!rimossiData[key]) rimossiData[key] = new Set();
+  rimossiData[key].add(nomeRimosso);
   saveTurno(key,turniData[key]);
   render();
 }
@@ -2173,7 +2178,10 @@ async function aggiungiOperatoreTurno(data, fascia, btnEl = null) {
 
 function rimuoviChipOp(key, idx) {
   if (!turniData[key]) return;
+  const nomeRimosso = turniData[key].operatori[idx].nome;
   turniData[key].operatori.splice(idx, 1);
+  if (!rimossiData[key]) rimossiData[key] = new Set();
+  rimossiData[key].add(nomeRimosso);
   saveTurno(key, turniData[key]);
   const parts = key.split('|');
   const fascia = parts[4];
@@ -2191,6 +2199,7 @@ function aggiungiChipOperatore(data, fascia, opId, opNome) {
   const pers = (PERSONALE[currentEmporio]||[]).find(p => p.nome === opNome);
   const ruolo = pers?.ruolo || 'volontario';
   turniData[key].operatori.push({nome:opNome, ruolo});
+  rimossiData[key]?.delete(opNome);
   saveTurno(key, turniData[key]);
   const chipsDiv = document.getElementById(`ops-${fascia}-${data}`);
   if (chipsDiv) {
@@ -3253,6 +3262,7 @@ function selezionaOpTurno(opId, nome, ruolo, data, fascia) {
     showToast(nome + ' già in questo turno', 'err'); return;
   }
   turniData[key].operatori.push({ nome, ruolo });
+  rimossiData[key]?.delete(nome);
   saveTurno(key, turniData[key]);
   render();
 }
@@ -3296,6 +3306,7 @@ async function applicaTurniMese(silenzioso = false) {
           const key = `${emporio}|${anno}|${mese}|${g}|${fascia}`;
           if (!turniData[key]) turniData[key] = { aperto: true, operatori: [] };
           if (!turniData[key].operatori.find(o => o.nome === op.nome)) {
+            if (rimossiData[key]?.has(op.nome)) continue;
             turniData[key].operatori.push({ nome: op.nome, ruolo: op.ruolo });
             await saveTurno(key, turniData[key], true);
             count++;
@@ -3326,8 +3337,11 @@ async function applicaTurniPredefiniti(anno, mese) {
     const { data: rows } = await db.from('turni').select('*')
       .eq('emporio', emporio).eq('anno', anno).eq('mese', mese);
     const td = {};
+    const rimossiMese = {};
     (rows || []).forEach(r => {
-      td[`${r.emporio}|${r.anno}|${r.mese}|${r.giorno}|${r.turno}`] = { aperto: r.aperto, operatori: r.operatori || [] };
+      const k = `${r.emporio}|${r.anno}|${r.mese}|${r.giorno}|${r.turno}`;
+      td[k] = { aperto: r.aperto, operatori: r.operatori || [] };
+      if (r.rimossi_manuali?.length) rimossiMese[k] = new Set(r.rimossi_manuali);
     });
 
     const giorniMese = new Date(anno, mese, 0).getDate();
@@ -3342,12 +3356,14 @@ async function applicaTurniPredefiniti(anno, mese) {
           const key = `${emporio}|${anno}|${mese}|${g}|${fascia}`;
           if (!td[key]) td[key] = { aperto: true, operatori: [] };
           if (!td[key].operatori.find(o => o.nome === op.nome)) {
+            if (rimossiMese[key]?.has(op.nome)) continue;
             td[key].operatori.push({ nome: op.nome, ruolo: op.ruolo });
             const parts = key.split('|');
             await db.from('turni').upsert({
               emporio: parts[0], anno: parseInt(parts[1]), mese: parseInt(parts[2]),
               giorno: parseInt(parts[3]), turno: parts[4],
-              aperto: td[key].aperto, operatori: td[key].operatori
+              aperto: td[key].aperto, operatori: td[key].operatori,
+              rimossi_manuali: [...(rimossiMese[key] || [])]
             }, { onConflict: 'emporio,anno,mese,giorno,turno' });
             totale++;
           }
