@@ -192,6 +192,9 @@ input[type="time"]{font-size:15px!important}
   .orario-campo input[type="time"]{width:100%}
 }
 
+.pred-footer{display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid #f1f5f9;margin-top:4px}
+.pred-feedback{font-size:13px;font-weight:600;color:#16A34A}
+.op-ruolo-label{font-size:11px;color:#94a3b8;font-weight:500}
 /* === FONT AUMENTATO TURNI — scoped a #app per non rompere navbar === */
 .turni-page #app,
 .turni-page #app * {
@@ -2981,11 +2984,17 @@ async function caricaAnagraficaOperatori() {
     const opEmporio = (tuttiOp || []).filter(o =>
       o.emporio === emporio || (o.empori_aggiuntivi || []).includes(emporio)
     );
-    renderAnagraficaOperatori(opEmporio, tuttiOp || []);
+    const ids = opEmporio.map(o => o.id);
+    let predefiniti = [];
+    if (ids.length) {
+      const { data: pred } = await db.from('turni_predefiniti').select('*').in('operatore_id', ids);
+      predefiniti = pred || [];
+    }
+    renderAnagraficaOperatori(opEmporio, tuttiOp || [], predefiniti);
   } catch(e) { if (container) container.innerHTML = `<p style="padding:20px;color:#B5453A">Errore: ${e.message}</p>`; }
 }
 
-function renderAnagraficaOperatori(opEmporio, tuttiOp) {
+function renderAnagraficaOperatori(opEmporio, tuttiOp, predefiniti = []) {
   const container = document.getElementById('opsub-anagrafica');
   if (!container) return;
   const emporio = currentEmporio;
@@ -2996,30 +3005,9 @@ function renderAnagraficaOperatori(opEmporio, tuttiOp) {
         <h3>Operatori — ${emporio}</h3>
         <button class="btn-aggiungi-op-emp" onclick="mostraAggiungiOp()">+ Aggiungi operatore</button>
       </div>
-      ${opEmporio.length ? `
-      <div style="overflow-x:auto">
-        <table class="tabella-op-turni">
-          <thead><tr>
-            <th>Nome</th><th>Ruolo</th><th>Emporio princ.</th><th>Azioni</th>
-          </tr></thead>
-          <tbody>
-            ${opEmporio.map(op => `
-              <tr>
-                <td><div class="op-nome-row">
-                  <div class="op-av">${op.nome.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase()}</div>
-                  <span>${op.nome}</span>
-                </div></td>
-                <td><span class="badge-ruolo ${op.ruolo}">${labelRuolo(op.ruolo)}</span></td>
-                <td style="color:#64748b;font-size:13px">${op.emporio}</td>
-                <td>
-                  ${op.emporio === emporio
-                    ? '<span style="font-size:11px;color:#94a3b8">Principale</span>'
-                    : `<button class="btn-rimuovi-op-emp" onclick="rimuoviOpEmporio('${op.id}','${op.nome.replace(/'/g,"\\'")}')">✕</button>`}
-                </td>
-              </tr>`).join('')}
-          </tbody>
-        </table>
-      </div>` : '<p style="color:#94a3b8;font-size:13px;padding:12px 0">Nessun operatore in questo emporio.</p>'}
+      ${opEmporio.length
+        ? opEmporio.map(op => rigaOperatoreTurni(op, predefiniti)).join('')
+        : '<p style="color:#94a3b8;font-size:13px;padding:12px 0">Nessun operatore in questo emporio.</p>'}
       <div id="modal-aggiungi-op-emp" style="display:none;margin-top:20px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:16px">
         <h4 style="margin:0 0 12px;font-size:15px;font-weight:700">Aggiungi operatore all'emporio</h4>
         <select id="select-op-da-aggiungere" class="f-sel" style="margin-bottom:12px;display:block">
@@ -3029,6 +3017,72 @@ function renderAnagraficaOperatori(opEmporio, tuttiOp) {
         <div style="display:flex;gap:8px">
           <button class="btn-p" onclick="aggiungiOpEmporio()">✓ Aggiungi</button>
           <button class="btn-s" onclick="document.getElementById('modal-aggiungi-op-emp').style.display='none'">Annulla</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function rigaOperatoreTurni(op, predefiniti) {
+  const pred = predefiniti.filter(p => p.operatore_id === op.id);
+  const predMap = {};
+  pred.forEach(p => { predMap[p.giorno] = p; });
+  const BR = {Lunedì:'Lun',Martedì:'Mar',Mercoledì:'Mer',Giovedì:'Gio',Venerdì:'Ven',Sabato:'Sab',Domenica:'Dom'};
+  const riepilogo = GIORNI_SETT
+    .filter(g => predMap[g] && !predMap[g].non_disponibile && (predMap[g].mattina || predMap[g].pomeriggio))
+    .map(g => {
+      const p = predMap[g];
+      const t = [];
+      if (p.mattina) t.push('Mat');
+      if (p.pomeriggio) t.push('Pom');
+      return (BR[g] || g.slice(0,3)) + ':' + t.join('+');
+    }).join(' · ') || 'Nessun turno predefinito';
+  const iniziali = op.nome.split(' ').filter(Boolean).map(w=>w[0]).join('').substring(0,2).toUpperCase();
+  const grigliaHtml = GIORNI_SETT.map(g => {
+    const p = predMap[g] || {};
+    const gid = g.replace(/à/g,'a');
+    return `
+      <div class="riga-giorno-default" id="pred-${op.id}-${gid}">
+        <span class="giorno-label">${g.substring(0,3)}</span>
+        <label class="check-fascia">
+          <input type="checkbox" ${p.mattina ? 'checked' : ''}
+                 data-op="${op.id}" data-giorno="${g}" data-fascia="mattina"
+                 onchange="aggiornaPredefinito('${op.id}','${g}','mattina',this.checked)">
+          <span>Mattina</span>
+        </label>
+        <label class="check-fascia">
+          <input type="checkbox" ${p.pomeriggio ? 'checked' : ''}
+                 data-op="${op.id}" data-giorno="${g}" data-fascia="pomeriggio"
+                 onchange="aggiornaPredefinito('${op.id}','${g}','pomeriggio',this.checked)">
+          <span>Pomeriggio</span>
+        </label>
+        <label class="check-fascia">
+          <input type="checkbox" ${p.non_disponibile ? 'checked' : ''}
+                 data-op="${op.id}" data-giorno="${g}" data-fascia="non_disponibile"
+                 onchange="aggiornaPredefinito('${op.id}','${g}','non_disponibile',this.checked)">
+          <span style="color:#B5453A">Non disp.</span>
+        </label>
+      </div>`;
+  }).join('');
+  return `
+    <div class="card-turno-operatore" data-id="${op.id}">
+      <div class="card-op-header" onclick="toggleTurniOp('${op.id}')">
+        <div class="op-info">
+          <div class="op-avatar-small">${iniziali}</div>
+          <div>
+            <div class="op-nome-turno">${op.nome}</div>
+            <div class="op-ruolo-label">${labelRuolo(op.ruolo)}</div>
+          </div>
+        </div>
+        <span class="riepilogo-turno-default" id="riepilogo-pred-${op.id}">${riepilogo}</span>
+        <span class="freccia-op" id="freccia-pred-${op.id}">▶</span>
+      </div>
+      <div class="card-op-corpo" id="corpo-pred-${op.id}" style="display:none">
+        <div class="turni-default-griglia">${grigliaHtml}</div>
+        <div class="pred-footer">
+          <button class="btn-p" onclick="salvaTurniPredefiniti('${op.id}')">
+            <i class="fas fa-check"></i> Salva turno predefinito
+          </button>
+          <span class="pred-feedback" id="feedback-pred-${op.id}" style="display:none">✓ Salvato!</span>
         </div>
       </div>
     </div>`;
@@ -3068,6 +3122,68 @@ async function rimuoviOpEmporio(opId, nome) {
     if (error) throw error;
     showToast("Operatore rimosso dall'emporio ✓");
     caricaAnagraficaOperatori();
+  } catch(e) { showToast('Errore: ' + e.message, 'err'); }
+}
+
+// ── TURNI PREDEFINITI ANAGRAFICA ──────────────────────────────────────────
+
+function toggleTurniOp(opId) {
+  const corpo = document.getElementById('corpo-pred-' + opId);
+  const freccia = document.getElementById('freccia-pred-' + opId);
+  if (!corpo) return;
+  const aperto = corpo.style.display !== 'none';
+  corpo.style.display = aperto ? 'none' : 'block';
+  if (freccia) freccia.textContent = aperto ? '▶' : '▼';
+}
+
+function aggiornaPredefinito(opId, giorno, fascia, valore) {
+  const gid = giorno.replace(/à/g,'a');
+  const card = document.getElementById(`pred-${opId}-${gid}`);
+  if (!card) return;
+  // Non disponibile → deseleziona mattina e pomeriggio
+  if (fascia === 'non_disponibile' && valore) {
+    card.querySelectorAll('input[data-fascia="mattina"],input[data-fascia="pomeriggio"]')
+      .forEach(cb => { cb.checked = false; });
+  }
+  // Mattina o pomeriggio → deseleziona non_disponibile
+  if ((fascia === 'mattina' || fascia === 'pomeriggio') && valore) {
+    const ndCb = card.querySelector('input[data-fascia="non_disponibile"]');
+    if (ndCb) ndCb.checked = false;
+  }
+}
+
+async function salvaTurniPredefiniti(opId) {
+  if (!db) { showToast('DB non connesso', 'err'); return; }
+  const daSalvare = GIORNI_SETT.map(g => {
+    const gid = g.replace(/à/g,'a');
+    const card = document.getElementById(`pred-${opId}-${gid}`);
+    return {
+      operatore_id: opId,
+      giorno: g,
+      mattina:          card?.querySelector('input[data-fascia="mattina"]')?.checked || false,
+      pomeriggio:       card?.querySelector('input[data-fascia="pomeriggio"]')?.checked || false,
+      non_disponibile:  card?.querySelector('input[data-fascia="non_disponibile"]')?.checked || false,
+    };
+  });
+  try {
+    const { error } = await db.from('turni_predefiniti')
+      .upsert(daSalvare, { onConflict: 'operatore_id,giorno' });
+    if (error) throw error;
+    // Aggiorna riepilogo nella header card
+    const BR = {Lunedì:'Lun',Martedì:'Mar',Mercoledì:'Mer',Giovedì:'Gio',Venerdì:'Ven',Sabato:'Sab',Domenica:'Dom'};
+    const riepilogo = daSalvare
+      .filter(p => !p.non_disponibile && (p.mattina || p.pomeriggio))
+      .map(p => {
+        const t = [];
+        if (p.mattina) t.push('Mat');
+        if (p.pomeriggio) t.push('Pom');
+        return (BR[p.giorno] || p.giorno.slice(0,3)) + ':' + t.join('+');
+      }).join(' · ') || 'Nessun turno predefinito';
+    const el = document.getElementById(`riepilogo-pred-${opId}`);
+    if (el) el.textContent = riepilogo;
+    const fb = document.getElementById(`feedback-pred-${opId}`);
+    if (fb) { fb.style.display = 'inline'; setTimeout(() => { fb.style.display = 'none'; }, 2000); }
+    showToast('Turno predefinito salvato ✓', 'ok');
   } catch(e) { showToast('Errore: ' + e.message, 'err'); }
 }
 
