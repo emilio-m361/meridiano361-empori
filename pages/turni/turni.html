@@ -1032,7 +1032,6 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
     <div class="card-r">
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
         <button class="btn-pom-toggle" style="margin-bottom:0" onclick="this.closest('.card-r').querySelector('.cal-table').classList.toggle('show-pom');this.querySelector('span').textContent=this.closest('.card-r').querySelector('.cal-table').classList.contains('show-pom')?'Nascondi Pomeriggio':'Mostra Pomeriggio'"><i class="fas fa-eye"></i><span>Mostra Pomeriggio</span></button>
-        <button class="btn-s" onclick="prePopolaMesiBtn(this)" title="Popola turni predefiniti per i prossimi 7 mesi"><i class="fas fa-calendar-check"></i> Popola mesi</button>
       </div>
       <div class="tscroll"><table class="cal-table">
         <thead>
@@ -1463,15 +1462,20 @@ function mostraOpSub(quale) {
 }
 
 // ── NAVIGAZIONE MESE ───────────────────────────────────────────────────────
-function mesePrecedente() {
+async function mesePrecedente() {
   if (currentMese === 0) { currentMese = 11; currentAnno--; }
   else { currentMese--; }
-  reload();
+  await reload();
+  const oggi = new Date();
+  if (new Date(currentAnno, currentMese, 1) >= new Date(oggi.getFullYear(), oggi.getMonth(), 1)) {
+    await applicaTurniPredefiniti(currentAnno, currentMese + 1);
+  }
 }
-function meseSuccessivo() {
+async function meseSuccessivo() {
   if (currentMese === 11) { currentMese = 0; currentAnno++; }
   else { currentMese++; }
-  reload();
+  await reload();
+  await applicaTurniPredefiniti(currentAnno, currentMese + 1);
 }
 
 function renderMonthLabel() {
@@ -2463,6 +2467,14 @@ mostraSeraGlobale = localStorage.getItem('turni_mostra_sera') === 'true';
 const _chk = document.getElementById('mostra-sera');
 if (_chk) _chk.checked = mostraSeraGlobale;
 reload();
+// Popola automaticamente turni predefiniti per i prossimi 2 mesi
+(async () => {
+  const oggi = new Date();
+  for (let m = 1; m <= 2; m++) {
+    const d = new Date(oggi.getFullYear(), oggi.getMonth() + m, 1);
+    await applicaTurniPredefiniti(d.getFullYear(), d.getMonth() + 1);
+  }
+})();
 // Test connessione Supabase all'avvio
 (async () => {
   if (!db) { console.error('Supabase non inizializzato'); return; }
@@ -3303,71 +3315,51 @@ async function applicaTurniMese(silenzioso = false) {
   }
 }
 
-async function prePopolaMesiBtn(btnEl) {
-  if (!db) { showToast('DB non connesso', 'err'); return; }
-  btnEl.disabled = true;
-  const origHtml = btnEl.innerHTML;
-  btnEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Caricamento…';
-
+async function applicaTurniPredefiniti(anno, mese) {
+  if (!db) return;
   const emporio = currentEmporio;
   const NOMI_GIORNO = ['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
-
   try {
     const predValidi = await caricaPredefiniti();
-    if (!predValidi.length) {
-      showToast('Nessun turno predefinito salvato in Anagrafica', 'err');
-      btnEl.disabled = false; btnEl.innerHTML = origHtml; return;
-    }
+    if (!predValidi.length) return;
 
+    const { data: rows } = await db.from('turni').select('*')
+      .eq('emporio', emporio).eq('anno', anno).eq('mese', mese);
+    const td = {};
+    (rows || []).forEach(r => {
+      td[`${r.emporio}|${r.anno}|${r.mese}|${r.giorno}|${r.turno}`] = { aperto: r.aperto, operatori: r.operatori || [] };
+    });
+
+    const giorniMese = new Date(anno, mese, 0).getDate();
     let totale = 0;
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(2026, 5 + i, 1);
-      const anno = d.getFullYear();
-      const mese = d.getMonth() + 1;
-      btnEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${i + 1}/7…`;
-
-      const { data: rows } = await db.from('turni').select('*')
-        .eq('emporio', emporio).eq('anno', anno).eq('mese', mese);
-      const td = {};
-      (rows || []).forEach(r => {
-        td[`${r.emporio}|${r.anno}|${r.mese}|${r.giorno}|${r.turno}`] = { aperto: r.aperto, operatori: r.operatori || [] };
-      });
-
-      const giorniMese = new Date(anno, mese, 0).getDate();
-      for (let g = 1; g <= giorniMese; g++) {
-        const ds = `${anno}-${String(mese).padStart(2,'0')}-${String(g).padStart(2,'0')}`;
-        const nomeGiorno = NOMI_GIORNO[new Date(ds + 'T12:00:00').getDay()];
-        for (const p of predValidi.filter(pr => pr.giorno === nomeGiorno)) {
-          const op = p._op;
-          for (const fascia of ['mattina', 'pomeriggio']) {
-            if (!p[fascia]) continue;
-            const key = `${emporio}|${anno}|${mese}|${g}|${fascia}`;
-            if (!td[key]) td[key] = { aperto: true, operatori: [] };
-            if (!td[key].operatori.find(o => o.nome === op.nome)) {
-              td[key].operatori.push({ nome: op.nome, ruolo: op.ruolo });
-              const parts = key.split('|');
-              await db.from('turni').upsert({
-                emporio: parts[0], anno: parseInt(parts[1]), mese: parseInt(parts[2]),
-                giorno: parseInt(parts[3]), turno: parts[4],
-                aperto: td[key].aperto, operatori: td[key].operatori
-              }, { onConflict: 'emporio,anno,mese,giorno,turno' });
-              totale++;
-            }
+    for (let g = 1; g <= giorniMese; g++) {
+      const ds = `${anno}-${String(mese).padStart(2,'0')}-${String(g).padStart(2,'0')}`;
+      const nomeGiorno = NOMI_GIORNO[new Date(ds + 'T12:00:00').getDay()];
+      for (const p of predValidi.filter(pr => pr.giorno === nomeGiorno)) {
+        const op = p._op;
+        for (const fascia of ['mattina', 'pomeriggio']) {
+          if (!p[fascia]) continue;
+          const key = `${emporio}|${anno}|${mese}|${g}|${fascia}`;
+          if (!td[key]) td[key] = { aperto: true, operatori: [] };
+          if (!td[key].operatori.find(o => o.nome === op.nome)) {
+            td[key].operatori.push({ nome: op.nome, ruolo: op.ruolo });
+            const parts = key.split('|');
+            await db.from('turni').upsert({
+              emporio: parts[0], anno: parseInt(parts[1]), mese: parseInt(parts[2]),
+              giorno: parseInt(parts[3]), turno: parts[4],
+              aperto: td[key].aperto, operatori: td[key].operatori
+            }, { onConflict: 'emporio,anno,mese,giorno,turno' });
+            totale++;
           }
         }
       }
     }
-
-    await loadData();
-    render();
-    btnEl.disabled = false;
-    btnEl.innerHTML = origHtml;
-    showToast(`✓ ${totale} turni popolati (giu–dic 2026)`);
+    if (totale > 0 && anno === currentAnno && mese === currentMese + 1) {
+      await loadData();
+      render();
+    }
   } catch(e) {
-    console.error('[popola]', e);
-    showToast('Errore: ' + e.message, 'err');
-    btnEl.disabled = false;
-    btnEl.innerHTML = origHtml;
+    console.error('[applicaTurniPredefiniti]', e);
   }
 }
 </script>
