@@ -37,8 +37,9 @@
 /* Reset omologato — scoped a #app per non rompere FA icons nella navbar */
 .turni-page { font-size: var(--f-base); color: var(--m-scuro); background: var(--m-sfondo); font-family: var(--m-font); }
 .turni-page #app, .turni-page #app * { font-family: var(--m-font) !important; box-sizing: border-box; }
-/* Escludi esplicitamente header e nav dall'override font */
-#m361-header, #m361-header *, #m361-nav, #m361-nav * { font-family: inherit; }
+/* NAV: nessuna regola esplicita — FA dichiara font-family via classe .fas/.fa-*
+   con specificità 0-1-0; qualsiasi regola #id-nav * avrebbe specificità 1-0-0
+   e sovrascrivrebbe le icone. Lasciare che FA gestisca il proprio font. */
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--m-font);background:var(--m-sfondo);color:var(--m-scuro);padding-bottom:100px}
