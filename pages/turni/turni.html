@@ -34,9 +34,11 @@
   --f-xl:   20px;
   --f-2xl:  24px;
 }
-/* Reset omologato */
-.turni-page, .turni-page * { font-family: var(--m-font) !important; box-sizing: border-box; }
-.turni-page { font-size: var(--f-base); color: var(--m-scuro); background: var(--m-sfondo); }
+/* Reset omologato — scoped a #app per non rompere FA icons nella navbar */
+.turni-page { font-size: var(--f-base); color: var(--m-scuro); background: var(--m-sfondo); font-family: var(--m-font); }
+.turni-page #app, .turni-page #app * { font-family: var(--m-font) !important; box-sizing: border-box; }
+/* Escludi esplicitamente header e nav dall'override font */
+#m361-header, #m361-header *, #m361-nav, #m361-nav * { font-family: inherit; }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--m-font);background:var(--m-sfondo);color:var(--m-scuro);padding-bottom:100px}
@@ -601,9 +603,7 @@ tr.cella-giorno.festivo { background: rgba(181,69,58,0.03) !important; }
 .cal-table .col-nomi   { min-width: 95px; }
 
 .header-fascia { text-align: center !important; padding: 5px 8px !important; border-bottom: none !important; }
-.header-fascia.mattina    { color: #92400e !important; background: #fef3c7 !important; }
-.header-fascia.pomeriggio { color: var(--m-scuro) !important; background: #ede9fe !important; }
-.header-fascia.sera     { color: var(--m-scuro) !important; background: var(--m-sfondo-card) !important; }
+/* header-fascia colour overrides moved to palette section below */
 
 .stato-icon {
   display: inline-flex; align-items: center; justify-content: center;
@@ -773,10 +773,15 @@ body, .turni-page { background: var(--m-sfondo) !important; }
 .macro-tab.attivo { color: var(--m-scuro) !important; border-bottom-color: var(--m-rosso) !important; }
 .sub-tab.attivo, .op-sub-tab.attivo { color: var(--m-scuro) !important; border-bottom-color: var(--m-rosso) !important; }
 
-/* Header fasce omologato */
-.header-fascia.mattina    { color: #92400E !important; background: rgba(245,158,11,0.07) !important; }
-.header-fascia.pomeriggio { color: var(--m-scuro) !important; background: rgba(51,65,85,0.07) !important; }
-.header-fascia.sera       { color: var(--m-scuro) !important; background: rgba(30,41,59,0.05) !important; }
+/* Header fasce — sfondo uniforme uguale a Assenze/Note */
+.header-fascia,
+.header-fascia.mattina,
+.header-fascia.pomeriggio,
+.header-fascia.sera {
+  background: var(--m-sfondo) !important;
+  color: var(--m-scuro-light) !important;
+  border-bottom: 2px solid var(--m-grigio-light) !important;
+}
 
 /* Chip operatore per fascia */
 .col-pomeriggio .chip-nome-cal { background: rgba(51,65,85,0.09) !important; color: var(--m-scuro-mid) !important; border-color: var(--m-grigio-light) !important; }
@@ -930,8 +935,6 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
 </style>
 </head>
 <body class="turni-page">
-<script src="../../scripts/auth.js"></script>
-<script src="../../scripts/nav-script.js"></script>
 <div class="main" id="app">
 
   <!-- Macro-navigazione: 3 tab -->
@@ -1411,16 +1414,16 @@ function renderMonth() {
           <div class="giorno-numero">${d}</div>
           <div class="giorno-nome">${GIORNI[dow]}</div>
         </td>
-        <td class="col-stato-cell ${stM}" onclick="toggleShift('${mk}')">
-          <span class="stato-icon">${mD.aperto?'✓':'✗'}</span>
+        <td class="col-stato-cell ${stM}" onclick="toggleShift('${mk}')" style="background:${mD.aperto?'#16A34A':'#B5453A'} !important">
+          <span class="stato-icon" style="color:#fff !important;background:transparent !important;border:none !important">${mD.aperto?'✓':'✗'}</span>
         </td>
         <td class="col-nomi col-mattina"><div class="op-list">${renderOps(mk,mD,'Mattina')}</div></td>
-        <td class="col-stato-cell col-pom ${stP}" onclick="toggleShift('${pk}')">
-          <span class="stato-icon">${pD.aperto?'✓':'✗'}</span>
+        <td class="col-stato-cell col-pom ${stP}" onclick="toggleShift('${pk}')" style="background:${pD.aperto?'#16A34A':'#B5453A'} !important">
+          <span class="stato-icon" style="color:#fff !important;background:transparent !important;border:none !important">${pD.aperto?'✓':'✗'}</span>
         </td>
         <td class="col-nomi col-pom col-pomeriggio"><div class="op-list">${renderOps(pk,pD,'Pomeriggio')}</div></td>
-        <td class="col-stato-cell col-sera ${stS}" onclick="toggleShift('${sk}')">
-          <span class="stato-icon">${sD.aperto?'✓':'✗'}</span>
+        <td class="col-stato-cell col-sera ${stS}" onclick="toggleShift('${sk}')" style="background:${sD.aperto?'#16A34A':'#B5453A'} !important">
+          <span class="stato-icon" style="color:#fff !important;background:transparent !important;border:none !important">${sD.aperto?'✓':'✗'}</span>
         </td>
         <td class="col-nomi col-sera"><div class="op-list">${renderOps(sk,sD,'Sera')}</div></td>
         <td>
@@ -2072,7 +2075,7 @@ function aggiornaRiepilogoOp(opId) {
   if (matG.length) sum += 'Mat: '+matG.join(',');
   if (pomG.length) sum += (sum?'  •  ':'')+'Pom: '+pomG.join(',');
   const el = document.getElementById(`riepilogo-${opId}`);
-  if (el) el.textContent = sum || 'Nessun turno';
+  if (el) el.textContent = sum || 'Nessun turno predefinito';
 }
 
 async function aggiornaTurnoDefault(opId, giorno, fascia, valore) {
@@ -2354,6 +2357,7 @@ function calcolaTotaleOreOperatore(nomeOperatore, anno) {
   return totali;
 }
 </script>
+<script src="../../scripts/auth.js"></script>
 <script src="../../scripts/nav-script.js"></script>
 </body>
 </html>
