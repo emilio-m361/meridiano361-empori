@@ -10,7 +10,6 @@
 <title>M361 - Gestione Turni</title>
 <link rel="stylesheet" href="../../assets/style/nav-style.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 /* ── PALETTE & SCALA — meridiano361 ───────────────────────────────────────── */
 :root {
@@ -37,9 +36,8 @@
 /* Reset omologato — scoped a #app per non rompere FA icons nella navbar */
 .turni-page { font-size: var(--f-base); color: var(--m-scuro); background: var(--m-sfondo); font-family: var(--m-font); }
 .turni-page #app, .turni-page #app * { font-family: var(--m-font) !important; box-sizing: border-box; }
-/* NAV: nessuna regola esplicita — FA dichiara font-family via classe .fas/.fa-*
-   con specificità 0-1-0; qualsiasi regola #id-nav * avrebbe specificità 1-0-0
-   e sovrascrivrebbe le icone. Lasciare che FA gestisca il proprio font. */
+@keyframes ico-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+.ico-spin { display:inline-block; animation:ico-spin 1s linear infinite; }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--m-font);background:var(--m-sfondo);color:var(--m-scuro);padding-bottom:100px}
@@ -1009,6 +1007,64 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
 .badge-ruolo.volontario { background:#dcfce7;color:#166534; }
 .btn-rimuovi-op-emp { background:none;border:1px solid #e2e8f0;border-radius:6px;width:26px;height:26px;cursor:pointer;color:#94a3b8;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .12s; }
 .btn-rimuovi-op-emp:hover { border-color:#B5453A;color:#B5453A; }
+
+/* ============================================
+   MOBILE TURNI — ottimizzazione completa
+   ============================================ */
+@media (max-width: 768px) {
+  .turni-macro-nav { overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:10px 12px 0;gap:0; }
+  .turni-macro-nav::-webkit-scrollbar { display:none; }
+  .macro-tab { font-size:13px !important;padding:9px 14px !important;white-space:nowrap;flex-shrink:0; }
+  .macro-sezione { padding:10px 12px !important; }
+  .turni-cal-header { gap:6px !important;margin-bottom:10px !important;flex-wrap:wrap; }
+  .turni-mese-titolo { font-size:17px !important;min-width:120px !important;text-align:center; }
+  button[onclick*="mesePrecedente"],button[onclick*="meseSuccessivo"] { width:32px !important;height:32px !important;min-width:32px !important;min-height:32px !important; }
+  .toggle-sera-label { font-size:12px !important;padding:5px 10px !important; }
+  .cal-wrapper { overflow-x:auto !important;-webkit-overflow-scrolling:touch;margin:0 -12px;padding:0 12px; }
+  .cal-turni { min-width:420px;font-size:12px !important; }
+  .col-giorno { width:52px !important;min-width:52px !important;padding:6px 4px !important; }
+  .giorno-numero { font-size:15px !important; }
+  .giorno-nome { font-size:9px !important; }
+  .col-stato-cell { width:22px !important;min-width:22px !important;max-width:22px !important; }
+  .stato-icon { font-size:11px !important;min-height:34px !important; }
+  .col-nomi { min-width:90px !important;padding:4px 4px !important; }
+  .chip-nome-cal { font-size:11px !important;padding:2px 5px !important;margin:1px !important; }
+  .chip-rimuovi { width:14px !important;height:14px !important; }
+  .btn-add-op-cal { font-size:14px !important;width:22px !important;height:22px !important;min-height:22px !important;padding:0 !important; }
+  .col-assenze { min-width:80px !important;font-size:11px !important; }
+  .col-note { min-width:80px !important;font-size:11px !important; }
+  textarea.note-input { font-size:12px !important;min-height:32px !important; }
+  .turni-sub-tabs,.op-sub-tabs,.orari-tabs { overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:0; }
+  .turni-sub-tabs::-webkit-scrollbar,.op-sub-tabs::-webkit-scrollbar,.orari-tabs::-webkit-scrollbar { display:none; }
+  .sub-tab,.op-sub-tab,.orari-tab { white-space:nowrap;flex-shrink:0;font-size:13px !important;padding:8px 12px !important; }
+  .op-turni-card { margin-bottom:8px !important; }
+  .op-turni-header { padding:10px 12px !important; }
+  .op-riepilogo-pred { display:none !important; }
+  .pred-riga { grid-template-columns:70px 1fr 1fr 1fr !important;font-size:13px !important;padding:7px 8px !important;gap:4px !important; }
+  .pred-giorno { font-size:13px !important; }
+  .pred-check { font-size:12px !important;gap:4px !important; }
+  .pred-check input { width:16px !important;height:16px !important; }
+  .orari-fasce { flex-direction:column !important;gap:10px !important; }
+  .orario-fascia-card { min-width:unset !important;padding:12px !important; }
+  .orario-inputs { gap:6px !important; }
+  .orario-campo input[type="time"] { width:100% !important;font-size:16px !important; }
+  .orari-filtri { flex-direction:column !important;gap:8px !important; }
+  .orari-filtri > * { width:100% !important; }
+  .orari-btn-group { flex-direction:column !important;gap:8px !important; }
+  .orari-btn-group button { width:100% !important; }
+  .assenza-form { flex-direction:column !important;gap:10px !important; }
+  .assenza-form > * { width:100% !important; }
+  .ore-assenza-wrapper { flex-wrap:wrap !important;gap:8px !important; }
+  #popover-op { width:calc(100vw - 24px) !important;left:12px !important;right:12px !important;max-width:none !important; }
+  #dropdown-op { width:calc(100vw - 24px) !important;left:12px !important;max-width:none !important; }
+}
+@media (max-width: 390px) {
+  .cal-turni { min-width:360px; }
+  .col-giorno { width:44px !important; }
+  .giorno-numero { font-size:13px !important; }
+  .chip-nome-cal { font-size:10px !important; }
+  .col-nomi { min-width:75px !important; }
+}
 </style>
 </head>
 <body class="turni-page">
@@ -1024,9 +1080,9 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
   <!-- SEZIONE 1: TURNI (default) -->
   <div id="sezione-turni" class="macro-sezione">
     <div class="turni-cal-header">
-      <button class="btn-nav-mese" onclick="mesePrecedente()"><i class="fas fa-chevron-left"></i></button>
+      <button class="btn-nav-mese" onclick="mesePrecedente()">‹</button>
       <span class="turni-mese-titolo" id="turni-mese-label">Caricamento…</span>
-      <button class="btn-nav-mese" onclick="meseSuccessivo()"><i class="fas fa-chevron-right"></i></button>
+      <button class="btn-nav-mese" onclick="meseSuccessivo()">›</button>
       <label class="toggle-sera-label">
         <input type="checkbox" id="mostra-sera" onchange="toggleColonnaSera(this.checked)">
         <span>+ Sera</span>
@@ -1034,7 +1090,7 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
     </div>
     <div class="card-r">
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
-        <button class="btn-pom-toggle" style="margin-bottom:0" onclick="this.closest('.card-r').querySelector('.cal-table').classList.toggle('show-pom');this.querySelector('span').textContent=this.closest('.card-r').querySelector('.cal-table').classList.contains('show-pom')?'Nascondi Pomeriggio':'Mostra Pomeriggio'"><i class="fas fa-eye"></i><span>Mostra Pomeriggio</span></button>
+        <button class="btn-pom-toggle" style="margin-bottom:0" onclick="this.closest('.card-r').querySelector('.cal-table').classList.toggle('show-pom');this.querySelector('span').textContent=this.closest('.card-r').querySelector('.cal-table').classList.contains('show-pom')?'Nascondi Pomeriggio':'Mostra Pomeriggio'"><span>Mostra Pomeriggio</span></button>
       </div>
       <div class="tscroll"><table class="cal-table">
         <thead>
@@ -1070,10 +1126,10 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
   <div id="sezione-orari" class="macro-sezione" style="display:none">
 
     <div class="orari-tab-bar">
-      <button class="orari-tab-btn on" onclick="mostraOrariTab('annuale')"><i class="fas fa-calendar"></i> Annuale</button>
-      <button class="orari-tab-btn" onclick="mostraOrariTab('mensile')"><i class="fas fa-calendar-alt"></i> Mensile</button>
-      <button class="orari-tab-btn" onclick="mostraOrariTab('settimanale')"><i class="fas fa-calendar-week"></i> Settimanale</button>
-      <button class="orari-tab-btn" onclick="mostraOrariTab('giornaliero')"><i class="fas fa-calendar-day"></i> Giornaliero</button>
+      <button class="orari-tab-btn on" onclick="mostraOrariTab('annuale')">Annuale</button>
+      <button class="orari-tab-btn" onclick="mostraOrariTab('mensile')">Mensile</button>
+      <button class="orari-tab-btn" onclick="mostraOrariTab('settimanale')">Settimanale</button>
+      <button class="orari-tab-btn" onclick="mostraOrariTab('giornaliero')">Giornaliero</button>
     </div>
 
     <!-- TAB ANNUALE -->
@@ -1081,21 +1137,21 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
       <div class="orari-card">
         <div class="orari-card-title">Orario base — valido tutto l'anno</div>
         <div class="orari-time-section">
-          <div class="orari-time-title"><i class="fas fa-sun"></i> Mattina</div>
+          <div class="orari-time-title">☀ Mattina</div>
           <div class="orari-time-row">
             <div class="orari-f-grp"><span class="orari-f-lbl">Apertura</span><input type="time" step="300" class="orari-f-inp" id="ann-mat-ap" value="09:15"></div>
             <div class="orari-f-grp"><span class="orari-f-lbl">Chiusura</span><input type="time" step="300" class="orari-f-inp" id="ann-mat-ch" value="13:00"></div>
           </div>
         </div>
         <div class="orari-time-section">
-          <div class="orari-time-title"><i class="fas fa-cloud-sun"></i> Pomeriggio</div>
+          <div class="orari-time-title">⛅ Pomeriggio</div>
           <div class="orari-time-row">
             <div class="orari-f-grp"><span class="orari-f-lbl">Apertura</span><input type="time" step="300" class="orari-f-inp" id="ann-pom-ap" value="15:00"></div>
             <div class="orari-f-grp"><span class="orari-f-lbl">Chiusura</span><input type="time" step="300" class="orari-f-inp" id="ann-pom-ch" value="19:00"></div>
           </div>
         </div>
         <div class="orari-btn-row">
-          <button class="orari-btn-p" onclick="saveAnnuale(this)"><i class="fas fa-save"></i> Salva orario annuale</button>
+          <button class="orari-btn-p" onclick="saveAnnuale(this)">Salva orario annuale</button>
         </div>
       </div>
     </div>
@@ -1123,14 +1179,14 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
         </div>
         <div id="men-orari-wrap">
           <div class="orari-time-section">
-            <div class="orari-time-title"><i class="fas fa-sun"></i> Mattina</div>
+            <div class="orari-time-title">☀ Mattina</div>
             <div class="orari-time-row">
               <div class="orari-f-grp"><span class="orari-f-lbl">Apertura</span><input type="time" step="300" class="orari-f-inp" id="men-mat-ap"></div>
               <div class="orari-f-grp"><span class="orari-f-lbl">Chiusura</span><input type="time" step="300" class="orari-f-inp" id="men-mat-ch"></div>
             </div>
           </div>
           <div class="orari-time-section">
-            <div class="orari-time-title"><i class="fas fa-cloud-sun"></i> Pomeriggio</div>
+            <div class="orari-time-title">⛅ Pomeriggio</div>
             <div class="orari-time-row">
               <div class="orari-f-grp"><span class="orari-f-lbl">Apertura</span><input type="time" step="300" class="orari-f-inp" id="men-pom-ap"></div>
               <div class="orari-f-grp"><span class="orari-f-lbl">Chiusura</span><input type="time" step="300" class="orari-f-inp" id="men-pom-ch"></div>
@@ -1142,8 +1198,8 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
           <textarea class="orari-note-area" id="men-note" placeholder="Es. Orario ridotto in agosto…"></textarea>
         </div>
         <div class="orari-btn-row">
-          <button class="orari-btn-p" onclick="saveMensile(this)"><i class="fas fa-save"></i> Salva</button>
-          <button class="orari-btn-s" onclick="resetMensile()"><i class="fas fa-undo"></i> Ripristina orario annuale</button>
+          <button class="orari-btn-p" onclick="saveMensile(this)">Salva</button>
+          <button class="orari-btn-s" onclick="resetMensile()">↩ Ripristina orario annuale</button>
         </div>
       </div>
     </div>
@@ -1164,14 +1220,14 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
         </div>
         <div id="sett-orari-wrap">
           <div class="orari-time-section">
-            <div class="orari-time-title"><i class="fas fa-sun"></i> Mattina</div>
+            <div class="orari-time-title">☀ Mattina</div>
             <div class="orari-time-row">
               <div class="orari-f-grp"><span class="orari-f-lbl">Apertura</span><input type="time" step="300" class="orari-f-inp" id="sett-mat-ap"></div>
               <div class="orari-f-grp"><span class="orari-f-lbl">Chiusura</span><input type="time" step="300" class="orari-f-inp" id="sett-mat-ch"></div>
             </div>
           </div>
           <div class="orari-time-section">
-            <div class="orari-time-title"><i class="fas fa-cloud-sun"></i> Pomeriggio</div>
+            <div class="orari-time-title">⛅ Pomeriggio</div>
             <div class="orari-time-row">
               <div class="orari-f-grp"><span class="orari-f-lbl">Apertura</span><input type="time" step="300" class="orari-f-inp" id="sett-pom-ap"></div>
               <div class="orari-f-grp"><span class="orari-f-lbl">Chiusura</span><input type="time" step="300" class="orari-f-inp" id="sett-pom-ch"></div>
@@ -1183,8 +1239,8 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
           <textarea class="orari-note-area" id="sett-note" placeholder="Es. Settimana Ferragosto…"></textarea>
         </div>
         <div class="orari-btn-row">
-          <button class="orari-btn-p" onclick="saveSettimanale(this)"><i class="fas fa-save"></i> Salva</button>
-          <button class="orari-btn-s" onclick="resetSettimanale()"><i class="fas fa-undo"></i> Ripristina</button>
+          <button class="orari-btn-p" onclick="saveSettimanale(this)">Salva</button>
+          <button class="orari-btn-s" onclick="resetSettimanale()">↩ Ripristina</button>
         </div>
       </div>
     </div>
@@ -1205,14 +1261,14 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
         </div>
         <div id="giorn-orari-wrap">
           <div class="orari-time-section">
-            <div class="orari-time-title"><i class="fas fa-sun"></i> Mattina</div>
+            <div class="orari-time-title">☀ Mattina</div>
             <div class="orari-time-row">
               <div class="orari-f-grp"><span class="orari-f-lbl">Apertura</span><input type="time" step="300" class="orari-f-inp" id="giorn-mat-ap"></div>
               <div class="orari-f-grp"><span class="orari-f-lbl">Chiusura</span><input type="time" step="300" class="orari-f-inp" id="giorn-mat-ch"></div>
             </div>
           </div>
           <div class="orari-time-section">
-            <div class="orari-time-title"><i class="fas fa-cloud-sun"></i> Pomeriggio</div>
+            <div class="orari-time-title">⛅ Pomeriggio</div>
             <div class="orari-time-row">
               <div class="orari-f-grp"><span class="orari-f-lbl">Apertura</span><input type="time" step="300" class="orari-f-inp" id="giorn-pom-ap"></div>
               <div class="orari-f-grp"><span class="orari-f-lbl">Chiusura</span><input type="time" step="300" class="orari-f-inp" id="giorn-pom-ch"></div>
@@ -1224,7 +1280,7 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
           </div>
           <div id="giorn-serale-wrap" style="display:none;margin-top:10px">
             <div class="orari-time-section" style="border-color:#CA8A04;background:#fffbeb">
-              <div class="orari-time-title" style="color:#92400e"><i class="fas fa-moon"></i> Sera</div>
+              <div class="orari-time-title" style="color:#92400e">🌙 Sera</div>
               <div class="orari-time-row">
                 <div class="orari-f-grp"><span class="orari-f-lbl">Apertura</span><input type="time" step="300" class="orari-f-inp" id="giorn-ser-ap" value="20:30"></div>
                 <div class="orari-f-grp"><span class="orari-f-lbl">Chiusura</span><input type="time" step="300" class="orari-f-inp" id="giorn-ser-ch" value="23:00"></div>
@@ -1237,8 +1293,8 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
           <textarea class="orari-note-area" id="giorn-note" placeholder="Es. Orario speciale 3 agosto…"></textarea>
         </div>
         <div class="orari-btn-row">
-          <button class="orari-btn-p" onclick="saveGiornaliero(this)"><i class="fas fa-save"></i> Salva</button>
-          <button class="orari-btn-s" onclick="resetGiornaliero()"><i class="fas fa-undo"></i> Ripristina</button>
+          <button class="orari-btn-p" onclick="saveGiornaliero(this)">Salva</button>
+          <button class="orari-btn-s" onclick="resetGiornaliero()">↩ Ripristina</button>
         </div>
       </div>
     </div>
@@ -1247,9 +1303,9 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
     <div class="orari-card" style="margin-top:4px">
       <div class="orari-card-title">Calendario mensile — orari effettivi</div>
       <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-        <button class="orari-btn-s" style="padding:7px 12px" onclick="orPrevMonth()"><i class="fas fa-chevron-left"></i></button>
+        <button class="orari-btn-s" style="padding:7px 12px" onclick="orPrevMonth()">‹</button>
         <span id="or-cal-title" style="font-size:15px;font-weight:900;color:#1e293b;min-width:150px;text-align:center"></span>
-        <button class="orari-btn-s" style="padding:7px 12px" onclick="orNextMonth()"><i class="fas fa-chevron-right"></i></button>
+        <button class="orari-btn-s" style="padding:7px 12px" onclick="orNextMonth()">›</button>
       </div>
       <div id="or-cal-grid"></div>
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px">
@@ -1333,7 +1389,7 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
     <input type="hidden" id="modal-copia-src">
     <div id="modal-copia-content"></div>
     <div style="display:flex;gap:8px;margin-top:16px">
-      <button onclick="eseguiCopiaGiorno()" class="btn-p" style="flex:1;justify-content:center"><i class="fas fa-copy"></i> Copia</button>
+      <button onclick="eseguiCopiaGiorno()" class="btn-p" style="flex:1;justify-content:center">Copia</button>
       <button onclick="closeModal('modal-copia')" class="btn-s" style="flex:1;justify-content:center">Annulla</button>
     </div>
   </div>
@@ -1514,7 +1570,7 @@ function renderAssenze(targetId = 'opsub-assenze') {
         <td style="padding:7px 10px;text-align:center">
           <button class="btn-s" style="padding:3px 8px;font-size:9px;min-height:auto"
                   onclick="removeAssenza('${dayKey}','${nome}');renderAssenze('${targetId}')">
-            <i class="fas fa-times"></i>
+            ×
           </button>
         </td>
       </tr>`);
@@ -1531,7 +1587,7 @@ function renderAssenze(targetId = 'opsub-assenze') {
       <select id="ass-giorno-sel" class="f-sel" style="min-width:110px">${dayOpts}</select>
       <button class="btn-p" style="padding:8px 14px;font-size:12px"
               onclick="openAssenzaModal('${currentEmporio}|${currentAnno}|${currentMese+1}|'+document.getElementById('ass-giorno-sel').value)">
-        <i class="fas fa-plus"></i> Aggiungi assenza
++ Aggiungi assenza
       </button>
     </div>
     ${righe.length
@@ -1623,7 +1679,7 @@ function renderStoreHoursDisplay() {
   if (!el) return;
   const h = storeHoursData;
   el.innerHTML = `
-    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:8px"><i class="fas fa-clock"></i> Orari Emporio</div>
+    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:8px">⏱ Orari Emporio</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
       <div style="background:#fff;border-radius:8px;padding:8px 12px;border:1px solid #f1f5f9">
         <div style="font-size:9px;font-weight:800;color:#B5453A;text-transform:uppercase;margin-bottom:2px">Mattina</div>
@@ -1680,8 +1736,8 @@ function renderMonth() {
       const ds = `${currentAnno}-${String(currentMese+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       return (td.operatori||[]).map((o,i)=> o.rimosso ? '' :
         `<span class="chip-nome-cal" ondblclick="event.stopPropagation();apriPopoverChip('${key}',${i},this)" title="Doppio click per modificare">${o.nome.split(' ')[0]}${o.oremanuali!=null?`<span class="chip-ore-custom">${o.oremanuali.toFixed(2)}h</span>`:''}` +
-        `<i class="fas fa-times rm" onclick="event.stopPropagation();removeOp('${key}',${i})"></i></span>`
-      ).join('')+`<span class="op-add" onclick="aggiungiOperatoreTurno('${ds}','${fascia}',this)"><i class="fas fa-plus"></i></span>`;
+        `<span class="rm" onclick="event.stopPropagation();removeOp('${key}',${i})">×</span></span>`
+      ).join('')+`<span class="op-add" onclick="aggiungiOperatoreTurno('${ds}','${fascia}',this)">+</span>`;
     };
 
     const stM = mD.aperto ? 'aperto' : 'chiuso';
@@ -1707,8 +1763,8 @@ function renderMonth() {
         <td class="col-nomi col-sera"><div class="op-list">${renderOps(sk,sD,'Sera')}</div></td>
         <td>
           <div style="display:flex;flex-direction:column;gap:2px">
-            ${dayAssenze.map(a=>`<span class="ass-badge ass-${a.tipo}" onclick="removeAssenza('${dayKey}','${a.nome}','${a.tipo}')">${a.tipo.charAt(0).toUpperCase()+a.tipo.slice(1)} – ${a.nome.split(' ')[0]} <i class="fas fa-times" style="font-size:8px"></i></span>`).join('')}
-            <span class="op-add" onclick="openAssenzaModal('${dayKey}')"><i class="fas fa-plus"></i> Ass.</span>
+            ${dayAssenze.map(a=>`<span class="ass-badge ass-${a.tipo}" onclick="removeAssenza('${dayKey}','${a.nome}','${a.tipo}')">${a.tipo.charAt(0).toUpperCase()+a.tipo.slice(1)} – ${a.nome.split(' ')[0]} ×</span>`).join('')}
+            <span class="op-add" onclick="openAssenzaModal('${dayKey}')">+ Ass.</span>
           </div>
         </td>
         <td class="note-cell"><textarea placeholder="..." onblur="saveNote('${dayKey}',this.value)">${note}</textarea></td>
@@ -1909,7 +1965,7 @@ function openAssenzaModal(dayKey) {
         <button onclick="setAssenza('${assKey}','ferie')" class="ass-badge ass-ferie" style="${current==='ferie'?'outline:2px solid #3b82f6':''}">Ferie</button>
         <button onclick="setAssenza('${assKey}','malattia')" class="ass-badge ass-malattia" style="${current==='malattia'?'outline:2px solid #f59e0b':''}">Malattia</button>
         <button onclick="setAssenza('${assKey}','permesso')" class="ass-badge ass-permesso" style="${current==='permesso'?'outline:2px solid #ec4899':''}">Permesso</button>
-        ${current?`<button onclick="rimuoviAssenzaKey('${assKey}','${dayKey}')" style="border:none;background:none;cursor:pointer;color:#94a3b8;font-size:11px"><i class="fas fa-times"></i></button>`:''}
+        ${current?`<button onclick="rimuoviAssenzaKey('${assKey}','${dayKey}')" style="border:none;background:none;cursor:pointer;color:#94a3b8;font-size:11px">×</button>`:''}
       </div>
     </div>`;
   }).join('');
@@ -1973,7 +2029,7 @@ document.getElementById('modal-add-title').textContent = 'Gestisci Operatori - '
             '<option value="dipendente">Dipendente</option>' +
             '<option value="serviziocivile">Servizio Civile</option>' +
           '</select></div>' +
-        '<button onclick="addNewPersonale()" class="btn-p" style="padding:9px 14px;font-size:10px;white-space:nowrap;"><i class="fas fa-plus"></i> Aggiungi</button>' +
+        '<button onclick="addNewPersonale()" class="btn-p" style="padding:9px 14px;font-size:10px;white-space:nowrap;">+ Aggiungi</button>' +
       '</div>' +
     '</div>' +
     '<div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:8px;">Operatori attuali</div>' +
@@ -1983,7 +2039,7 @@ document.getElementById('modal-add-title').textContent = 'Gestisci Operatori - '
           '<span class="op-chip ' + (p.ruolo==='dipendente'?'c-dip':p.ruolo==='serviziocivile'?'c-scu':'c-vol') + '" style="font-size:11px;">' + p.nome + '</span>' +
           '<div style="display:flex;align-items:center;gap:6px;">' +
             '<span style="font-size:9px;color:#94a3b8;text-transform:uppercase;">' + p.ruolo + '</span>' +
-            '<button onclick="removePersonale(' + i + ')" style="border:none;background:none;cursor:pointer;color:#cbd5e1;font-size:12px;" title="Rimuovi"><i class="fas fa-times"></i></button>' +
+            '<button onclick="removePersonale(' + i + ')" style="border:none;background:none;cursor:pointer;color:#cbd5e1;font-size:12px;" title="Rimuovi">×</button>' +
           '</div></div>';
       }).join('') +
     '</div>';
@@ -2274,7 +2330,7 @@ const GIORNI_SETT = ['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sa
 async function caricaOperatoriEmporio(emporio) {
   if (!db) { showToast('DB non connesso','err'); return; }
   const container = document.getElementById('lista-operatori-turni');
-  if (container) container.innerHTML = '<p style="padding:20px;text-align:center;color:#94a3b8;font-size:13px"><i class="fas fa-spinner fa-spin"></i> Caricamento...</p>';
+  if (container) container.innerHTML = '<p style="padding:20px;text-align:center;color:#94a3b8;font-size:13px"><span class="ico-spin">⟳</span> Caricamento...</p>';
   try {
     let query = db.from('operatori').select('id,nome,emporio,ruolo').eq('attivo', true);
     if (emporio) query = query.eq('emporio', emporio);
@@ -2334,7 +2390,7 @@ function renderOperatoriDefaults() {
         </div>
         <button class="btn-p" style="margin-top:8px;width:100%;justify-content:center"
                 onclick="salvaTurnoDefaultCompleto('${op.id}')">
-          <i class="fas fa-check"></i> Salva turno predefinito
+          ✓ Salva turno predefinito
         </button>
       </div>
     </div>`;
@@ -2435,7 +2491,7 @@ function renderOperatoriView() {
     </div>
     <div id="lista-operatori-turni">
       <p style="padding:20px;text-align:center;color:#94a3b8;font-size:13px">
-        <i class="fas fa-spinner fa-spin"></i> Caricamento...
+        <span class="ico-spin">⟳</span> Caricamento...
       </p>
     </div>
   </div>`;
@@ -3042,7 +3098,7 @@ function setBtnLoading(btnEl, loading) {
   if (!btnEl) return;
   if (loading) {
     btnEl.dataset.testoOriginale = btnEl.innerHTML;
-    btnEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando…';
+    btnEl.innerHTML = '<span class="ico-spin">⟳</span> Salvando…';
     btnEl.disabled = true;
     btnEl.style.opacity = '.7';
   } else {
@@ -3138,7 +3194,7 @@ function labelRuolo(ruolo) {
 async function caricaAnagraficaOperatori() {
   const container = document.getElementById('opsub-anagrafica');
   if (!container) return;
-  container.innerHTML = '<p style="padding:20px;text-align:center;color:#94a3b8;font-size:13px"><i class="fas fa-spinner fa-spin"></i> Caricamento…</p>';
+  container.innerHTML = '<p style="padding:20px;text-align:center;color:#94a3b8;font-size:13px"><span class="ico-spin">⟳</span> Caricamento…</p>';
   if (!db) { container.innerHTML = '<p style="padding:20px;color:#B5453A">DB non connesso</p>'; return; }
   try {
     const emporio = currentEmporio;
@@ -3247,7 +3303,7 @@ function rigaOperatoreTurni(op, predefiniti) {
         <div class="turni-default-griglia">${grigliaHtml}</div>
         <div class="pred-footer">
           <button class="btn-p" onclick="salvaTurniPredefiniti('${op.id}')">
-            <i class="fas fa-check"></i> Salva turno predefinito
+            ✓ Salva turno predefinito
           </button>
           <span class="pred-feedback" id="feedback-pred-${op.id}" style="display:none">✓ Salvato!</span>
         </div>
@@ -3277,7 +3333,12 @@ async function aggiungiOpEmporio() {
 
 async function rimuoviOpEmporio(opId, nome) {
   const emporio = currentEmporio;
-  if (!confirm(`Rimuovere ${nome} dall'emporio ${emporio}?\n\nSe è il suo emporio principale, verrà impostato come "Non assegnato".`)) return;
+  const ok = await m361Confirm(
+    `Se è il suo emporio principale, verrà impostato come "Non assegnato".`,
+    `Rimuovere ${nome} da ${emporio}?`,
+    'Rimuovi', 'Annulla', 'error'
+  );
+  if (!ok) return;
   try {
     const { data: op } = await db.from('operatori').select('emporio,empori_aggiuntivi').eq('id', opId).single();
     let aggiornamento;
@@ -3521,6 +3582,7 @@ async function applicaTurniPredefiniti(anno, mese) {
 }
 </script>
 <script src="../../scripts/auth.js"></script>
+<script src="../../scripts/ui-helpers.js"></script>
 <script src="../../scripts/nav-script.js"></script>
 </body>
 </html>

@@ -723,8 +723,8 @@ document.getElementById('numero-ordine-preview').value = '';
             });
         }
 
-        function addNewCityPrompt() {
-            const nuovaCitta = prompt("Inserisci il nome della nuova città:");
+        async function addNewCityPrompt() {
+            const nuovaCitta = await m361Prompt("Inserisci il nome della nuova città:");
             if (nuovaCitta && nuovaCitta.trim() !== "") {
                 const nome = nuovaCitta.trim();
                 if (!ALL_EMPORI.includes(nome)) {
@@ -740,17 +740,17 @@ document.getElementById('numero-ordine-preview').value = '';
             }
         }
 
-        function removeCurrentCity() {
+        async function removeCurrentCity() {
             const select = document.getElementById('select-emporio');
-            if (select.selectedIndex > 0 && confirm("Rimuovere la città selezionata?")) {
+            if (select.selectedIndex > 0 && await m361Confirm("Rimuovere la città selezionata?", "Conferma", "Rimuovi")) {
                 ALL_EMPORI = ALL_EMPORI.filter(c => c !== select.value);
                 select.remove(select.selectedIndex);
                 handleCittaChange();
             }
         }
 
-        function addNewOperatorPrompt() {
-            const nome = prompt("Nuovo operatore:");
+        async function addNewOperatorPrompt() {
+            const nome = await m361Prompt("Nuovo operatore:");
             if (nome && nome.trim() !== "") {
                 const opSelect = document.getElementById('select-operatore');
                 const opt = document.createElement('option');
@@ -762,9 +762,9 @@ document.getElementById('numero-ordine-preview').value = '';
             }
         }
 
-        function removeCurrentOperator() {
+        async function removeCurrentOperator() {
             const opSelect = document.getElementById('select-operatore');
-            if (opSelect.selectedIndex > 0 && confirm("Rimuovere operatore?")) {
+            if (opSelect.selectedIndex > 0 && await m361Confirm("Rimuovere operatore?", "Conferma", "Rimuovi")) {
                 opSelect.remove(opSelect.selectedIndex);
             }
             refreshNumeroOrdinePreview();
@@ -1122,7 +1122,7 @@ function calcSubtotal(groupId) {
         async function saveNuovoCliente() {
             const nome = document.getElementById('nc-nome').value.trim();
             const cognome = document.getElementById('nc-cognome').value.trim();
-            if (!nome || !cognome) { alert('Nome e cognome obbligatori'); return; }
+            if (!nome || !cognome) { await m361Alert('Nome e cognome obbligatori', '', 'warning'); return; }
             const clienteData = {
                 nome,
                 cognome,
@@ -1139,9 +1139,9 @@ function calcSubtotal(groupId) {
                 ['nc-nome','nc-cognome','nc-tel','nc-note'].forEach(id => document.getElementById(id).value = '');
                 document.getElementById('nc-emporio').value = '';
                 toggleNuovoClienteForm();
-                alert(`${nome} ${cognome} aggiunto alla rubrica!`);
+                showToastM361(`${nome} ${cognome} aggiunto alla rubrica!`, 'success');
             } catch(e) {
-                alert('Errore salvataggio cliente: ' + e.message);
+                await m361Alert('Errore salvataggio cliente: ' + e.message, 'Errore', 'error');
             }
         }
 
@@ -1214,7 +1214,7 @@ function calcSubtotal(groupId) {
             }
         }
 
-        function validaFormOrdine() {
+        async function validaFormOrdine() {
             const campiObbligatori = [
                 { id: 'select-emporio', label: 'Emporio' },
                 { id: 'cust-nome',      label: 'Nome cliente' },
@@ -1226,14 +1226,14 @@ function calcSubtotal(groupId) {
                 if (!el || !el.value.trim()) {
                     el?.focus();
                     el?.classList.add('campo-errore');
-                    alert('Campo obbligatorio: ' + campo.label);
+                    await m361Alert('Campo obbligatorio: ' + campo.label, '', 'warning');
                     return false;
                 }
                 el.classList.remove('campo-errore');
             }
             const righe = document.querySelectorAll('.product-row');
             if (!righe.length) {
-                alert("Aggiungi almeno un prodotto all'ordine");
+                await m361Alert("Aggiungi almeno un prodotto all'ordine", '', 'warning');
                 return false;
             }
             return true;
@@ -1241,7 +1241,7 @@ function calcSubtotal(groupId) {
 
         async function validateSubmission(event) {
             event.preventDefault();
-            if (!validaFormOrdine()) return;
+            if (!await validaFormOrdine()) return;
 
             const btn = document.getElementById('submit-btn');
             btn.disabled = true;
@@ -1342,11 +1342,11 @@ function calcSubtotal(groupId) {
                 if (error) throw error;
 
                 modificheNonSalvate = false;
-                alert('Ordine salvato con successo!');
-                window.location.href = 'ordini_incorso.html';
+                showToastM361('Ordine salvato con successo!', 'success', 1500);
+                setTimeout(() => { window.location.href = 'ordini_incorso.html'; }, 800);
             } catch (error) {
                 console.error('Error saving order:', error);
-                alert('Errore nel salvataggio: ' + error.message);
+                await m361Alert('Errore nel salvataggio: ' + error.message, 'Errore', 'error');
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-save mr-2"></i> Salva Ordine';
             }
@@ -1804,8 +1804,8 @@ function toggleGusto(groupId) {
             accontoInput.addEventListener('input', calcGrandTotal);
             
             // Add group button
-            document.getElementById('btn-add-group').addEventListener('click', function() {
-                const nome = prompt('Nome tipologia confetti:');
+            document.getElementById('btn-add-group').addEventListener('click', async function() {
+                const nome = await m361Prompt('Nome tipologia bomboniera:');
                 if (nome !== null) addGroup(nome.trim() || undefined);
             });
             
@@ -1822,6 +1822,7 @@ function toggleGusto(groupId) {
         });
     </script>
     <script src="../../scripts/auth.js"></script>
+    <script src="../../scripts/ui-helpers.js"></script>
     <script src="../../scripts/nav-script.js"></script>
 </body>
 </html>
