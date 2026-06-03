@@ -1095,7 +1095,7 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
           </div>
         </div>
         <div class="orari-btn-row">
-          <button class="orari-btn-p" onclick="saveAnnuale()"><i class="fas fa-save"></i> Salva orario annuale</button>
+          <button class="orari-btn-p" onclick="saveAnnuale(this)"><i class="fas fa-save"></i> Salva orario annuale</button>
         </div>
       </div>
     </div>
@@ -1142,7 +1142,7 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
           <textarea class="orari-note-area" id="men-note" placeholder="Es. Orario ridotto in agosto…"></textarea>
         </div>
         <div class="orari-btn-row">
-          <button class="orari-btn-p" onclick="saveMensile()"><i class="fas fa-save"></i> Salva</button>
+          <button class="orari-btn-p" onclick="saveMensile(this)"><i class="fas fa-save"></i> Salva</button>
           <button class="orari-btn-s" onclick="resetMensile()"><i class="fas fa-undo"></i> Ripristina orario annuale</button>
         </div>
       </div>
@@ -1183,7 +1183,7 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
           <textarea class="orari-note-area" id="sett-note" placeholder="Es. Settimana Ferragosto…"></textarea>
         </div>
         <div class="orari-btn-row">
-          <button class="orari-btn-p" onclick="saveSettimanale()"><i class="fas fa-save"></i> Salva</button>
+          <button class="orari-btn-p" onclick="saveSettimanale(this)"><i class="fas fa-save"></i> Salva</button>
           <button class="orari-btn-s" onclick="resetSettimanale()"><i class="fas fa-undo"></i> Ripristina</button>
         </div>
       </div>
@@ -1237,7 +1237,7 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
           <textarea class="orari-note-area" id="giorn-note" placeholder="Es. Orario speciale 3 agosto…"></textarea>
         </div>
         <div class="orari-btn-row">
-          <button class="orari-btn-p" onclick="saveGiornaliero()"><i class="fas fa-save"></i> Salva</button>
+          <button class="orari-btn-p" onclick="saveGiornaliero(this)"><i class="fas fa-save"></i> Salva</button>
           <button class="orari-btn-s" onclick="resetGiornaliero()"><i class="fas fa-undo"></i> Ripristina</button>
         </div>
       </div>
@@ -1423,7 +1423,7 @@ function showToast(msg, type='ok') {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast show ' + type;
-  setTimeout(() => t.className = 'toast', 2500);
+  setTimeout(() => t.className = 'toast', type === 'err' ? 6000 : 2500);
 }
 
 // ── EMPORIO DA URL / SESSIONE ──────────────────────────────────────────────
@@ -2862,7 +2862,8 @@ function populateAnnuale() {
   orSetV('ann-pom-ap', r?.pomeriggio_apertura || '15:00');
   orSetV('ann-pom-ch', r?.pomeriggio_chiusura || '19:00');
 }
-async function saveAnnuale() {
+async function saveAnnuale(btnEl) {
+  setBtnLoading(btnEl, true);
   const p = {
     emporio_id: currentEmporio, tipo: 'annuale', giorno_chiuso: false,
     mattina_apertura:    orV('ann-mat-ap') || null,
@@ -2871,6 +2872,7 @@ async function saveAnnuale() {
     pomeriggio_chiusura: orV('ann-pom-ch') || null,
   };
   const err = await orUpsert({ tipo: 'annuale' }, p);
+  setBtnLoading(btnEl, false);
   if (!err) { showToast('Orario annuale salvato ✓'); orRenderCalendar(); }
   else showToast('Errore: ' + err.message, 'err');
 }
@@ -2889,7 +2891,8 @@ function populateMensile() {
   orSetV('men-pom-ch', r?.pomeriggio_chiusura || ann?.pomeriggio_chiusura || '19:00');
   orSetV('men-note', r?.note || '');
 }
-async function saveMensile() {
+async function saveMensile(btnEl) {
+  setBtnLoading(btnEl, true);
   const mese = parseInt(orV('men-mese'));
   const chiuso = document.getElementById('men-chiuso').checked;
   const p = {
@@ -2901,6 +2904,7 @@ async function saveMensile() {
     note: orV('men-note') || null,
   };
   const err = await orUpsert({ tipo: 'mensile', mese }, p);
+  setBtnLoading(btnEl, false);
   if (!err) { showToast('Orario mensile salvato ✓'); orRenderCalendar(); }
   else showToast('Errore: ' + err.message, 'err');
 }
@@ -2937,9 +2941,10 @@ function populateSettimanale() {
   orSetV('sett-pom-ch', r?.pomeriggio_chiusura || ann?.pomeriggio_chiusura || '19:00');
   orSetV('sett-note', r?.note || '');
 }
-async function saveSettimanale() {
+async function saveSettimanale(btnEl) {
   const pw = orParseWeek();
   if (!pw) { showToast('Seleziona una settimana', 'err'); return; }
+  setBtnLoading(btnEl, true);
   const chiuso = document.getElementById('sett-chiuso').checked;
   const p = {
     emporio_id: currentEmporio, tipo: 'settimanale',
@@ -2951,6 +2956,7 @@ async function saveSettimanale() {
     note: orV('sett-note') || null,
   };
   const err = await orUpsert({ tipo: 'settimanale', settimana: pw.settimana, anno_settimana: pw.anno }, p);
+  setBtnLoading(btnEl, false);
   if (!err) { showToast('Orario settimanale salvato ✓'); orRenderCalendar(); }
   else showToast('Errore: ' + err.message, 'err');
 }
@@ -2993,9 +2999,10 @@ function populateGiornaliero() {
   if (rs) { orSetV('giorn-ser-ap', rs.sera_apertura); orSetV('giorn-ser-ch', rs.sera_chiusura); }
   orSetV('giorn-note', r?.note || '');
 }
-async function saveGiornaliero() {
+async function saveGiornaliero(btnEl) {
   const data = orV('giorn-data');
   if (!data) { showToast('Seleziona una data', 'err'); return; }
+  setBtnLoading(btnEl, true);
   const chiuso = document.getElementById('giorn-chiuso').checked;
   const p = {
     emporio_id: currentEmporio, tipo: 'giornaliero', data_specifica: data, giorno_chiuso: chiuso,
@@ -3006,7 +3013,7 @@ async function saveGiornaliero() {
     note: orV('giorn-note') || null,
   };
   let err = await orUpsert({ tipo: 'giornaliero', data_specifica: data }, p);
-  if (err) { showToast('Errore: ' + err.message, 'err'); return; }
+  if (err) { setBtnLoading(btnEl, false); showToast('Errore: ' + err.message, 'err'); return; }
   if (document.getElementById('giorn-serale-on').checked) {
     const ps = {
       emporio_id: currentEmporio, tipo: 'straordinaria_serale', data_specifica: data,
@@ -3017,6 +3024,7 @@ async function saveGiornaliero() {
   } else {
     await orDelete({ tipo: 'straordinaria_serale', data_specifica: data });
   }
+  setBtnLoading(btnEl, false);
   if (!err) { showToast('Orario giornaliero salvato ✓'); orRenderCalendar(); }
   else showToast('Errore serale: ' + err.message, 'err');
 }
@@ -3029,33 +3037,54 @@ async function resetGiornaliero() {
   orRenderCalendar();
 }
 
+// ── BUTTON LOADING STATE ───────────────────────────────────────────────────
+function setBtnLoading(btnEl, loading) {
+  if (!btnEl) return;
+  if (loading) {
+    btnEl.dataset.testoOriginale = btnEl.innerHTML;
+    btnEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando…';
+    btnEl.disabled = true;
+    btnEl.style.opacity = '.7';
+  } else {
+    btnEl.innerHTML = btnEl.dataset.testoOriginale || '✓ Salva';
+    btnEl.disabled = false;
+    btnEl.style.opacity = '1';
+  }
+}
+
 // ── DB HELPERS ─────────────────────────────────────────────────────────────
 async function orUpsert(filters, payload) {
-  if (!db) return new Error('DB non connesso');
+  if (!db) { console.error('[orUpsert] db non inizializzato'); return new Error('DB non connesso'); }
+  console.log('[orUpsert] filters:', filters, 'payload:', payload, 'emporio:', currentEmporio);
   try {
     let q = db.from('orari_emporio').select('id').eq('emporio_id', currentEmporio).eq('tipo', filters.tipo);
     if (filters.mese           != null) q = q.eq('mese', filters.mese);
     if (filters.settimana      != null) q = q.eq('settimana', filters.settimana).eq('anno_settimana', filters.anno_settimana);
     if (filters.data_specifica != null) q = q.eq('data_specifica', filters.data_specifica);
-    const { data: ex } = await q.maybeSingle();
+    const { data: ex, error: selErr } = await q.maybeSingle();
+    if (selErr) console.warn('[orUpsert] select error:', selErr);
     const { error } = ex
       ? await db.from('orari_emporio').update(payload).eq('id', ex.id)
       : await db.from('orari_emporio').insert(payload);
-    if (!error) await loadOrari();
-    return error || null;
-  } catch(e) { return e; }
+    if (error) { console.error('[orUpsert] write error:', error); return error; }
+    console.log('[orUpsert] OK, ricarico orari');
+    await loadOrari();
+    return null;
+  } catch(e) { console.error('[orUpsert] exception:', e); return e; }
 }
 async function orDelete(filters) {
-  if (!db) return new Error('DB non connesso');
+  if (!db) { console.error('[orDelete] db non inizializzato'); return new Error('DB non connesso'); }
+  console.log('[orDelete] filters:', filters, 'emporio:', currentEmporio);
   try {
     let q = db.from('orari_emporio').delete().eq('emporio_id', currentEmporio).eq('tipo', filters.tipo);
     if (filters.mese           != null) q = q.eq('mese', filters.mese);
     if (filters.settimana      != null) q = q.eq('settimana', filters.settimana).eq('anno_settimana', filters.anno_settimana);
     if (filters.data_specifica != null) q = q.eq('data_specifica', filters.data_specifica);
     const { error } = await q;
-    if (!error) await loadOrari();
-    return error || null;
-  } catch(e) { return e; }
+    if (error) { console.error('[orDelete] error:', error); return error; }
+    await loadOrari();
+    return null;
+  } catch(e) { console.error('[orDelete] exception:', e); return e; }
 }
 
 // ── CALENDARIO ─────────────────────────────────────────────────────────────
