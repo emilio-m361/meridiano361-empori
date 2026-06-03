@@ -632,6 +632,9 @@ tr.cella-giorno.festivo { background: rgba(181,69,58,0.03) !important; }
 .chip-nome-cal .rm { font-size: 9px; color: #cbd5e1; cursor: pointer; margin-left: 2px; }
 .chip-nome-cal .rm:hover { color: #ef4444; }
 .chip-nome-cal .ore-inp { width: 38px; border: 1px solid #e2e8f0; border-radius: 4px; padding: 1px 3px; font-size: 10px; text-align: center; font-weight: 700; font-family: 'DM Mono', monospace; }
+.chip-nome-cal { cursor: pointer; }
+.chip-nome-cal:hover { border-color: #B5453A !important; }
+.chip-ore-custom { font-size: 9px; color: #B5453A; font-weight: 700; margin-left: 2px; white-space: nowrap; }
 
 .giorno-numero { font-size: 16px; font-weight: 900; color: #1e293b; line-height: 1; }
 .giorno-nome   { font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: #94a3b8; margin-top: 2px; }
@@ -1676,7 +1679,8 @@ function renderMonth() {
       const fascia = key.split('|')[4];
       const ds = `${currentAnno}-${String(currentMese+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       return (td.operatori||[]).map((o,i)=> o.rimosso ? '' :
-        `<span class="chip-nome-cal">${o.nome.split(' ')[0]}${o.oremanuali!=null?`<input class="ore-inp" value="${o.oremanuali}" onchange="setOre('${key}',${i},this.value)" onclick="event.stopPropagation()" title="Ore manuali">`:''}<i class="fas fa-times rm" onclick="removeOp('${key}',${i})"></i></span>`
+        `<span class="chip-nome-cal" ondblclick="event.stopPropagation();apriPopoverChip('${key}',${i},this)" title="Doppio click per modificare">${o.nome.split(' ')[0]}${o.oremanuali!=null?`<span class="chip-ore-custom">${o.oremanuali.toFixed(2)}h</span>`:''}` +
+        `<i class="fas fa-times rm" onclick="event.stopPropagation();removeOp('${key}',${i})"></i></span>`
       ).join('')+`<span class="op-add" onclick="aggiungiOperatoreTurno('${ds}','${fascia}',this)"><i class="fas fa-plus"></i></span>`;
     };
 
@@ -2032,7 +2036,7 @@ function dateToTurnoKey(data, fascia) {
 function creaChipHtml(o, i, key, ds, fascia) {
   const sid = o.nome.replace(/[^a-zA-Z0-9]/g,'_');
   const oreDisp = o.oremanuali != null ? o.oremanuali.toFixed(2)+'h' : '';
-  return `<div class="chip-operatore-turno">
+  return `<div class="chip-operatore-turno" ondblclick="toggleOrarioOp('${sid}','${ds}','${fascia}')" title="Doppio click per orario">
     <div class="chip-op-header">
       <span class="chip-op-nome">${o.nome.split(' ').slice(0,2).join(' ')}</span>
       <span class="chip-op-ore" id="ore-${sid}-${ds}-${fascia}">${oreDisp}</span>
@@ -2568,6 +2572,119 @@ function resetOrarioOp(sid, idx, key, ds, fascia) {
   if (fine)   fine.value   = '';
   const op = turniData[key]?.operatori[idx];
   if (op) { op.oremanuali = null; saveTurno(key, turniData[key]); mostraOreOp(sid,ds,fascia,0); }
+}
+
+// ── POPOVER CHIP MESE ────────────────────────────────────────────────────────
+function apriPopoverChip(key, idx, chipEl) {
+  document.getElementById('popover-chip-op')?.remove();
+  const parts = key.split('|');
+  const fascia = parts[4];
+  const ds = `${parts[1]}-${parts[2].padStart(2,'0')}-${parts[3].padStart(2,'0')}`;
+  const op = turniData[key]?.operatori[idx];
+  if (!op) return;
+
+  const defInizio = dayHoursData[`${ds}_${fascia}_apertura`] ||
+    (fascia==='sera'?'20:00':fascia==='mattina'?storeHoursData.mat_open||'09:15':storeHoursData.pom_open||'15:00');
+  const defFine = dayHoursData[`${ds}_${fascia}_chiusura`] ||
+    (fascia==='sera'?'22:30':fascia==='mattina'?storeHoursData.mat_close||'13:00':storeHoursData.pom_close||'19:00');
+
+  const dataFmt = new Date(ds+'T12:00:00').toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'});
+  const fasciaLabel = fascia==='mattina'?'Mattina':fascia==='pomeriggio'?'Pomeriggio':'Sera';
+  const oreDisp = op.oremanuali != null ? '⏱ '+op.oremanuali.toFixed(2)+'h' : '';
+
+  const pop = document.createElement('div');
+  pop.id = 'popover-chip-op';
+  pop.style.cssText = 'position:fixed;z-index:9999;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.18);width:270px;overflow:hidden';
+  pop.innerHTML = `
+    <div style="background:#1e293b;color:#fff;padding:11px 14px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:14px;font-weight:700">${op.nome}</div>
+        <div style="font-size:11px;color:#94a3b8">${fasciaLabel} · ${dataFmt}</div>
+      </div>
+      <button onclick="document.getElementById('popover-chip-op').remove()" style="background:none;border:none;color:#94a3b8;font-size:20px;cursor:pointer;padding:0;min-height:auto;line-height:1">×</button>
+    </div>
+    <div style="padding:12px 14px">
+      <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">
+        Turno: <span style="color:#1e293b;font-weight:700">${defInizio} → ${defFine}</span>
+      </div>
+      <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:8px">
+        <div style="flex:1">
+          <div style="font-size:11px;color:#94a3b8;font-weight:600;margin-bottom:3px">Inizio</div>
+          <input type="time" step="300" id="pop-chip-inizio" style="width:100%;padding:7px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:15px;font-weight:700;color:#1e293b">
+        </div>
+        <span style="color:#94a3b8;font-size:16px;padding-bottom:8px">→</span>
+        <div style="flex:1">
+          <div style="font-size:11px;color:#94a3b8;font-weight:600;margin-bottom:3px">Fine</div>
+          <input type="time" step="300" id="pop-chip-fine" style="width:100%;padding:7px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:15px;font-weight:700;color:#1e293b">
+        </div>
+      </div>
+      <div id="pop-chip-ore" style="font-size:13px;color:#B5453A;font-weight:700;min-height:18px;margin-bottom:4px">${oreDisp}</div>
+      <button onclick="resetPopoverChipOrario('${defInizio}','${defFine}')" style="font-size:12px;color:#94a3b8;background:none;border:none;cursor:pointer;padding:2px 0;text-decoration:underline;min-height:auto">↺ Usa orario turno</button>
+    </div>
+    <div style="height:1px;background:#f1f5f9"></div>
+    <div style="padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+      <button onclick="salvaPopoverChip('${key}',${idx})" style="background:#1e293b;color:#fff;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;width:100%">✓ Salva ore</button>
+      <button onclick="document.getElementById('popover-chip-op').remove();removeOp('${key}',${idx})" style="background:#fee2e2;color:#B5453A;border:1px solid #fca5a5;border-radius:8px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;width:100%">🗑 Rimuovi dal turno</button>
+    </div>`;
+
+  pop.querySelector('#pop-chip-inizio').addEventListener('input', _aggiornaOrePopChip);
+  pop.querySelector('#pop-chip-fine').addEventListener('input', _aggiornaOrePopChip);
+
+  const rect = chipEl.getBoundingClientRect();
+  if (window.innerHeight - rect.bottom < 370) {
+    pop.style.bottom = (window.innerHeight - rect.top + 4) + 'px';
+  } else {
+    pop.style.top = (rect.bottom + 4) + 'px';
+  }
+  pop.style.left = Math.max(10, Math.min(rect.left, window.innerWidth - 280)) + 'px';
+  document.body.appendChild(pop);
+  setTimeout(() => pop.querySelector('#pop-chip-inizio').focus(), 50);
+  setTimeout(() => {
+    document.addEventListener('click', function h(e) {
+      if (!pop.contains(e.target) && e.target !== chipEl) { pop.remove(); document.removeEventListener('click', h); }
+    });
+  }, 100);
+}
+
+function _aggiornaOrePopChip() {
+  const ini = document.getElementById('pop-chip-inizio')?.value;
+  const fin = document.getElementById('pop-chip-fine')?.value;
+  const el  = document.getElementById('pop-chip-ore');
+  if (!ini || !fin || !el) return;
+  const [hI,mI] = ini.split(':').map(Number);
+  const [hF,mF] = fin.split(':').map(Number);
+  const min = (hF*60+mF)-(hI*60+mI);
+  el.textContent = min > 0 ? '⏱ '+arrotondaOre(min).toFixed(2)+'h' : '';
+}
+
+function resetPopoverChipOrario(defInizio, defFine) {
+  const ini = document.getElementById('pop-chip-inizio');
+  const fin = document.getElementById('pop-chip-fine');
+  if (ini) ini.value = defInizio;
+  if (fin) fin.value = defFine;
+  _aggiornaOrePopChip();
+}
+
+function salvaPopoverChip(key, idx) {
+  const ini = document.getElementById('pop-chip-inizio')?.value;
+  const fin = document.getElementById('pop-chip-fine')?.value;
+  const op = turniData[key]?.operatori[idx];
+  if (!op) return;
+  if (ini && fin) {
+    const [hI,mI] = ini.split(':').map(Number);
+    const [hF,mF] = fin.split(':').map(Number);
+    const min = (hF*60+mF)-(hI*60+mI);
+    if (min > 0) {
+      let ore = arrotondaOre(min);
+      if (op.ruolo === 'dipendente') ore += 0.25;
+      op.oremanuali = ore;
+    }
+  } else {
+    op.oremanuali = null;
+  }
+  saveTurno(key, turniData[key]);
+  document.getElementById('popover-chip-op')?.remove();
+  render();
 }
 
 // ── RIEPILOGO ORE MENSILE ────────────────────────────────────────────────────
