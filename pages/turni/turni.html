@@ -2587,6 +2587,20 @@ function arrotondaOre(minuti) {
   return ore + bonus + DEC_MIN[minArr === 60 ? 0 : minArr];
 }
 
+// ── SISTEMA ORE CENTRALIZZATO (15min→0.25 | 30→0.50 | 45→0.75 | 60→1.00) ──
+function minutiADecimale(minuti) { return arrotondaOre(minuti || 0); }
+function calcolaOre(inizio, fine, dipendente = false) {
+  if (!inizio || !fine) return null;
+  const [hI, mI] = inizio.split(':').map(Number);
+  const [hF, mF] = fine.split(':').map(Number);
+  const totMin = (hF * 60 + mF) - (hI * 60 + mI);
+  if (totMin <= 0) return null;
+  let ore = minutiADecimale(totMin);
+  if (dipendente) ore += 0.25;
+  return ore;
+}
+function oreDisplay(ore) { return (ore === null || ore === undefined) ? '—' : ore.toFixed(2) + 'h'; }
+
 function toggleOrarioOp(sid, ds, fascia) {
   const div = document.getElementById(`orario-${sid}-${ds}-${fascia}`);
   if (div) div.style.display = div.style.display === 'none' ? 'block' : 'none';
@@ -2804,11 +2818,14 @@ const MINUTI_A_DECIMALE = { 0: '.00', 15: '.25', 30: '.50', 45: '.75' };
 
 function calcolaOreAssenza() {
   const ore = parseInt(document.getElementById('assenza-ore')?.value || 0);
-  const minuti = parseInt(document.getElementById('assenza-minuti')?.value || 0);
-  const decimale = MINUTI_A_DECIMALE[minuti] ?? '.00';
-  const valore = parseFloat(ore + decimale);
+  const min = parseInt(document.getElementById('assenza-minuti')?.value || 0);
+  const valore = minutiADecimale(ore * 60 + min);
   const display = document.getElementById('ore-valore-display');
-  if (display) display.textContent = valore.toFixed(2);
+  if (display) {
+    display.textContent = oreDisplay(valore);
+    display.style.color = '#B5453A';
+    display.style.fontWeight = '700';
+  }
   const hidden = document.getElementById('assenza-ore-valore');
   if (hidden) hidden.value = valore;
   return valore;
@@ -3113,16 +3130,14 @@ async function orUpsert(filters, payload) {
   if (!db) { console.error('[orUpsert] db non inizializzato'); return new Error('DB non connesso'); }
   console.log('[orUpsert] filters:', filters, 'payload:', payload, 'emporio:', currentEmporio);
   try {
-    let q = db.from('orari_emporio').select('id').eq('emporio_id', currentEmporio).eq('tipo', filters.tipo);
-    if (filters.mese           != null) q = q.eq('mese', filters.mese);
-    if (filters.settimana      != null) q = q.eq('settimana', filters.settimana).eq('anno_settimana', filters.anno_settimana);
-    if (filters.data_specifica != null) q = q.eq('data_specifica', filters.data_specifica);
-    const { data: ex, error: selErr } = await q.maybeSingle();
-    if (selErr) console.warn('[orUpsert] select error:', selErr);
-    const { error } = ex
-      ? await db.from('orari_emporio').update(payload).eq('id', ex.id)
-      : await db.from('orari_emporio').insert(payload);
-    if (error) { console.error('[orUpsert] write error:', error); return error; }
+    let delQ = db.from('orari_emporio').delete().eq('emporio_id', currentEmporio).eq('tipo', filters.tipo);
+    if (filters.mese           != null) delQ = delQ.eq('mese', filters.mese);
+    if (filters.settimana      != null) delQ = delQ.eq('settimana', filters.settimana).eq('anno_settimana', filters.anno_settimana);
+    if (filters.data_specifica != null) delQ = delQ.eq('data_specifica', filters.data_specifica);
+    const { error: delErr } = await delQ;
+    if (delErr) console.warn('[orUpsert] delete warn:', delErr);
+    const { error } = await db.from('orari_emporio').insert(payload);
+    if (error) { console.error('[orUpsert] insert error:', error); return error; }
     console.log('[orUpsert] OK, ricarico orari');
     await loadOrari();
     return null;
