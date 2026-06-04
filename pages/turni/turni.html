@@ -1164,6 +1164,12 @@ body.turni-readonly .ass-badge[onclick*="removeAssenza"] { pointer-events: none 
 <body class="turni-page">
 <div class="main" id="app">
 
+  <!-- SELETTORE EMPORIO -->
+  <div id="emporio-selector-bar" style="display:flex;align-items:center;gap:10px;padding:8px 16px;background:#f8fafc;border-bottom:1px solid #e2e8f0">
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#64748b">Emporio:</span>
+    <select id="sel-emporio" class="f-sel" onchange="cambiaEmporio(this.value)" style="min-width:140px;font-weight:700;padding:5px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:13px;background:#fff"></select>
+  </div>
+
   <!-- Macro-navigazione: 3 tab -->
   <div class="turni-macro-nav">
     <button class="macro-tab attivo" onclick="mostraSezione('turni')"     id="tab-turni">📅 Turni</button>
@@ -1426,9 +1432,11 @@ body.turni-readonly .ass-badge[onclick*="removeAssenza"] { pointer-events: none 
     <div class="op-sub-tabs">
       <button class="op-sub-tab attivo" onclick="mostraOpSub('anagrafica')" id="optab-anagrafica">👤 Anagrafica</button>
       <button class="op-sub-tab"        onclick="mostraOpSub('ore')"        id="optab-ore">⏱ Ore</button>
+      <button class="op-sub-tab"        onclick="mostraOpSub('assenze')"    id="optab-assenze">📋 Assenze</button>
     </div>
     <div id="opsub-anagrafica"><div id="lista-op-emporio"></div></div>
     <div id="opsub-ore"       style="display:none"></div>
+    <div id="opsub-assenze"   style="display:none"></div>
   </div>
 
 </div>
@@ -1647,7 +1655,24 @@ function getEmporioCorrente() {
   const params = new URLSearchParams(window.location.search);
   return params.get('emporio') ||
          sessionStorage.getItem('emporio_turni') ||
-         'Cremona';
+         Object.keys(PERSONALE)[0];
+}
+
+function cambiaEmporio(emp) {
+  if (!emp) return;
+  currentEmporio = emp;
+  sessionStorage.setItem('emporio_turni', emp);
+  const vtab = document.getElementById('vtab-tabella');
+  if (vtab) vtab.textContent = '📅 Turni Emporio ' + emp;
+  reload();
+}
+
+function initEmporioSelector() {
+  const sel = document.getElementById('sel-emporio');
+  if (!sel) return;
+  sel.innerHTML = Object.keys(PERSONALE).map(e =>
+    `<option value="${e}"${e === currentEmporio ? ' selected' : ''}>${e}</option>`
+  ).join('');
 }
 
 // ── MACRO-SEZIONI ──────────────────────────────────────────────────────────
@@ -1664,7 +1689,7 @@ function mostraSezione(quale) {
 
 // ── GESTIONE OPERATORI SUB-TABS ────────────────────────────────────────────
 function mostraOpSub(quale) {
-  ['anagrafica','ore'].forEach(s => {
+  ['anagrafica','ore','assenze'].forEach(s => {
     const el  = document.getElementById('opsub-' + s);
     const tab = document.getElementById('optab-' + s);
     if (el)  el.style.display = s === quale ? 'block' : 'none';
@@ -1672,6 +1697,7 @@ function mostraOpSub(quale) {
   });
   if (quale === 'anagrafica') caricaAnagraficaOperatori();
   else if (quale === 'ore')   renderOre();
+  else if (quale === 'assenze') renderAssenze('opsub-assenze');
 }
 
 // ── NAVIGAZIONE MESE ───────────────────────────────────────────────────────
@@ -2168,42 +2194,48 @@ function renderOreTable(stats, annuale, anno, mese) {
         <div style="font-size:10px;color:#94a3b8;margin-top:2px">${contrattoLabel}</div>
       </td>
       <td style="font-weight:900;color:#1e293b">${fmt(s.oreEmporio)}</td>
+      <td>${fmtAltreAtt(s.oreAltreAtt)}</td>
+      <td style="color:#854d0e">${fmt(s.oreMalattia)}</td>
       <td style="color:#1e40af">${fmt(s.oreFerie)}</td>
       <td style="color:#9d174d">${fmt(s.orePermesso)}</td>
-      <td style="color:#854d0e">${fmt(s.oreMalattia)}</td>
       <td style="color:#475569">${fmt(s.oreAltro)}</td>
-      <td>${fmtAltreAtt(s.oreAltreAtt)}</td>
       <td style="font-weight:900;color:#B5453A">${s.oreContratto > 0 ? s.oreContratto.toFixed(2) : '–'}</td>
     </tr>`;
   }).join('');
   const totRow = stats.length > 1 ? `<tfoot><tr>
     <td>TOTALE</td>
     <td>${fmt(stats.reduce((a,x)=>a+x.oreEmporio,0))}</td>
+    <td>${fmt(stats.reduce((a,x)=>a+(x.oreAltreAtt||0),0))}</td>
+    <td>${fmt(stats.reduce((a,x)=>a+x.oreMalattia,0))}</td>
     <td>${fmt(stats.reduce((a,x)=>a+x.oreFerie,0))}</td>
     <td>${fmt(stats.reduce((a,x)=>a+x.orePermesso,0))}</td>
-    <td>${fmt(stats.reduce((a,x)=>a+x.oreMalattia,0))}</td>
     <td>${fmt(stats.reduce((a,x)=>a+x.oreAltro,0))}</td>
-    <td>${fmt(stats.reduce((a,x)=>a+(x.oreAltreAtt||0),0))}</td>
     <td>${fmt(stats.reduce((a,x)=>a+x.oreContratto,0))}</td>
   </tr></tfoot>` : '';
   const nota = `<div style="font-size:11px;color:#94a3b8;margin-top:10px;padding:8px 12px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">
-    <strong style="color:#475569">Altre attività</strong> = ore previste periodo − emporio − ferie − permesso − malattia − altro ass.
+    <strong style="color:#475569">Altre attività</strong> = ore previste periodo − emporio − ferie − permesso − malattia − altro.
     &nbsp;·&nbsp; <span style="color:#B5453A">rosso = eccesso</span> &nbsp;·&nbsp;
     Assenze calcolate sulle <em>ore previste del giorno</em>, non sulle ore emporio
   </div>`;
   return `
   <div style="font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">${periodo}</div>
   <div class="card-r"><div class="tscroll"><table class="hrs-table">
-    <thead><tr>
-      <th style="text-align:left">Operatore</th>
-      <th>In emporio</th>
-      <th style="background:#1e40af">Ferie</th>
-      <th style="background:#9d174d">Permesso</th>
-      <th style="background:#854d0e">Malattia</th>
-      <th>Altro ass.</th>
-      <th style="background:#0369a1">Altre attività</th>
-      <th style="background:#B5453A">Totale</th>
-    </tr></thead>
+    <thead>
+      <tr>
+        <th rowspan="2" style="text-align:left;vertical-align:bottom;border-bottom:2px solid #e2e8f0">Operatore</th>
+        <th colspan="2" style="text-align:center;background:#dbeafe;color:#1e40af;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:5px 8px;border-bottom:2px solid #93c5fd">Presenze</th>
+        <th colspan="3" style="text-align:center;background:#fee2e2;color:#9f1239;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:5px 8px;border-bottom:2px solid #fca5a5">Assenze</th>
+        <th rowspan="2" style="background:#B5453A;color:#fff;vertical-align:bottom;text-align:center;border-bottom:2px solid #9f1239">Totale</th>
+      </tr>
+      <tr>
+        <th style="background:#eff6ff">In emporio</th>
+        <th style="background:#eff6ff;color:#1e40af">Altre attività</th>
+        <th style="background:#fff7ed;color:#92400e">Malattia</th>
+        <th style="background:#eff6ff;color:#1d4ed8">Ferie</th>
+        <th style="background:#fdf4ff;color:#7e22ce">Permesso</th>
+        <th style="color:#475569">Altro</th>
+      </tr>
+    </thead>
     <tbody>${rows}</tbody>
     ${totRow}
   </table></div></div>${nota}`;
@@ -2876,6 +2908,7 @@ function setTurniView(v) {
 // ── INIT ───────────────────────────────────────────────────────────────────
 loadPersonaleLocale();
 currentEmporio = getEmporioCorrente();
+initEmporioSelector();
 if (typeof getOperatoreLoggato === 'function') {
   const _u = getOperatoreLoggato();
   if (_u && !['admin', 'dipendente'].includes(_u.ruolo)) {
