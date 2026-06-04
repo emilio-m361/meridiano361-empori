@@ -2908,6 +2908,7 @@ function orGetISOWeekYear(d) {
 
 async function initOrari() {
   if (!currentEmporio) currentEmporio = getEmporioCorrente();
+  await orCheckTabella();
   await loadOrari();
   populateAnnuale();
   const mm = document.getElementById('men-mese');
@@ -3163,34 +3164,56 @@ function setBtnLoading(btnEl, loading) {
 // ── DB HELPERS ─────────────────────────────────────────────────────────────
 async function orUpsert(filters, payload) {
   if (!db) { console.error('[orUpsert] db non inizializzato'); return new Error('DB non connesso'); }
-  console.log('[orUpsert] filters:', filters, 'payload:', payload, 'emporio:', currentEmporio);
+  console.log('[orUpsert] tabella: orari_emporio | emporio:', currentEmporio, '| filters:', filters, '| payload:', payload);
   try {
     let delQ = db.from('orari_emporio').delete().eq('emporio_id', currentEmporio).eq('tipo', filters.tipo);
     if (filters.mese           != null) delQ = delQ.eq('mese', filters.mese);
     if (filters.settimana      != null) delQ = delQ.eq('settimana', filters.settimana).eq('anno_settimana', filters.anno_settimana);
     if (filters.data_specifica != null) delQ = delQ.eq('data_specifica', filters.data_specifica);
     const { error: delErr } = await delQ;
-    if (delErr) console.warn('[orUpsert] delete warn:', delErr);
+    if (delErr) {
+      console.error('[orUpsert] DELETE FALLITO — codice:', delErr.code, '| messaggio:', delErr.message, '| hint:', delErr.hint);
+      if (delErr.code === 'PGRST204' || delErr.message?.includes('schema cache') || delErr.message?.includes('not found')) {
+        return new Error('Tabella orari_emporio non trovata nel DB. Eseguire il blocco SQL di setup su Supabase.');
+      }
+    }
     const { error } = await db.from('orari_emporio').insert(payload);
-    if (error) { console.error('[orUpsert] insert error:', error); return error; }
-    console.log('[orUpsert] OK, ricarico orari');
+    if (error) {
+      console.error('[orUpsert] INSERT FALLITO — codice:', error.code, '| messaggio:', error.message, '| hint:', error.hint, '| payload:', JSON.stringify(payload));
+      return error;
+    }
+    console.log('[orUpsert] OK | tipo:', filters.tipo, '| emporio:', currentEmporio);
     await loadOrari();
     return null;
-  } catch(e) { console.error('[orUpsert] exception:', e); return e; }
+  } catch(e) { console.error('[orUpsert] eccezione:', e); return e; }
 }
 async function orDelete(filters) {
   if (!db) { console.error('[orDelete] db non inizializzato'); return new Error('DB non connesso'); }
-  console.log('[orDelete] filters:', filters, 'emporio:', currentEmporio);
+  console.log('[orDelete] tabella: orari_emporio | emporio:', currentEmporio, '| filters:', filters);
   try {
     let q = db.from('orari_emporio').delete().eq('emporio_id', currentEmporio).eq('tipo', filters.tipo);
     if (filters.mese           != null) q = q.eq('mese', filters.mese);
     if (filters.settimana      != null) q = q.eq('settimana', filters.settimana).eq('anno_settimana', filters.anno_settimana);
     if (filters.data_specifica != null) q = q.eq('data_specifica', filters.data_specifica);
     const { error } = await q;
-    if (error) { console.error('[orDelete] error:', error); return error; }
+    if (error) {
+      console.error('[orDelete] FALLITO — codice:', error.code, '| messaggio:', error.message);
+      return error;
+    }
+    console.log('[orDelete] OK | tipo:', filters.tipo);
     await loadOrari();
     return null;
-  } catch(e) { console.error('[orDelete] exception:', e); return e; }
+  } catch(e) { console.error('[orDelete] eccezione:', e); return e; }
+}
+async function orCheckTabella() {
+  if (!db) return;
+  const { data, error } = await db.from('orari_emporio').select('id').limit(1);
+  if (error) {
+    console.error('[orCheck] TABELLA orari_emporio NON RAGGIUNGIBILE:', error.message);
+    showToast('⚠ Tabella orari non configurata — vedi console', 'err');
+  } else {
+    console.log('[orCheck] Tabella orari_emporio OK, record trovati:', data?.length ?? 0);
+  }
 }
 
 // ── CALENDARIO ─────────────────────────────────────────────────────────────
