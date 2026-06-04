@@ -1327,10 +1327,12 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
       <button class="op-sub-tab attivo" onclick="mostraOpSub('anagrafica')" id="optab-anagrafica">👤 Anagrafica</button>
       <button class="op-sub-tab"        onclick="mostraOpSub('ore')"        id="optab-ore">⏱ Ore turno</button>
       <button class="op-sub-tab"        onclick="mostraOpSub('assenze')"    id="optab-assenze">🏖 Assenze e ferie</button>
+      <button class="op-sub-tab"        onclick="mostraOpSub('riepilogo')"  id="optab-riepilogo">📊 Riepilogo ore</button>
     </div>
     <div id="opsub-anagrafica"><div id="lista-op-emporio"></div></div>
-    <div id="opsub-ore"     style="display:none"></div>
-    <div id="opsub-assenze" style="display:none"></div>
+    <div id="opsub-ore"       style="display:none"></div>
+    <div id="opsub-assenze"   style="display:none"></div>
+    <div id="opsub-riepilogo" style="display:none"></div>
   </div>
 
 </div>
@@ -1505,7 +1507,7 @@ function mostraSezione(quale) {
 
 // ── GESTIONE OPERATORI SUB-TABS ────────────────────────────────────────────
 function mostraOpSub(quale) {
-  ['anagrafica','ore','assenze'].forEach(s => {
+  ['anagrafica','ore','assenze','riepilogo'].forEach(s => {
     const el  = document.getElementById('opsub-' + s);
     const tab = document.getElementById('optab-' + s);
     if (el)  el.style.display = s === quale ? 'block' : 'none';
@@ -1518,6 +1520,8 @@ function mostraOpSub(quale) {
     if (el) el.innerHTML = renderHours();
   } else if (quale === 'assenze') {
     renderAssenze('opsub-assenze');
+  } else if (quale === 'riepilogo') {
+    renderRiepilogo();
   }
 }
 
@@ -2881,6 +2885,328 @@ function calcolaTotaleOreOperatore(nomeOperatore, anno) {
     totali.totale += ore;
   });
   return totali;
+}
+
+// ── RIEPILOGO ORE PER OPERATORE ────────────────────────────────────────────
+let riepilogoVista = 'mensile';
+let riepilogoExtraData = [];
+const RP_CAUSALI = ['ufficio','formazione','riunione','magazzino','consegna','trasferta','altro'];
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function labelRuoloBreve(ruolo) {
+  return ruolo==='dipendente'?'Dip':ruolo==='serviziocivile'?'SCU':ruolo==='volontario'?'Vol':(ruolo||'?');
+}
+
+function renderRiepilogo() {
+  const el = document.getElementById('opsub-riepilogo');
+  if (!el) return;
+  const pers = PERSONALE[currentEmporio] || [];
+  const anno = new Date().getFullYear();
+  const mese = new Date().getMonth() + 1;
+  el.innerHTML = `
+  <div style="padding:4px 0">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px">
+      <div>
+        <div class="f-label">Operatore</div>
+        <select id="rp-op" onchange="aggiornaRiepilogo()" class="f-sel" style="min-width:180px">
+          <option value="">— Seleziona operatore —</option>
+          ${pers.map(p=>`<option value="${escHtml(p.nome)}">${escHtml(p.nome)} (${labelRuoloBreve(p.ruolo)})</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <div class="f-label">Vista</div>
+        <div style="display:flex;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden">
+          <button id="rp-btn-mens" onclick="setVistaRiepilogo('mensile')" style="padding:6px 14px;font-size:12px;font-weight:600;border:none;cursor:pointer;background:#B5453A;color:#fff;transition:all .15s">Mese</button>
+          <button id="rp-btn-anno" onclick="setVistaRiepilogo('annuale')" style="padding:6px 14px;font-size:12px;font-weight:600;border:none;cursor:pointer;background:#f8fafc;color:#64748b;transition:all .15s">Anno</button>
+        </div>
+      </div>
+      <div>
+        <div class="f-label">Anno</div>
+        <input type="number" id="rp-anno" value="${anno}" min="2020" max="2035" onchange="aggiornaRiepilogo()"
+          style="width:80px;padding:6px 8px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;color:#1e293b">
+      </div>
+      <div id="rp-mese-wrap">
+        <div class="f-label">Mese</div>
+        <select id="rp-mese" onchange="aggiornaRiepilogo()" class="f-sel">
+          ${MESI.map((m,i)=>`<option value="${i+1}" ${i+1===mese?'selected':''}>${m}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div id="rp-summary">
+      <p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px">Seleziona un operatore per vedere il riepilogo</p>
+    </div>
+    <div id="rp-detail"></div>
+    <div id="rp-extra-form"></div>
+  </div>`;
+}
+
+function setVistaRiepilogo(vista) {
+  riepilogoVista = vista;
+  const bM=document.getElementById('rp-btn-mens'), bA=document.getElementById('rp-btn-anno');
+  const mW=document.getElementById('rp-mese-wrap');
+  const on='#B5453A',off='#f8fafc',onT='#fff',offT='#64748b';
+  if(bM){bM.style.background=vista==='mensile'?on:off;bM.style.color=vista==='mensile'?onT:offT;}
+  if(bA){bA.style.background=vista==='annuale'?on:off;bA.style.color=vista==='annuale'?onT:offT;}
+  if(mW) mW.style.display = vista==='mensile' ? '' : 'none';
+  aggiornaRiepilogo();
+}
+
+async function aggiornaRiepilogo() {
+  const nome  = document.getElementById('rp-op')?.value;
+  const anno  = parseInt(document.getElementById('rp-anno')?.value) || new Date().getFullYear();
+  const mese  = parseInt(document.getElementById('rp-mese')?.value) || (new Date().getMonth()+1);
+  const annuale = riepilogoVista === 'annuale';
+  const sumEl = document.getElementById('rp-summary');
+  const detEl = document.getElementById('rp-detail');
+  const frmEl = document.getElementById('rp-extra-form');
+  if (!sumEl) return;
+  if (!nome) {
+    sumEl.innerHTML = '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px">Seleziona un operatore per vedere il riepilogo</p>';
+    if(detEl) detEl.innerHTML=''; if(frmEl) frmEl.innerHTML=''; return;
+  }
+  sumEl.innerHTML = '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:12px"><span style="display:inline-block;animation:spin 1s linear infinite">⟳</span> Caricamento…</p>';
+  if(detEl) detEl.innerHTML=''; if(frmEl) frmEl.innerHTML='';
+  const op = (PERSONALE[currentEmporio]||[]).find(p=>p.nome===nome);
+  const ruolo = op?.ruolo || '';
+  try {
+    let tQ = db.from('turni').select('*').eq('emporio',currentEmporio).eq('anno',anno);
+    if(!annuale) tQ=tQ.eq('mese',mese);
+    const {data:turniRows,error:tErr}=await tQ; if(tErr) throw tErr;
+    const assenzeObj={};
+    (turniRows||[]).forEach(r=>{if(r.assenze) Object.assign(assenzeObj,r.assenze);});
+    let eQ=db.from('operatori_attivita_extra').select('*')
+      .eq('operatore',nome).eq('emporio_id',currentEmporio).eq('anno',anno);
+    if(!annuale) eQ=eQ.eq('mese',mese);
+    const {data:extraRows,error:eErr}=await eQ.order('data',{ascending:true}); if(eErr) throw eErr;
+    riepilogoExtraData=extraRows||[];
+    const stats=rpCalcolaStats(nome,ruolo,turniRows||[],assenzeObj,riepilogoExtraData,anno,mese,annuale);
+    sumEl.innerHTML=rpRenderSummary(stats,nome,ruolo,anno,mese,annuale);
+    if(detEl) detEl.innerHTML=rpRenderDetail(nome,ruolo,turniRows||[],assenzeObj,riepilogoExtraData,anno,mese,annuale);
+    if(frmEl) frmEl.innerHTML=rpRenderFormExtra();
+  } catch(e) {
+    console.error('[riepilogo]',e);
+    sumEl.innerHTML=`<p style="color:#B5453A;text-align:center;padding:12px;font-size:13px">Errore: ${escHtml(e.message)}</p>`;
+  }
+}
+
+function rpCalcolaStats(nome, ruolo, turniRows, assenzeObj, extraRows, anno, mese, annuale) {
+  let oreEmporio=0,oreFerie=0,orePermesso=0,oreMalattia=0,oreAltroAss=0,oreAltroExtra=0,oreRecupero=0;
+  // Ore in emporio dai turni
+  (turniRows||[]).forEach(r=>{
+    if(!r.aperto) return;
+    const op=(r.operatori||[]).find(o=>o.nome===nome&&!o.rimosso); if(!op) return;
+    oreEmporio += op.oremanuali!=null ? parseFloat(op.oremanuali)||0 : calcShiftHours(r.turno,ruolo);
+  });
+  // Assenze (ferie/permesso/malattia) dai turni
+  Object.entries(assenzeObj).forEach(([k,v])=>{
+    const parts=k.split('|'); if(parts.length<5) return;
+    const empK=parts[0],annoK=parts[1],meseK=parts[2];
+    const nomeK=parts.slice(4).join('|');
+    if(empK!==currentEmporio||parseInt(annoK)!==anno) return;
+    if(!annuale&&parseInt(meseK)!==mese) return;
+    if(nomeK!==nome) return;
+    const tipo=getAssenzaTipo(v);
+    const oreAss=getAssenzaOre(v);
+    const def=calcShiftHours('mattina',ruolo)+calcShiftHours('pomeriggio',ruolo);
+    const addOre=oreAss>0?oreAss:def;
+    if(tipo==='ferie')         oreFerie    +=addOre;
+    else if(tipo==='permesso') orePermesso +=addOre;
+    else if(tipo==='malattia') oreMalattia +=addOre;
+    else                       oreAltroAss +=addOre;
+  });
+  // Attività extra (altro/recupero)
+  (extraRows||[]).forEach(r=>{
+    const ore=parseFloat(r.ore)||0;
+    if(r.categoria==='recupero') oreRecupero   +=ore;
+    else                         oreAltroExtra +=ore;
+  });
+  const oreAltro=oreAltroAss+oreAltroExtra;
+  const totale=oreEmporio+oreFerie+orePermesso+oreMalattia+oreAltro+oreRecupero;
+  return {oreEmporio,oreFerie,orePermesso,oreMalattia,oreAltroAss,oreAltroExtra,oreAltro,oreRecupero,totale};
+}
+
+function rpRenderSummary(stats, nome, ruolo, anno, mese, annuale) {
+  const f=n=>n>0?n.toFixed(2)+'h':'–';
+  const periodo=annuale?`Anno ${anno}`:`${MESI[mese-1]} ${anno}`;
+  const cc=ruolo==='dipendente'?'c-dip':ruolo==='serviziocivile'?'c-scu':'c-vol';
+  const cards=[
+    {label:'Totale generale',val:stats.totale,     color:'#B5453A',big:true},
+    {label:'In emporio',     val:stats.oreEmporio,  color:'#1e293b'},
+    {label:'Ferie',          val:stats.oreFerie,    color:'#1e40af'},
+    {label:'Permesso',       val:stats.orePermesso, color:'#9d174d'},
+    {label:'Malattia',       val:stats.oreMalattia, color:'#854d0e'},
+    {label:'Altro',          val:stats.oreAltro,    color:'#475569'},
+    {label:'Recupero',       val:stats.oreRecupero, color:'#065f46'},
+  ];
+  return `
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+    <span class="op-chip ${cc}" style="font-size:11px">${escHtml(nome)}</span>
+    <span style="color:#94a3b8;font-size:12px">${periodo}</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:16px">
+    ${cards.map(c=>`
+    <div style="background:#fff;border:1.5px solid ${c.big?c.color:'#e2e8f0'};border-radius:10px;padding:12px 14px">
+      <div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-bottom:4px">${c.label}</div>
+      <div style="font-size:${c.big?22:18}px;font-weight:${c.big?900:700};color:${c.color}">${f(c.val)}</div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function rpRenderDetail(nome, ruolo, turniRows, assenzeObj, extraRows, anno, mese, annuale) {
+  // Turni in emporio
+  const turniOp=(turniRows||[])
+    .filter(r=>r.aperto&&(r.operatori||[]).find(o=>o.nome===nome&&!o.rimosso))
+    .sort((a,b)=>(a.mese-b.mese)||(a.giorno-b.giorno)||(a.turno<b.turno?-1:1));
+  const turniHtml=turniOp.length?`
+  <div class="card-r" style="margin-bottom:12px;padding:14px">
+    <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Turni in emporio</div>
+    <div class="tscroll"><table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr style="background:#f8fafc;color:#64748b">
+        <th style="padding:5px 10px;text-align:left;font-weight:600">Data</th>
+        <th style="padding:5px 10px;text-align:left;font-weight:600">Turno</th>
+        <th style="padding:5px 10px;text-align:right;font-weight:700">Ore</th>
+      </tr></thead><tbody>
+      ${turniOp.map(r=>{
+        const op=(r.operatori||[]).find(o=>o.nome===nome&&!o.rimosso);
+        const ore=op.oremanuali!=null?parseFloat(op.oremanuali)||0:calcShiftHours(r.turno,ruolo);
+        const label=r.turno==='mattina'?'Mattina':r.turno==='pomeriggio'?'Pomeriggio':'Sera';
+        return `<tr style="border-top:1px solid #f1f5f9">
+          <td style="padding:5px 10px;color:#1e293b">${r.giorno}/${r.mese}/${r.anno}</td>
+          <td style="padding:5px 10px;color:#64748b">${label}</td>
+          <td style="padding:5px 10px;text-align:right;font-weight:700;color:#1e293b">${ore.toFixed(2)}h</td>
+        </tr>`;
+      }).join('')}
+      </tbody>
+    </table></div>
+  </div>`:'';
+  // Assenze
+  const assenzeRows=[];
+  Object.entries(assenzeObj).forEach(([k,v])=>{
+    const parts=k.split('|'); if(parts.length<5) return;
+    const empK=parts[0],annoK=parts[1],meseK=parts[2],giornoK=parts[3];
+    const nomeK=parts.slice(4).join('|');
+    if(empK!==currentEmporio||parseInt(annoK)!==anno) return;
+    if(!annuale&&parseInt(meseK)!==mese) return;
+    if(nomeK!==nome) return;
+    const tipo=getAssenzaTipo(v),oreAss=getAssenzaOre(v);
+    const def=calcShiftHours('mattina',ruolo)+calcShiftHours('pomeriggio',ruolo);
+    assenzeRows.push({data:`${giornoK}/${meseK}/${annoK}`,meseN:parseInt(meseK),giornoN:parseInt(giornoK),tipo,ore:oreAss>0?oreAss:def});
+  });
+  assenzeRows.sort((a,b)=>(a.meseN-b.meseN)||(a.giornoN-b.giornoN));
+  const assenzeHtml=assenzeRows.length?`
+  <div class="card-r" style="margin-bottom:12px;padding:14px">
+    <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Ferie / Permessi / Malattia</div>
+    <div class="tscroll"><table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr style="background:#f8fafc;color:#64748b">
+        <th style="padding:5px 10px;text-align:left;font-weight:600">Data</th>
+        <th style="padding:5px 10px;text-align:left;font-weight:600">Tipo</th>
+        <th style="padding:5px 10px;text-align:right;font-weight:700">Ore</th>
+      </tr></thead><tbody>
+      ${assenzeRows.map(r=>`<tr style="border-top:1px solid #f1f5f9">
+        <td style="padding:5px 10px;color:#1e293b">${r.data}</td>
+        <td style="padding:5px 10px"><span class="ass-badge ass-${r.tipo||'altro'}">${r.tipo||'—'}</span></td>
+        <td style="padding:5px 10px;text-align:right;font-weight:700">${r.ore.toFixed(2)}h</td>
+      </tr>`).join('')}
+      </tbody>
+    </table></div>
+  </div>`:'';
+  // Attività extra
+  const extraHtml=(extraRows||[]).length?`
+  <div class="card-r" style="margin-bottom:12px;padding:14px">
+    <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Attività extra (Altro / Recupero)</div>
+    <div class="tscroll"><table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr style="background:#f8fafc;color:#64748b">
+        <th style="padding:5px 10px;text-align:left;font-weight:600">Data</th>
+        <th style="padding:5px 10px;text-align:left;font-weight:600">Categoria</th>
+        <th style="padding:5px 10px;text-align:left;font-weight:600">Causale</th>
+        <th style="padding:5px 10px;text-align:right;font-weight:700">Ore</th>
+        <th style="padding:5px 4px"></th>
+      </tr></thead><tbody>
+      ${(extraRows||[]).map(r=>{
+        const dataFmt=r.data?r.data.split('-').reverse().join('/'):'–';
+        const catClr=r.categoria==='recupero'?'#065f46':'#475569';
+        return `<tr style="border-top:1px solid #f1f5f9">
+          <td style="padding:5px 10px;color:#1e293b">${dataFmt}</td>
+          <td style="padding:5px 10px;font-weight:600;color:${catClr}">${r.categoria}</td>
+          <td style="padding:5px 10px;color:#64748b">${escHtml(r.causale||'—')}</td>
+          <td style="padding:5px 10px;text-align:right;font-weight:700">${parseFloat(r.ore).toFixed(2)}h</td>
+          <td style="padding:5px 4px;text-align:right"><button onclick="eliminaExtra('${r.id}')" style="background:none;border:none;color:#B5453A;cursor:pointer;font-size:16px;padding:0 4px;line-height:1" title="Elimina">×</button></td>
+        </tr>`;
+      }).join('')}
+      </tbody>
+    </table></div>
+  </div>`:'';
+  if(!turniHtml&&!assenzeHtml&&!extraHtml) return '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:16px">Nessun dato per il periodo selezionato</p>';
+  return turniHtml+assenzeHtml+extraHtml;
+}
+
+function rpRenderFormExtra() {
+  const oggi=new Date().toISOString().slice(0,10);
+  return `
+  <div class="card-r" style="padding:16px;margin-top:4px">
+    <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Aggiungi attività extra</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+      <div>
+        <div class="f-label">Data</div>
+        <input type="date" id="extra-data" value="${oggi}" style="padding:6px 8px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;color:#1e293b">
+      </div>
+      <div>
+        <div class="f-label">Categoria</div>
+        <select id="extra-categoria" class="f-sel">
+          <option value="altro">Altro</option>
+          <option value="recupero">Recupero</option>
+        </select>
+      </div>
+      <div>
+        <div class="f-label">Causale</div>
+        <select id="extra-causale" class="f-sel">
+          ${RP_CAUSALI.map(c=>`<option value="${c}">${c.charAt(0).toUpperCase()+c.slice(1)}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <div class="f-label">Ore</div>
+        <input type="number" id="extra-ore" value="1" min="0.25" max="24" step="0.25"
+          style="width:72px;padding:6px 8px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;color:#1e293b">
+      </div>
+      <div>
+        <div class="f-label">Note</div>
+        <input type="text" id="extra-note" placeholder="Facoltativo"
+          style="width:140px;padding:6px 8px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;color:#1e293b">
+      </div>
+      <button onclick="salvaExtra()" class="btn-p" style="align-self:flex-end">+ Aggiungi</button>
+    </div>
+  </div>`;
+}
+
+async function salvaExtra() {
+  if (!db) { showToast('DB non connesso','err'); return; }
+  const nome=document.getElementById('rp-op')?.value;
+  if (!nome) { showToast('Seleziona un operatore','err'); return; }
+  const data=document.getElementById('extra-data')?.value;
+  const categoria=document.getElementById('extra-categoria')?.value||'altro';
+  const causale=document.getElementById('extra-causale')?.value||null;
+  const ore=parseFloat(document.getElementById('extra-ore')?.value);
+  const note=document.getElementById('extra-note')?.value.trim()||null;
+  if (!data) { showToast('Seleziona una data','err'); return; }
+  if (!ore||ore<=0) { showToast('Ore non valide','err'); return; }
+  const d=new Date(data+'T12:00:00');
+  const payload={operatore:nome,emporio_id:currentEmporio,data,anno:d.getFullYear(),mese:d.getMonth()+1,ore,categoria,causale,note};
+  console.log('[extra] INSERT payload:',JSON.stringify(payload));
+  const {error}=await db.from('operatori_attivita_extra').insert(payload);
+  if(error){showToast('Errore: '+error.message,'err');console.error('[extra]',error);return;}
+  showToast('Attività aggiunta ✓');
+  aggiornaRiepilogo();
+}
+
+async function eliminaExtra(id) {
+  if(!db||!id) return;
+  if(!confirm('Eliminare questa attività extra?')) return;
+  const {error}=await db.from('operatori_attivita_extra').delete().eq('id',id);
+  if(error){showToast('Errore: '+error.message,'err');return;}
+  showToast('Eliminata ✓');
+  aggiornaRiepilogo();
 }
 
 // ── ORARI EMPORIO ───────────────────────────────────────────────────────────
