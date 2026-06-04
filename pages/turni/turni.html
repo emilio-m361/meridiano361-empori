@@ -1066,6 +1066,49 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
   .chip-nome-cal { font-size:10px !important; }
   .col-nomi { min-width:75px !important; }
 }
+
+/* ── CHIP TURNO PROPRIO ────────────────────────────────────────────────────── */
+.chip-nome-cal.chip-own {
+  background: #B5453A !important;
+  color: #fff !important;
+  border-color: #9b3a30 !important;
+  font-weight: 800 !important;
+}
+.chip-nome-cal.chip-own .rm { color: rgba(255,255,255,.6) !important; }
+.chip-nome-cal.chip-own .rm:hover { color: #fff !important; }
+.chip-nome-cal.chip-own .chip-ore-custom { color: rgba(255,255,255,.85) !important; }
+
+/* ── MODALITÀ SOLA LETTURA ─────────────────────────────────────────────────── */
+body.turni-readonly .chip-nome-cal .rm { display: none !important; }
+body.turni-readonly .op-add { display: none !important; }
+body.turni-readonly .col-stato-cell { pointer-events: none !important; cursor: default !important; }
+body.turni-readonly .note-cell textarea { pointer-events: none !important; resize: none !important; }
+body.turni-readonly .btn-aggiungi-op-turno { display: none !important; }
+body.turni-readonly .giorno-azioni { display: none !important; }
+body.turni-readonly .negozio-stato input { pointer-events: none !important; }
+body.turni-readonly .negozio-orari input { pointer-events: none !important; }
+body.turni-readonly .btn-aggiungi-sera { display: none !important; }
+body.turni-readonly .btn-rimuovi-sera { display: none !important; }
+body.turni-readonly .ass-badge[onclick*="removeAssenza"] { pointer-events: none !important; }
+
+/* ── TAB VISTA TURNI (Tabella / Giornate) ─────────────────────────────────── */
+.turni-view-tabs {
+  display: flex; gap: 4px; margin-bottom: 14px;
+  background: #fff; padding: 4px; border-radius: 10px;
+  border: 1px solid #e2e8f0; width: fit-content;
+}
+.turni-view-tab {
+  padding: 7px 16px; border-radius: 7px; font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .05em;
+  border: none; background: transparent; color: #94a3b8;
+  cursor: pointer; transition: all .12s; font-family: inherit;
+}
+.turni-view-tab.on { background: #1e293b; color: #fff; }
+.turni-view-tab:hover:not(.on) { background: #f1f5f9; color: #475569; }
+@media (max-width: 768px) {
+  .turni-view-tabs { width: 100%; }
+  .turni-view-tab { flex: 1; text-align: center; font-size: 11px; padding: 8px 10px; }
+}
 </style>
 </head>
 <body class="turni-page">
@@ -1084,43 +1127,54 @@ tr.riga-giorno.tutto-chiuso { background: transparent !important; }
       <button class="btn-nav-mese" onclick="mesePrecedente()">‹</button>
       <span class="turni-mese-titolo" id="turni-mese-label">Caricamento…</span>
       <button class="btn-nav-mese" onclick="meseSuccessivo()">›</button>
-      <label class="toggle-sera-label">
+      <label class="toggle-sera-label" id="toggle-sera-wrap">
         <input type="checkbox" id="mostra-sera" onchange="toggleColonnaSera(this.checked)">
         <span>+ Sera</span>
       </label>
     </div>
-    <div class="card-r">
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
-        <button class="btn-pom-toggle" style="margin-bottom:0" onclick="this.closest('.card-r').querySelector('.cal-table').classList.toggle('show-pom');this.querySelector('span').textContent=this.closest('.card-r').querySelector('.cal-table').classList.contains('show-pom')?'Nascondi Pomeriggio':'Mostra Pomeriggio'"><span>Mostra Pomeriggio</span></button>
-      </div>
-      <div class="tscroll"><table class="cal-table">
-        <thead>
-          <tr>
-            <th rowspan="2" class="col-giorno">Data</th>
-            <th colspan="2" class="header-fascia mattina">Mattina</th>
-            <th colspan="2" class="header-fascia pomeriggio col-pom">Pomeriggio</th>
-            <th colspan="2" class="header-fascia sera col-sera">Sera</th>
-            <th rowspan="2">Assenze</th>
-            <th rowspan="2">Note</th>
-          </tr>
-          <tr>
-            <th class="col-stato"></th>
-            <th class="col-nomi"></th>
-            <th class="col-stato col-pom"></th>
-            <th class="col-nomi col-pom"></th>
-            <th class="col-stato col-sera"></th>
-            <th class="col-nomi col-sera"></th>
-          </tr>
-        </thead>
-        <tbody id="cal-tbody"></tbody>
-      </table></div>
-      <div class="calendario-legenda">
-        <div class="legenda-item"><span class="stato-icon aperto" style="pointer-events:none;font-size:10px;width:18px;height:18px">✓</span><span>Aperto</span></div>
-        <div class="legenda-item"><span class="stato-icon chiuso" style="pointer-events:none;font-size:10px;width:18px;height:18px">✗</span><span>Chiuso</span></div>
-        <div class="legenda-item"><span class="legenda-dot" style="background:#D97706"></span><span>Parziale</span></div>
-        <div class="legenda-item"><span class="chip-nome-cal" style="pointer-events:none">Op.</span></div>
+    <!-- Tab vista: Tabella / Giornate -->
+    <div class="turni-view-tabs">
+      <button class="turni-view-tab on" id="vtab-tabella" onclick="setTurniView('tabella')">📅 Tabella</button>
+      <button class="turni-view-tab" id="vtab-giornate" onclick="setTurniView('giornate')">📋 Giornate</button>
+    </div>
+    <!-- Vista TABELLA -->
+    <div id="turni-view-tabella">
+      <div class="card-r">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+          <button class="btn-pom-toggle" style="margin-bottom:0" onclick="this.closest('.card-r').querySelector('.cal-table').classList.toggle('show-pom');this.querySelector('span').textContent=this.closest('.card-r').querySelector('.cal-table').classList.contains('show-pom')?'Nascondi Pomeriggio':'Mostra Pomeriggio'"><span>Mostra Pomeriggio</span></button>
+        </div>
+        <div class="tscroll"><table class="cal-table">
+          <thead>
+            <tr>
+              <th rowspan="2" class="col-giorno">Data</th>
+              <th colspan="2" class="header-fascia mattina">Mattina</th>
+              <th colspan="2" class="header-fascia pomeriggio col-pom">Pomeriggio</th>
+              <th colspan="2" class="header-fascia sera col-sera">Sera</th>
+              <th rowspan="2">Assenze</th>
+              <th rowspan="2">Note</th>
+            </tr>
+            <tr>
+              <th class="col-stato"></th>
+              <th class="col-nomi"></th>
+              <th class="col-stato col-pom"></th>
+              <th class="col-nomi col-pom"></th>
+              <th class="col-stato col-sera"></th>
+              <th class="col-nomi col-sera"></th>
+            </tr>
+          </thead>
+          <tbody id="cal-tbody"></tbody>
+        </table></div>
+        <div class="calendario-legenda">
+          <div class="legenda-item"><span class="stato-icon aperto" style="pointer-events:none;font-size:10px;width:18px;height:18px">✓</span><span>Aperto</span></div>
+          <div class="legenda-item"><span class="stato-icon chiuso" style="pointer-events:none;font-size:10px;width:18px;height:18px">✗</span><span>Chiuso</span></div>
+          <div class="legenda-item"><span class="legenda-dot" style="background:#D97706"></span><span>Parziale</span></div>
+          <div class="legenda-item"><span class="chip-nome-cal" style="pointer-events:none">Op.</span></div>
+          <div class="legenda-item"><span class="chip-nome-cal chip-own" style="pointer-events:none">Tu</span><span>Il tuo turno</span></div>
+        </div>
       </div>
     </div>
+    <!-- Vista GIORNATE (card mobile-friendly) -->
+    <div id="turni-view-giornate" style="display:none"></div>
   </div>
 
   <!-- SEZIONE 2: ORARI EMPORIO (inline) -->
@@ -1745,7 +1799,8 @@ function renderMonth() {
         const oreEff = o.oremanuali != null ? o.oremanuali : defOre;
         const oreStyle = o.oremanuali != null ? '' : 'color:#94a3b8;font-size:8px';
         const oreStr = oreEff ? `<span class="chip-ore-custom" style="${oreStyle}">${oreEff.toFixed(2)}h</span>` : '';
-        return `<span class="chip-nome-cal" ondblclick="event.stopPropagation();apriPopoverChip('${key}',${i},this)" title="Doppio click per modificare orario">${o.nome.split(' ')[0]}${oreStr}` +
+        const ownCls = isCurrentUser(o.nome) ? ' chip-own' : '';
+        return `<span class="chip-nome-cal${ownCls}" ondblclick="event.stopPropagation();apriPopoverChip('${key}',${i},this)" title="Doppio click per modificare orario">${o.nome.split(' ')[0]}${oreStr}` +
           `<span class="rm" onclick="event.stopPropagation();removeOp('${key}',${i})">×</span></span>`;
       }).join('')+`<span class="op-add" onclick="aggiungiOperatoreTurno('${ds}','${fascia}',this)">+</span>`;
     };
@@ -1918,16 +1973,22 @@ function renderYear() {
 // ── MASTER RENDER ──────────────────────────────────────────────────────────
 function render() {
   renderMonthLabel();
-  const tbody = document.getElementById('cal-tbody');
-  if (tbody) {
-    tbody.innerHTML = renderMonth();
-    const chk = document.getElementById('mostra-sera');
-    toggleColonnaSera(chk ? chk.checked : mostraSeraGlobale);
+  if (currentView === 'giornate') {
+    const elG = document.getElementById('turni-view-giornate');
+    if (elG && elG.style.display !== 'none') elG.innerHTML = renderGiornaliero();
+  } else {
+    const tbody = document.getElementById('cal-tbody');
+    if (tbody) {
+      tbody.innerHTML = renderMonth();
+      const chk = document.getElementById('mostra-sera');
+      toggleColonnaSera(chk ? chk.checked : mostraSeraGlobale);
+    }
   }
 }
 
 // ── AZIONI ─────────────────────────────────────────────────────────────────
 function toggleShift(key) {
+  if(!canEditTurni()){showToast('Non hai i permessi per modificare i turni','err');return;}
   if(!turniData[key]) turniData[key]={aperto:true,operatori:[]};
   turniData[key].aperto=!turniData[key].aperto;
   saveTurno(key,turniData[key]);
@@ -1952,6 +2013,7 @@ function openAddModal(key,title) {
 }
 
 function addOp(key,nome,ruolo,withManualHrs) {
+  if(!canEditTurni()){showToast('Non hai i permessi per modificare i turni','err');closeModal('modal-add');return;}
   if(!turniData[key]) turniData[key]={aperto:true,operatori:[]};
   const newOp={nome,ruolo};
   if(withManualHrs) newOp.oremanuali=calcShiftHours(key.includes('mattina')?'mattina':'pomeriggio',ruolo);
@@ -1962,6 +2024,7 @@ function addOp(key,nome,ruolo,withManualHrs) {
 }
 
 function removeOp(key,idx) {
+  if(!canEditTurni()){showToast('Non hai i permessi per modificare i turni','err');return;}
   turniData[key].operatori[idx].rimosso = true;
   saveTurno(key,turniData[key]);
   render();
@@ -2008,6 +2071,7 @@ function openAssenzaModal(dayKey) {
 }
 
 function setAssenza(assKey,tipo) {
+  if(!canEditTurni()){showToast('Non hai i permessi per modificare le assenze','err');closeModal('modal-ass');return;}
   const ore = calcolaOreAssenza();
   assenzeData[assKey] = ore > 0 ? {tipo, ore} : tipo;
   const parts=assKey.split('|');
@@ -2019,6 +2083,7 @@ function setAssenza(assKey,tipo) {
 }
 
 function removeAssenza(dayKey,nome) {
+  if(!canEditTurni()){showToast('Non hai i permessi per modificare le assenze','err');return;}
   const assKey=`${dayKey}|${nome}`;
   delete assenzeData[assKey];
   const parts=dayKey.split('|');
@@ -2029,6 +2094,7 @@ function removeAssenza(dayKey,nome) {
 }
 
 function rimuoviAssenzaKey(assKey,dayKey) {
+  if(!canEditTurni()) return;
   delete assenzeData[assKey];
   const parts=assKey.split('|');
   const mk=`${parts[0]}|${parts[1]}|${parts[2]}|${parts[3]}|mattina`;
@@ -2038,6 +2104,7 @@ function rimuoviAssenzaKey(assKey,dayKey) {
 }
 
 function saveNote(dayKey,val) {
+  if(!canEditTurni()) return;
   noteData[dayKey]=val;
   const parts=dayKey.split('|');
   const mk=`${parts[0]}|${parts[1]}|${parts[2]}|${parts[3]}|mattina`;
@@ -2132,7 +2199,8 @@ function creaChipHtml(o, i, key, ds, fascia) {
   const oreDisp = oreEff != null ? oreEff.toFixed(2)+'h' : '';
   const oreColor = isOverride ? 'color:#B5453A;font-weight:700' : 'color:#94a3b8;font-weight:500';
   const overrideDot = isOverride ? ' title="Orario personalizzato ✎"' : '';
-  return `<div class="chip-operatore-turno" ondblclick="toggleOrarioOp('${sid}','${ds}','${fascia}')" title="Doppio click per orario">
+  const ownStyle = isCurrentUser(o.nome) ? ' style="border-color:#B5453A;background:rgba(181,69,58,0.06)"' : '';
+  return `<div class="chip-operatore-turno"${ownStyle} ondblclick="toggleOrarioOp('${sid}','${ds}','${fascia}')" title="Doppio click per orario">
     <div class="chip-op-header">
       <span class="chip-op-nome">${o.nome.split(' ').slice(0,2).join(' ')}</span>
       <span class="chip-op-ore" id="ore-${sid}-${ds}-${fascia}" style="${oreColor}"${overrideDot}>${oreDisp}</span>
@@ -2241,6 +2309,7 @@ function renderGiornaliero() {
 }
 
 function aggiornaNegozio(data, fascia, stato) {
+  if(!canEditTurni()){showToast('Non hai i permessi per modificare i turni','err');return;}
   const key = dateToTurnoKey(data, fascia);
   if (!turniData[key]) turniData[key] = {aperto:true, operatori:[]};
   turniData[key].aperto = (stato === 'aperto');
@@ -2272,6 +2341,7 @@ async function aggiungiOperatoreTurno(data, fascia, btnEl = null) {
 }
 
 function rimuoviChipOp(key, idx) {
+  if(!canEditTurni()){showToast('Non hai i permessi per modificare i turni','err');return;}
   if (!turniData[key]) return;
   turniData[key].operatori[idx].rimosso = true;
   saveTurno(key, turniData[key]);
@@ -2561,18 +2631,59 @@ async function applicaTurnoDefault(data) {
   } catch(e) { showToast('Errore: '+e.message,'err'); }
 }
 
+// ── PERMESSI TURNI ──────────────────────────────────────────────────────────
+function canEditTurni() {
+  if (typeof getOperatoreLoggato !== 'function') return true;
+  const u = getOperatoreLoggato();
+  if (!u) return true; // nessuna sessione → modalità sviluppo
+  if (['admin', 'dipendente'].includes(u.ruolo)) return true;
+  if (u.is_responsabile_turni) return true;
+  return false;
+}
+
+function isCurrentUser(nome) {
+  if (typeof getOperatoreLoggato !== 'function') return false;
+  const u = getOperatoreLoggato();
+  if (!u) return false;
+  return (u.nome || '').trim().toLowerCase() === (nome || '').trim().toLowerCase();
+}
+
+// ── VISTA TURNI (tabella / giornate) ──────────────────────────────────────
+function setTurniView(v) {
+  currentView = v;
+  const elT = document.getElementById('turni-view-tabella');
+  const elG = document.getElementById('turni-view-giornate');
+  const vtT = document.getElementById('vtab-tabella');
+  const vtG = document.getElementById('vtab-giornate');
+  const seraTgl = document.getElementById('toggle-sera-wrap');
+  if (elT) elT.style.display = v === 'tabella' ? '' : 'none';
+  if (elG) elG.style.display = v === 'giornate' ? '' : 'none';
+  if (vtT) vtT.classList.toggle('on', v === 'tabella');
+  if (vtG) vtG.classList.toggle('on', v === 'giornate');
+  if (seraTgl) seraTgl.style.display = v === 'tabella' ? '' : 'none';
+  if (v === 'giornate' && elG) elG.innerHTML = renderGiornaliero();
+}
+
 // ── INIT ───────────────────────────────────────────────────────────────────
 loadPersonaleLocale();
 currentEmporio = getEmporioCorrente();
-if (typeof isAdmin === 'function' && !isAdmin()) {
-  const _emp = typeof getEmporioLoggato === 'function' ? getEmporioLoggato() : null;
-  if (_emp) currentEmporio = _emp;
-  const _tabOp = document.getElementById('tab-operatori');
-  if (_tabOp) _tabOp.style.display = 'none';
+if (typeof getOperatoreLoggato === 'function') {
+  const _u = getOperatoreLoggato();
+  if (_u && !['admin', 'dipendente'].includes(_u.ruolo)) {
+    const _emp = _u.emporio;
+    if (_emp) currentEmporio = _emp;
+    const _tabOp = document.getElementById('tab-operatori');
+    if (_tabOp) _tabOp.style.display = 'none';
+  }
+  if (!canEditTurni()) {
+    document.body.classList.add('turni-readonly');
+  }
 }
 mostraSeraGlobale = localStorage.getItem('turni_mostra_sera') === 'true';
 const _chk = document.getElementById('mostra-sera');
 if (_chk) _chk.checked = mostraSeraGlobale;
+// Usa vista giornate di default su mobile, tabella su desktop
+setTurniView(window.innerWidth < 768 ? 'giornate' : 'tabella');
 reload();
 // Popola automaticamente turni predefiniti per i prossimi 2 mesi
 (async () => {
@@ -3862,6 +3973,7 @@ function mostraDropdownOperatori(data, fascia, ops, btnEl = null) {
 }
 
 function selezionaOpTurno(opId, nome, ruolo, data, fascia) {
+  if(!canEditTurni()){showToast('Non hai i permessi per modificare i turni','err');document.getElementById('dropdown-op-turno')?.remove();return;}
   const key = dateToTurnoKey(data, fascia);
   if (!turniData[key]) turniData[key] = { aperto: true, operatori: [] };
   const esistente = turniData[key].operatori.find(o => o.nome === nome);
