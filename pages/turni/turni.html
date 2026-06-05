@@ -76,7 +76,7 @@ body{font-family:var(--m-font);background:var(--m-sfondo);color:var(--m-scuro);p
 .date-cell .dn{font-size:9px;color:#94a3b8;font-weight:700;text-transform:uppercase}
 .op-list{display:flex;flex-direction:column;gap:3px;min-width:120px}
 .op-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:8px;font-size:11px;font-weight:600;max-width:fit-content;white-space:nowrap}
-.op-chip .rm{font-size:9px;color:#cbd5e1;cursor:pointer;margin-left:2px}
+.op-chip .rm{font-size:14px;color:#cbd5e1;cursor:pointer;margin-left:4px;line-height:1;display:inline-flex;align-items:center}
 .op-chip .rm:hover{color:#ef4444}
 .c-dip{background:#fce4ec;color:#7f1d1d}
 .c-vol{background:#e8f5e9;color:#1b5e20}
@@ -402,6 +402,14 @@ tr.cella-giorno.festivo { background: rgba(181,69,58,0.03) !important; }
   opacity: .5;
 }
 .chip-toggle-orario:hover { opacity: 1; }
+.chip-operatore-turno .chip-remove {
+  background: none; border: none; cursor: pointer;
+  font-size: 16px; font-weight: 700; line-height: 1; padding: 0; min-height: auto;
+  color: #94a3b8; display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  transition: background .1s, color .1s;
+}
+.chip-operatore-turno .chip-remove:hover { background: #fee2e2; color: #B5453A; }
 .chip-op-orario {
   border-top: 1px solid #f1f5f9;
   padding-top: 6px;
@@ -495,7 +503,18 @@ tr.cella-giorno.festivo { background: rgba(181,69,58,0.03) !important; }
 .col-mattina .chip-nome-cal    { background: #fef9c3; color: #92400e; border-color: #fde68a; }
 .col-pomeriggio .chip-nome-cal { background: #ede9fe; color: var(--m-scuro); border-color: #c4b5fd; }
 .col-sera .chip-nome-cal     { background: #d1fae5; color: var(--m-scuro); border-color: #a7f3d0; }
-.chip-nome-cal .rm { font-size: 9px; color: #cbd5e1; cursor: pointer; margin-left: 2px; }
+.chip-nome-cal .rm {
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 700;
+  color: #94a3b8;
+  cursor: pointer;
+  margin-left: 5px;
+  vertical-align: middle;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 1px;
+}
 .chip-nome-cal .rm:hover { color: #ef4444; }
 .chip-nome-cal .ore-inp { width: 38px; border: 1px solid #e2e8f0; border-radius: 4px; padding: 1px 3px; font-size: 10px; text-align: center; font-weight: 700; font-family: 'DM Mono', monospace; }
 .chip-nome-cal { cursor: pointer; }
@@ -511,17 +530,7 @@ tr.riga-giorno.tutto-chiuso        { background: rgba(181,69,58,.06); }
 tr.riga-giorno.festivo             { background: rgba(181,69,58,0.03) !important; }
 tr.riga-giorno.festivo .giorno-numero { color: #B5453A; }
 
-.btn-pom-toggle {
-  display: none; font-size: 10px; padding: 5px 12px; margin: 6px 10px 2px;
-  border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc;
-  color: #64748b; font-weight: 700; cursor: pointer;
-  align-items: center; gap: 6px; font-family: inherit;
-}
-@media (max-width: 768px) {
-  .col-pom                     { display: none !important; }
-  .cal-table.show-pom .col-pom { display: table-cell !important; }
-  .btn-pom-toggle              { display: inline-flex; }
-}
+.btn-pom-toggle { display: none !important; }
 
 /* === STRUTTURA MACRO-SEZIONI === */
 .turni-macro-nav {
@@ -976,7 +985,9 @@ body.turni-own-only .negozio-stato input { pointer-events: none !important; }
 body.turni-own-only .negozio-orari input { pointer-events: none !important; }
 body.turni-own-only .btn-aggiungi-sera { display: none !important; }
 body.turni-own-only .btn-rimuovi-sera { display: none !important; }
-/* .op-add, .btn-aggiungi-op-turno, .giorno-azioni restano visibili — filtro applicato in JS */
+/* In own-only: rende il + più evidente (è l'unico controllo interattivo per il volontario) */
+body.turni-own-only .op-add { color: #B5453A !important; font-weight: 700 !important; font-size: 14px !important; border: 1px solid #fca5a5 !important; background: #fff5f5 !important; }
+body.turni-own-only .op-add:hover { background: #B5453A !important; color: #fff !important; border-color: #B5453A !important; }
 
 /* ── ORARI SOLA LETTURA ──────────────────────────────────────────────────── */
 body.orari-readonly .orari-btn-p { display: none !important; }
@@ -1070,20 +1081,94 @@ body.operatori-readonly #sezione-operatori textarea { pointer-events: none !impo
     font-size: 12px !important; padding: 7px 11px !important; white-space: nowrap; flex-shrink: 0;
   }
 
-  /* 6. Vista tabella calendario — scroll orizzontale pulito */
-  .tscroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .cal-table { font-size: 11px !important; min-width: 380px; }
-  .cal-table thead th { font-size: 8px !important; padding: 5px 3px !important; }
-  .col-giorno { width: 46px !important; min-width: 46px !important; padding: 5px 3px !important; }
+  /* 6. Vista tabella calendario — card per giorno su mobile */
+  .tscroll { overflow-x: visible; }
+  .cal-table { display: block !important; min-width: unset !important; font-size: 11px !important; }
+  .cal-table thead { display: none !important; }
+  .cal-table tbody { display: block !important; width: 100%; }
+
+  .cal-table tbody tr.riga-giorno {
+    display: grid !important;
+    grid-template-columns: 46px 26px 1fr;
+    grid-template-rows: minmax(38px, auto) minmax(36px, auto);
+    margin-bottom: 6px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  /* Colonna giorno: si estende su entrambe le righe */
+  .cal-table tr.riga-giorno > td:nth-child(1) {
+    grid-column: 1; grid-row: 1 / 3;
+    display: flex !important;
+    flex-direction: column; align-items: center; justify-content: center;
+    background: #f8fafc !important;
+    border-right: 1px solid #e8ecf0 !important;
+    border-bottom: none !important;
+    padding: 4px 2px !important;
+    width: 46px !important; min-width: 46px !important;
+  }
+
+  /* Mattina: icona stato */
+  .cal-table tr.riga-giorno > td:nth-child(2) {
+    grid-column: 2; grid-row: 1;
+    display: flex !important;
+    align-items: center; justify-content: center;
+    border-right: 1px solid #f1f5f9 !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    width: 26px !important; min-width: 26px !important; max-width: 26px !important;
+  }
+
+  /* Mattina: nomi operatori */
+  .cal-table tr.riga-giorno > td:nth-child(3) {
+    grid-column: 3; grid-row: 1;
+    display: block !important;
+    padding: 3px 7px !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+  }
+
+  /* Pomeriggio: icona stato */
+  .cal-table tr.riga-giorno > td:nth-child(4) {
+    grid-column: 2; grid-row: 2;
+    display: flex !important;
+    align-items: center; justify-content: center;
+    border-right: 1px solid #f1f5f9 !important;
+    width: 26px !important; min-width: 26px !important; max-width: 26px !important;
+  }
+
+  /* Pomeriggio: nomi operatori */
+  .cal-table tr.riga-giorno > td:nth-child(5) {
+    grid-column: 3; grid-row: 2;
+    display: block !important;
+    padding: 3px 7px !important;
+  }
+
+  /* Nascondi sera, assenze, note su mobile */
+  .cal-table tr.riga-giorno > td:nth-child(n+6) { display: none !important; }
+
+  /* Label fascia inline */
+  .cal-table tr.riga-giorno > td:nth-child(3)::before {
+    content: "☀ Mat"; display: block;
+    font-size: 7px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .05em; color: #94a3b8; margin-bottom: 1px;
+  }
+  .cal-table tr.riga-giorno > td:nth-child(5)::before {
+    content: "◑ Pom"; display: block;
+    font-size: 7px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .05em; color: #64748b; margin-bottom: 1px;
+  }
+
+  /* Chips in riga orizzontale */
+  .cal-table tr.riga-giorno .op-list {
+    display: flex !important; flex-direction: row !important;
+    flex-wrap: wrap !important; gap: 2px !important; align-items: center;
+    min-height: 0 !important;
+  }
+
   .giorno-numero { font-size: 13px !important; }
   .giorno-nome   { font-size: 8px !important; }
-  .col-stato-cell { width: 20px !important; min-width: 20px !important; max-width: 20px !important; }
-  .stato-icon { font-size: 10px !important; min-height: 30px !important; }
-  .col-nomi   { min-width: 80px !important; padding: 3px !important; }
+  .stato-icon { font-size: 10px !important; min-height: 28px !important; width: 26px !important; }
   .chip-nome-cal { font-size: 10px !important; padding: 1px 4px !important; margin: 1px !important; }
-  .col-assenze, .col-note { min-width: 70px !important; font-size: 10px !important; padding: 3px !important; }
-  .note-cell textarea { font-size: 10px !important; min-height: 24px !important; }
-  .btn-pom-toggle { display: inline-flex; font-size: 10px !important; }
 
   /* 7. Vista giornate (card per giorno) */
   .giorno-turno { margin-bottom: 10px !important; border-radius: 10px !important; }
@@ -1192,7 +1277,6 @@ body.operatori-readonly #sezione-operatori textarea { pointer-events: none !impo
   .turni-mese-titolo { font-size: 14px !important; min-width: 95px !important; }
   .col-giorno { width: 38px !important; }
   .giorno-numero { font-size: 12px !important; }
-  .cal-table  { min-width: 330px; }
   .chip-nome-cal { font-size: 9px !important; }
   .riga-giorno-default { grid-template-columns: 60px 1fr 1fr 1fr !important; font-size: 10px !important; }
   .ore-filtro-grp { width: 100% !important; }
@@ -1263,9 +1347,6 @@ body.operatori-readonly #sezione-operatori textarea { pointer-events: none !impo
     <!-- Vista TABELLA -->
     <div id="turni-view-tabella">
       <div class="card-r">
-        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
-          <button class="btn-pom-toggle" style="margin-bottom:0" onclick="this.closest('.card-r').querySelector('.cal-table').classList.toggle('show-pom');this.querySelector('span').textContent=this.closest('.card-r').querySelector('.cal-table').classList.contains('show-pom')?'Nascondi Pomeriggio':'Mostra Pomeriggio'"><span>Mostra Pomeriggio</span></button>
-        </div>
         <div class="tscroll"><table class="cal-table">
           <thead>
             <tr>
@@ -1589,6 +1670,7 @@ body.operatori-readonly #sezione-operatori textarea { pointer-events: none !impo
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../../scripts/auth.js"></script>
 <script>
 const SBURL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
 const SBKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
@@ -1922,6 +2004,11 @@ async function loadData() {
     const { data } = await db.from('turni_orari').select('orari').eq('emporio', currentEmporio).maybeSingle();
     storeHoursData = data?.orari ? {...DEFAULTHOURS,...data.orari} : {...DEFAULTHOURS};
   } catch(e) { storeHoursData = {...DEFAULTHOURS}; }
+  // Carica orari_emporio per rispettare chiusure settimanali/mensili nella tabella turni
+  try {
+    const { data: _orData } = await db.from('orari_emporio').select('*').eq('emporio_id', currentEmporio);
+    allOrari = _orData || [];
+  } catch(e) { /* allOrari resta invariato */ }
 }
 
 async function saveTurno(key, turnoObj, quiet = false) {
@@ -2002,8 +2089,12 @@ function renderMonth() {
     const mk = `${currentEmporio}|${currentAnno}|${currentMese+1}|${d}|mattina`;
     const pk = `${currentEmporio}|${currentAnno}|${currentMese+1}|${d}|pomeriggio`;
     const sk = `${currentEmporio}|${currentAnno}|${currentMese+1}|${d}|sera`;
-    const mD = turniData[mk] || {aperto:!isFestivo, operatori:[]};
-    const pD = turniData[pk] || {aperto:!isFestivo, operatori:[]};
+    const _ds = `${currentAnno}-${String(currentMese+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const _effOr    = allOrari.length ? orCalcEffettivo(_ds) : null;
+    const _chiusoOr = _effOr?.chiuso === true;
+    const _defAp    = _chiusoOr ? false : !isFestivo;
+    const mD = turniData[mk] || {aperto:_defAp, operatori:[]};
+    const pD = turniData[pk] || {aperto:_defAp, operatori:[]};
     const sD = turniData[sk] || {aperto:false, operatori:[]};
     const dayKey = `${currentEmporio}|${currentAnno}|${currentMese+1}|${d}`;
     const dayAssenze = Object.entries(assenzeData).filter(([k])=>k.startsWith(dayKey+'|')).map(([k,v])=>({nome:k.split('|').slice(4).join('|'),tipo:getAssenzaTipo(v),ore:getAssenzaOre(v)}));
@@ -2023,17 +2114,20 @@ function renderMonth() {
         const selfCls = canInsertOwnNameOnly() && isCurrentUser(o.nome) ? ' chip-self' : '';
         return `<span class="chip-nome-cal${selfCls}" ondblclick="event.stopPropagation();apriPopoverChip('${key}',${i},this)" title="Doppio click per modificare orario">${o.nome.split(' ')[0]}${partialStr}` +
           `<span class="rm" onclick="event.stopPropagation();removeOp('${key}',${i})">×</span></span>`;
-      }).join('')+`<span class="op-add" onclick="aggiungiOperatoreTurno('${ds}','${fascia}',this)">+</span>`;
+      }).join('')+`<span class="op-add" onclick="aggiungiOperatoreTurno('${ds}','${fascia}',this)">${canInsertOwnNameOnly() ? '+ Io' : '+'}</span>`;
     };
 
     const stM = mD.aperto ? 'aperto' : 'chiuso';
     const stP = pD.aperto ? 'aperto' : 'chiuso';
     const stS = sD.aperto ? 'aperto' : 'chiuso';
+    const _chiusoLabel = _chiusoOr && !turniData[mk] && !turniData[pk]
+      ? `<span style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:#B5453A;opacity:.8">CHIUSO</span>` : '';
     rows.push(`
-      <tr class="riga-giorno${isFestivo?' festivo':''}">
+      <tr class="riga-giorno${isFestivo?' festivo':''}${_chiusoOr&&!turniData[mk]&&!turniData[pk]?' tutto-chiuso':''}">
         <td class="col-giorno">
-          <div class="giorno-numero">${d}</div>
+          <div class="giorno-numero"${_chiusoOr&&!turniData[mk]&&!turniData[pk]?' style="color:#B5453A"':''}>${d}</div>
           <div class="giorno-nome">${GIORNI[dow]}</div>
+          ${_chiusoLabel}
         </td>
         <td class="col-stato-cell ${stM}" onclick="toggleShift('${mk}')" style="background:${mD.aperto?'#16A34A':'#B5453A'} !important">
           <span class="stato-icon" style="color:#fff !important;background:transparent !important;border:none !important">${mD.aperto?'✓':'✗'}</span>
@@ -2511,13 +2605,18 @@ async function openAssenzaModal(dayKey) {
   let pers = [];
   try {
     const { data, error } = await db.from('operatori')
-      .select('id,nome,ruolo,emporio,empori_aggiuntivi')
+      .select('*')
       .in('ruolo', RUOLI_CONTRATTUALIZZATI)
       .or('attivo.eq.true,attivo.is.null')
       .order('nome');
     if (error) throw error;
+    const _assParti = dayKey.split('|');
+    const _assDate = _assParti.length >= 4
+      ? `${_assParti[1]}-${String(_assParti[2]).padStart(2,'0')}-${String(_assParti[3]).padStart(2,'0')}`
+      : null;
     pers = (data || []).filter(o =>
-      o.emporio === currentEmporio || (o.empori_aggiuntivi || []).includes(currentEmporio)
+      (o.emporio === currentEmporio || (o.empori_aggiuntivi || []).includes(currentEmporio)) &&
+      isOperatoreAttivoInData(o, _assDate)
     );
   } catch(e) {
     listEl.innerHTML = `<p style="padding:16px;color:#B5453A;font-size:13px">Errore caricamento operatori: ${e.message}</p>`;
@@ -2732,12 +2831,13 @@ async function aggiungiOperatoreTurno(data, fascia, btnEl = null) {
   try {
     const emporio = currentEmporio;
     const { data: tuttiOp, error: dbErr } = await db.from('operatori')
-      .select('id,nome,ruolo,emporio,empori_aggiuntivi')
+      .select('*')
       .or('attivo.eq.true,attivo.is.null')
       .order('nome');
     if (dbErr) throw dbErr;
     let filtrati = (tuttiOp || []).filter(o =>
-      o.emporio === emporio || (o.empori_aggiuntivi || []).includes(emporio)
+      (o.emporio === emporio || (o.empori_aggiuntivi || []).includes(emporio)) &&
+      isOperatoreAttivoInData(o, data)
     );
     if (canInsertOwnNameOnly()) {
       const _me = _uLoggato();
@@ -3055,6 +3155,18 @@ async function applicaTurnoDefault(data) {
 // NB: impostazioni.html salva ruolo='scu' nel DB; 'serviziocivile' è usato
 //     solo nel sistema PERSONALE locale (localStorage). Entrambi sono alias.
 const RUOLI_CONTRATTUALIZZATI = ['dipendente', 'scu', 'serviziocivile'];
+
+/**
+ * Restituisce true se l'operatore è attivo nella data indicata.
+ * data_inizio/data_fine sono colonne opzionali della tabella operatori (formato ISO YYYY-MM-DD).
+ * Se assenti, l'operatore è sempre considerato attivo.
+ */
+function isOperatoreAttivoInData(op, dataStr) {
+  const oggi = dataStr || new Date().toISOString().slice(0, 10);
+  if (op.data_inizio && oggi < op.data_inizio) return false;
+  if (op.data_fine   && oggi > op.data_fine)   return false;
+  return true;
+}
 const isRuoloSCU      = r => r === 'scu' || r === 'serviziocivile';
 const isRuoloDipSCU   = r => r === 'dipendente' || isRuoloSCU(r);
 const chipClass       = r => r === 'dipendente' ? 'c-dip' : isRuoloSCU(r) ? 'c-scu' : 'c-vol';
@@ -4314,7 +4426,7 @@ async function caricaAnagraficaOperatori() {
   try {
     const emporio = currentEmporio;
     const { data: tuttiOp } = await db.from('operatori')
-      .select('id,nome,ruolo,emporio,empori_aggiuntivi,telefono,ore_settimanali,ore_previste_lun,ore_previste_mar,ore_previste_mer,ore_previste_gio,ore_previste_ven,ore_previste_sab,ore_previste_dom')
+      .select('*')
       .or('attivo.eq.true,attivo.is.null')
       .order('nome');
     const opEmporio = (tuttiOp || []).filter(o =>
@@ -4407,6 +4519,16 @@ function rigaOperatoreTurni(op, predefiniti) {
           <div>
             <div class="op-nome-turno">${op.nome}</div>
             <div class="op-ruolo-label">${labelRuolo(op.ruolo)}</div>
+            ${isRuoloDipSCU(op.ruolo) ? (() => {
+              const oggi = new Date().toISOString().slice(0,10);
+              if (op.data_fine && op.data_fine < oggi)
+                return `<span style="font-size:10px;color:#B5453A;font-weight:700;background:#fee2e2;padding:1px 6px;border-radius:4px;margin-top:2px;display:inline-block">Contratto scaduto</span>`;
+              if (op.data_fine) {
+                const gg = Math.ceil((new Date(op.data_fine+'T12:00:00') - new Date()) / 86400000);
+                if (gg <= 30) return `<span style="font-size:10px;color:#d97706;font-weight:700;background:#fef9c3;padding:1px 6px;border-radius:4px;margin-top:2px;display:inline-block">Scade tra ${gg}gg</span>`;
+              }
+              return '';
+            })() : ''}
           </div>
         </div>
         <span class="riepilogo-turno-default" id="riepilogo-pred-${op.id}">${riepilogo}</span>
@@ -4462,7 +4584,49 @@ function rigaOperatoreTurni(op, predefiniti) {
               <button onclick="salvaOrePreviste('${op.id}')" class="btn-p" style="padding:7px 14px;font-size:10px">Salva ore previste</button>
               <span id="op-gg-fb-${op.id}" style="display:none;font-size:11px;color:#16a34a;font-weight:700">✓ Salvate</span>
             </div>
+          </div>
+          ${(() => {
+            const oggi = new Date().toISOString().slice(0,10);
+            const scaduto = op.data_fine && op.data_fine < oggi;
+            const nonAncora = op.data_inizio && op.data_inizio > oggi;
+            const badge = scaduto
+              ? `<span style="font-size:11px;color:#B5453A;font-weight:700;padding:3px 8px;background:#fee2e2;border-radius:6px">Contratto scaduto</span>`
+              : nonAncora
+                ? `<span style="font-size:11px;color:#854d0e;font-weight:700;padding:3px 8px;background:#fef9c3;border-radius:6px">Non ancora attivo</span>`
+                : `<span style="font-size:11px;color:#16a34a;font-weight:700;padding:3px 8px;background:#dcfce7;border-radius:6px">Attivo</span>`;
+            return `
+          <div style="margin-bottom:14px;padding:14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0">
+            <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+              Periodo di lavoro ${badge}
+            </div>
+            <div style="margin-bottom:10px">
+              <div style="font-size:10px;font-weight:700;color:#64748b;margin-bottom:4px">Tipo contratto</div>
+              <select id="op-tipo-contratto-${op.id}"
+                style="padding:6px 8px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:13px;font-family:inherit;color:#1e293b;background:#fff;min-width:180px">
+                <option value="indeterminato" ${(op.tipo_contratto||'indeterminato')==='indeterminato'?'selected':''}>Tempo indeterminato</option>
+                <option value="determinato" ${op.tipo_contratto==='determinato'?'selected':''}>Tempo determinato</option>
+                <option value="scu" ${op.tipo_contratto==='scu'?'selected':''}>SCU</option>
+                <option value="volontario" ${op.tipo_contratto==='volontario'?'selected':''}>Volontario</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end">
+              <div>
+                <div style="font-size:10px;font-weight:700;color:#64748b;margin-bottom:4px">Data inizio <span style="color:#94a3b8;font-weight:400">(primo giorno)</span></div>
+                <input type="date" id="op-data-inizio-${op.id}" value="${op.data_inizio || ''}"
+                  style="padding:6px 8px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:13px;font-family:inherit;color:#1e293b;background:#fff">
+              </div>
+              <div>
+                <div style="font-size:10px;font-weight:700;color:#64748b;margin-bottom:4px">Data fine <span style="color:#94a3b8;font-weight:400">(vuoto = tempo indeterminato)</span></div>
+                <input type="date" id="op-data-fine-${op.id}" value="${op.data_fine || ''}"
+                  style="padding:6px 8px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:13px;font-family:inherit;color:#1e293b;background:#fff">
+              </div>
+              <button onclick="salvaDataLavoro('${op.id}')" class="btn-s" style="padding:7px 14px;font-size:10px;align-self:flex-end">
+                ✓ Salva periodo
+              </button>
+              <span id="op-periodo-fb-${op.id}" style="display:none;font-size:11px;color:#16a34a;font-weight:700;align-self:flex-end">✓ Salvato</span>
+            </div>
           </div>`;
+          })()}`;
         })() : ''}
         <div class="turni-default-griglia">${grigliaHtml}</div>
         <div class="pred-footer">
@@ -4582,6 +4746,28 @@ async function rimuoviOpEmporio(opId, nome) {
     const { error } = await db.from('operatori').update(aggiornamento).eq('id', opId);
     if (error) throw error;
     showToast("Operatore rimosso dall'emporio ✓");
+    caricaAnagraficaOperatori();
+  } catch(e) { showToast('Errore: ' + e.message, 'err'); }
+}
+
+// ── PERIODO DI LAVORO ─────────────────────────────────────────────────────
+async function salvaDataLavoro(opId) {
+  if (!canEditOperatori()) { showToast('Non hai i permessi per modificare gli operatori', 'err'); return; }
+  if (!db) return;
+  const inizio = document.getElementById(`op-data-inizio-${opId}`)?.value || null;
+  const fine   = document.getElementById(`op-data-fine-${opId}`)?.value   || null;
+  const tipo   = document.getElementById(`op-tipo-contratto-${opId}`)?.value || null;
+  if (fine && inizio && fine < inizio) {
+    showToast('La data fine deve essere successiva alla data inizio', 'err'); return;
+  }
+  try {
+    const { error } = await db.from('operatori')
+      .update({ data_inizio: inizio || null, data_fine: fine || null, tipo_contratto: tipo || null })
+      .eq('id', opId);
+    if (error) throw error;
+    const fb = document.getElementById(`op-periodo-fb-${opId}`);
+    if (fb) { fb.style.display = 'inline'; setTimeout(() => { fb.style.display = 'none'; }, 2500); }
+    showToast('Periodo di lavoro salvato ✓');
     caricaAnagraficaOperatori();
   } catch(e) { showToast('Errore: ' + e.message, 'err'); }
 }
@@ -4822,7 +5008,6 @@ async function applicaTurniPredefiniti(anno, mese) {
   }
 }
 </script>
-<script src="../../scripts/auth.js"></script>
 <script src="../../scripts/ui-helpers.js"></script>
 <script src="../../scripts/nav-script.js"></script>
 </body>
