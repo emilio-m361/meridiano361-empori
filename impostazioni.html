@@ -79,6 +79,11 @@
         .modal-header button:hover { background: #fee2e2; color: #B5453A; border-color: #fecaca; }
         .modal-body { padding: 18px 22px; overflow-y: auto; flex: 1; }
         .modal-footer { padding: 14px 22px; border-top: 1px solid #f1f5f9; display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+        /* ── Messaggi inline modal operatore ── */
+        .modal-op-msg { display: none; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; line-height: 1.5; margin-bottom: 12px; }
+        .modal-op-msg-error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .modal-op-msg-info    { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .modal-op-msg-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
 
         /* === BUTTONS === */
         .btn-primary   { background: #B5453A; color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: 'Inter', sans-serif; transition: background .15s; }
@@ -308,6 +313,7 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" id="edit-op-id-orig">
+                <div id="modal-op-msg" class="modal-op-msg" role="alert"></div>
 
                 <div class="campo-gruppo">
                     <label>Nome e Cognome *</label>
@@ -748,6 +754,7 @@
             if (cb) cb.checked = false;
         });
         aggiornaCBEmpori();
+        clearModalMsg();
         document.getElementById('modal-modifica-operatore').style.display = 'flex';
     }
 
@@ -781,7 +788,7 @@
             if (cb) cb.checked = extra.includes(k);
         });
         aggiornaCBEmpori();
-
+        clearModalMsg();
         document.getElementById('modal-modifica-operatore').style.display = 'flex';
     }
 
@@ -806,42 +813,138 @@
         document.getElementById('modal-modifica-operatore').style.display = 'none';
     }
 
-    async function salvaModificaOperatore() {
-        const idOrig  = document.getElementById('edit-op-id-orig').value.trim();
-        const nome    = document.getElementById('edit-op-nome').value.trim();
-        const isNuovo = !idOrig;
+    // ── MESSAGGI INLINE MODAL ─────────────────────────────────────────────
+    function showModalMsg(msg, tipo = 'error') {
+        const el = document.getElementById('modal-op-msg');
+        if (!el) return;
+        el.className = 'modal-op-msg modal-op-msg-' + tipo;
+        el.innerHTML  = msg;
+        el.style.display = 'block';
+        el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+    function clearModalMsg() {
+        const el = document.getElementById('modal-op-msg');
+        if (!el) return;
+        el.style.display = 'none';
+        el.innerHTML = '';
+        el.className = 'modal-op-msg';
+    }
 
-        if (!nome) { alert('Il nome è obbligatorio.'); return; }
-
-        // Emporio: converte la chiave select → display name per il DB
+    // ── SALVATAGGIO OPERATORE ─────────────────────────────────────────────
+    function buildOpPayload() {
         const empChiave  = document.getElementById('edit-op-emporio').value;
         const empDisplay = EMPORI_LABEL[empChiave] || empChiave;
-
-        // Empori aggiuntivi: chiavi → display names
-        const extraChiavi   = EMPORI_ORDER.filter(k => k !== empChiave && document.getElementById('extra-' + k)?.checked);
-        const extraDisplay  = extraChiavi.map(k => EMPORI_LABEL[k] || k);
-
-        const payload = {
-            nome:               nome,
-            emporio:            empDisplay,
-            ruolo:              document.getElementById('edit-op-ruolo').value,
-            telefono:           document.getElementById('edit-op-telefono').value.trim() || null,
-            email:              document.getElementById('edit-op-email-field').value.trim() || null,
-            empori_aggiuntivi:  extraDisplay.length > 0 ? extraDisplay : null,
-            note:               document.getElementById('edit-op-note').value.trim() || null,
+        const extraChiavi  = EMPORI_ORDER.filter(k => k !== empChiave && document.getElementById('extra-' + k)?.checked);
+        const extraDisplay = extraChiavi.map(k => EMPORI_LABEL[k] || k);
+        return {
+            empChiave,
+            payload: {
+                nome:              document.getElementById('edit-op-nome').value.trim(),
+                emporio:           empDisplay,
+                ruolo:             document.getElementById('edit-op-ruolo').value,
+                telefono:          document.getElementById('edit-op-telefono').value.trim() || null,
+                email:             document.getElementById('edit-op-email-field').value.trim().toLowerCase() || null,
+                empori_aggiuntivi: extraDisplay.length > 0 ? extraDisplay : null,
+                note:              document.getElementById('edit-op-note').value.trim() || null,
+            },
         };
+    }
 
+    async function _doSave(isNuovo, idOrig, payload) {
         let error;
         if (isNuovo) {
             ({ error } = await db.from('operatori').insert(payload));
         } else {
             ({ error } = await db.from('operatori').update(payload).eq('id', idOrig));
         }
+        if (error) {
+            // Ultimo presidio contro duplicate: errore 23505 da DB
+            if (error.code === '23505') {
+                showModalMsg('⚠️ Email già presente nel sistema. Controlla se l\'operatore esiste già nella lista.', 'error');
+            } else {
+                showModalMsg('Errore nel salvataggio: ' + error.message, 'error');
+            }
+            return false;
+        }
+        return true;
+    }
 
-        if (error) { alert('Errore nel salvataggio: ' + error.message); return; }
+    async function salvaModificaOperatore() {
+        clearModalMsg();
 
-        chiudiModalModifica();
-        loadUsers();
+        const idOrig  = document.getElementById('edit-op-id-orig').value.trim();
+        const isNuovo = !idOrig;
+        const { empChiave, payload } = buildOpPayload();
+        const { nome, email } = payload;
+
+        if (!nome) { showModalMsg('Il nome è obbligatorio.', 'error'); return; }
+
+        // ── Caso UPDATE: verifica che la nuova email non appartenga a un altro operatore ──
+        if (!isNuovo && email) {
+            const { data: altro } = await db
+                .from('operatori')
+                .select('id, nome')
+                .eq('email', email)
+                .neq('id', idOrig)
+                .maybeSingle();
+            if (altro) {
+                showModalMsg(`L'email <strong>${email}</strong> è già usata dall'operatore <strong>${altro.nome}</strong>. Scegli un'altra email.`, 'error');
+                return;
+            }
+        }
+
+        // ── Caso INSERT: cerca se esiste già un operatore con questa email ──
+        if (isNuovo && email) {
+            const { data: esistente } = await db
+                .from('operatori')
+                .select('id, nome, email, emporio, ruolo')
+                .eq('email', email)
+                .maybeSingle();
+
+            if (esistente) {
+                const empEsistente = normalizzaEmporio(esistente.emporio);
+                const isAdminAccount = ADMIN_EMAILS.includes(esistente.email);
+
+                // Caso A: è un account admin
+                if (isAdminAccount) {
+                    showModalMsg(
+                        `⚠️ <strong>${esistente.nome}</strong> è già registrato come amministratore del sistema. ` +
+                        `Non è necessario aggiungere un duplicato. ` +
+                        `Gli admin hanno accesso a tutti gli empori per definizione.`,
+                        'info'
+                    );
+                    return;
+                }
+
+                // Caso B: già presente in questo stesso emporio
+                if (empEsistente === empChiave) {
+                    const empLabel = EMPORI_LABEL[empChiave] || empChiave;
+                    showModalMsg(
+                        `<strong>${esistente.nome}</strong> è già presente nell'emporio <strong>${empLabel}</strong>. ` +
+                        `Cercalo nella lista e usa ✏️ per modificarlo.`,
+                        'info'
+                    );
+                    return;
+                }
+
+                // Caso C: esiste ma in un emporio diverso — offri di aggiornare
+                const empOrigLabel  = EMPORI_LABEL[empEsistente] || esistente.emporio;
+                const empDestLabel  = EMPORI_LABEL[empChiave]   || empChiave;
+                const conferma = confirm(
+                    `"${esistente.nome}" è già registrato nell'emporio ${empOrigLabel}.\n\n` +
+                    `Vuoi aggiornare il suo emporio principale a "${empDestLabel}"?`
+                );
+                if (!conferma) return;
+                // Aggiorna il record esistente invece di inserirne uno nuovo
+                const ok = await _doSave(false, esistente.id, payload);
+                if (ok) { chiudiModalModifica(); loadUsers(); }
+                return;
+            }
+        }
+
+        // ── Percorso standard: INSERT o UPDATE senza conflitti ──
+        const ok = await _doSave(isNuovo, idOrig, payload);
+        if (ok) { chiudiModalModifica(); loadUsers(); }
     }
 
     function eliminaOperatore() {
