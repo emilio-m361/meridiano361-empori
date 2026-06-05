@@ -2057,7 +2057,7 @@ function renderHours() {
   const pers = PERSONALE[currentEmporio]||[];
   const days = new Date(currentAnno, currentMese+1, 0).getDate();
   const stats = pers.map(p => {
-    const isDipSCU = p.ruolo==='dipendente' || p.ruolo==='serviziocivile';
+    const isDipSCU = isRuoloDipSCU(p.ruolo);
     let oreLavoro=0, oreFerie=0, oreMalattia=0, orePermesso=0, oreAltro=0;
     for(let d=1;d<=days;d++){
       const mk=`${currentEmporio}|${currentAnno}|${currentMese+1}|${d}|mattina`;
@@ -2086,9 +2086,8 @@ function renderHours() {
   });
   const fmt = n => n>0 ? n.toFixed(2) : '–';
   const fmtAss = (s, n) => s.isDipSCU && n>0 ? n.toFixed(2) : '–';
-  const cc = r => r==='dipendente'?'c-dip':r==='serviziocivile'?'c-scu':'c-vol';
   const rows = stats.map(s=>`<tr>
-    <td><span class="op-chip ${cc(s.ruolo)}" style="font-size:11px">${s.nome}</span></td>
+    <td><span class="op-chip ${chipClass(s.ruolo)}" style="font-size:11px">${s.nome}</span></td>
     <td style="color:#1e293b">${fmt(s.oreLavoro)}</td>
     <td style="color:#1e293b">${fmtAss(s,s.oreMalattia)}</td>
     <td style="color:#1e293b">${fmtAss(s,s.oreFerie+s.orePermesso)}</td>
@@ -2180,9 +2179,9 @@ async function aggiornaOre() {
     ]);
     if (turniRes.error) throw turniRes.error;
     const turniRows = turniRes.data || [];
-    // Solo dipendenti e SCU dell'emporio corrente
+    // Operatori contrattualizzati (dipendente + scu) dell'emporio corrente
     const opDB = (opRes.data || []).filter(o =>
-      (o.ruolo === 'dipendente' || o.ruolo === 'serviziocivile') &&
+      RUOLI_CONTRATTUALIZZATI.includes(o.ruolo) &&
       (o.emporio === currentEmporio || (o.empori_aggiuntivi || []).includes(currentEmporio))
     );
     if (opSel) {
@@ -2270,7 +2269,7 @@ function calcOreStats(nome, ruolo, opData, turniRows, assenzeObj, anno, mese, an
 
 function renderOreTable(stats, annuale, anno, mese) {
   if (!stats.length) return '<p style="padding:24px;text-align:center;color:#94a3b8;font-size:13px">Nessun dipendente o SCU registrato per questo emporio</p>';
-  const cc  = r => r === 'dipendente' ? 'c-dip' : 'c-scu';
+  const cc  = chipClass;
   const fmt = n => n !== 0 && n > 0 ? n.toFixed(2) : '–';
   const fmtAltreAtt = n => {
     if (!n && n !== 0) return '–';
@@ -2355,7 +2354,6 @@ async function loadYearData() {
 function renderYear() {
   const pers=PERSONALE[currentEmporio]||[];
   const fmt=n=>n>0?n.toFixed(0):'–';
-  const cc=r=>r==='dipendente'?'c-dip':r==='serviziocivile'?'c-scu':'c-vol';
   const statsPerMese=pers.map(p=>{
     const mesiOre=Array(12).fill(0);
     for(let m=1;m<=12;m++){
@@ -2377,8 +2375,7 @@ function renderYear() {
   });
   const ferieAnno=pers.map(p=>{
     let tot=0;
-    const isDipSCU = p.ruolo==='dipendente'||p.ruolo==='serviziocivile';
-    if(!isDipSCU) return tot;
+    if(!isRuoloDipSCU(p.ruolo)) return tot;
     for(let m=1;m<=12;m++){
       const days=new Date(currentAnno,m,0).getDate();
       for(let d=1;d<=days;d++){
@@ -2391,7 +2388,7 @@ function renderYear() {
   });
   const totMesi=Array(12).fill(0).map((_,i)=>statsPerMese.reduce((s,x)=>s+x.mesiOre[i],0));
   const rows=statsPerMese.map((s,idx)=>`<tr>
-    <td><span class="op-chip ${cc(s.ruolo)}" style="font-size:10px">${s.nome}</span></td>
+    <td><span class="op-chip ${chipClass(s.ruolo)}" style="font-size:10px">${s.nome}</span></td>
     ${s.mesiOre.map(h=>`<td>${fmt(h)}</td>`).join('')}
     <td style="font-weight:900;color:#B5453A">${fmt(s.totAnno)}</td>
     <td style="color:#1e40af;font-weight:800">${fmt(ferieAnno[idx])}</td>
@@ -2430,7 +2427,7 @@ function openAddModal(key,title) {
   document.getElementById('modal-add-list').innerHTML=available.length
     ?available.map(p=>`
       <div style="padding:8px 12px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center">
-        <span class="op-chip ${p.ruolo==='dipendente'?'c-dip':p.ruolo==='serviziocivile'?'c-scu':'c-vol'}" style="font-size:11px">${p.nome}</span>
+        <span class="op-chip ${chipClass(p.ruolo)}" style="font-size:11px">${p.nome}</span>
         <div style="display:flex;gap:4px">
           <button onclick="addOp('${key}','${p.nome}','${p.ruolo}',false)" class="btn-p" style="padding:5px 10px;font-size:9px">Aggiungi</button>
           <button onclick="addOp('${key}','${p.nome}','${p.ruolo}',true)" class="btn-s" style="padding:5px 8px;font-size:8px" title="Con ore manuali">+ Ore</button>
@@ -2487,8 +2484,7 @@ function openAssenzaModal(dayKey) {
   if (!canManageAllAssenze() && !canManageOwnAssenze()) {
     showToast('Non hai i permessi per gestire le assenze', 'err'); return;
   }
-  // Operatori contrattualizzati: dipendenti e servizio civile
-  const RUOLI_CONTRATTUALIZZATI = ['dipendente', 'serviziocivile'];
+  // Operatori contrattualizzati: dipendenti e SCU (scu o serviziocivile)
   let pers = (PERSONALE[currentEmporio]||[]).filter(p => RUOLI_CONTRATTUALIZZATI.includes(p.ruolo));
   if (canManageOwnAssenze() && !canManageAllAssenze()) {
     pers = pers.filter(p => isCurrentUser(p.nome));
@@ -2599,7 +2595,7 @@ document.getElementById('modal-add-title').textContent = 'Gestisci Operatori - '
     '<div id="ops-current-list">' +
       list.map(function(p,i){
         return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-bottom:1px solid #f1f5f9;">' +
-          '<span class="op-chip ' + (p.ruolo==='dipendente'?'c-dip':p.ruolo==='serviziocivile'?'c-scu':'c-vol') + '" style="font-size:11px;">' + p.nome + '</span>' +
+          '<span class="op-chip ' + chipClass(p.ruolo) + '" style="font-size:11px;">' + p.nome + '</span>' +
           '<div style="display:flex;align-items:center;gap:6px;">' +
             '<span style="font-size:9px;color:#94a3b8;text-transform:uppercase;">' + p.ruolo + '</span>' +
             '<button onclick="removePersonale(' + i + ')" style="border:none;background:none;cursor:pointer;color:#cbd5e1;font-size:12px;" title="Rimuovi">×</button>' +
@@ -3014,9 +3010,17 @@ async function applicaTurnoDefault(data) {
   } catch(e) { showToast('Errore: '+e.message,'err'); }
 }
 
+// ── RUOLI E HELPER CENTRALIZZATI ────────────────────────────────────────────
+// NB: impostazioni.html salva ruolo='scu' nel DB; 'serviziocivile' è usato
+//     solo nel sistema PERSONALE locale (localStorage). Entrambi sono alias.
+const RUOLI_CONTRATTUALIZZATI = ['dipendente', 'scu', 'serviziocivile'];
+const isRuoloSCU      = r => r === 'scu' || r === 'serviziocivile';
+const isRuoloDipSCU   = r => r === 'dipendente' || isRuoloSCU(r);
+const chipClass       = r => r === 'dipendente' ? 'c-dip' : isRuoloSCU(r) ? 'c-scu' : 'c-vol';
+
 // ── PERMESSI TURNI ──────────────────────────────────────────────────────────
 const RUOLI_FULL = ['admin', 'dipendente', 'coordinatore', 'responsabile'];
-const RUOLI_OWN  = ['serviziocivile', 'volontario', 'altro'];
+const RUOLI_OWN  = ['scu', 'serviziocivile', 'volontario', 'altro'];
 
 function _uLoggato() {
   return typeof getOperatoreLoggato === 'function' ? getOperatoreLoggato() : null;
@@ -3043,7 +3047,7 @@ function canEditOperatori() { return canEditTurni(); }
 function canManageOwnAssenze() {
   const u = _uLoggato();
   if (!u) return false;
-  return u.ruolo === 'serviziocivile';
+  return isRuoloSCU(u.ruolo);
 }
 function canManageAllAssenze() { return canEditTurni(); }
 function isCurrentUser(nome) {
@@ -3479,7 +3483,7 @@ function escHtml(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function labelRuoloBreve(ruolo) {
-  return ruolo==='dipendente'?'Dip':ruolo==='serviziocivile'?'SCU':ruolo==='volontario'?'Vol':(ruolo||'?');
+  return ruolo==='dipendente'?'Dip':isRuoloSCU(ruolo)?'SCU':ruolo==='volontario'?'Vol':(ruolo||'?');
 }
 
 function renderRiepilogo() {
@@ -3613,7 +3617,7 @@ function rpCalcolaStats(nome, ruolo, turniRows, assenzeObj, extraRows, anno, mes
 function rpRenderSummary(stats, nome, ruolo, anno, mese, annuale) {
   const f=n=>n>0?n.toFixed(2)+'h':'–';
   const periodo=annuale?`Anno ${anno}`:`${MESI[mese-1]} ${anno}`;
-  const cc=ruolo==='dipendente'?'c-dip':ruolo==='serviziocivile'?'c-scu':'c-vol';
+  const cc=chipClass(ruolo);
   const cards=[
     {label:'Totale generale',val:stats.totale,     color:'#B5453A',big:true},
     {label:'In emporio',     val:stats.oreEmporio,  color:'#1e293b'},
@@ -4363,7 +4367,7 @@ function rigaOperatoreTurni(op, predefiniti) {
         <span class="freccia-op" id="freccia-pred-${op.id}">›</span>
       </div>
       <div class="card-op-corpo" id="corpo-pred-${op.id}" style="display:none">
-        ${(op.ruolo === 'dipendente' || op.ruolo === 'serviziocivile') ? (() => {
+        ${isRuoloDipSCU(op.ruolo) ? (() => {
           const GG = [
             { key:'lun', label:'Lun' }, { key:'mar', label:'Mar' }, { key:'mer', label:'Mer' },
             { key:'gio', label:'Gio' }, { key:'ven', label:'Ven' }, { key:'sab', label:'Sab' },
