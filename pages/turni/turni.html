@@ -2090,9 +2090,8 @@ function renderHours() {
   const rows = stats.map(s=>`<tr>
     <td><span class="op-chip ${cc(s.ruolo)}" style="font-size:11px">${s.nome}</span></td>
     <td style="color:#1e293b">${fmt(s.oreLavoro)}</td>
-    <td style="color:#1e293b">${fmtAss(s,s.oreFerie)}</td>
-    <td style="color:#1e293b">${fmtAss(s,s.orePermesso)}</td>
     <td style="color:#1e293b">${fmtAss(s,s.oreMalattia)}</td>
+    <td style="color:#1e293b">${fmtAss(s,s.oreFerie+s.orePermesso)}</td>
     <td style="color:#1e293b">${fmtAss(s,s.oreAltro)}</td>
     <td style="font-weight:700;color:#B5453A">${fmt(s.totale)}</td>
   </tr>`).join('');
@@ -2100,9 +2099,8 @@ function renderHours() {
     <thead><tr>
       <th style="text-align:left;background:#B5453A;color:#fff">Operatore</th>
       <th>In negozio</th>
-      <th style="background:#f1f5f9;color:#1e293b">Ferie</th>
-      <th style="background:#f1f5f9;color:#1e293b">Permesso</th>
       <th style="background:#f1f5f9;color:#1e293b">Malattia</th>
+      <th style="background:#f1f5f9;color:#1e293b">Ferie/Permessi</th>
       <th style="background:#f1f5f9;color:#1e293b">Altro</th>
       <th style="background:#B5453A">Totale</th>
     </tr></thead>
@@ -2110,9 +2108,8 @@ function renderHours() {
     <tfoot><tr>
       <td>TOTALE</td>
       <td>${fmt(stats.reduce((s,x)=>s+x.oreLavoro,0))}</td>
-      <td>${fmt(stats.reduce((s,x)=>s+x.oreFerie,0))}</td>
-      <td>${fmt(stats.reduce((s,x)=>s+x.orePermesso,0))}</td>
       <td>${fmt(stats.reduce((s,x)=>s+x.oreMalattia,0))}</td>
+      <td>${fmt(stats.reduce((s,x)=>s+x.oreFerie+x.orePermesso,0))}</td>
       <td>${fmt(stats.reduce((s,x)=>s+x.oreAltro,0))}</td>
       <td>${fmt(stats.reduce((s,x)=>s+x.totale,0))}</td>
     </tr></tfoot>
@@ -2295,8 +2292,7 @@ function renderOreTable(stats, annuale, anno, mese) {
       <td style="color:#1e293b">${fmt(s.oreEmporio)}</td>
       <td style="color:#1e293b">${fmtAltreAtt(s.oreAltreAtt)}</td>
       <td style="color:#1e293b">${fmt(s.oreMalattia)}</td>
-      <td style="color:#1e293b">${fmt(s.oreFerie)}</td>
-      <td style="color:#1e293b">${fmt(s.orePermesso)}</td>
+      <td style="color:#1e293b">${fmt(s.oreFerie + s.orePermesso)}</td>
       <td style="color:#1e293b">${fmt(s.oreAltro)}</td>
       <td style="font-weight:700;color:#B5453A">${s.oreContratto > 0 ? s.oreContratto.toFixed(2) : '–'}</td>
     </tr>`;
@@ -2306,8 +2302,7 @@ function renderOreTable(stats, annuale, anno, mese) {
     <td>${fmt(stats.reduce((a,x)=>a+x.oreEmporio,0))}</td>
     <td>${fmt(stats.reduce((a,x)=>a+(x.oreAltreAtt||0),0))}</td>
     <td>${fmt(stats.reduce((a,x)=>a+x.oreMalattia,0))}</td>
-    <td>${fmt(stats.reduce((a,x)=>a+x.oreFerie,0))}</td>
-    <td>${fmt(stats.reduce((a,x)=>a+x.orePermesso,0))}</td>
+    <td>${fmt(stats.reduce((a,x)=>a+x.oreFerie+x.orePermesso,0))}</td>
     <td>${fmt(stats.reduce((a,x)=>a+x.oreAltro,0))}</td>
     <td>${fmt(stats.reduce((a,x)=>a+x.oreContratto,0))}</td>
   </tr></tfoot>` : '';
@@ -2330,8 +2325,7 @@ function renderOreTable(stats, annuale, anno, mese) {
         <th style="background:#334155;color:#fff">In emporio</th>
         <th style="background:#334155;color:#fff">Altre attività</th>
         <th style="background:#f1f5f9;color:#1e293b">Malattia</th>
-        <th style="background:#f1f5f9;color:#1e293b">Ferie</th>
-        <th style="background:#f1f5f9;color:#1e293b">Permesso</th>
+        <th style="background:#f1f5f9;color:#1e293b">Ferie/Permessi</th>
         <th style="background:#f1f5f9;color:#1e293b">Altro</th>
       </tr>
     </thead>
