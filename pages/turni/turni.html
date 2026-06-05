@@ -964,6 +964,28 @@ body.turni-readonly .btn-aggiungi-sera { display: none !important; }
 body.turni-readonly .btn-rimuovi-sera { display: none !important; }
 body.turni-readonly .ass-badge[onclick*="removeAssenza"] { pointer-events: none !important; }
 
+/* ── INSERIMENTO SOLO PROPRIO NOME (SCU / Volontari) ────────────────────── */
+body.turni-own-only .chip-nome-cal .rm { display: none !important; }
+body.turni-own-only .col-stato-cell { pointer-events: none !important; cursor: default !important; }
+body.turni-own-only .note-cell textarea { pointer-events: none !important; resize: none !important; }
+body.turni-own-only .negozio-stato input { pointer-events: none !important; }
+body.turni-own-only .negozio-orari input { pointer-events: none !important; }
+body.turni-own-only .btn-aggiungi-sera { display: none !important; }
+body.turni-own-only .btn-rimuovi-sera { display: none !important; }
+/* .op-add, .btn-aggiungi-op-turno, .giorno-azioni restano visibili — filtro applicato in JS */
+
+/* ── ORARI SOLA LETTURA ──────────────────────────────────────────────────── */
+body.orari-readonly .orari-btn-p { display: none !important; }
+body.orari-readonly .orari-btn-s { display: none !important; }
+body.orari-readonly #sezione-orari input[type="time"],
+body.orari-readonly #sezione-orari input[type="checkbox"] { pointer-events: none !important; }
+
+/* ── GESTIONE OPERATORI SOLA LETTURA ─────────────────────────────────────── */
+body.operatori-readonly #sezione-operatori .btn-p { display: none !important; }
+body.operatori-readonly #sezione-operatori input[type="checkbox"] { pointer-events: none !important; }
+body.operatori-readonly #sezione-operatori input[type="number"] { pointer-events: none !important; }
+body.operatori-readonly #sezione-operatori textarea { pointer-events: none !important; resize: none !important; }
+
 /* ── SCHERMATA SELEZIONE EMPORIO ─────────────────────────────────────────── */
 #turni-emp-selector { padding: 32px 20px; }
 .turni-emp-titolo { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: #94a3b8; margin-bottom: 20px; }
@@ -1747,6 +1769,9 @@ function initEmporioSelector() {
 
 // ── MACRO-SEZIONI ──────────────────────────────────────────────────────────
 function mostraSezione(quale) {
+  if (quale === 'operatori' && !canViewOperatori()) {
+    showToast('Non hai accesso alla gestione operatori', 'err'); return;
+  }
   ['turni','orari','operatori'].forEach(s => {
     const sez = document.getElementById('sezione-' + s);
     const tab = document.getElementById('tab-' + s);
@@ -2461,9 +2486,15 @@ function openAssenzaModal(dayKey) {
     }
   }
 
+  if (!canManageAllAssenze() && !canManageOwnAssenze()) {
+    showToast('Non hai i permessi per gestire le assenze', 'err'); return;
+  }
   // Operatori contrattualizzati: dipendenti e servizio civile
   const RUOLI_CONTRATTUALIZZATI = ['dipendente', 'serviziocivile'];
-  const pers = (PERSONALE[currentEmporio]||[]).filter(p => RUOLI_CONTRATTUALIZZATI.includes(p.ruolo));
+  let pers = (PERSONALE[currentEmporio]||[]).filter(p => RUOLI_CONTRATTUALIZZATI.includes(p.ruolo));
+  if (canManageOwnAssenze() && !canManageAllAssenze()) {
+    pers = pers.filter(p => isCurrentUser(p.nome));
+  }
   if (!pers.length) {
     document.getElementById('modal-ass-list').innerHTML = '<p style="padding:16px;text-align:center;color:#94a3b8;font-size:13px">Nessun operatore contrattualizzato in questo emporio</p>';
     document.getElementById('modal-ass').classList.add('show');
@@ -2492,7 +2523,12 @@ function openAssenzaModal(dayKey) {
 }
 
 function setAssenza(assKey,tipo) {
-  if(!canEditTurni()){showToast('Non hai i permessi per modificare le assenze','err');closeModal('modal-ass');return;}
+  if (!canManageAllAssenze() && !canManageOwnAssenze()) {
+    showToast('Non hai i permessi per modificare le assenze','err'); closeModal('modal-ass'); return;
+  }
+  if (canManageOwnAssenze() && !canManageAllAssenze() && !isCurrentUser(assKey.split('|')[4])) {
+    showToast('Puoi gestire solo le tue assenze','err'); closeModal('modal-ass'); return;
+  }
   const ore = calcolaOreAssenza();
   assenzeData[assKey] = ore > 0 ? {tipo, ore} : tipo;
   const parts=assKey.split('|');
@@ -2504,7 +2540,12 @@ function setAssenza(assKey,tipo) {
 }
 
 function removeAssenza(dayKey,nome) {
-  if(!canEditTurni()){showToast('Non hai i permessi per modificare le assenze','err');return;}
+  if (!canManageAllAssenze() && !canManageOwnAssenze()) {
+    showToast('Non hai i permessi per modificare le assenze','err'); return;
+  }
+  if (canManageOwnAssenze() && !canManageAllAssenze() && !isCurrentUser(nome)) {
+    showToast('Puoi gestire solo le tue assenze','err'); return;
+  }
   const assKey=`${dayKey}|${nome}`;
   delete assenzeData[assKey];
   const parts=dayKey.split('|');
@@ -2515,7 +2556,8 @@ function removeAssenza(dayKey,nome) {
 }
 
 function rimuoviAssenzaKey(assKey,dayKey) {
-  if(!canEditTurni()) return;
+  if (!canManageAllAssenze() && !canManageOwnAssenze()) return;
+  if (canManageOwnAssenze() && !canManageAllAssenze() && !isCurrentUser(assKey.split('|')[4])) return;
   delete assenzeData[assKey];
   const parts=assKey.split('|');
   const mk=`${parts[0]}|${parts[1]}|${parts[2]}|${parts[3]}|mattina`;
@@ -2664,9 +2706,16 @@ async function aggiungiOperatoreTurno(data, fascia, btnEl = null) {
       .or('attivo.eq.true,attivo.is.null')
       .order('nome');
     if (dbErr) throw dbErr;
-    const filtrati = (tuttiOp || []).filter(o =>
+    let filtrati = (tuttiOp || []).filter(o =>
       o.emporio === emporio || (o.empori_aggiuntivi || []).includes(emporio)
     );
+    if (canInsertOwnNameOnly()) {
+      const _me = _uLoggato();
+      filtrati = filtrati.filter(o =>
+        (o.nome || '').trim().toLowerCase() === (_me?.nome || '').trim().toLowerCase()
+      );
+      if (!filtrati.length) { showToast('Non sei assegnato a questo emporio', 'err'); return; }
+    }
     if (!filtrati.length) {
       showToast(`Nessun operatore assegnato a ${emporio}`, 'err'); return;
     }
@@ -2874,6 +2923,7 @@ function aggiornaRiepilogoOp(opId) {
 }
 
 async function aggiornaTurnoDefault(opId, giorno, fascia, valore) {
+  if (!canEditOperatori()) { showToast('Non hai i permessi per modificare gli operatori', 'err'); return; }
   if (!db) { showToast('DB non connesso','err'); return; }
   try {
     const existing = (turniPredefiniti[opId]||[]).find(r=>r.giorno===giorno);
@@ -2890,6 +2940,7 @@ async function aggiornaTurnoDefault(opId, giorno, fascia, valore) {
 }
 
 async function salvaTurnoDefaultCompleto(opId) {
+  if (!canEditOperatori()) { showToast('Non hai i permessi per modificare gli operatori', 'err'); return; }
   if (!db) { showToast('DB non connesso','err'); return; }
   const nota = document.getElementById(`note-op-${opId}`)?.value || '';
   try {
@@ -2966,18 +3017,39 @@ async function applicaTurnoDefault(data) {
 }
 
 // ── PERMESSI TURNI ──────────────────────────────────────────────────────────
+const RUOLI_FULL = ['admin', 'dipendente', 'coordinatore', 'responsabile'];
+const RUOLI_OWN  = ['serviziocivile', 'volontario', 'altro'];
+
+function _uLoggato() {
+  return typeof getOperatoreLoggato === 'function' ? getOperatoreLoggato() : null;
+}
 function canEditTurni() {
-  if (typeof getOperatoreLoggato !== 'function') return true;
-  const u = getOperatoreLoggato();
-  if (!u) return true; // nessuna sessione → modalità sviluppo
-  if (['admin', 'dipendente'].includes(u.ruolo)) return true;
+  const u = _uLoggato();
+  if (!u) return true;
+  if (RUOLI_FULL.includes(u.ruolo)) return true;
   if (u.is_responsabile_turni) return true;
   return false;
 }
-
+function canInsertOwnNameOnly() {
+  const u = _uLoggato();
+  if (!u) return false;
+  return RUOLI_OWN.includes(u.ruolo) && !canEditTurni();
+}
+function canEditOrari() { return canEditTurni(); }
+function canViewOperatori() {
+  const u = _uLoggato();
+  if (!u) return true;
+  return u.ruolo !== 'volontario';
+}
+function canEditOperatori() { return canEditTurni(); }
+function canManageOwnAssenze() {
+  const u = _uLoggato();
+  if (!u) return false;
+  return u.ruolo === 'serviziocivile';
+}
+function canManageAllAssenze() { return canEditTurni(); }
 function isCurrentUser(nome) {
-  if (typeof getOperatoreLoggato !== 'function') return false;
-  const u = getOperatoreLoggato();
+  const u = _uLoggato();
   if (!u) return false;
   return (u.nome || '').trim().toLowerCase() === (nome || '').trim().toLowerCase();
 }
@@ -3001,12 +3073,22 @@ setTurniView('tabella');
 // Gestione permessi operatore loggato
 if (typeof getOperatoreLoggato === 'function') {
   const _u = getOperatoreLoggato();
-  if (_u && !['admin', 'dipendente'].includes(_u.ruolo)) {
-    const _tabOp = document.getElementById('tab-operatori');
-    if (_tabOp) _tabOp.style.display = 'none';
-  }
-  if (!canEditTurni()) {
-    document.body.classList.add('turni-readonly');
+  if (_u) {
+    if (!canViewOperatori()) {
+      const _tabOp = document.getElementById('tab-operatori');
+      if (_tabOp) _tabOp.style.display = 'none';
+    }
+    if (canInsertOwnNameOnly()) {
+      document.body.classList.add('turni-own-only');
+    } else if (!canEditTurni()) {
+      document.body.classList.add('turni-readonly');
+    }
+    if (!canEditOrari()) {
+      document.body.classList.add('orari-readonly');
+    }
+    if (!canEditOperatori()) {
+      document.body.classList.add('operatori-readonly');
+    }
   }
 }
 
@@ -3807,6 +3889,7 @@ function populateAnnuale() {
   orSetV('ann-pom-ch', r?.pomeriggio_chiusura || '19:00');
 }
 async function saveAnnuale(btnEl) {
+  if (!canEditOrari()) { showToast('Non hai i permessi per modificare gli orari', 'err'); return; }
   setBtnLoading(btnEl, true);
   const p = {
     emporio_id: currentEmporio, livello: 'annuale', giorno_chiuso: false,
@@ -3836,6 +3919,7 @@ function populateMensile() {
   orSetV('men-note', r?.note || '');
 }
 async function saveMensile(btnEl) {
+  if (!canEditOrari()) { showToast('Non hai i permessi per modificare gli orari', 'err'); return; }
   setBtnLoading(btnEl, true);
   const mese = parseInt(orV('men-mese'));
   const chiuso = document.getElementById('men-chiuso').checked;
@@ -3893,6 +3977,7 @@ function populateSettimanale() {
   orSetV('sett-note', r?.note || '');
 }
 async function saveSettimanale(btnEl) {
+  if (!canEditOrari()) { showToast('Non hai i permessi per modificare gli orari', 'err'); return; }
   const pw = orParseWeek();
   if (!pw) { showToast('Seleziona una settimana', 'err'); return; }
   setBtnLoading(btnEl, true);
@@ -3956,6 +4041,7 @@ function populateGiornaliero() {
   orSetV('giorn-note', r?.note || '');
 }
 async function saveGiornaliero(btnEl) {
+  if (!canEditOrari()) { showToast('Non hai i permessi per modificare gli orari', 'err'); return; }
   const data = orV('giorn-data');
   if (!data) { showToast('Seleziona una data', 'err'); return; }
   setBtnLoading(btnEl, true);
@@ -4332,6 +4418,7 @@ function mostraAggiungiOp() {
 }
 
 async function aggiungiOpEmporio() {
+  if (!canEditOperatori()) { showToast('Non hai i permessi per modificare gli operatori', 'err'); return; }
   const opId = document.getElementById('select-op-da-aggiungere')?.value;
   if (!opId) return;
   const emporio = currentEmporio;
@@ -4359,6 +4446,7 @@ function aggiornaTotaleOre(opId) {
 }
 
 async function salvaOrePreviste(opId) {
+  if (!canEditOperatori()) { showToast('Non hai i permessi per modificare gli operatori', 'err'); return; }
   if (!db) return;
   const GG = ['lun','mar','mer','gio','ven','sab','dom'];
   const payload = {};
@@ -4382,6 +4470,7 @@ async function salvaOrePreviste(opId) {
 }
 
 async function rimuoviOpEmporio(opId, nome) {
+  if (!canEditOperatori()) { showToast('Non hai i permessi per modificare gli operatori', 'err'); return; }
   const emporio = currentEmporio;
   const ok = await m361Confirm(
     `Se è il suo emporio principale, verrà impostato come "Non assegnato".`,
@@ -4433,6 +4522,7 @@ function aggiornaPredefinito(opId, giorno, fascia, valore) {
 }
 
 async function salvaTurniPredefiniti(opId) {
+  if (!canEditOperatori()) { showToast('Non hai i permessi per modificare gli operatori', 'err'); return; }
   if (!db) { showToast('DB non connesso', 'err'); return; }
   const daSalvare = GIORNI_SETT.map(g => {
     const gid = g.replace(/à/g,'a');
@@ -4511,7 +4601,14 @@ function mostraDropdownOperatori(data, fascia, ops, btnEl = null) {
 }
 
 function selezionaOpTurno(opId, nome, ruolo, data, fascia) {
-  if(!canEditTurni()){showToast('Non hai i permessi per modificare i turni','err');document.getElementById('dropdown-op-turno')?.remove();return;}
+  if (!canEditTurni() && !canInsertOwnNameOnly()) {
+    showToast('Non hai i permessi per modificare i turni', 'err');
+    document.getElementById('dropdown-op-turno')?.remove(); return;
+  }
+  if (canInsertOwnNameOnly() && !isCurrentUser(nome)) {
+    showToast('Puoi inserire solo il tuo nome', 'err');
+    document.getElementById('dropdown-op-turno')?.remove(); return;
+  }
   const key = dateToTurnoKey(data, fascia);
   if (!turniData[key]) turniData[key] = { aperto: true, operatori: [] };
   const esistente = turniData[key].operatori.find(o => o.nome === nome);
