@@ -438,6 +438,7 @@ function buildNav() {
     // 5a. Check sincrono da sessionStorage (fast path — da pagina precedente)
     const cachedPermessi = sessionStorage.getItem('permessi');
     const cachedRuolo = sessionStorage.getItem('ruolo') || '';
+    // Solo per ruoli non-privilegiati (non admin/dipendente) si applicano i permessi cached
     if (cachedPermessi && !['admin', 'dipendente'].includes(cachedRuolo)) {
       try {
         const mappaCached = JSON.parse(cachedPermessi);
@@ -462,7 +463,9 @@ function buildNav() {
     const ruolo = (user.ruolo || '').toLowerCase();
     sessionStorage.setItem('ruolo', ruolo);
 
-    // Admin e dipendenti: accesso completo, nessun limite
+    // Admin e dipendenti: bypass del sistema permessi DB (accesso completo).
+    // SCU e altri ruoli contrattualizzati passano invece dal controllo permessi.
+    // Questo è INTENZIONALE: dipendente = staff fisso con accesso globale.
     if (['admin', 'dipendente'].includes(ruolo)) {
       sessionStorage.removeItem('permessi');
       return;

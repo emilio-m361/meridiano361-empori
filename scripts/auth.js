@@ -16,6 +16,10 @@ function getRuoloLoggato() {
   return getOperatoreLoggato()?.ruolo || null;
 }
 
+// isAdmin = "accesso globale a tutti gli empori".
+// I dipendenti (ruolo fisso staff) vedono tutti gli empori come gli admin.
+// SCU sono contrattualizzati ma legati a un emporio specifico → non isAdmin.
+// Questa distinzione è INTENZIONALE e separata dalla logica "contrattualizzati".
 function isAdmin() {
   return ['admin', 'dipendente'].includes(getRuoloLoggato());
 }

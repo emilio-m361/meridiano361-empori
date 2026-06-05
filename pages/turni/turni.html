@@ -1973,6 +1973,7 @@ function calcShiftHours(shift, ruolo = '') {
   const [h1,m1]=times[0].split(':').map(Number);
   const [h2,m2]=times[1].split(':').map(Number);
   const base = minutiADecimale((h2*60+m2)-(h1*60+m1));
+  // +0.25h (15 min) = pausa retribuita CCNL dipendenti; non si applica a SCU/volontari
   return ruolo==='dipendente' ? base + 0.25 : base;
 }
 
@@ -4252,9 +4253,10 @@ function orRenderCalendar() {
 
 // ── LABEL RUOLO ───────────────────────────────────────────────────────────
 function labelRuolo(ruolo) {
-  return ruolo === 'admin' ? 'Amministratore' :
-         ruolo === 'dipendente' ? 'Dipendente' :
-         ruolo === 'volontario' ? 'Volontario' : (ruolo || '—');
+  return ruolo === 'admin'      ? 'Amministratore' :
+         ruolo === 'dipendente' ? 'Dipendente'     :
+         isRuoloSCU(ruolo)      ? 'SCU'            :
+         ruolo === 'volontario' ? 'Volontario'     : (ruolo || '—');
 }
 
 // ── ANAGRAFICA OPERATORI (Problema 3) ─────────────────────────────────────
