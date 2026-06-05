@@ -2093,8 +2093,9 @@ function renderMonth() {
     const _effOr    = allOrari.length ? orCalcEffettivo(_ds) : null;
     const _chiusoOr = _effOr?.chiuso === true;
     const _defAp    = _chiusoOr ? false : !isFestivo;
-    const mD = turniData[mk] || {aperto:_defAp, operatori:[]};
-    const pD = turniData[pk] || {aperto:_defAp, operatori:[]};
+    // Display-only: orari chiuso sovrascrive visivamente aperto salvato; turniData invariato.
+    const mD = _chiusoOr ? {...(turniData[mk] || {operatori:[]}), aperto: false} : (turniData[mk] || {aperto:_defAp, operatori:[]});
+    const pD = _chiusoOr ? {...(turniData[pk] || {operatori:[]}), aperto: false} : (turniData[pk] || {aperto:_defAp, operatori:[]});
     const sD = turniData[sk] || {aperto:false, operatori:[]};
     const dayKey = `${currentEmporio}|${currentAnno}|${currentMese+1}|${d}`;
     const dayAssenze = Object.entries(assenzeData).filter(([k])=>k.startsWith(dayKey+'|')).map(([k,v])=>({nome:k.split('|').slice(4).join('|'),tipo:getAssenzaTipo(v),ore:getAssenzaOre(v)}));
@@ -2120,12 +2121,12 @@ function renderMonth() {
     const stM = mD.aperto ? 'aperto' : 'chiuso';
     const stP = pD.aperto ? 'aperto' : 'chiuso';
     const stS = sD.aperto ? 'aperto' : 'chiuso';
-    const _chiusoLabel = _chiusoOr && !turniData[mk] && !turniData[pk]
+    const _chiusoLabel = _chiusoOr
       ? `<span style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:#B5453A;opacity:.8">CHIUSO</span>` : '';
     rows.push(`
-      <tr class="riga-giorno${isFestivo?' festivo':''}${_chiusoOr&&!turniData[mk]&&!turniData[pk]?' tutto-chiuso':''}">
+      <tr class="riga-giorno${isFestivo?' festivo':''}${_chiusoOr?' tutto-chiuso':''}">
         <td class="col-giorno">
-          <div class="giorno-numero"${_chiusoOr&&!turniData[mk]&&!turniData[pk]?' style="color:#B5453A"':''}>${d}</div>
+          <div class="giorno-numero"${_chiusoOr?' style="color:#B5453A"':''}>${d}</div>
           <div class="giorno-nome">${GIORNI[dow]}</div>
           ${_chiusoLabel}
         </td>
@@ -4331,6 +4332,7 @@ async function orUpsert(livello, keys, payload) {
     }
     console.log('[orUpsert] OK | livello:', livello, '| emporio:', currentEmporio);
     await loadOrari();
+    if (typeof render === 'function') render();
     return null;
   } catch(e) { console.error('[orUpsert] eccezione:', e); return e; }
 }
