@@ -4375,7 +4375,7 @@ function rigaOperatoreTurni(op, predefiniti) {
             { key:'gio', label:'Gio' }, { key:'ven', label:'Ven' }, { key:'sab', label:'Sab' },
             { key:'dom', label:'Dom' }
           ];
-          const settVal = op.ore_settimanali != null ? op.ore_settimanali.toFixed(2) : '–';
+          const settVal = op.ore_settimanali != null ? parseFloat(op.ore_settimanali).toString() : '';
           const inputi = GG.map(g => {
             const v = op[`ore_previste_${g.key}`];
             const display = v != null ? parseFloat(v).toString() : '';
@@ -4390,16 +4390,29 @@ function rigaOperatoreTurni(op, predefiniti) {
           return `
           <div style="margin-bottom:14px;padding:14px 14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0">
             <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:10px">
-              Ore previste per giorno
-              <span style="margin-left:6px;color:#475569;font-size:10px;text-transform:none;letter-spacing:0">usate per calcolare ferie, assenze e "Altre attività"</span>
+              Ore previste
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+              <label style="font-size:11px;font-weight:700;color:#475569;white-space:nowrap">
+                Ore per settimana <span style="color:#ef4444">*</span>
+              </label>
+              <input type="number" id="op-sett-${op.id}"
+                value="${settVal}" min="0" max="80" step="0.25" placeholder="es. 38"
+                style="width:80px;border:1.5px solid #94a3b8;border-radius:6px;padding:5px 8px;font-size:14px;font-weight:700;text-align:center;font-family:inherit;color:#1e293b;background:#fff"
+                oninput="aggiornaTotaleOre('${op.id}')">
+              <span style="font-size:10px;color:#94a3b8">ore/settimana (obbligatorio)</span>
+            </div>
+            <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#cbd5e1;margin-bottom:8px">
+              Ore per giorno <span style="font-size:9px;font-weight:400;text-transform:none;letter-spacing:0;color:#94a3b8">(opzionale — se inserite, la somma deve corrispondere al totale settimanale)</span>
             </div>
             <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:10px">
               ${inputi}
             </div>
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
               <div style="font-size:11px;color:#475569">
-                Totale settimana: <strong id="op-gg-tot-${op.id}" style="font-size:13px;color:#1e293b">${settVal}h</strong>
+                Somma giorni: <strong id="op-gg-tot-${op.id}" style="font-size:13px;color:#1e293b">–</strong>
               </div>
+              <span id="op-gg-match-${op.id}" style="display:none;font-size:11px;font-weight:700"></span>
               <button onclick="salvaOrePreviste('${op.id}')" class="btn-p" style="padding:7px 14px;font-size:10px">Salva ore previste</button>
               <span id="op-gg-fb-${op.id}" style="display:none;font-size:11px;color:#16a34a;font-weight:700">✓ Salvate</span>
             </div>
@@ -4437,33 +4450,62 @@ async function aggiungiOpEmporio() {
   } catch(e) { showToast('Errore: ' + e.message, 'err'); }
 }
 
-// Aggiorna il totale settimanale visualizzato nella griglia anagrafica
+// Aggiorna somma giorni e indicatore match rispetto alle ore settimanali
 function aggiornaTotaleOre(opId) {
   const GG = ['lun','mar','mer','gio','ven','sab','dom'];
-  let tot = 0;
+  let somma = 0;
+  let haGiorni = false;
   GG.forEach(g => {
-    const v = parseFloat(document.getElementById(`op-gg-${g}-${opId}`)?.value || '0');
-    if (!isNaN(v)) tot += v;
+    const raw = document.getElementById(`op-gg-${g}-${opId}`)?.value?.trim();
+    if (raw !== '' && raw !== undefined) {
+      const v = parseFloat(raw);
+      if (!isNaN(v)) { somma += v; haGiorni = true; }
+    }
   });
-  const el = document.getElementById('op-gg-tot-' + opId);
-  if (el) el.textContent = tot > 0 ? tot.toFixed(2) + 'h' : '–';
+  const elTot   = document.getElementById('op-gg-tot-'   + opId);
+  const elMatch = document.getElementById('op-gg-match-' + opId);
+  if (elTot) elTot.textContent = haGiorni ? somma.toFixed(2) + 'h' : '–';
+  if (elMatch) {
+    const settRaw = document.getElementById('op-sett-' + opId)?.value?.trim();
+    const settVal = settRaw !== '' ? parseFloat(settRaw) : NaN;
+    if (!haGiorni || isNaN(settVal)) { elMatch.style.display = 'none'; return; }
+    const ok = Math.abs(somma - settVal) < 0.01;
+    elMatch.style.display = 'inline';
+    elMatch.textContent   = ok ? '✓ corrispondono' : '✗ non corrispondono';
+    elMatch.style.color   = ok ? '#16a34a' : '#ef4444';
+  }
 }
 
 async function salvaOrePreviste(opId) {
   if (!canEditOperatori()) { showToast('Non hai i permessi per modificare gli operatori', 'err'); return; }
   if (!db) return;
+
+  // ore_settimanali = input esplicito obbligatorio
+  const settRaw = document.getElementById('op-sett-' + opId)?.value?.trim();
+  const settVal = settRaw !== '' ? parseFloat(settRaw) : NaN;
+  if (isNaN(settVal) || settVal <= 0) {
+    showToast('Inserisci le ore previste per settimana prima di salvare.', 'err');
+    document.getElementById('op-sett-' + opId)?.focus();
+    return;
+  }
+
   const GG = ['lun','mar','mer','gio','ven','sab','dom'];
-  const payload = {};
-  let totale = 0;
+  const payload = { ore_settimanali: parseFloat(settVal.toFixed(2)) };
+  let sommaGiorni = 0;
+  let haGiorni = false;
   GG.forEach(g => {
     const el  = document.getElementById(`op-gg-${g}-${opId}`);
     const raw = el?.value?.trim();
-    const val = raw !== '' ? parseFloat(raw) : null;
+    const val = (raw !== '' && raw !== undefined) ? parseFloat(raw) : null;
     payload[`ore_previste_${g}`] = (val !== null && !isNaN(val)) ? val : null;
-    if (val !== null && !isNaN(val)) totale += val;
+    if (val !== null && !isNaN(val)) { sommaGiorni += val; haGiorni = true; }
   });
-  // ore_settimanali = somma dei giorni (calcolata automaticamente)
-  payload.ore_settimanali = totale > 0 ? parseFloat(totale.toFixed(2)) : null;
+
+  if (haGiorni && Math.abs(sommaGiorni - settVal) >= 0.01) {
+    showToast('Le ore previste giornaliere devono corrispondere al totale settimanale inserito.', 'err');
+    return;
+  }
+
   try {
     const { error } = await db.from('operatori').update(payload).eq('id', opId);
     if (error) throw error;
@@ -4507,6 +4549,7 @@ function toggleTurniOp(opId) {
   const aperto = corpo.style.display !== 'none';
   corpo.style.display = aperto ? 'none' : 'block';
   if (freccia) freccia.textContent = aperto ? '›' : '▾';
+  if (!aperto) aggiornaTotaleOre(opId);
 }
 
 function aggiornaPredefinito(opId, giorno, fascia, valore) {
