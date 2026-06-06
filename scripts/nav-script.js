@@ -244,6 +244,135 @@ body { font-family: 'Inter', sans-serif; padding-top: 56px; padding-bottom: 68px
   }
 
   /* ═══════════════════════════════════════
+     MODALE CAMBIO PASSWORD
+  ═══════════════════════════════════════ */
+  function injectChangePasswordModal() {
+    if (document.getElementById('m361-chpwd-overlay')) return;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'm361-chpwd-overlay';
+    overlay.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99999;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)';
+    overlay.innerHTML = `
+      <div style="background:#fff;border-radius:24px;padding:32px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.2);font-family:'Inter',sans-serif">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:36px;height:36px;background:#fef2f2;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <i class="fas fa-lock" style="color:#B5453A;font-size:14px"></i>
+            </div>
+            <span style="font-size:15px;font-weight:800;color:#1e293b">Cambia password</span>
+          </div>
+          <button id="m361-chpwd-close" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;padding:4px;line-height:1" title="Chiudi">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div id="m361-chpwd-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:10px 14px;font-size:12px;font-weight:700;color:#dc2626;margin-bottom:16px;display:flex;align-items:center;gap:8px">
+          <i class="fas fa-exclamation-circle"></i>
+          <span id="m361-chpwd-error-text"></span>
+        </div>
+        <div id="m361-chpwd-ok" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:10px 14px;font-size:12px;font-weight:700;color:#16a34a;margin-bottom:16px;display:flex;align-items:center;gap:8px">
+          <i class="fas fa-check-circle"></i>
+          <span>Password aggiornata con successo!</span>
+        </div>
+
+        <div style="margin-bottom:14px">
+          <label style="display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:6px">Nuova password</label>
+          <input type="password" id="m361-chpwd-new" placeholder="Minimo 6 caratteri" minlength="6"
+            style="width:100%;padding:12px 16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;transition:border-color .15s"
+            onfocus="this.style.borderColor='#B5453A'" onblur="this.style.borderColor='#e2e8f0'">
+        </div>
+        <div style="margin-bottom:24px">
+          <label style="display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:6px">Conferma password</label>
+          <input type="password" id="m361-chpwd-conf" placeholder="Ripeti la password" minlength="6"
+            style="width:100%;padding:12px 16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;transition:border-color .15s"
+            onfocus="this.style.borderColor='#B5453A'" onblur="this.style.borderColor='#e2e8f0'">
+        </div>
+
+        <button id="m361-chpwd-submit"
+          style="width:100%;background:#B5453A;color:#fff;font-weight:800;font-size:14px;border:none;border-radius:14px;padding:14px;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .15s"
+          onmouseenter="this.style.background='#a14545'" onmouseleave="this.style.background='#B5453A'">
+          <div id="m361-chpwd-spinner" style="display:none;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:spin .8s linear infinite"></div>
+          <span id="m361-chpwd-label">Salva nuova password</span>
+        </button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const closeModal = () => {
+      overlay.style.display = 'none';
+      document.getElementById('m361-chpwd-new').value = '';
+      document.getElementById('m361-chpwd-conf').value = '';
+      document.getElementById('m361-chpwd-error').style.display = 'none';
+      document.getElementById('m361-chpwd-ok').style.display = 'none';
+    };
+
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+    document.getElementById('m361-chpwd-close').addEventListener('click', closeModal);
+
+    document.getElementById('m361-chpwd-conf').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('m361-chpwd-submit').click();
+    });
+
+    document.getElementById('m361-chpwd-submit').addEventListener('click', async () => {
+      const pwd = document.getElementById('m361-chpwd-new').value;
+      const conf = document.getElementById('m361-chpwd-conf').value;
+      const errDiv = document.getElementById('m361-chpwd-error');
+      const errText = document.getElementById('m361-chpwd-error-text');
+      const okDiv = document.getElementById('m361-chpwd-ok');
+      const btn = document.getElementById('m361-chpwd-submit');
+
+      errDiv.style.display = 'none';
+      okDiv.style.display = 'none';
+
+      if (pwd.length < 6) {
+        errText.textContent = 'La password deve essere di almeno 6 caratteri.';
+        errDiv.style.display = 'flex';
+        return;
+      }
+      if (pwd !== conf) {
+        errText.textContent = 'Le password non coincidono.';
+        errDiv.style.display = 'flex';
+        return;
+      }
+
+      btn.disabled = true;
+      document.getElementById('m361-chpwd-spinner').style.display = 'block';
+      document.getElementById('m361-chpwd-label').textContent = 'Salvataggio...';
+
+      const db = getSupabase();
+      if (!db) {
+        errText.textContent = 'Servizio non disponibile. Riprova.';
+        errDiv.style.display = 'flex';
+        btn.disabled = false;
+        document.getElementById('m361-chpwd-spinner').style.display = 'none';
+        document.getElementById('m361-chpwd-label').textContent = 'Salva nuova password';
+        return;
+      }
+
+      const { error } = await db.auth.updateUser({ password: pwd });
+
+      btn.disabled = false;
+      document.getElementById('m361-chpwd-spinner').style.display = 'none';
+      document.getElementById('m361-chpwd-label').textContent = 'Salva nuova password';
+
+      if (error) {
+        errText.textContent = 'Errore nel salvataggio. Riprova.';
+        errDiv.style.display = 'flex';
+      } else {
+        okDiv.style.display = 'flex';
+        document.getElementById('m361-chpwd-new').value = '';
+        document.getElementById('m361-chpwd-conf').value = '';
+        setTimeout(closeModal, 2000);
+      }
+    });
+
+    window.__m361OpenChangePwd = () => {
+      overlay.style.display = 'flex';
+      setTimeout(() => document.getElementById('m361-chpwd-new').focus(), 50);
+    };
+  }
+
+  /* ═══════════════════════════════════════
      GUIDE SYSTEM
   ═══════════════════════════════════════ */
   function injectGuide() {
@@ -328,7 +457,7 @@ body { font-family: 'Inter', sans-serif; padding-top: 56px; padding-bottom: 68px
       </a>
       <div class="hd-right">
         <button id="m361-install-btn" onclick="window.__m361InstallApp&&window.__m361InstallApp()" style="display:none;align-items:center;gap:4px;font-size:10px;font-weight:700;background:#B5453A;color:#fff;border:none;border-radius:8px;padding:5px 10px;cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0;line-height:1"><i class="fas fa-download"></i> Installa</button>
-        ${nomeBreve ? '<span style="font-size:11px;font-weight:700;color:#94a3b8;white-space:nowrap">'+nomeBreve+'</span>' : ''}
+        ${nomeBreve ? '<button id="m361-profile-btn" onclick="window.__m361OpenChangePwd&&window.__m361OpenChangePwd()" title="Cambia password" style="background:none;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;color:#64748b;padding:4px 9px;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;flex-shrink:0;line-height:1;transition:all .15s" onmouseenter="this.style.borderColor=\'#B5453A\';this.style.color=\'#B5453A\'" onmouseleave="this.style.borderColor=\'#e2e8f0\';this.style.color=\'#64748b\'"><i class=\'fas fa-user\' style=\'font-size:9px\'></i>'+nomeBreve+'</button>' : ''}
         <button id="back-btn" ${isHome ? 'class="hidden"' : ''} onclick="history.back()">
           <i class="fas fa-arrow-left"></i> Indietro
         </button>
@@ -434,6 +563,7 @@ function buildNav() {
     injectResponsiveCSS();
     buildHeader();
     buildNav();
+    injectChangePasswordModal();
     injectGuide();
 
     // 5a. Check sincrono da sessionStorage (fast path — da pagina precedente)
