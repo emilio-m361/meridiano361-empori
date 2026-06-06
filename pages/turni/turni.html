@@ -3185,8 +3185,14 @@ const RUOLI_OWN  = ['scu', 'serviziocivile', 'volontario', 'altro'];
 function _uLoggato() {
   const u = typeof getOperatoreLoggato === 'function' ? getOperatoreLoggato() : null;
   if (!u) return null;
-  // Normalizza ruolo: lowercase + trim per evitare mismatch con dati DB
-  return typeof u.ruolo === 'string' ? { ...u, ruolo: u.ruolo.toLowerCase().trim() } : u;
+  // Normalizza ruolo: lowercase+trim + mappa varianti di genere alla forma canonica
+  const _RUOLO_NORM = {
+    'volontaria': 'volontario',
+    'coordinatrice': 'coordinatore',
+    'responsabile': 'responsabile',
+  };
+  const r = typeof u.ruolo === 'string' ? u.ruolo.toLowerCase().trim() : (u.ruolo || '');
+  return { ...u, ruolo: _RUOLO_NORM[r] || r };
 }
 function canEditTurni() {
   const u = _uLoggato();
