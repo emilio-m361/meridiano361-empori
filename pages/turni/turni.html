@@ -3244,13 +3244,6 @@ setTurniView('tabella');
 // Gestione permessi operatore loggato
 if (typeof getOperatoreLoggato === 'function') {
   const _u = getOperatoreLoggato();
-  const _uN = _uLoggato();
-  console.log('[PERM] localStorage m361_user:', localStorage.getItem('m361_user'));
-  console.log('[PERM] getOperatoreLoggato():', JSON.stringify(_u));
-  console.log('[PERM] _uLoggato() (normalizzato):', JSON.stringify(_uN));
-  console.log('[PERM] canInsertOwnNameOnly():', canInsertOwnNameOnly());
-  console.log('[PERM] canEditTurni():', canEditTurni());
-  console.log('[PERM] RUOLI_OWN:', JSON.stringify(RUOLI_OWN));
   if (_u) {
     if (!canViewOperatori()) {
       const _tabOp = document.getElementById('tab-operatori');
