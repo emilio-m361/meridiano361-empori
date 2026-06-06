@@ -1367,29 +1367,29 @@ function calcSubtotal(groupId) {
                    onchange="toggleConfezOptions(${groupId})"
                    style="width:16px;height:16px;accent-color:#475569;cursor:pointer">
         </td>
-        <td class="confez-cell" style="background:rgba(51,65,85,0.15);padding-left:16px !important">
+        <td style="background:rgba(51,65,85,0.15);padding:4px 4px 4px 16px !important">
             <input type="text" id="confez-cod-${groupId}" value="CB" class="confez-inp-sm">
         </td>
-        <td class="confez-cell" style="background:rgba(51,65,85,0.15)">
-            <span style="font-size:13px;font-weight:600;color:#334155;padding-left:8px">Confezionamento</span>
+        <td style="background:rgba(51,65,85,0.15);padding:4px !important">
+            <span style="display:block;width:100%;border:1px solid #4b5563;border-radius:6px;padding:5px 7px;font-size:12px;font-weight:600;color:#334155;background:rgba(51,65,85,0.08);box-sizing:border-box">Confezionamento</span>
         </td>
-        <td class="confez-cell" style="background:rgba(51,65,85,0.15);text-align:right">
+        <td style="background:rgba(51,65,85,0.15);padding:4px !important">
             <input type="text" id="confez-cost-inp-${groupId}" class="confez-inp-sm" value="€ 3,00"
-                   style="width:80px;text-align:right"
+                   style="text-align:right"
                    onfocus="clearCurrency(this)"
                    onblur="formatCurrency(this);calcConfezOmaggio(${groupId})"
                    oninput="calcConfezOmaggio(${groupId})">
         </td>
-        <td class="confez-cell" style="background:rgba(51,65,85,0.15);text-align:center">
+        <td style="background:rgba(51,65,85,0.15);padding:4px !important">
             <input type="number" id="confez-qty-${groupId}" value="1" min="0"
                    oninput="calcConfezOmaggio(${groupId})"
-                   class="confez-inp-sm" style="width:60px;text-align:center">
+                   class="confez-inp-sm" style="text-align:center">
         </td>
-        <td class="confez-cell" style="background:rgba(51,65,85,0.15);text-align:center">
+        <td style="background:rgba(51,65,85,0.15);padding:4px !important;text-align:center;vertical-align:middle">
             <input type="checkbox" id="confez-pronta-${groupId}" style="width:16px;height:16px;accent-color:#166534;cursor:pointer">
         </td>
         <td colspan="4" style="background:rgba(51,65,85,0.15)"></td>
-        <td style="background:rgba(51,65,85,0.15);text-align:right;padding:0 16px 0 4px;font-weight:700;color:#334155;font-size:12px"
+        <td class="confez-total-cell" style="background:rgba(51,65,85,0.15);padding:4px 16px 4px 4px !important;font-weight:700;color:#334155;font-size:12px;text-align:right"
             id="confez-total-${groupId}">0,00</td>
         <td style="background:rgba(51,65,85,0.15)"></td>`;
     tbody.appendChild(confezRow);
@@ -1459,13 +1459,13 @@ function calcSubtotal(groupId) {
     omaggioRow.innerHTML = `
         <td style="background:rgba(181,69,58,0.12);width:32px"></td>
         <td style="background:rgba(181,69,58,0.12);padding:3px 4px 3px 16px !important">
-            <input type="text" value="CO" class="omaggio-inp-sm">
+            <input type="text" value="CO" class="omaggio-inp-sm" style="text-align:left">
         </td>
         <td style="background:rgba(181,69,58,0.12);padding:3px 4px !important">
-            <span style="font-weight:700;font-size:11px">Cartoncini omaggio</span>
+            <span style="display:block;width:100%;border:1px solid rgba(181,69,58,0.4);border-radius:6px;padding:5px 7px;font-size:12px;font-weight:700;color:#B5453A;background:rgba(181,69,58,0.07);box-sizing:border-box">Cartoncini omaggio</span>
         </td>
-        <td style="background:rgba(181,69,58,0.12);padding:3px 4px !important;text-align:right">
-            <input type="text" value="€ 0,00" class="omaggio-inp-sm" style="width:80px;text-align:right"
+        <td style="background:rgba(181,69,58,0.12);padding:3px 4px !important">
+            <input type="text" value="€ 0,00" class="omaggio-inp-sm" style="text-align:right"
                    id="omaggio-price-${groupId}"
                    onfocus="clearCurrency(this)" onblur="formatCurrency(this)">
         </td>
