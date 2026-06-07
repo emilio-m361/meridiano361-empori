@@ -1596,6 +1596,12 @@ body.operatori-readonly #sezione-operatori textarea { pointer-events: none !impo
     <!-- Sezione: Ore totali -->
     <div id="ass-section-ore" style="margin-bottom:12px;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">
       <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:8px">ORE DI ASSENZA</div>
+      <div class="ore-assenza-wrapper" style="margin-bottom:10px">
+        <div class="ore-input-group">
+          <label class="ore-sublabel">Data</label>
+          <input type="date" id="ore-assenza-data" class="orari-f-inp" style="font-size:14px;padding:8px 10px" readonly>
+        </div>
+      </div>
       <div class="ore-assenza-wrapper">
         <div class="ore-input-group">
           <label class="ore-sublabel">Ore</label>
@@ -2818,16 +2824,14 @@ async function openAssenzaModal(dayKey) {
   if (minEl) minEl.value = 0;
   calcolaOreAssenza();
 
-  // Pre-popola data per la fascia oraria
+  // Pre-popola data in entrambe le sezioni
   const parts = dayKey.split('|');
   if (parts.length >= 4) {
+    const isoDate = `${parts[1]}-${String(parts[2]).padStart(2,'0')}-${String(parts[3]).padStart(2,'0')}`;
     const fasciaData = document.getElementById('fascia-data');
-    if (fasciaData) {
-      const anno = parts[1];
-      const mese = String(parts[2]).padStart(2, '0');
-      const giorno = String(parts[3]).padStart(2, '0');
-      fasciaData.value = `${anno}-${mese}-${giorno}`;
-    }
+    if (fasciaData) fasciaData.value = isoDate;
+    const oreData = document.getElementById('ore-assenza-data');
+    if (oreData) oreData.value = isoDate;
   }
 
   if (!canManageAllAssenze() && !canManageOwnAssenze()) {
