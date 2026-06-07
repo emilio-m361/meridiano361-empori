@@ -1671,7 +1671,14 @@ body.operatori-readonly #sezione-operatori textarea { pointer-events: none !impo
       </div>
     </div>
 
-    <div style="margin-bottom:16px;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">
+    <!-- Tab ore / fascia -->
+    <div class="orari-tab-bar" style="margin-bottom:12px">
+      <button class="orari-tab-btn on" id="mod-mode-ore"    onclick="_toggleModMode('ore')">Ore totali</button>
+      <button class="orari-tab-btn"    id="mod-mode-fascia" onclick="_toggleModMode('fascia')">Fascia oraria</button>
+    </div>
+
+    <!-- Sezione: Ore totali -->
+    <div id="mod-section-ore" style="margin-bottom:16px;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">
       <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:8px">ORE DI ASSENZA</div>
       <div class="ore-assenza-wrapper">
         <div class="ore-input-group">
@@ -1692,9 +1699,34 @@ body.operatori-readonly #sezione-operatori textarea { pointer-events: none !impo
           <div class="ore-valore" id="mod-ass-ore-display">0.00</div>
         </div>
       </div>
-      <input type="hidden" id="mod-ass-ore-valore" value="0">
       <div style="font-size:10px;color:#94a3b8;margin-top:6px">Lascia a 0 per non specificare le ore</div>
     </div>
+
+    <!-- Sezione: Fascia oraria -->
+    <div id="mod-section-fascia" style="display:none;margin-bottom:16px;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:8px">FASCIA ORARIA</div>
+      <div class="ore-assenza-wrapper">
+        <div class="ore-input-group">
+          <label class="ore-sublabel">Data</label>
+          <input type="date" id="mod-fascia-data" class="orari-f-inp" style="font-size:14px;padding:8px 10px" onchange="_calcolaModOreFascia()">
+        </div>
+        <div class="ore-input-group">
+          <label class="ore-sublabel">Dalle</label>
+          <input type="time" id="mod-fascia-inizio" step="300" class="input-ore" style="width:100px;font-size:16px" onchange="_calcolaModOreFascia()">
+        </div>
+        <div class="ore-input-group">
+          <label class="ore-sublabel">Alle</label>
+          <input type="time" id="mod-fascia-fine" step="300" class="input-ore" style="width:100px;font-size:16px" onchange="_calcolaModOreFascia()">
+        </div>
+        <div class="ore-input-group">
+          <label class="ore-sublabel">Durata</label>
+          <div class="ore-valore" id="mod-fascia-durata">—</div>
+        </div>
+      </div>
+      <div id="mod-fascia-error" style="display:none;margin-top:8px;padding:6px 10px;background:#fee2e2;border-radius:6px;font-size:12px;color:#991b1b;font-weight:600"></div>
+    </div>
+
+    <input type="hidden" id="mod-ass-ore-valore" value="0">
 
     <div id="mod-ass-error" class="hidden" style="margin-bottom:12px;padding:8px 12px;background:#fee2e2;border-radius:8px;font-size:12px;color:#991b1b;font-weight:600"></div>
 
@@ -2904,17 +2936,27 @@ function apriModificaAssenza(assKey, tipo, oreRaw, targetId) {
   const dow = new Date(a, m0, d).getDay();
   document.getElementById('mod-ass-info').textContent = `${nome}  —  ${GIORNI[dow]} ${d} ${MESI[m0]} ${a}`;
 
+  // Reset tab a "Ore totali"
+  _toggleModMode('ore');
+
   // Pre-fill tipo
   _modSelTipo(_editTipoSel);
 
   // Pre-fill ore
   const totalMin = Math.round((oreRaw || 0) * 60);
   const oreInt = Math.floor(totalMin / 60);
-  const minRaw = totalMin % 60;
-  const minSnap = Math.round(minRaw / 15) * 15 % 60;
+  const minSnap = Math.round((totalMin % 60) / 15) * 15 % 60;
   document.getElementById('mod-ass-ore').value = oreInt;
   document.getElementById('mod-ass-minuti').value = minSnap;
   _calcolaModOre();
+
+  // Pre-fill data fascia (stessa data dell'assenza)
+  const isoDate = `${a}-${String(m0+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  document.getElementById('mod-fascia-data').value = isoDate;
+  document.getElementById('mod-fascia-inizio').value = '';
+  document.getElementById('mod-fascia-fine').value = '';
+  document.getElementById('mod-fascia-durata').textContent = '—';
+  document.getElementById('mod-fascia-error').style.display = 'none';
 
   document.getElementById('mod-ass-error').classList.add('hidden');
   document.getElementById('mod-ass-save-btn').disabled = false;
@@ -2931,6 +2973,15 @@ function _modSelTipo(t) {
   });
 }
 
+function _toggleModMode(mode) {
+  const isOre = mode === 'ore';
+  document.getElementById('mod-section-ore').style.display    = isOre ? '' : 'none';
+  document.getElementById('mod-section-fascia').style.display = isOre ? 'none' : '';
+  document.getElementById('mod-mode-ore').classList.toggle('on',  isOre);
+  document.getElementById('mod-mode-fascia').classList.toggle('on', !isOre);
+  if (!isOre) _calcolaModOreFascia(); else _calcolaModOre();
+}
+
 function _calcolaModOre() {
   const ore = parseInt(document.getElementById('mod-ass-ore')?.value || 0);
   const min = parseInt(document.getElementById('mod-ass-minuti')?.value || 0);
@@ -2939,6 +2990,33 @@ function _calcolaModOre() {
   if (disp) { disp.textContent = oreDisplay(val); disp.style.color = val > 0 ? '#B5453A' : '#94a3b8'; disp.style.fontWeight = '700'; }
   const hid = document.getElementById('mod-ass-ore-valore');
   if (hid) hid.value = val;
+}
+
+function _calcolaModOreFascia() {
+  const inizio = document.getElementById('mod-fascia-inizio')?.value;
+  const fine   = document.getElementById('mod-fascia-fine')?.value;
+  const errEl  = document.getElementById('mod-fascia-error');
+  const durEl  = document.getElementById('mod-fascia-durata');
+  const hid    = document.getElementById('mod-ass-ore-valore');
+  if (!inizio || !fine) {
+    if (durEl)  { durEl.textContent = '—'; durEl.style.color = '#94a3b8'; }
+    if (hid)    hid.value = 0;
+    if (errEl)  errEl.style.display = 'none';
+    return;
+  }
+  const [h1,m1] = inizio.split(':').map(Number);
+  const [h2,m2] = fine.split(':').map(Number);
+  const minTot  = (h2*60+m2) - (h1*60+m1);
+  if (minTot <= 0) {
+    if (errEl)  { errEl.textContent = "L'ora di fine deve essere successiva all'ora di inizio"; errEl.style.display = ''; }
+    if (durEl)  { durEl.textContent = '—'; durEl.style.color = '#94a3b8'; }
+    if (hid)    hid.value = 0;
+    return;
+  }
+  if (errEl) errEl.style.display = 'none';
+  const val = minutiADecimale(minTot);
+  if (durEl)  { durEl.textContent = oreDisplay(val); durEl.style.color = '#B5453A'; durEl.style.fontWeight = '700'; }
+  if (hid)    hid.value = val;
 }
 
 async function salvaModificaAssenza() {
