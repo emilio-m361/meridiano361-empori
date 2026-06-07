@@ -1655,6 +1655,60 @@ body.operatori-readonly #sezione-operatori textarea { pointer-events: none !impo
   </div>
 </div>
 
+<!-- MODAL: Modifica singola assenza -->
+<div class="modal-bg" id="modal-ass-modifica" onclick="if(event.target===this)closeModal('modal-ass-modifica')">
+  <div class="modal-box">
+    <h3>Modifica Assenza</h3>
+    <div id="mod-ass-info" style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:14px;padding:8px 12px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0"></div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:8px">TIPO DI ASSENZA</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button onclick="_modSelTipo('ferie')"    id="mod-btn-ferie"    class="ass-badge ass-ferie"    style="font-size:11px;padding:5px 10px">Ferie</button>
+        <button onclick="_modSelTipo('permesso')" id="mod-btn-permesso" class="ass-badge ass-permesso" style="font-size:11px;padding:5px 10px">Permesso</button>
+        <button onclick="_modSelTipo('malattia')" id="mod-btn-malattia" class="ass-badge ass-malattia" style="font-size:11px;padding:5px 10px">Malattia</button>
+        <button onclick="_modSelTipo('altro')"    id="mod-btn-altro"    class="ass-badge ass-altro"    style="font-size:11px;padding:5px 10px">Altro</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:8px">ORE DI ASSENZA</div>
+      <div class="ore-assenza-wrapper">
+        <div class="ore-input-group">
+          <label class="ore-sublabel">Ore</label>
+          <input type="number" id="mod-ass-ore" min="0" max="24" value="0" oninput="_calcolaModOre()" class="input-ore">
+        </div>
+        <div class="ore-input-group">
+          <label class="ore-sublabel">Minuti</label>
+          <select id="mod-ass-minuti" onchange="_calcolaModOre()" class="input-minuti">
+            <option value="0">00</option>
+            <option value="15">15</option>
+            <option value="30">30</option>
+            <option value="45">45</option>
+          </select>
+        </div>
+        <div class="ore-input-group">
+          <label class="ore-sublabel">Valore</label>
+          <div class="ore-valore" id="mod-ass-ore-display">0.00</div>
+        </div>
+      </div>
+      <input type="hidden" id="mod-ass-ore-valore" value="0">
+      <div style="font-size:10px;color:#94a3b8;margin-top:6px">Lascia a 0 per non specificare le ore</div>
+    </div>
+
+    <div id="mod-ass-error" class="hidden" style="margin-bottom:12px;padding:8px 12px;background:#fee2e2;border-radius:8px;font-size:12px;color:#991b1b;font-weight:600"></div>
+
+    <div style="display:flex;gap:8px">
+      <button onclick="salvaModificaAssenza()" id="mod-ass-save-btn"
+              class="btn-p" style="flex:1;justify-content:center;gap:8px">
+        <div id="mod-ass-spinner" class="spinner"></div>
+        <span id="mod-ass-save-label">Salva</span>
+      </button>
+      <button onclick="closeModal('modal-ass-modifica')" class="btn-s" style="flex:1;justify-content:center">Annulla</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: Copia Giorno -->
 <div class="modal-bg" id="modal-copia" onclick="if(event.target===this)closeModal('modal-copia')">
   <div class="modal-box">
@@ -1967,7 +2021,7 @@ async function renderAssenze(targetId = 'opsub-assenze') {
       const nome = k.split('|').slice(4).join('|');
       const oreRaw = getAssenzaOre(v);
       const { ore, stimato } = _oreEff(nome, d, oreRaw);
-      all.push({ d, dow, dayKey, nome, tipo: getAssenzaTipo(v), ore, stimato });
+      all.push({ d, dow, dayKey, nome, tipo: getAssenzaTipo(v), ore, stimato, oreRaw });
     });
   }
 
@@ -2008,17 +2062,21 @@ async function renderAssenze(targetId = 'opsub-assenze') {
   const byOp = {};
   filtered.forEach(r => { (byOp[r.nome] = byOp[r.nome] || []).push(r); });
 
+  const _canAll = canManageAllAssenze();
+  const _canOwn = canManageOwnAssenze();
+
   const TH = `<thead><tr style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;background:#f8fafc;border-bottom:2px solid #e2e8f0">
     <th style="padding:6px 12px;text-align:left;width:120px">Data</th>
     <th style="padding:6px 12px;text-align:left">Tipo assenza</th>
     <th style="padding:6px 12px;text-align:right;width:80px">Ore assenza</th>
-    <th style="padding:6px 4px;width:36px"></th>
+    <th style="padding:6px 6px;width:60px"></th>
   </tr></thead>`;
 
   const opCards = Object.entries(byOp).map(([nome, rows]) => {
     const initials = nome.split(' ').slice(0,2).map(s => s[0]||'').join('').toUpperCase();
     const opTotal  = rows.reduce((s, r) => s + (r.ore || 0), 0);
     const opHasStimato = rows.some(r => r.stimato);
+    const canEdit = _canAll || (_canOwn && isCurrentUser(nome));
     const rowsHtml = rows
       .sort((a, b) => a.d - b.d)
       .map(r => {
@@ -2027,6 +2085,11 @@ async function renderAssenze(targetId = 'opsub-assenze') {
           ? `<span style="font-family:'DM Mono';font-size:12px;font-weight:700;color:${r.stimato?'#94a3b8':'#334155'}"
                   title="${r.stimato?'Ore stimate dal profilo operatore':'Ore inserite manualmente'}">${r.ore % 1 === 0 ? r.ore.toFixed(0) : r.ore.toFixed(2)}h${r.stimato?' <span style="font-size:9px;color:#b0bec5;vertical-align:super">~</span>':''}</span>`
           : `<span style="color:#cbd5e1;font-size:12px">—</span>`;
+        const btns = canEdit ? `
+            <button class="ass-edit-btn btn-s" style="padding:2px 6px;font-size:10px;min-height:auto;line-height:1.4;background:#f1f5f9;color:#475569;border-color:#e2e8f0" title="Modifica"
+                    onclick="apriModificaAssenza('${r.dayKey}|${nome}','${r.tipo}',${r.oreRaw},'${targetId}')">✎</button>
+            <button class="ass-rm-btn btn-s" style="padding:2px 6px;font-size:10px;min-height:auto;line-height:1.4" title="Elimina"
+                    onclick="removeAssenza('${r.dayKey}','${nome}');renderAssenze('${targetId}')">×</button>` : '';
         return `
         <tr style="border-bottom:1px solid #f1f5f9">
           <td style="padding:8px 12px;white-space:nowrap">
@@ -2035,10 +2098,7 @@ async function renderAssenze(targetId = 'opsub-assenze') {
           </td>
           <td style="padding:8px 12px"><span class="ass-badge ass-${r.tipo}">${tipoLabel}</span></td>
           <td style="padding:8px 12px;text-align:right">${oreCell}</td>
-          <td style="padding:6px 4px;text-align:center">
-            <button class="ass-rm-btn btn-s" style="padding:2px 7px;font-size:10px;min-height:auto;line-height:1.4"
-                    onclick="removeAssenza('${r.dayKey}','${nome}');renderAssenze('${targetId}')">×</button>
-          </td>
+          <td style="padding:6px 6px;text-align:right;white-space:nowrap">${btns}</td>
         </tr>`;
       })
       .join('');
@@ -2828,6 +2888,108 @@ function removeAssenza(dayKey,nome) {
   render();
 }
 
+// ── MODIFICA SINGOLA ASSENZA ───────────────────────────────────────────────
+let _editAssKey = null, _editTargetId = null, _editTipoSel = null;
+
+function apriModificaAssenza(assKey, tipo, oreRaw, targetId) {
+  if (!canManageAllAssenze() && !canManageOwnAssenze()) {
+    showToast('Non hai i permessi per modificare le assenze','err'); return;
+  }
+  _editAssKey = assKey; _editTargetId = targetId; _editTipoSel = tipo || 'ferie';
+
+  // Info label: nome + data
+  const parts = assKey.split('|');
+  const nome = parts.slice(4).join('|');
+  const d = parseInt(parts[3]), m0 = parseInt(parts[2]) - 1, a = parts[1];
+  const dow = new Date(a, m0, d).getDay();
+  document.getElementById('mod-ass-info').textContent = `${nome}  —  ${GIORNI[dow]} ${d} ${MESI[m0]} ${a}`;
+
+  // Pre-fill tipo
+  _modSelTipo(_editTipoSel);
+
+  // Pre-fill ore
+  const totalMin = Math.round((oreRaw || 0) * 60);
+  const oreInt = Math.floor(totalMin / 60);
+  const minRaw = totalMin % 60;
+  const minSnap = Math.round(minRaw / 15) * 15 % 60;
+  document.getElementById('mod-ass-ore').value = oreInt;
+  document.getElementById('mod-ass-minuti').value = minSnap;
+  _calcolaModOre();
+
+  document.getElementById('mod-ass-error').classList.add('hidden');
+  document.getElementById('mod-ass-save-btn').disabled = false;
+  document.getElementById('mod-ass-spinner').style.display = 'none';
+  document.getElementById('mod-ass-save-label').textContent = 'Salva';
+  document.getElementById('modal-ass-modifica').classList.add('show');
+}
+
+function _modSelTipo(t) {
+  _editTipoSel = t;
+  ['ferie','permesso','malattia','altro'].forEach(x => {
+    const btn = document.getElementById('mod-btn-' + x);
+    if (btn) btn.style.outline = x === t ? '2px solid currentColor' : '';
+  });
+}
+
+function _calcolaModOre() {
+  const ore = parseInt(document.getElementById('mod-ass-ore')?.value || 0);
+  const min = parseInt(document.getElementById('mod-ass-minuti')?.value || 0);
+  const val = minutiADecimale(ore * 60 + min);
+  const disp = document.getElementById('mod-ass-ore-display');
+  if (disp) { disp.textContent = oreDisplay(val); disp.style.color = val > 0 ? '#B5453A' : '#94a3b8'; disp.style.fontWeight = '700'; }
+  const hid = document.getElementById('mod-ass-ore-valore');
+  if (hid) hid.value = val;
+}
+
+async function salvaModificaAssenza() {
+  if (!_editAssKey || !_editTipoSel) return;
+  const parts = _editAssKey.split('|');
+  const emporio = parts[0], anno = parseInt(parts[1]), mese = parseInt(parts[2]), giorno = parseInt(parts[3]);
+
+  const oreVal = parseFloat(document.getElementById('mod-ass-ore-valore').value) || 0;
+  const newVal = oreVal > 0 ? {tipo: _editTipoSel, ore: oreVal} : _editTipoSel;
+
+  const btn = document.getElementById('mod-ass-save-btn');
+  btn.disabled = true;
+  document.getElementById('mod-ass-spinner').style.display = 'block';
+  document.getElementById('mod-ass-save-label').textContent = 'Salvataggio...';
+  document.getElementById('mod-ass-error').classList.add('hidden');
+
+  try {
+    // Carica la riga mattina per leggere le assenze esistenti del giorno
+    const { data: righe, error: rErr } = await db.from('turni').select('*')
+      .eq('emporio', emporio).eq('anno', anno).eq('mese', mese).eq('giorno', giorno);
+    if (rErr) throw rErr;
+
+    const mattinaRiga = (righe || []).find(r => r.turno === 'mattina');
+    // Unisci tutte le assenze del giorno da tutte le righe
+    const allAss = {};
+    (righe || []).forEach(r => { if (r.assenze) Object.assign(allAss, r.assenze); });
+    allAss[_editAssKey] = newVal;
+
+    const payload = {
+      emporio, anno, mese, giorno, turno: 'mattina',
+      aperto:    mattinaRiga?.aperto    ?? true,
+      operatori: mattinaRiga?.operatori ?? [],
+      assenze:   allAss,
+      note:      mattinaRiga?.note      ?? null,
+    };
+    const { error } = await db.from('turni').upsert(payload, {onConflict:'emporio,anno,mese,giorno,turno'});
+    if (error) throw error;
+
+    closeModal('modal-ass-modifica');
+    showToast('Assenza aggiornata ✓', 'ok');
+    if (_editTargetId) renderAssenze(_editTargetId);
+  } catch(e) {
+    const errEl = document.getElementById('mod-ass-error');
+    errEl.textContent = 'Errore: ' + e.message;
+    errEl.classList.remove('hidden');
+    btn.disabled = false;
+    document.getElementById('mod-ass-spinner').style.display = 'none';
+    document.getElementById('mod-ass-save-label').textContent = 'Salva';
+  }
+}
+
 function rimuoviAssenzaKey(assKey,dayKey) {
   if (!canManageAllAssenze() && !canManageOwnAssenze()) return;
   if (canManageOwnAssenze() && !canManageAllAssenze() && !isCurrentUser(assKey.split('|')[4])) return;
@@ -3446,7 +3608,7 @@ if (typeof getOperatoreLoggato === 'function') {
   } catch(e) { console.error('[INIT] exception:', e); }
 })();
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeModal('modal-add');closeModal('modal-ass');closeModal('modal-copia');}
+  if(e.key==='Escape'){closeModal('modal-add');closeModal('modal-ass');closeModal('modal-ass-modifica');closeModal('modal-copia');}
 });
 
 // ── FASCIA SERALE ────────────────────────────────────────────────────────────
