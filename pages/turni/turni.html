@@ -1754,7 +1754,7 @@ body.operatori-readonly #sezione-operatori textarea { pointer-events: none !impo
       <div class="ore-assenza-wrapper" style="margin-bottom:10px">
         <div class="ore-input-group">
           <label class="ore-sublabel">Data</label>
-          <input type="date" id="ore-assenza-data" class="orari-f-inp" style="font-size:14px;padding:8px 10px" readonly>
+          <input type="date" id="ore-assenza-data" class="orari-f-inp" style="font-size:14px;padding:8px 10px" onchange="reloadAssenzaModalForDate('ore')">
         </div>
       </div>
       <div class="ore-assenza-wrapper">
@@ -1791,7 +1791,7 @@ body.operatori-readonly #sezione-operatori textarea { pointer-events: none !impo
       <div class="ore-assenza-wrapper">
         <div class="ore-input-group">
           <label class="ore-sublabel">Data</label>
-          <input type="date" id="fascia-data" class="orari-f-inp" style="font-size:14px;padding:8px 10px" onchange="calcolaOreFascia()">
+          <input type="date" id="fascia-data" class="orari-f-inp" style="font-size:14px;padding:8px 10px" onchange="calcolaOreFascia(); reloadAssenzaModalForDate('fascia')">
         </div>
         <div class="ore-input-group">
           <label class="ore-sublabel">Dalle</label>
@@ -3043,6 +3043,72 @@ async function openAssenzaModal(dayKey) {
         <button onclick="setAssenza('${assKey}','malattia')" class="ass-badge ass-malattia" style="${current==='malattia'?'outline:2px solid #f59e0b':''}">Malattia</button>
         <button onclick="setAssenza('${assKey}','altro')" class="ass-badge ass-altro" style="${current==='altro'?'outline:2px solid #64748b':''}">Altro</button>
         ${current ? `<button onclick="rimuoviAssenzaKey('${assKey}','${dayKey}')" style="border:none;background:none;cursor:pointer;color:#94a3b8;font-size:11px;padding:0 2px">×</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function reloadAssenzaModalForDate(src) {
+  // Sync the two date fields and rebuild the operator list for the new date
+  let newDateVal;
+  if (src === 'ore') {
+    newDateVal = document.getElementById('ore-assenza-data')?.value;
+    const fd = document.getElementById('fascia-data');
+    if (fd) fd.value = newDateVal || '';
+  } else {
+    newDateVal = document.getElementById('fascia-data')?.value;
+    const od = document.getElementById('ore-assenza-data');
+    if (od) od.value = newDateVal || '';
+  }
+  if (!newDateVal) return;
+
+  const parts = newDateVal.split('-');
+  if (parts.length < 3) return;
+  const newDayKey = `${currentEmporio}|${parts[0]}|${parseInt(parts[1], 10)}|${parseInt(parts[2], 10)}`;
+
+  const listEl = document.getElementById('modal-ass-list');
+  listEl.innerHTML = '<p style="padding:16px;text-align:center;color:#94a3b8;font-size:13px"><span style="display:inline-block;animation:spin 1s linear infinite">⟳</span></p>';
+
+  let pers = [];
+  try {
+    const { data, error } = await db.from('operatori')
+      .select('*')
+      .in('ruolo', RUOLI_CONTRATTUALIZZATI)
+      .or('attivo.eq.true,attivo.is.null')
+      .order('nome');
+    if (error) throw error;
+    pers = (data || []).filter(o =>
+      (o.emporio === currentEmporio || (o.empori_aggiuntivi || []).includes(currentEmporio)) &&
+      isOperatoreAttivoInData(o, newDateVal)
+    );
+  } catch(e) {
+    listEl.innerHTML = `<p style="padding:16px;color:#B5453A;font-size:13px">Errore: ${e.message}</p>`;
+    return;
+  }
+
+  if (canManageOwnAssenze() && !canManageAllAssenze()) {
+    pers = pers.filter(p => isCurrentUser(p.nome));
+  }
+  if (!pers.length) {
+    listEl.innerHTML = '<p style="padding:16px;text-align:center;color:#94a3b8;font-size:13px">Nessun operatore contrattualizzato in questo emporio</p>';
+    return;
+  }
+  listEl.innerHTML = pers.map(p => {
+    const assKey = `${newDayKey}|${p.nome}`;
+    const current = getAssenzaTipo(assenzeData[assKey]);
+    const roleLabel = p.ruolo === 'dipendente' ? 'Dip.' : 'SCU';
+    const roleCls   = p.ruolo === 'dipendente' ? 'c-dip' : 'c-scu';
+    return `<div style="padding:8px 12px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:6px;min-width:0">
+        <span class="op-chip ${roleCls}" style="font-size:9px;padding:2px 6px;flex-shrink:0">${roleLabel}</span>
+        <span style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.nome}</span>
+      </div>
+      <div style="display:flex;gap:3px;flex-wrap:wrap">
+        <button onclick="setAssenza('${assKey}','ferie')" class="ass-badge ass-ferie" style="${current==='ferie'?'outline:2px solid #3b82f6':''}">Ferie</button>
+        <button onclick="setAssenza('${assKey}','permesso')" class="ass-badge ass-permesso" style="${current==='permesso'?'outline:2px solid #ec4899':''}">Permesso</button>
+        <button onclick="setAssenza('${assKey}','malattia')" class="ass-badge ass-malattia" style="${current==='malattia'?'outline:2px solid #f59e0b':''}">Malattia</button>
+        <button onclick="setAssenza('${assKey}','altro')" class="ass-badge ass-altro" style="${current==='altro'?'outline:2px solid #64748b':''}">Altro</button>
+        ${current ? `<button onclick="rimuoviAssenzaKey('${assKey}','${newDayKey}')" style="border:none;background:none;cursor:pointer;color:#94a3b8;font-size:11px;padding:0 2px">×</button>` : ''}
       </div>
     </div>`;
   }).join('');
