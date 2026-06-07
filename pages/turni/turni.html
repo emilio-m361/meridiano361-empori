@@ -972,6 +972,8 @@ body.turni-readonly .negozio-orari input { pointer-events: none !important; }
 body.turni-readonly .btn-aggiungi-sera { display: none !important; }
 body.turni-readonly .btn-rimuovi-sera { display: none !important; }
 body.turni-readonly .ass-badge[onclick*="removeAssenza"] { pointer-events: none !important; }
+body.turni-readonly .ass-rm-btn  { display: none !important; }
+body.turni-readonly .ass-add-btn { display: none !important; }
 
 /* ── INSERIMENTO SOLO PROPRIO NOME (SCU / Volontari) ────────────────────── */
 body.turni-own-only .chip-nome-cal .rm { display: none !important; }
@@ -1914,55 +1916,122 @@ function toggleColonnaSera(mostra) {
 
 // ── ASSENZE VIEW ───────────────────────────────────────────────────────────
 function renderAssenze(targetId = 'opsub-assenze') {
-  const days = new Date(currentAnno, currentMese+1, 0).getDate();
-  const righe = [];
-  for (let d=1; d<=days; d++) {
-    const dayKey = `${currentEmporio}|${currentAnno}|${currentMese+1}|${d}`;
-    const dow = new Date(currentAnno,currentMese,d).getDay();
-    Object.entries(assenzeData).filter(([k])=>k.startsWith(dayKey+'|')).forEach(([k,v])=>{
-      const nome = k.split('|').slice(4).join('|');
-      const tipo = getAssenzaTipo(v);
-      const ore  = getAssenzaOre(v);
-      righe.push(`<tr>
-        <td style="padding:7px 10px;font-weight:700;white-space:nowrap">${d} ${GIORNI[dow]}</td>
-        <td style="padding:7px 10px">${nome}</td>
-        <td style="padding:7px 10px;text-align:center"><span class="ass-badge ass-${tipo}">${tipo}</span></td>
-        <td style="padding:7px 10px;font-family:'DM Mono';text-align:center">${ore>0?ore.toFixed(2)+'h':'—'}</td>
-        <td style="padding:7px 10px;text-align:center">
-          <button class="btn-s" style="padding:3px 8px;font-size:9px;min-height:auto"
-                  onclick="removeAssenza('${dayKey}','${nome}');renderAssenze('${targetId}')">
-            ×
-          </button>
-        </td>
-      </tr>`);
-    });
-  }
-  const today = new Date();
-  const defDay = today.getMonth()===currentMese&&today.getFullYear()===currentAnno?today.getDate():1;
-  const dayOpts = Array.from({length:days},(_,i)=>i+1)
-    .map(d=>`<option value="${d}"${d===defDay?' selected':''}>${d} ${MESISHORT[currentMese]}</option>`).join('');
   const el = document.getElementById(targetId);
   if (!el) return;
+
+  const days = new Date(currentAnno, currentMese+1, 0).getDate();
+
+  // Preserve filter values across re-renders
+  const prevOp   = document.getElementById('ass-filtro-op')   ? document.getElementById('ass-filtro-op').value   : '';
+  const prevTipo = document.getElementById('ass-filtro-tipo')  ? document.getElementById('ass-filtro-tipo').value  : '';
+  const prevData = document.getElementById('ass-data-input')   ? document.getElementById('ass-data-input').value   : '';
+
+  // Collect all absences for the month
+  const all = [];
+  for (let d = 1; d <= days; d++) {
+    const dayKey = `${currentEmporio}|${currentAnno}|${currentMese+1}|${d}`;
+    const dow = new Date(currentAnno, currentMese, d).getDay();
+    Object.entries(assenzeData).filter(([k]) => k.startsWith(dayKey + '|')).forEach(([k, v]) => {
+      const nome = k.split('|').slice(4).join('|');
+      all.push({ d, dow, dayKey, nome, tipo: getAssenzaTipo(v), ore: getAssenzaOre(v) });
+    });
+  }
+
+  // Summary stats
+  const TIPI = ['ferie', 'permesso', 'malattia', 'altro'];
+  const countPerTipo = {};
+  let totalOre = 0;
+  TIPI.forEach(t => countPerTipo[t] = 0);
+  all.forEach(r => { countPerTipo[r.tipo] = (countPerTipo[r.tipo] || 0) + 1; totalOre += r.ore || 0; });
+  const summaryBadges = TIPI.filter(t => countPerTipo[t] > 0)
+    .map(t => `<span class="ass-badge ass-${t}">${t.charAt(0).toUpperCase()+t.slice(1)} <strong>${countPerTipo[t]}</strong></span>`)
+    .join('');
+
+  // Operator filter options (only names present in absences)
+  const allNomi = [...new Set(all.map(r => r.nome))].sort();
+  const opOpts = `<option value="">Tutti gli operatori</option>` +
+    allNomi.map(n => `<option value="${n}"${n === prevOp ? ' selected' : ''}>${n}</option>`).join('');
+  const tipoOpts = `<option value="">Tutti i tipi</option>` +
+    TIPI.map(t => `<option value="${t}"${t === prevTipo ? ' selected' : ''}>${t.charAt(0).toUpperCase()+t.slice(1)}</option>`).join('');
+
+  // Default date for "aggiungi" input
+  const today = new Date();
+  const defDateVal = prevData || (() => {
+    const y = currentAnno, m = String(currentMese+1).padStart(2,'0');
+    const d = today.getMonth() === currentMese && today.getFullYear() === currentAnno
+      ? String(today.getDate()).padStart(2,'0') : '01';
+    return `${y}-${m}-${d}`;
+  })();
+
+  // Apply filters
+  const filtered = all.filter(r =>
+    (!prevOp   || r.nome === prevOp) &&
+    (!prevTipo || r.tipo === prevTipo)
+  );
+
+  // Group by operator
+  const byOp = {};
+  filtered.forEach(r => { (byOp[r.nome] = byOp[r.nome] || []).push(r); });
+
+  const opCards = Object.entries(byOp).map(([nome, rows]) => {
+    const initials = nome.split(' ').slice(0,2).map(s => s[0]||'').join('').toUpperCase();
+    const opTotal  = rows.reduce((s, r) => s + (r.ore || 0), 0);
+    const rowsHtml = rows
+      .sort((a, b) => a.d - b.d)
+      .map(r => `
+        <tr style="border-bottom:1px solid #f1f5f9">
+          <td style="padding:7px 12px;font-weight:600;white-space:nowrap;color:#475569">${r.d} ${GIORNI[r.dow]}</td>
+          <td style="padding:7px 12px;text-align:center"><span class="ass-badge ass-${r.tipo}">${r.tipo.charAt(0).toUpperCase()+r.tipo.slice(1)}</span></td>
+          <td style="padding:7px 12px;text-align:center;font-family:'DM Mono';color:#64748b">${r.ore > 0 ? r.ore.toFixed(2)+'h' : '—'}</td>
+          <td style="padding:6px 8px;text-align:center">
+            <button class="ass-rm-btn btn-s" style="padding:3px 8px;font-size:9px;min-height:auto"
+                    onclick="removeAssenza('${r.dayKey}','${nome}');renderAssenze('${targetId}')">×</button>
+          </td>
+        </tr>`)
+      .join('');
+    return `
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f8fafc;border-bottom:1px solid #e2e8f0">
+          <div style="width:32px;height:32px;border-radius:50%;background:#B5453A;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">${initials}</div>
+          <div style="flex:1;min-width:0;font-weight:700;font-size:13px;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${nome}</div>
+          <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
+            <span style="font-size:11px;font-weight:700;color:#64748b">${rows.length} ass.</span>
+            ${opTotal > 0 ? `<span style="font-family:'DM Mono';font-size:11px;background:#f1f5f9;color:#334155;padding:2px 7px;border-radius:6px;font-weight:700">${opTotal.toFixed(1)}h</span>` : ''}
+          </div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      </div>`;
+  }).join('');
+
   el.innerHTML = `
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
-      <select id="ass-giorno-sel" class="f-sel" style="min-width:110px">${dayOpts}</select>
-      <button class="btn-p" style="padding:8px 14px;font-size:12px"
-              onclick="openAssenzaModal('${currentEmporio}|${currentAnno}|${currentMese+1}|'+document.getElementById('ass-giorno-sel').value)">
-+ Aggiungi assenza
-      </button>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+      <select id="ass-filtro-op" class="f-sel" style="min-width:150px" onchange="renderAssenze('${targetId}')">${opOpts}</select>
+      <select id="ass-filtro-tipo" class="f-sel" style="min-width:130px" onchange="renderAssenze('${targetId}')">${tipoOpts}</select>
+      <div style="display:flex;gap:6px;align-items:center;margin-left:auto">
+        <input type="date" id="ass-data-input" class="f-sel" style="min-width:140px" value="${defDateVal}"
+               min="${currentAnno}-${String(currentMese+1).padStart(2,'0')}-01"
+               max="${currentAnno}-${String(currentMese+1).padStart(2,'0')}-${String(days).padStart(2,'0')}">
+        <button class="btn-p ass-add-btn" style="padding:8px 14px;font-size:12px;white-space:nowrap"
+                onclick="openAssenzaModal('${currentEmporio}|${currentAnno}|${currentMese+1}|'+parseInt((document.getElementById('ass-data-input').value||'').split('-')[2]||1,10))">
+          + Aggiungi
+        </button>
+      </div>
     </div>
-    ${righe.length
-      ? `<div class="card-r"><div class="tscroll"><table style="width:100%;border-collapse:collapse;font-size:13px">
-          <thead><tr style="font-size:9px;text-transform:uppercase;color:#94a3b8;letter-spacing:.08em">
-            <th style="padding:6px 10px;text-align:left;background:#f8fafc;border-bottom:2px solid #e2e8f0">Data</th>
-            <th style="padding:6px 10px;text-align:left;background:#f8fafc;border-bottom:2px solid #e2e8f0">Operatore</th>
-            <th style="padding:6px 10px;text-align:center;background:#f8fafc;border-bottom:2px solid #e2e8f0">Tipo</th>
-            <th style="padding:6px 10px;text-align:center;background:#f8fafc;border-bottom:2px solid #e2e8f0">Ore</th>
-            <th style="padding:6px 10px;background:#f8fafc;border-bottom:2px solid #e2e8f0"></th>
-          </tr></thead>
-          <tbody>${righe.join('')}</tbody>
-        </table></div></div>`
-      : `<p style="padding:28px;text-align:center;color:#94a3b8;font-size:13px">Nessuna assenza per ${MESI[currentMese]} ${currentAnno}</p>`
+    ${all.length > 0 ? `
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;align-items:center">
+        ${summaryBadges}
+        ${totalOre > 0 ? `<span style="margin-left:auto;font-family:'DM Mono';font-size:12px;font-weight:700;color:#475569">${totalOre.toFixed(1)}h totali</span>` : ''}
+      </div>` : ''}
+    ${filtered.length > 0
+      ? opCards
+      : `<div style="text-align:center;padding:40px 20px;color:#94a3b8">
+           <i class="fas fa-calendar-check" style="font-size:36px;margin-bottom:12px;display:block;opacity:.35"></i>
+           <p style="font-size:13px;font-weight:600">${all.length === 0
+             ? 'Nessuna assenza per ' + MESI[currentMese] + ' ' + currentAnno
+             : 'Nessun risultato per i filtri selezionati'}</p>
+         </div>`
     }`;
 }
 
