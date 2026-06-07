@@ -304,6 +304,33 @@
 
     </div>
 
+    <!-- CONTENUTO RESPONSABILE DEL PERSONALE -->
+    <div id="resp-content" class="hidden impostazioni-container">
+        <div class="mb-6">
+            <div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#94a3b8;display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                <span style="width:3px;height:16px;background:#B5453A;border-radius:2px;display:inline-block;flex-shrink:0"></span>
+                Gestione Personale
+            </div>
+            <p class="text-slate-500 text-sm mt-1">Puoi aggiungere e modificare gli operatori del tuo emporio.</p>
+        </div>
+        <div class="settings-section">
+            <button class="settings-section-header" onclick="toggleSection(this)">
+                <span>👥 Operatori — <span id="resp-emporio-label"></span></span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="settings-section-body" style="padding:0">
+                <div style="padding:12px 16px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:flex-end">
+                    <button class="btn-primary" onclick="nuovoOperatoreResp()">+ Aggiungi operatore</button>
+                </div>
+                <div id="resp-operatori-container" style="padding:0">
+                    <div style="text-align:center;padding:40px 0;color:#94a3b8;font-size:14px">
+                        <i class="fas fa-spinner fa-spin" style="margin-right:6px"></i>Caricamento...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ── MODAL MODIFICA OPERATORE ── -->
     <div id="modal-modifica-operatore" class="modal-overlay" onclick="if(event.target===this)chiudiModalModifica()">
         <div class="modal-box" style="max-width:480px">
@@ -377,13 +404,20 @@
                         </label>
                     </div>
                 </div>
+                <div class="campo-gruppo" id="gruppo-resp-personale" style="display:none">
+                    <label>Responsabile del Personale</label>
+                    <label class="check-flag">
+                        <input type="checkbox" id="edit-op-resp-personale">
+                        <span>Può gestire gli operatori del proprio emporio nelle Impostazioni</span>
+                    </label>
+                </div>
                 <div class="campo-gruppo">
                     <label>Note</label>
                     <textarea id="edit-op-note" class="campo-input" rows="2" placeholder="Note sull'operatore..."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-danger" onclick="eliminaOperatore()">🗑 Elimina</button>
+                <button id="btn-modal-elimina" class="btn-danger" onclick="eliminaOperatore()">🗑 Elimina</button>
                 <div style="flex:1"></div>
                 <button class="btn-secondary" onclick="chiudiModalModifica()">Annulla</button>
                 <button class="btn-primary" onclick="salvaModificaOperatore()">✓ Salva</button>
@@ -511,15 +545,28 @@
     let utentiCache = [];
 
     const currentUser = JSON.parse(localStorage.getItem('m361_user') || 'null');
+    const _isAdmin = !!(currentUser && isAdminEmail(currentUser.email));
 
-    if (!currentUser || !isAdminEmail(currentUser.email)) {
-        document.getElementById('access-denied').classList.remove('hidden');
-    } else {
-        document.getElementById('admin-content').classList.remove('hidden');
-        loadUsers();
-        caricaInfoApp();
-        caricaCategorie();
+    async function initPage() {
+        if (!currentUser) { document.getElementById('access-denied').classList.remove('hidden'); return; }
+        if (_isAdmin) {
+            document.getElementById('admin-content').classList.remove('hidden');
+            loadUsers(); caricaInfoApp(); caricaCategorie();
+            return;
+        }
+        // Controllo fresco da DB per responsabile del personale
+        const { data: opFresh } = await db.from('operatori').select('is_resp_personale, emporio').eq('id', currentUser.id).maybeSingle();
+        if (opFresh?.is_resp_personale) {
+            _respEmporioChiave = normalizzaEmporio(opFresh.emporio || currentUser.emporio || '');
+            document.getElementById('resp-emporio-label').textContent = EMPORI_LABEL[_respEmporioChiave] || opFresh.emporio || '';
+            document.getElementById('resp-content').classList.remove('hidden');
+            loadUsersEmporio(_respEmporioChiave);
+        } else {
+            document.getElementById('access-denied').classList.remove('hidden');
+        }
     }
+    let _respEmporioChiave = '';
+    initPage();
 
     // ── ACCORDION ─────────────────────────────────────────────────────────
     function toggleSection(btn) {
@@ -729,6 +776,7 @@
                         <div class="op-avatar-small">${iniziali}</div>
                         <span>${op.nome || '—'}</span>
                         ${isAdminEmail(op.email) ? '<span style="font-size:10px;background:#fef3c7;color:#92400e;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px" title="Utente con accesso amministratore">🔑 Admin</span>' : ''}
+                        ${op.is_resp_personale ? '<span style="font-size:10px;background:#ede9fe;color:#5b21b6;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px" title="Responsabile del personale">👑 Resp. Personale</span>' : ''}
                         ${op.is_readonly ? '<span style="font-size:10px;background:#fef2f2;color:#dc2626;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px">Sola lettura</span>' : ''}
                     </div>
                 </td>
@@ -795,6 +843,14 @@
         });
         aggiornaCBEmpori();
         clearModalMsg();
+
+        // Elementi admin-only
+        const respCb = document.getElementById('edit-op-resp-personale');
+        if (respCb) respCb.checked = !!(op.is_resp_personale);
+        document.getElementById('gruppo-resp-personale').style.display = _isAdmin ? '' : 'none';
+        document.getElementById('btn-modal-elimina').style.display = _isAdmin ? '' : 'none';
+        document.getElementById('edit-op-emporio').disabled = !_isAdmin;
+
         document.getElementById('modal-modifica-operatore').style.display = 'flex';
     }
 
@@ -845,13 +901,14 @@
         return {
             empChiave,
             payload: {
-                nome:              document.getElementById('edit-op-nome').value.trim(),
-                emporio:           empDisplay,
-                ruolo:             document.getElementById('edit-op-ruolo').value,
-                telefono:          document.getElementById('edit-op-telefono').value.trim() || null,
-                email:             document.getElementById('edit-op-email-field').value.trim().toLowerCase() || null,
-                empori_aggiuntivi: extraDisplay.length > 0 ? extraDisplay : null,
-                note:              document.getElementById('edit-op-note').value.trim() || null,
+                nome:               document.getElementById('edit-op-nome').value.trim(),
+                emporio:            empDisplay,
+                ruolo:              document.getElementById('edit-op-ruolo').value,
+                telefono:           document.getElementById('edit-op-telefono').value.trim() || null,
+                email:              document.getElementById('edit-op-email-field').value.trim().toLowerCase() || null,
+                empori_aggiuntivi:  extraDisplay.length > 0 ? extraDisplay : null,
+                note:               document.getElementById('edit-op-note').value.trim() || null,
+                is_resp_personale:  !!(document.getElementById('edit-op-resp-personale')?.checked),
             },
         };
     }
@@ -964,14 +1021,84 @@
                 if (!conferma) return;
                 // Aggiorna il record esistente invece di inserirne uno nuovo
                 const ok = await _doSave(false, esistente.id, payload);
-                if (ok) { chiudiModalModifica(); loadUsers(); }
+                if (ok) afterSave();
                 return;
             }
         }
 
         // ── Percorso standard: INSERT o UPDATE senza conflitti ──
         const ok = await _doSave(isNuovo, idOrig, payload);
-        if (ok) { chiudiModalModifica(); loadUsers(); }
+        if (ok) afterSave();
+    }
+
+    function afterSave() {
+        chiudiModalModifica();
+        if (_isAdmin) { loadUsers(); }
+        else if (_respEmporioChiave) { loadUsersEmporio(_respEmporioChiave); }
+    }
+
+    // ── VISTA RESPONSABILE DEL PERSONALE ──────────────────────────────────
+    function nuovoOperatoreResp() {
+        nuovoOperatore(_respEmporioChiave);
+        document.getElementById('edit-op-emporio').disabled = true;
+        document.getElementById('gruppo-resp-personale').style.display = 'none';
+        document.getElementById('btn-modal-elimina').style.display = 'none';
+        if (document.getElementById('edit-op-resp-personale')) {
+            document.getElementById('edit-op-resp-personale').checked = false;
+        }
+    }
+
+    async function loadUsersEmporio(chiaveEmporio) {
+        const container = document.getElementById('resp-operatori-container');
+        const { data: operatori, error } = await db
+            .from('operatori')
+            .select('*')
+            .order('nome', { ascending: true });
+        if (error) {
+            container.innerHTML = `<div style="color:#dc2626;padding:16px;font-size:14px">Errore: ${error.message}</div>`;
+            return;
+        }
+        utentiCache = operatori || [];
+        const filtrati = utentiCache.filter(op => normalizzaEmporio(op.emporio) === chiaveEmporio);
+        if (filtrati.length === 0) {
+            container.innerHTML = '<p style="color:#94a3b8;padding:32px;text-align:center;font-size:14px">Nessun operatore registrato per questo emporio.</p>';
+            return;
+        }
+        container.innerHTML = `
+            <table class="tabella-operatori" style="margin:0">
+                <thead><tr>
+                    <th>Nome</th>
+                    <th>Ruolo</th>
+                    <th>Telefono</th>
+                    <th>Email</th>
+                    <th style="text-align:right">Azioni</th>
+                </tr></thead>
+                <tbody>${filtrati.map(op => rigaOperatoreResp(op)).join('')}</tbody>
+            </table>`;
+    }
+
+    function rigaOperatoreResp(op) {
+        const iniziali  = avatarIniziali(op.nome);
+        const ruoloNorm = (op.ruolo || 'operatore').toLowerCase().replace(/\s+/g, '');
+        const safeId    = String(op.id).replace(/'/g, "\\'");
+        return `
+            <tr class="riga-operatore" data-id="${op.id}">
+                <td>
+                    <div class="op-nome-cella">
+                        <div class="op-avatar-small">${iniziali}</div>
+                        <span>${op.nome || '—'}</span>
+                        ${op.is_readonly ? '<span style="font-size:10px;background:#fef2f2;color:#dc2626;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px">Sola lettura</span>' : ''}
+                    </div>
+                </td>
+                <td><span class="badge-ruolo ${ruoloNorm}">${labelRuolo(op.ruolo)}</span></td>
+                <td class="op-tel">${op.telefono || '—'}</td>
+                <td class="op-tel" style="font-size:12px">${op.email || '—'}</td>
+                <td>
+                    <div class="op-azioni-riga">
+                        <button onclick="apriModalModifica('${safeId}')" title="Modifica anagrafica">✏️</button>
+                    </div>
+                </td>
+            </tr>`;
     }
 
     function eliminaOperatore() {

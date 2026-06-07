@@ -519,16 +519,17 @@ function buildNav() {
     });
   }
 
-  // AGGIUNTA MANUALE TASTO ADMIN (Solo per te)
-  if (user && user.email === 'e.mazzolari@meridiano361.it') {
+  // Tasto Impostazioni: admin completo o responsabile del personale
+  if (user && (user.email === 'e.mazzolari@meridiano361.it' || user.is_resp_personale)) {
     const sep = document.createElement('div');
     sep.className = 'mn-sep';
     nav.appendChild(sep);
 
+    const isFullAdmin = user.email === 'e.mazzolari@meridiano361.it';
     const adminBtn = {
       id: 'impostazioni',
-      label: 'Admin',
-      icon: 'fa-gear',
+      label: isFullAdmin ? 'Admin' : 'Personale',
+      icon: isFullAdmin ? 'fa-gear' : 'fa-users-gear',
       href: 'impostazioni.html',
       active: true
     };
