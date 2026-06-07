@@ -971,7 +971,6 @@ body.turni-readonly .negozio-stato input { pointer-events: none !important; }
 body.turni-readonly .negozio-orari input { pointer-events: none !important; }
 body.turni-readonly .btn-aggiungi-sera { display: none !important; }
 body.turni-readonly .btn-rimuovi-sera { display: none !important; }
-body.turni-readonly .ass-badge[onclick*="removeAssenza"] { pointer-events: none !important; }
 body.turni-readonly .ass-rm-btn  { display: none !important; }
 body.turni-readonly .ass-add-btn { display: none !important; }
 
@@ -2379,8 +2378,7 @@ function renderMonth() {
         <td class="col-nomi col-sera"><div class="op-list">${renderOps(sk,sD,'Sera')}</div></td>
         <td>
           <div style="display:flex;flex-direction:column;gap:2px">
-            ${dayAssenze.map(a=>`<span class="ass-badge ass-${a.tipo}" onclick="removeAssenza('${dayKey}','${a.nome}','${a.tipo}')">${a.tipo.charAt(0).toUpperCase()+a.tipo.slice(1)} – ${a.nome.split(' ')[0]} ×</span>`).join('')}
-            <span class="op-add" onclick="openAssenzaModal('${dayKey}')">+ Ass.</span>
+            ${dayAssenze.map(a=>`<span class="ass-badge ass-${a.tipo}" style="cursor:default">${a.tipo.charAt(0).toUpperCase()+a.tipo.slice(1)} – ${a.nome.split(' ')[0]}</span>`).join('')}
           </div>
         </td>
         <td class="note-cell"><textarea placeholder="..." onblur="saveNote('${dayKey}',this.value)">${note}</textarea></td>
