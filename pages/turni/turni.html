@@ -2124,7 +2124,7 @@ async function renderAssenze(targetId = 'opsub-assenze') {
             <button class="ass-edit-btn btn-s" style="padding:2px 6px;font-size:10px;min-height:auto;line-height:1.4;background:#f1f5f9;color:#475569;border-color:#e2e8f0" title="Modifica"
                     onclick="apriModificaAssenza('${r.dayKey}|${nome}','${r.tipo}',${r.oreRaw},'${targetId}')">✎</button>
             <button class="ass-rm-btn btn-s" style="padding:2px 6px;font-size:10px;min-height:auto;line-height:1.4" title="Elimina"
-                    onclick="removeAssenza('${r.dayKey}','${nome}');renderAssenze('${targetId}')">×</button>` : '';
+                    onclick="removeAssenzaDiretta('${r.dayKey}','${nome}','${targetId}')">×</button>` : '';
         return `
         <tr style="border-bottom:1px solid #f1f5f9">
           <td style="padding:8px 12px;white-space:nowrap">
@@ -2904,6 +2904,34 @@ function setAssenza(assKey,tipo) {
   saveTurno(mk,turniData[mk]);
   closeModal('modal-ass');
   render();
+}
+
+async function removeAssenzaDiretta(dayKey, nome, targetId) {
+  if (!canManageAllAssenze() && !canManageOwnAssenze()) {
+    showToast('Non hai i permessi per modificare le assenze','err'); return;
+  }
+  if (canManageOwnAssenze() && !canManageAllAssenze() && !isCurrentUser(nome)) {
+    showToast('Puoi gestire solo le tue assenze','err'); return;
+  }
+  const parts = dayKey.split('|');
+  const emporio = parts[0], anno = parseInt(parts[1]), mese = parseInt(parts[2]), giorno = parseInt(parts[3]);
+  const assKey = `${dayKey}|${nome}`;
+  try {
+    const { data: righe, error: rErr } = await db.from('turni').select('*')
+      .eq('emporio', emporio).eq('anno', anno).eq('mese', mese).eq('giorno', giorno);
+    if (rErr) throw rErr;
+    const allAss = {};
+    (righe || []).forEach(r => { if (r.assenze) Object.assign(allAss, r.assenze); });
+    delete allAss[assKey];
+    if ((righe || []).length > 0) {
+      const { error: updErr } = await db.from('turni')
+        .update({ assenze: allAss })
+        .eq('emporio', emporio).eq('anno', anno).eq('mese', mese).eq('giorno', giorno);
+      if (updErr) throw updErr;
+    }
+    showToast('Assenza eliminata ✓','ok');
+    if (targetId) renderAssenze(targetId);
+  } catch(e) { showToast('Errore: ' + e.message,'err'); }
 }
 
 function removeAssenza(dayKey,nome) {
