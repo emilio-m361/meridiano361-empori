@@ -2967,15 +2967,22 @@ async function salvaModificaAssenza() {
     (righe || []).forEach(r => { if (r.assenze) Object.assign(allAss, r.assenze); });
     allAss[_editAssKey] = newVal;
 
-    const payload = {
-      emporio, anno, mese, giorno, turno: 'mattina',
-      aperto:    mattinaRiga?.aperto    ?? true,
-      operatori: mattinaRiga?.operatori ?? [],
-      assenze:   allAss,
-      note:      mattinaRiga?.note      ?? null,
-    };
-    const { error } = await db.from('turni').upsert(payload, {onConflict:'emporio,anno,mese,giorno,turno'});
-    if (error) throw error;
+    // Aggiorna TUTTE le righe esistenti (evita valori stale su pomeriggio/sera)
+    if ((righe || []).length > 0) {
+      const { error: updErr } = await db.from('turni')
+        .update({ assenze: allAss })
+        .eq('emporio', emporio).eq('anno', anno).eq('mese', mese).eq('giorno', giorno);
+      if (updErr) throw updErr;
+    }
+
+    // Se la riga mattina non esiste, creala (serve per salvare l'assenza)
+    if (!mattinaRiga) {
+      const { error: insErr } = await db.from('turni').upsert({
+        emporio, anno, mese, giorno, turno: 'mattina',
+        aperto: true, operatori: [], assenze: allAss, note: null
+      }, { onConflict: 'emporio,anno,mese,giorno,turno' });
+      if (insErr) throw insErr;
+    }
 
     closeModal('modal-ass-modifica');
     showToast('Assenza aggiornata ✓', 'ok');
