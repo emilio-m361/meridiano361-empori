@@ -2036,7 +2036,11 @@ async function renderAssenze(targetId = 'opsub-assenze') {
     const op = opDataMap[nome];
     if (op) {
       const stima = getOrePrevisteGiorno(op, anno, mese + 1, d);
-      if (stima > 0) return { ore: stima, stimato: true };
+      if (stima > 0) {
+        // Dipendenti: +0.25h pausa retribuita CCNL se il giorno è lavorativo
+        const ore = op.ruolo === 'dipendente' ? stima + 0.25 : stima;
+        return { ore, stimato: true };
+      }
       const full = calcShiftHours('mattina', op.ruolo || '') + calcShiftHours('pomeriggio', op.ruolo || '');
       if (full > 0) return { ore: full, stimato: true };
     }
