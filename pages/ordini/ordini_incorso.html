@@ -453,7 +453,7 @@
         <!-- FILTRI RIGA -->
         <div class="filtri-riga mb-6">
             <div class="filtro-item">
-                <input type="text" id="filtro-cliente" placeholder="Cerca cliente..." oninput="applicaFiltri()" class="filtro-input" autocomplete="off">
+                <input type="text" id="filtro-cliente" placeholder="Cerca cliente..." oninput="applicaFiltri()" class="filtro-input" autocomplete="new-password" name="filtro-cliente-x">
             </div>
             <div class="filtro-item">
                 <select id="filtro-emporio" onchange="applicaFiltri()" class="filtro-input">
@@ -1027,6 +1027,12 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Forza campo vuoto dopo che il browser ha avuto tempo di fare autocomplete
+            setTimeout(() => {
+                const fc = document.getElementById('filtro-cliente');
+                if (fc) fc.value = '';
+            }, 0);
+
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.addEventListener('click', () => filterOrders(btn.getAttribute('data-filter')));
             });
