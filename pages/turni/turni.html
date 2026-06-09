@@ -1793,11 +1793,16 @@ button { max-width: 100%; overflow-wrap: break-word; word-break: break-word; }
     <!-- Sezione: Ore totali -->
     <div id="ass-section-ore" style="margin-bottom:12px;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">
       <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:8px">ORE DI ASSENZA</div>
-      <div class="ore-assenza-wrapper" style="margin-bottom:10px">
+      <div class="ore-assenza-wrapper" style="margin-bottom:10px;align-items:flex-end">
         <div class="ore-input-group">
-          <label class="ore-sublabel">Data</label>
+          <label class="ore-sublabel">Dal</label>
           <input type="date" id="ore-assenza-data" class="orari-f-inp" style="font-size:14px;padding:8px 10px" onchange="reloadAssenzaModalForDate('ore')">
         </div>
+        <div class="ore-input-group">
+          <label class="ore-sublabel">Al (opz.)</label>
+          <input type="date" id="ore-assenza-data-fine" class="orari-f-inp" style="font-size:14px;padding:8px 10px" onchange="_onAssenzaDataFineChange()">
+        </div>
+        <div id="ass-range-label" style="display:none;font-size:11px;font-weight:700;color:#2563eb;background:#eff6ff;padding:4px 10px;border-radius:6px;white-space:nowrap;margin-bottom:2px"></div>
       </div>
       <div class="ore-assenza-wrapper">
         <div class="ore-input-group">
@@ -3033,6 +3038,10 @@ async function openAssenzaModal(dayKey) {
     if (fasciaData) fasciaData.value = isoDate;
     const oreData = document.getElementById('ore-assenza-data');
     if (oreData) oreData.value = isoDate;
+    const oreDataFine = document.getElementById('ore-assenza-data-fine');
+    if (oreDataFine) oreDataFine.value = '';
+    const rangeLabel = document.getElementById('ass-range-label');
+    if (rangeLabel) rangeLabel.style.display = 'none';
   }
 
   if (!canManageAllAssenze() && !canManageOwnAssenze()) {
@@ -3160,21 +3169,105 @@ async function reloadAssenzaModalForDate(src) {
   }).join('');
 }
 
-function setAssenza(assKey,tipo) {
+async function setAssenza(assKey, tipo) {
   if (!canManageAllAssenze() && !canManageOwnAssenze()) {
     showToast('Non hai i permessi per modificare le assenze','err'); closeModal('modal-ass'); return;
   }
   if (canManageOwnAssenze() && !canManageAllAssenze() && !isCurrentUser(assKey.split('|')[4])) {
     showToast('Puoi gestire solo le tue assenze','err'); closeModal('modal-ass'); return;
   }
+
   const ore = calcolaOreAssenza();
+  const modoOre = document.getElementById('ass-section-ore')?.style.display !== 'none';
+  const fromISO = document.getElementById('ore-assenza-data')?.value;
+  const toISO   = modoOre ? (document.getElementById('ore-assenza-data-fine')?.value || '') : '';
+  const nome    = assKey.split('|').slice(4).join('|');
+
+  // ── Range multi-giorno ──────────────────────────────────────────────────
+  if (modoOre && toISO && fromISO && toISO > fromISO) {
+    const giorni = _rangeGiorni(fromISO, toISO);
+    closeModal('modal-ass');
+    try {
+      await _saveAssenzaRange(nome, giorni, tipo, ore);
+      const etichetta = tipo === 'ferie' ? 'Ferie' : tipo === 'permesso' ? 'Permesso' : tipo === 'malattia' ? 'Malattia' : 'Assenza';
+      showToast(`${etichetta} salvat${tipo==='ferie'?'e':'o'} per ${giorni.length} giorn${giorni.length===1?'o':'i'} ✓`, 'ok');
+    } catch(e) {
+      showToast('Errore nel salvataggio range: ' + e.message, 'err');
+    }
+    render();
+    return;
+  }
+
+  // ── Giorno singolo (comportamento originale) ────────────────────────────
   assenzeData[assKey] = ore > 0 ? {tipo, ore} : tipo;
-  const parts=assKey.split('|');
-  const mk=`${parts[0]}|${parts[1]}|${parts[2]}|${parts[3]}|mattina`;
-  if(!turniData[mk]) turniData[mk]={aperto:true,operatori:[]};
-  saveTurno(mk,turniData[mk]);
+  const parts = assKey.split('|');
+  const mk = `${parts[0]}|${parts[1]}|${parts[2]}|${parts[3]}|mattina`;
+  if (!turniData[mk]) turniData[mk] = {aperto:true, operatori:[]};
+  saveTurno(mk, turniData[mk]);
   closeModal('modal-ass');
   render();
+}
+
+function _rangeGiorni(fromISO, toISO) {
+  const result = [];
+  const cur = new Date(fromISO + 'T00:00:00');
+  const end = new Date(toISO  + 'T00:00:00');
+  while (cur <= end) {
+    result.push(cur.toISOString().slice(0, 10));
+    cur.setDate(cur.getDate() + 1);
+  }
+  return result;
+}
+
+async function _saveAssenzaRange(nome, giorni, tipo, ore) {
+  const assVal = ore > 0 ? {tipo, ore} : tipo;
+  for (const isoDate of giorni) {
+    const [anno, mese, giorno] = isoDate.split('-').map(Number);
+    const dayKey = `${currentEmporio}|${anno}|${mese}|${giorno}`;
+    const assKey = `${dayKey}|${nome}`;
+
+    // Legge il record esistente per non perdere altri dati del giorno
+    const { data: righe } = await db.from('turni').select('*')
+      .eq('emporio', currentEmporio).eq('anno', anno).eq('mese', mese)
+      .eq('giorno', giorno).eq('turno', 'mattina');
+    const row = righe?.[0];
+    const existingAssenze = row?.assenze ? {...row.assenze} : {};
+    existingAssenze[assKey] = assVal;
+
+    // Aggiorna cache in-memoria se è il mese corrente
+    if (anno === currentAnno && mese === currentMese + 1) {
+      assenzeData[assKey] = assVal;
+    }
+
+    const { error } = await db.from('turni').upsert({
+      emporio: currentEmporio, anno, mese, giorno, turno: 'mattina',
+      aperto:    row?.aperto    ?? true,
+      operatori: row?.operatori || [],
+      assenze:   existingAssenze,
+      note:      row?.note      ?? null,
+    }, {onConflict: 'emporio,anno,mese,giorno,turno'});
+    if (error) throw error;
+  }
+}
+
+function _onAssenzaDataFineChange() {
+  const from  = document.getElementById('ore-assenza-data')?.value;
+  const to    = document.getElementById('ore-assenza-data-fine')?.value;
+  const label = document.getElementById('ass-range-label');
+  if (!label) return;
+  if (to && from && to >= from) {
+    const n = _rangeGiorni(from, to).length;
+    label.textContent = n + ' giorn' + (n === 1 ? 'o' : 'i');
+    label.style.display = 'block';
+  } else {
+    if (to && from && to < from) {
+      document.getElementById('ore-assenza-data-fine').value = from;
+      label.textContent = '1 giorno';
+      label.style.display = 'block';
+    } else {
+      label.style.display = 'none';
+    }
+  }
 }
 
 async function removeAssenzaDiretta(dayKey, nome, targetId) {
