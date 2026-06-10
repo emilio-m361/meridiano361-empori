@@ -887,7 +887,7 @@ function buildNav() {
   // ── PUSH NOTIFICATIONS ──────────────────────────────────────────────────
   // Chiave pubblica VAPID — sostituire dopo aver generato le chiavi con:
   //   npx web-push generate-vapid-keys --json
-  const VAPID_PUBLIC_KEY = 'INSERIRE_QUI_LA_VAPID_PUBLIC_KEY';
+  const VAPID_PUBLIC_KEY = 'BDp6t_puD0DL_xwGbaZwMQ_zbfd6ZSzWFuJ8Br87NsxuLhLoeoN4SZin10Vg3YqpgIocZzRXwW-WKQ9sZoLC8aw';
 
   async function initPushNotifications(user) {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
