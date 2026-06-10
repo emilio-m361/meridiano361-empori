@@ -18,13 +18,23 @@
         /* === LAYOUT === */
         .impostazioni-container { max-width: 100%; padding: 24px 32px; }
 
-        /* === ACCORDION SECTIONS === */
+        /* === ACCORDION SECTIONS (usate in resp-content) === */
         .settings-section { margin-bottom: 16px; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
         .settings-section-header { width: 100%; background: #f8fafc; border: none; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: 700; color: #1e293b; cursor: pointer; text-align: left; font-family: 'Inter', sans-serif; }
         .settings-section-header:hover { background: #f1f5f9; }
         .settings-section-body { padding: 20px; border-top: 1px solid #e2e8f0; background: #fff; }
         .arrow { font-size: 12px; color: #94a3b8; transition: transform .2s; display: inline-block; }
         .arrow.chiuso { transform: rotate(-90deg); }
+
+        /* === CARD SECTIONS (usate in admin-content) === */
+        .s-card { background:#fff; border-radius:16px; border:1px solid #e2e8f0; box-shadow:0 1px 4px rgba(0,0,0,.04); overflow:hidden; margin-bottom:16px; }
+        .s-card-head { padding:14px 20px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:10px; background:#f8fafc; }
+        .s-card-head-icon { font-size:18px; line-height:1; flex-shrink:0; }
+        .s-card-head-title { font-size:12px; font-weight:900; color:#1e293b; text-transform:uppercase; letter-spacing:.1em; }
+        .s-card-body { padding:20px; }
+        .admin-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+        @media(max-width:700px) { .admin-grid-2 { grid-template-columns:1fr; } }
+        .admin-grid-2 .s-card { margin-bottom:0; }
 
         /* === OPERATORI TABLE LAYOUT === */
         .impostazioni-operatori { display: flex; flex-direction: column; gap: 20px; padding: 20px 24px; max-width: 100%; }
@@ -173,154 +183,160 @@
             <p class="text-slate-500 text-sm">Gestisci operatori, permessi e configurazioni generali.</p>
         </div>
 
-        <!-- SEZIONE OPERATORI -->
-        <div class="settings-section">
-            <button class="settings-section-header" onclick="toggleSection(this)">
-                <span>👥 Operatori</span>
-                <span class="arrow">▼</span>
-            </button>
-            <div class="settings-section-body" style="padding:0">
-                <div class="bg-amber-50 border-b border-amber-200 p-4 text-sm text-amber-800">
-                    <i class="fas fa-info-circle mr-2"></i>
-                    <strong>Sola Lettura attiva</strong>: l'utente non può modificare dati. Usa <strong>🔒 Accessi</strong> per gestire le sezioni visibili per ogni operatore.
-                </div>
-                <div class="impostazioni-operatori" id="impostazioni-operatori">
-                    <div style="text-align:center;padding:40px 0;color:#94a3b8;font-size:14px">
-                        <i class="fas fa-spinner fa-spin mr-2"></i>Caricamento operatori...
-                    </div>
+        <!-- OPERATORI — full width -->
+        <div class="s-card">
+            <div class="s-card-head">
+                <span class="s-card-head-icon">👥</span>
+                <span class="s-card-head-title">Operatori</span>
+            </div>
+            <div class="bg-amber-50 border-b border-amber-200 p-4 text-sm text-amber-800">
+                <i class="fas fa-info-circle mr-2"></i>
+                <strong>Sola Lettura attiva</strong>: l'utente non può modificare dati. Usa <strong>🔒 Accessi</strong> per gestire le sezioni visibili per ogni operatore.
+            </div>
+            <div class="impostazioni-operatori" id="impostazioni-operatori">
+                <div style="text-align:center;padding:40px 0;color:#94a3b8;font-size:14px">
+                    <i class="fas fa-spinner fa-spin mr-2"></i>Caricamento operatori...
                 </div>
             </div>
         </div>
 
-        <!-- SEZIONE EMPORI -->
-        <div class="settings-section">
-            <button class="settings-section-header" onclick="toggleSection(this)">
-                <span>🏪 Empori attivi</span>
-                <span class="arrow">▼</span>
-            </button>
-            <div class="settings-section-body">
-                <table class="empori-table">
-                    <thead>
-                        <tr>
-                            <th>Emporio</th>
-                            <th>Chiave DB</th>
-                            <th>Stato</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Cremona</strong></td>
-                            <td style="color:#94a3b8;font-size:12px;font-family:monospace">cremona</td>
-                            <td><span style="background:#f0fdf4;color:#16a34a;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px">● Attivo</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Casalmaggiore</strong></td>
-                            <td style="color:#94a3b8;font-size:12px;font-family:monospace">casalmaggiore</td>
-                            <td><span style="background:#f0fdf4;color:#16a34a;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px">● Attivo</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Viadana</strong></td>
-                            <td style="color:#94a3b8;font-size:12px;font-family:monospace">viadana</td>
-                            <td><span style="background:#f0fdf4;color:#16a34a;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px">● Attivo</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Reggio Emilia</strong></td>
-                            <td style="color:#94a3b8;font-size:12px;font-family:monospace">reggioemilia</td>
-                            <td><span style="background:#f0fdf4;color:#16a34a;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px">● Attivo</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Mantova</strong></td>
-                            <td style="color:#94a3b8;font-size:12px;font-family:monospace">mantova</td>
-                            <td><span style="background:#f0fdf4;color:#16a34a;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px">● Attivo</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <!-- NOTIFICHE + EMPORI — griglia 2 colonne -->
+        <div class="admin-grid-2">
 
-        <!-- SEZIONE CATEGORIE -->
-        <div class="settings-section">
-            <button class="settings-section-header" onclick="toggleSection(this)">
-                <span>🏷 Categorie prodotti</span>
-                <span class="arrow">▼</span>
-            </button>
-            <div class="settings-section-body">
-                <div id="lista-categorie" class="flex flex-wrap gap-2 mb-3">
-                    <span class="text-slate-400 text-sm italic">Caricamento...</span>
+            <!-- NOTIFICHE -->
+            <div class="s-card">
+                <div class="s-card-head">
+                    <span class="s-card-head-icon">🔔</span>
+                    <span class="s-card-head-title">Notifiche</span>
                 </div>
-                <p class="text-xs text-slate-400">Le categorie sono ricavate automaticamente dagli ordini registrati.</p>
-            </div>
-        </div>
-
-        <!-- SEZIONE BACKUP -->
-        <div class="settings-section">
-            <button class="settings-section-header" onclick="toggleSection(this)">
-                <span>📥 Backup dati</span>
-                <span class="arrow">▼</span>
-            </button>
-            <div class="settings-section-body">
-                <p class="text-sm text-slate-500 mb-4">Scarica tutti gli ordini in corso in formato CSV (compatibile con Excel).</p>
-                <button class="btn-esporta" onclick="esportaCSV()">
-                    <i class="fas fa-download mr-2"></i> Esporta ordini in corso (CSV)
-                </button>
-                <div id="export-status" class="text-sm mt-3 text-slate-400"></div>
-                <div class="mt-4 pt-4 border-t border-slate-100">
-                    <p class="text-sm text-slate-500 mb-3">Dopo aver invitato nuovi operatori su Supabase Auth, esegui la sincronizzazione per collegare i loro account.</p>
-                    <button class="btn-esporta" onclick="mostraSyncSQL()" style="background:#1e40af">
-                        <i class="fas fa-rotate mr-2"></i> 🔄 Sincronizza Auth operatori
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- SEZIONE NOTIFICHE -->
-        <div class="settings-section">
-            <button class="settings-section-header" onclick="toggleSection(this)">
-                <span>🔔 Notifiche</span>
-                <span class="arrow">▼</span>
-            </button>
-            <div class="settings-section-body">
-                <p class="text-sm text-slate-500 mb-4">Invia un avviso a tutti gli operatori o a quelli di un emporio specifico. Apparirà come banner nella loro prossima visita.</p>
-                <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">
-                    <div>
-                        <label style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:4px">Destinatari</label>
-                        <select id="notif-target" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;color:#1e293b;background:#fff;outline:none">
-                            <option value="tutti">Tutti gli operatori</option>
-                            <option value="cremona">Emporio Cremona</option>
-                            <option value="casalmaggiore">Emporio Casalmaggiore</option>
-                            <option value="reggioemilia">Emporio Reggio Emilia</option>
-                            <option value="viadana">Emporio Viadana</option>
-                            <option value="mantova">Emporio Mantova</option>
-                        </select>
+                <div class="s-card-body">
+                    <p class="text-sm text-slate-500 mb-4">Invia un avviso a tutti gli operatori o a quelli di un emporio specifico. Apparirà come banner nella loro prossima visita.</p>
+                    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">
+                        <div>
+                            <label style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:4px">Destinatari</label>
+                            <select id="notif-target" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;color:#1e293b;background:#fff;outline:none">
+                                <option value="tutti">Tutti gli operatori</option>
+                                <option value="cremona">Emporio Cremona</option>
+                                <option value="casalmaggiore">Emporio Casalmaggiore</option>
+                                <option value="reggioemilia">Emporio Reggio Emilia</option>
+                                <option value="viadana">Emporio Viadana</option>
+                                <option value="mantova">Emporio Mantova</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:4px">Titolo</label>
+                            <input id="notif-titolo" type="text" maxlength="80" autocomplete="new-password" placeholder="Es. Riunione martedì 10 giugno" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;color:#1e293b;outline:none;box-sizing:border-box">
+                        </div>
+                        <div>
+                            <label style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:4px">Messaggio (opzionale)</label>
+                            <textarea id="notif-testo" rows="3" maxlength="400" placeholder="Testo aggiuntivo…" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;color:#1e293b;outline:none;resize:vertical;box-sizing:border-box"></textarea>
+                        </div>
+                        <button class="btn-esporta" onclick="inviaNotifica()" style="align-self:flex-start">
+                            <i class="fas fa-paper-plane mr-2"></i> Invia notifica
+                        </button>
                     </div>
-                    <div>
-                        <label style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:4px">Titolo</label>
-                        <input id="notif-titolo" type="text" maxlength="80" autocomplete="new-password" placeholder="Es. Riunione martedì 10 giugno" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;color:#1e293b;outline:none;box-sizing:border-box">
-                    </div>
-                    <div>
-                        <label style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:4px">Messaggio (opzionale)</label>
-                        <textarea id="notif-testo" rows="3" maxlength="400" placeholder="Testo aggiuntivo…" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;color:#1e293b;outline:none;resize:vertical;box-sizing:border-box"></textarea>
-                    </div>
-                    <button class="btn-esporta" onclick="inviaNotifica()" style="align-self:flex-start">
-                        <i class="fas fa-paper-plane mr-2"></i> Invia notifica
-                    </button>
-                </div>
-                <div>
                     <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Ultime inviate</div>
                     <div id="notif-lista" style="display:flex;flex-direction:column;gap:8px">
                         <div style="color:#94a3b8;font-size:13px">Caricamento…</div>
                     </div>
                 </div>
             </div>
+
+            <!-- EMPORI ATTIVI -->
+            <div class="s-card">
+                <div class="s-card-head">
+                    <span class="s-card-head-icon">🏪</span>
+                    <span class="s-card-head-title">Empori attivi</span>
+                </div>
+                <div style="padding:0">
+                    <table class="empori-table">
+                        <thead>
+                            <tr>
+                                <th>Emporio</th>
+                                <th>Chiave DB</th>
+                                <th>Stato</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Cremona</strong></td>
+                                <td style="color:#94a3b8;font-size:12px;font-family:monospace">cremona</td>
+                                <td><span style="background:#f0fdf4;color:#16a34a;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px">● Attivo</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Casalmaggiore</strong></td>
+                                <td style="color:#94a3b8;font-size:12px;font-family:monospace">casalmaggiore</td>
+                                <td><span style="background:#f0fdf4;color:#16a34a;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px">● Attivo</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Viadana</strong></td>
+                                <td style="color:#94a3b8;font-size:12px;font-family:monospace">viadana</td>
+                                <td><span style="background:#f0fdf4;color:#16a34a;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px">● Attivo</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Reggio Emilia</strong></td>
+                                <td style="color:#94a3b8;font-size:12px;font-family:monospace">reggioemilia</td>
+                                <td><span style="background:#f0fdf4;color:#16a34a;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px">● Attivo</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mantova</strong></td>
+                                <td style="color:#94a3b8;font-size:12px;font-family:monospace">mantova</td>
+                                <td><span style="background:#f0fdf4;color:#16a34a;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px">● Attivo</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
 
-        <!-- SEZIONE INFO APP -->
-        <div class="settings-section">
-            <button class="settings-section-header" onclick="toggleSection(this)">
-                <span>ℹ️ Info app</span>
-                <span class="arrow">▼</span>
-            </button>
-            <div class="settings-section-body">
+        <!-- BACKUP + CATEGORIE — griglia 2 colonne -->
+        <div class="admin-grid-2">
+
+            <!-- BACKUP DATI -->
+            <div class="s-card">
+                <div class="s-card-head">
+                    <span class="s-card-head-icon">📥</span>
+                    <span class="s-card-head-title">Backup dati</span>
+                </div>
+                <div class="s-card-body">
+                    <p class="text-sm text-slate-500 mb-4">Scarica tutti gli ordini in corso in formato CSV (compatibile con Excel).</p>
+                    <button class="btn-esporta" onclick="esportaCSV()">
+                        <i class="fas fa-download mr-2"></i> Esporta ordini in corso (CSV)
+                    </button>
+                    <div id="export-status" class="text-sm mt-3 text-slate-400"></div>
+                    <div class="mt-4 pt-4 border-t border-slate-100">
+                        <p class="text-sm text-slate-500 mb-3">Dopo aver invitato nuovi operatori su Supabase Auth, esegui la sincronizzazione per collegare i loro account.</p>
+                        <button class="btn-esporta" onclick="mostraSyncSQL()" style="background:#1e40af">
+                            <i class="fas fa-rotate mr-2"></i> 🔄 Sincronizza Auth operatori
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CATEGORIE PRODOTTI -->
+            <div class="s-card">
+                <div class="s-card-head">
+                    <span class="s-card-head-icon">🏷</span>
+                    <span class="s-card-head-title">Categorie prodotti</span>
+                </div>
+                <div class="s-card-body">
+                    <div id="lista-categorie" class="flex flex-wrap gap-2 mb-3">
+                        <span class="text-slate-400 text-sm italic">Caricamento...</span>
+                    </div>
+                    <p class="text-xs text-slate-400">Le categorie sono ricavate automaticamente dagli ordini registrati.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- INFO APP — full width -->
+        <div class="s-card">
+            <div class="s-card-head">
+                <span class="s-card-head-icon">ℹ️</span>
+                <span class="s-card-head-title">Info app</span>
+            </div>
+            <div class="s-card-body">
                 <div class="info-app-grid">
                     <div class="info-app-card">
                         <div class="info-app-label">Progetto</div>
@@ -599,7 +615,7 @@
         if (!currentUser) { document.getElementById('access-denied').classList.remove('hidden'); return; }
         if (_isAdmin) {
             document.getElementById('admin-content').classList.remove('hidden');
-            loadUsers(); caricaInfoApp(); caricaCategorie();
+            loadUsers(); caricaInfoApp(); caricaCategorie(); caricaNotificheInviate();
             return;
         }
         // Controllo fresco da DB per responsabile del personale
@@ -1520,19 +1536,11 @@
         return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
-    // Carica notifiche quando la sezione viene aperta + pulisce eventuali autofill
-    document.querySelectorAll('.settings-section-header').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (btn.querySelector('span')?.textContent?.includes('Notifiche')) {
-                caricaNotificheInviate();
-                // Il browser può iniettare l'email dopo il render: forziamo il reset
-                setTimeout(() => {
-                    const t = document.getElementById('notif-titolo');
-                    if (t && t.value && t.value.includes('@')) t.value = '';
-                }, 100);
-            }
-        });
-    });
+    // Pulisce eventuali autofill del browser sul campo titolo notifica
+    setTimeout(() => {
+        const t = document.getElementById('notif-titolo');
+        if (t && t.value && t.value.includes('@')) t.value = '';
+    }, 300);
     </script>
 </body>
 </html>
