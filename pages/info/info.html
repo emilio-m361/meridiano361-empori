@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <link rel="icon" href="/faviconm361.png" type="image/png">
@@ -41,51 +41,51 @@
         .f-label { font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--slate-400);margin-bottom:6px;display:block; }
         .f-input { width:100%;border:1px solid var(--slate-200);border-radius:12px;padding:10px 14px;font-size:15px;font-family:'Inter',sans-serif;color:var(--slate-700);outline:none;transition:border .15s; }
         .f-input:focus { border-color:var(--red); }
-        .f-textarea { min-height:80px;resize:vertical; }
+        .f-textarea { min-height:90px;resize:vertical; }
         .f-row { display:grid;gap:12px; }
         .f-row-2 { grid-template-columns:1fr 1fr; }
-        .f-row-3 { grid-template-columns:1fr 1fr 1fr; }
-        @media(max-width:640px) { .f-row-2,.f-row-3 { grid-template-columns:1fr; } }
+        @media(max-width:640px) { .f-row-2 { grid-template-columns:1fr; } }
 
-        /* Request card */
+        /* WhatsApp toggle — stesso pattern di ordini_nuovi.html */
+        .wa-active { color: #25D366; }
+        .wa-inactive { color: #cbd5e1; }
+
+        /* Request cards */
         .req-card { background:#fff;border-radius:16px;border:1px solid var(--slate-200);overflow:hidden;transition:all .15s; }
         .req-card:hover { border-color:var(--slate-300); }
-        .req-header { padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--slate-100); }
+        .req-header { padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--slate-100);flex-wrap:wrap; }
         .req-body { padding:16px 18px; }
         .req-field { margin-bottom:10px; }
         .req-field-label { font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--slate-400); }
         .req-field-value { font-size:15px;font-weight:600;color:var(--slate-700);margin-top:2px; }
-        .req-desc { background:var(--slate-50);border-radius:10px;padding:12px;font-size:14px;color:var(--slate-600);line-height:1.5;margin-top:10px; }
+        .req-desc { background:var(--slate-50);border-radius:10px;padding:12px;font-size:15px;color:var(--slate-600);line-height:1.6;margin-top:10px; }
         .req-date { font-size:12px;font-weight:700;color:var(--slate-400);font-family:'DM Mono',monospace; }
         .req-emp { font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:3px 10px;border-radius:8px; }
 
-        /* Response */
+        /* Response box */
         .resp-box { margin-top:12px;padding:12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px; }
-        .resp-box-label { font-size:9px;font-weight:800;text-transform:uppercase;color:var(--green);margin-bottom:4px; }
-        .resp-box-text { font-size:13px;color:var(--slate-700);line-height:1.5; }
-        .resp-input { display:flex;gap:8px;margin-top:12px; }
-        .resp-input textarea { flex:1;border:1px solid var(--slate-200);border-radius:10px;padding:8px 12px;font-size:13px;font-family:'Inter',sans-serif;resize:none;min-height:60px;outline:none; }
-        .resp-input textarea:focus { border-color:var(--green); }
+        .resp-box-label { font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--green);margin-bottom:6px;display:flex;align-items:center;gap:6px; }
+        .resp-box-text { font-size:14px;color:var(--slate-700);line-height:1.6; }
 
         /* Status badges */
-        .st-new { background:#fef3c7;color:#92400e; }
-        .st-replied { background:#d1fae5;color:#065f46; }
-        .st-archived { background:var(--slate-100);color:var(--slate-500); }
+        .st-aperta  { background:#fef3c7;color:#92400e; }
+        .st-esaurita { background:#d1fae5;color:#065f46; }
+
+        /* Emporio color pills */
         .emp-cr { background:#fce4ec;color:#B5453A; }
         .emp-ca { background:#fff3e0;color:#c78044; }
         .emp-re { background:#e8f5e9;color:#6b8d53; }
         .emp-ma { background:#ede9fe;color:#7C3AED; }
         .emp-vi { background:#e3f2fd;color:#4c6d90; }
 
-        /* Empty */
-        .empty-st { padding:40px 20px;text-align:center;color:var(--slate-400);font-size:13px;font-weight:600; }
+        /* Action buttons */
+        .btn-action { font-size:11px;font-weight:700;border:1px solid var(--slate-200);border-radius:8px;padding:5px 12px;background:#fff;cursor:pointer;transition:all .12s;white-space:nowrap;color:var(--slate-600); }
+        .btn-action:hover { border-color:var(--slate-400); }
+        .btn-esaudi { color:#065f46;border-color:#bbf7d0;background:#f0fdf4; }
+        .btn-esaudi:hover { background:#dcfce7;border-color:#86efac; }
 
-        /* Font size aumentato */
-        .info-card, .info-item, .info-testo { font-size: 15px !important; }
-        .info-titolo { font-size: 17px !important; font-weight: 600; }
-        .req-field-value { font-size: 15px; }
-        .req-desc { font-size: 15px; }
-        .req-field-label { font-size: 12px; }
+        /* Empty state */
+        .empty-st { padding:40px 20px;text-align:center;color:var(--slate-400);font-size:13px;font-weight:600; }
     </style>
 </head>
 <body class="pb-20">
@@ -96,7 +96,7 @@
 
         <div style="margin-bottom:24px">
             <h1 style="font-size:24px;font-weight:700;color:var(--slate-800);line-height:1.2">Richieste informazioni da clienti</h1>
-            <p style="font-size:13px;color:var(--slate-400);margin-top:4px">Gestione richieste info e appuntamenti per emporio</p>
+            <p style="font-size:13px;color:var(--slate-400);margin-top:4px">Gestione richieste info per emporio</p>
         </div>
 
         <!-- EMPORIO SELECTION -->
@@ -129,7 +129,7 @@
         <!-- MAIN CONTENT (hidden until emporio selected) -->
         <div id="main-content" style="display:none">
 
-            <!-- Current emporio indicator -->
+            <!-- Emporio indicator + new button -->
             <div class="flex items-center justify-between mb-5">
                 <div class="flex items-center gap-3">
                     <span class="req-emp" id="current-emp-badge"></span>
@@ -137,71 +137,101 @@
                         <i class="fas fa-exchange-alt"></i> Cambia
                     </button>
                 </div>
-                <button onclick="showNewForm()" id="btn-new" class="text-xs font-bold text-white bg-[#B5453A] hover:bg-[#8c362d] px-4 py-2 rounded-lg transition-all flex items-center gap-2">
+                <button onclick="showForm(null)" id="btn-new" class="text-xs font-bold text-white bg-[#B5453A] hover:bg-[#8c362d] px-4 py-2 rounded-lg transition-all flex items-center gap-2">
                     <i class="fas fa-plus"></i> Nuova Richiesta
                 </button>
             </div>
 
-            <!-- NEW REQUEST FORM -->
-            <div id="new-form" class="card-r p-5 mb-6" style="display:none">
-                <div class="sec-t" style="margin-bottom:14px">Nuova Richiesta Info</div>
+            <!-- FORM: Nuova / Modifica -->
+            <div id="req-form" class="card-r p-5 mb-6" style="display:none">
+                <div class="sec-t" id="form-title" style="margin-bottom:18px">Nuova Richiesta</div>
 
-                <div class="space-y-3">
+                <div class="space-y-4">
+
+                    <!-- 1. Cliente + Giorno richiesta -->
                     <div class="f-row f-row-2">
-                        <div><label class="f-label">Cliente (Nome e Cognome)</label><input type="text" id="f-cliente" class="f-input" placeholder="Mario Rossi"></div>
-                        <div><label class="f-label">Telefono</label><input type="tel" id="f-telefono" class="f-input" placeholder="333 1234567"></div>
-                    </div>
-                    <div><label class="f-label">E-mail</label><input type="email" id="f-email" class="f-input" placeholder="mario@email.com"></div>
-                    <div class="f-row f-row-3">
-                        <div><label class="f-label">Consegna</label>
-                            <select id="f-consegna" class="f-input" onchange="toggleIndirizzo()">
-                                <option value="ritiro">Ritiro in negozio</option>
-                                <option value="domicilio">Consegna a domicilio</option>
-                            </select>
+                        <div>
+                            <label class="f-label">Cliente (Nome e Cognome)</label>
+                            <input type="text" id="f-cliente" class="f-input" placeholder="Mario Rossi">
                         </div>
-                        <div id="addr-wrap" style="display:none"><label class="f-label">Indirizzo</label><input type="text" id="f-indirizzo" class="f-input" placeholder="Via Roma 1"></div>
-                        <div><label class="f-label">Giorno preferito</label><input type="date" id="f-giorno" class="f-input"></div>
-                        <div><label class="f-label">Orario preferito</label><input type="time" id="f-orario" class="f-input"></div>
+                        <div>
+                            <label class="f-label">Giorno richiesta</label>
+                            <input type="date" id="f-giorno" class="f-input">
+                        </div>
                     </div>
-                    <div><label class="f-label">Descrizione richiesta</label><textarea id="f-descrizione" class="f-input f-textarea" placeholder="Descrivi cosa cerca il cliente, tipo di prodotto, budget, dettagli..."></textarea></div>
+
+                    <!-- 2. Cellulare + WA toggle / Email -->
+                    <div class="f-row f-row-2">
+                        <div>
+                            <label class="f-label">Numero di cellulare</label>
+                            <div class="relative">
+                                <input type="tel" id="f-telefono" class="f-input" style="padding-right:44px" placeholder="333 1234567">
+                                <button type="button" id="btn-wa-info" onclick="toggleWA()" title="WhatsApp attivo/disattivo"
+                                    class="absolute wa-active transition-colors"
+                                    style="right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:0">
+                                    <i class="fab fa-whatsapp fa-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="f-label">Email</label>
+                            <input type="email" id="f-email" class="f-input" placeholder="mario@email.com">
+                        </div>
+                    </div>
+
+                    <!-- 3. Descrizione richiesta -->
+                    <div>
+                        <label class="f-label">Descrizione richiesta</label>
+                        <textarea id="f-descrizione" class="f-input f-textarea" placeholder="Descrivi cosa cerca il cliente, tipo di prodotto, budget, dettagli specifici..."></textarea>
+                    </div>
+
+                    <!-- 4. Risposta -->
+                    <div>
+                        <label class="f-label">
+                            Risposta
+                            <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--slate-300);margin-left:6px">— cosa è stato risposto al cliente</span>
+                        </label>
+                        <textarea id="f-risposta" class="f-input f-textarea" placeholder="Inserisci qui la risposta data al cliente (opzionale per nuove richieste)..."></textarea>
+                    </div>
+
                 </div>
 
-                <div class="flex items-center justify-end gap-3 mt-4">
-                    <button onclick="hideNewForm()" class="text-xs font-bold text-slate-400 hover:text-slate-600 px-4 py-2">Annulla</button>
-                    <button onclick="submitRequest()" class="text-xs font-bold text-white bg-[#1e293b] hover:bg-[#334155] px-5 py-3 rounded-lg transition-all flex items-center gap-2">
-                        <i class="fas fa-paper-plane"></i> Invia Richiesta
+                <div class="flex items-center justify-end gap-3 mt-5">
+                    <button onclick="hideForm()" class="text-xs font-bold text-slate-400 hover:text-slate-600 px-4 py-2">Annulla</button>
+                    <button onclick="saveRequest()" class="text-xs font-bold text-white bg-[#1e293b] hover:bg-[#334155] px-5 py-3 rounded-lg transition-all flex items-center gap-2">
+                        <i class="fas fa-save"></i> <span id="form-btn-label">Salva Richiesta</span>
                     </button>
                 </div>
             </div>
 
             <!-- TABS -->
             <div class="tab-bar mb-5">
-                <button class="tab-btn active" data-tab="attive" onclick="switchTab('attive')">
-                    Attive <span class="badge-count" id="count-attive">0</span>
+                <button class="tab-btn active" data-tab="aperte" onclick="switchTab('aperte')">
+                    Da gestire <span class="badge-count" id="count-aperte">0</span>
                 </button>
-                <button class="tab-btn" data-tab="archiviate" onclick="switchTab('archiviate')">
-                    Archiviate
+                <button class="tab-btn" data-tab="esaudite" onclick="switchTab('esaudite')">
+                    Esaudite
                 </button>
                 <button class="tab-btn" data-tab="recap" onclick="switchTab('recap')">
-                    Recap Completo
+                    Recap
                 </button>
             </div>
 
-            <!-- ACTIVE REQUESTS -->
-            <div class="tab-content active" data-tab="attive">
-                <div id="list-attive" class="space-y-4"></div>
+            <!-- DA GESTIRE -->
+            <div class="tab-content active" data-tab="aperte">
+                <div id="list-aperte" class="space-y-4"></div>
             </div>
 
-            <!-- ARCHIVED -->
-            <div class="tab-content" data-tab="archiviate">
-                <div id="list-archiviate" class="space-y-4"></div>
+            <!-- ESAUDITE -->
+            <div class="tab-content" data-tab="esaudite">
+                <div id="list-esaudite" class="space-y-4"></div>
             </div>
 
             <!-- RECAP -->
             <div class="tab-content" data-tab="recap">
                 <div class="card-r p-5">
                     <div class="sec-t" style="margin-bottom:14px">Recap Tutte le Richieste</div>
-                    <div class="table-scroll">
+                    <div style="overflow-x:auto">
                         <table class="w-full text-sm border-collapse" id="recap-table">
                             <thead>
                                 <tr style="background:var(--slate-50);border-bottom:2px solid var(--slate-200)">
@@ -218,13 +248,17 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
     const { createClient } = supabase;
-    const db = createClient('https://hsalynvxazxqtmsvjrzc.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8');
+    const db = createClient(
+        'https://hsalynvxazxqtmsvjrzc.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8'
+    );
 
     const EMP_MAP = {
         cremona:       { label:'Cremona',        css:'emp-cr' },
@@ -236,115 +270,162 @@
 
     let currentEmporio = null;
     let requests = [];
+    let editingId = null; // null = nuova richiesta, altrimenti ID del record in modifica
 
-    // ─── EMPORIO ───
+    // ─── EMPORIO ───────────────────────────────────────────────────────────
     function selectEmporio(emp) {
         currentEmporio = emp;
         document.querySelectorAll('.emp-btn').forEach(b => b.classList.remove('selected'));
         event.currentTarget.classList.add('selected');
-
         const badge = document.getElementById('current-emp-badge');
         badge.textContent = EMP_MAP[emp].label;
         badge.className = 'req-emp ' + EMP_MAP[emp].css;
-
         document.getElementById('emporio-selection').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
         loadRequests();
     }
 
     function changeEmporio() {
+        hideForm();
         document.getElementById('emporio-selection').style.display = 'block';
         document.getElementById('main-content').style.display = 'none';
     }
 
-    // ─── TABS ───
+    // ─── TABS ──────────────────────────────────────────────────────────────
     function switchTab(tab) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.dataset.tab === tab));
         if (tab === 'recap') renderRecap();
     }
 
-    // ─── FORM ───
-    function showNewForm() {
-        document.getElementById('new-form').style.display = 'block';
-        document.getElementById('btn-new').style.display = 'none';
-        document.getElementById('f-giorno').value = new Date().toISOString().split('T')[0];
-    }
-    function hideNewForm() {
-        document.getElementById('new-form').style.display = 'none';
-        document.getElementById('btn-new').style.display = 'flex';
-    }
-    function toggleIndirizzo() {
-        document.getElementById('addr-wrap').style.display = document.getElementById('f-consegna').value === 'domicilio' ? 'block' : 'none';
+    // ─── WHATSAPP TOGGLE — stesso pattern di ordini_nuovi.html ─────────────
+    function toggleWA() {
+        const btn = document.getElementById('btn-wa-info');
+        btn.classList.toggle('wa-active');
+        btn.classList.toggle('wa-inactive');
     }
 
-    async function submitRequest() {
+    function setWA(active) {
+        const btn = document.getElementById('btn-wa-info');
+        btn.classList.toggle('wa-active', !!active);
+        btn.classList.toggle('wa-inactive', !active);
+    }
+
+    function isWAActive() {
+        return document.getElementById('btn-wa-info').classList.contains('wa-active');
+    }
+
+    // ─── FORM ──────────────────────────────────────────────────────────────
+    function showForm(id) {
+        editingId = id || null;
+
+        if (editingId) {
+            const r = requests.find(x => x.id === editingId);
+            if (!r) return;
+            document.getElementById('form-title').textContent = 'Modifica Richiesta';
+            document.getElementById('form-btn-label').textContent = 'Aggiorna';
+            document.getElementById('f-cliente').value    = r.cliente    || '';
+            document.getElementById('f-telefono').value   = r.telefono   || '';
+            document.getElementById('f-email').value      = r.email      || '';
+            document.getElementById('f-giorno').value     = r.giorno     || '';
+            document.getElementById('f-descrizione').value = r.descrizione || '';
+            document.getElementById('f-risposta').value   = r.risposta   || '';
+            setWA(!!r.wa_attivo);
+        } else {
+            document.getElementById('form-title').textContent = 'Nuova Richiesta';
+            document.getElementById('form-btn-label').textContent = 'Salva Richiesta';
+            ['f-cliente','f-telefono','f-email','f-descrizione','f-risposta'].forEach(fid => {
+                document.getElementById(fid).value = '';
+            });
+            document.getElementById('f-giorno').value = new Date().toISOString().split('T')[0];
+            setWA(true); // WA attivo di default per nuove richieste
+        }
+
+        document.getElementById('req-form').style.display = 'block';
+        document.getElementById('btn-new').style.display = 'none';
+        document.getElementById('req-form').scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    function hideForm() {
+        document.getElementById('req-form').style.display = 'none';
+        document.getElementById('btn-new').style.display = 'flex';
+        editingId = null;
+    }
+
+    async function saveRequest() {
         const cliente = document.getElementById('f-cliente').value.trim();
         if (!cliente) { alert('Inserisci il nome del cliente'); return; }
 
-        const newReq = {
-            emporio: currentEmporio,
+        const payload = {
+            emporio:     currentEmporio,
             cliente,
-            telefono: document.getElementById('f-telefono').value.trim(),
-            email: document.getElementById('f-email').value.trim(),
-            consegna: document.getElementById('f-consegna').value,
-            indirizzo: document.getElementById('f-indirizzo').value.trim(),
-            giorno: document.getElementById('f-giorno').value,
-            orario: document.getElementById('f-orario').value,
+            telefono:    document.getElementById('f-telefono').value.trim(),
+            email:       document.getElementById('f-email').value.trim(),
+            giorno:      document.getElementById('f-giorno').value || null,
             descrizione: document.getElementById('f-descrizione').value.trim(),
-            stato: 'nuova',
-            risposta: '',
-            archiviata: false,
-            created_at: new Date().toISOString()
+            risposta:    document.getElementById('f-risposta').value.trim(),
+            wa_attivo:   isWAActive(),
         };
 
-        const { data, error } = await db.from('info_clienti').insert([newReq]).select().single();
-        if (error) {
-            newReq.id = 'local-' + Date.now();
-            requests.push(newReq);
+        if (editingId) {
+            // MODIFICA record esistente
+            if (!String(editingId).startsWith('local-')) {
+                const { error } = await db.from('info_clienti').update(payload).eq('id', editingId);
+                if (error) { alert('Errore nel salvataggio: ' + error.message); return; }
+            }
+            const idx = requests.findIndex(r => r.id === editingId);
+            if (idx >= 0) requests[idx] = { ...requests[idx], ...payload };
         } else {
-            requests.push(data);
+            // NUOVA richiesta
+            const newReq = {
+                ...payload,
+                stato:      'aperta',
+                archiviata: false,
+                created_at: new Date().toISOString(),
+            };
+            const { data, error } = await db.from('info_clienti').insert([newReq]).select().single();
+            if (error) {
+                // fallback locale se DB non raggiungibile
+                newReq.id = 'local-' + Date.now();
+                requests.push(newReq);
+            } else {
+                requests.push(data);
+            }
         }
 
-        // Reset form
-        ['f-cliente','f-telefono','f-email','f-indirizzo','f-descrizione','f-orario'].forEach(id => document.getElementById(id).value = '');
-        document.getElementById('f-consegna').value = 'ritiro';
-        toggleIndirizzo();
-        hideNewForm();
+        hideForm();
         render();
     }
 
-    // ─── RESPONSES ───
-    async function sendResponse(id) {
-        const textarea = document.getElementById('resp-' + id);
-        const text = textarea.value.trim();
-        if (!text) return;
-
-        const item = requests.find(r => r.id === id);
-        if (!item) return;
-        item.risposta = text;
-        item.stato = 'risposto';
-
-        if (!String(id).startsWith('local-')) {
-            await db.from('info_clienti').update({ risposta: text, stato: 'risposto' }).eq('id', id);
-        }
-        render();
-    }
-
-    async function archiveRequest(id) {
-        if (!confirm('Archiviare questa richiesta?')) return;
+    // ─── AZIONI SULLE CARD ────────────────────────────────────────────────
+    async function esaudiRequest(id) {
+        if (!confirm('Segnare questa richiesta come esaudita?')) return;
         const item = requests.find(r => r.id === id);
         if (!item) return;
         item.archiviata = true;
-
+        item.stato = 'esaurita';
         if (!String(id).startsWith('local-')) {
-            await db.from('info_clienti').update({ archiviata: true }).eq('id', id);
+            await db.from('info_clienti').update({ archiviata: true, stato: 'esaurita' }).eq('id', id);
         }
         render();
+        switchTab('esaudite');
+    }
+
+    async function riaperiRequest(id) {
+        if (!confirm('Riaprire questa richiesta?')) return;
+        const item = requests.find(r => r.id === id);
+        if (!item) return;
+        item.archiviata = false;
+        item.stato = 'aperta';
+        if (!String(id).startsWith('local-')) {
+            await db.from('info_clienti').update({ archiviata: false, stato: 'aperta' }).eq('id', id);
+        }
+        render();
+        switchTab('aperte');
     }
 
     async function deleteRequest(id) {
-        if (!confirm('Eliminare questa richiesta?')) return;
+        if (!confirm('Eliminare definitivamente questa richiesta?')) return;
         requests = requests.filter(r => r.id !== id);
         if (!String(id).startsWith('local-')) {
             await db.from('info_clienti').delete().eq('id', id);
@@ -352,29 +433,55 @@
         render();
     }
 
-    // ─── RENDER ───
+    // ─── RENDER ───────────────────────────────────────────────────────────
     function render() {
-        const empReqs = requests.filter(r => r.emporio === currentEmporio);
-        const active = empReqs.filter(r => !r.archiviata);
-        const archived = empReqs.filter(r => r.archiviata);
+        const empReqs  = requests.filter(r => r.emporio === currentEmporio);
+        const aperte   = empReqs.filter(r => !r.archiviata);
+        const esaudite = empReqs.filter(r =>  r.archiviata);
 
-        document.getElementById('count-attive').textContent = active.length;
-        document.getElementById('list-attive').innerHTML = active.length ? active.map(r => renderCard(r, false)).join('') : '<div class="empty-st"><i class="fas fa-inbox" style="font-size:24px;display:block;margin-bottom:8px"></i>Nessuna richiesta attiva</div>';
-        document.getElementById('list-archiviate').innerHTML = archived.length ? archived.map(r => renderCard(r, true)).join('') : '<div class="empty-st"><i class="fas fa-archive" style="font-size:24px;display:block;margin-bottom:8px"></i>Nessuna richiesta archiviata</div>';
+        document.getElementById('count-aperte').textContent = aperte.length;
+
+        document.getElementById('list-aperte').innerHTML = aperte.length
+            ? aperte.map(r => renderCard(r, false)).join('')
+            : '<div class="empty-st"><i class="fas fa-inbox" style="font-size:28px;display:block;margin-bottom:10px"></i>Nessuna richiesta da gestire</div>';
+
+        document.getElementById('list-esaudite').innerHTML = esaudite.length
+            ? esaudite.map(r => renderCard(r, true)).join('')
+            : '<div class="empty-st"><i class="fas fa-check-circle" style="font-size:28px;display:block;margin-bottom:10px"></i>Nessuna richiesta esaudita</div>';
     }
 
-    function renderCard(r, isArchived) {
-        const date = r.created_at ? new Date(r.created_at).toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' }) : '—';
-        const stClass = r.stato === 'risposto' ? 'st-replied' : r.archiviata ? 'st-archived' : 'st-new';
-        const stLabel = r.stato === 'risposto' ? 'Risposto' : r.archiviata ? 'Archiviata' : 'Da rispondere';
+    function renderCard(r, isEsaurita) {
+        const date = r.created_at
+            ? new Date(r.created_at).toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' })
+            : '—';
 
-        const deliveryInfo = r.consegna === 'domicilio'
-            ? `<span class="text-xs text-slate-500"><i class="fas fa-truck" style="margin-right:4px"></i>${r.indirizzo || 'Domicilio'}</span>`
-            : `<span class="text-xs text-slate-500"><i class="fas fa-store" style="margin-right:4px"></i>Ritiro in negozio</span>`;
+        const giornoLabel = r.giorno
+            ? new Date(r.giorno + 'T12:00:00').toLocaleDateString('it-IT', { day:'2-digit', month:'long', year:'numeric' })
+            : null;
 
-        const scheduleInfo = (r.giorno || r.orario)
-            ? `<span class="text-xs text-slate-500 ml-3"><i class="fas fa-calendar" style="margin-right:4px"></i>${r.giorno ? new Date(r.giorno).toLocaleDateString('it-IT') : ''} ${r.orario || ''}</span>`
+        const stClass = isEsaurita ? 'st-esaurita' : 'st-aperta';
+        const stLabel = isEsaurita ? 'Esaudita' : 'Da gestire';
+
+        // Link WhatsApp (stesso pattern di ordini_incorso)
+        const waLink = (r.wa_attivo && r.telefono)
+            ? `<a href="https://wa.me/39${r.telefono.replace(/\D/g,'')}" target="_blank"
+                  style="color:#25D366;margin-left:8px;font-size:14px;text-decoration:none"
+                  title="Apri WhatsApp"><i class="fab fa-whatsapp"></i></a>`
             : '';
+
+        const actions = isEsaurita
+            ? `<button onclick="showForm('${r.id}')" class="btn-action" title="Modifica">
+                   <i class="fas fa-pen" style="font-size:10px;margin-right:4px"></i>Modifica
+               </button>
+               <button onclick="riaperiRequest('${r.id}')" class="btn-action" title="Riapri">
+                   <i class="fas fa-undo" style="font-size:10px;margin-right:4px"></i>Riapri
+               </button>`
+            : `<button onclick="showForm('${r.id}')" class="btn-action" title="Modifica">
+                   <i class="fas fa-pen" style="font-size:10px;margin-right:4px"></i>Modifica
+               </button>
+               <button onclick="esaudiRequest('${r.id}')" class="btn-action btn-esaudi">
+                   <i class="fas fa-check" style="font-size:10px;margin-right:4px"></i>Esaudita
+               </button>`;
 
         return `
         <div class="req-card">
@@ -383,40 +490,62 @@
                     <span class="req-date">${date}</span>
                     <span class="req-emp ${stClass}" style="font-size:9px;padding:3px 10px;border-radius:8px">${stLabel}</span>
                 </div>
-                <div class="flex items-center gap-2">
-                    ${!isArchived ? `<button onclick="archiveRequest('${r.id}')" style="font-size:11px;font-weight:700;color:var(--slate-500);border:1px solid var(--slate-200);border-radius:8px;padding:4px 10px;background:#fff;cursor:pointer;white-space:nowrap;transition:all .12s" onmouseover="this.style.borderColor='var(--slate-400)'" onmouseout="this.style.borderColor='var(--slate-200)'">Richiesta da archiviare</button>` : ''}
-                    <button onclick="deleteRequest('${r.id}')" class="text-slate-300 hover:text-red-500 transition-colors" title="Elimina"><i class="fas fa-trash" style="font-size:11px"></i></button>
+                <div class="flex items-center gap-2 flex-wrap">
+                    ${actions}
+                    <button onclick="deleteRequest('${r.id}')" class="text-slate-300 hover:text-red-500 transition-colors" title="Elimina">
+                        <i class="fas fa-trash" style="font-size:11px"></i>
+                    </button>
                 </div>
             </div>
             <div class="req-body">
-                <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:8px">
-                    <div class="req-field"><div class="req-field-label">Cliente</div><div class="req-field-value">${r.cliente}</div></div>
-                    ${r.telefono ? `<div class="req-field"><div class="req-field-label">Telefono</div><div class="req-field-value"><a href="tel:${r.telefono}" style="color:var(--slate-700);text-decoration:none">${r.telefono}</a></div></div>` : ''}
-                    ${r.email ? `<div class="req-field"><div class="req-field-label">Email</div><div class="req-field-value"><a href="mailto:${r.email}" style="color:var(--red);text-decoration:none;font-size:12px">${r.email}</a></div></div>` : ''}
+                <div style="display:flex;flex-wrap:wrap;gap:18px;margin-bottom:10px">
+                    <div class="req-field">
+                        <div class="req-field-label">Cliente</div>
+                        <div class="req-field-value">${r.cliente}</div>
+                    </div>
+                    ${r.telefono ? `
+                    <div class="req-field">
+                        <div class="req-field-label">Cellulare</div>
+                        <div class="req-field-value" style="display:flex;align-items:center">
+                            <a href="tel:${r.telefono}" style="color:var(--slate-700);text-decoration:none">${r.telefono}</a>
+                            ${waLink}
+                        </div>
+                    </div>` : ''}
+                    ${r.email ? `
+                    <div class="req-field">
+                        <div class="req-field-label">Email</div>
+                        <div class="req-field-value">
+                            <a href="mailto:${r.email}" style="color:var(--red);text-decoration:none;font-size:13px">${r.email}</a>
+                        </div>
+                    </div>` : ''}
+                    ${giornoLabel ? `
+                    <div class="req-field">
+                        <div class="req-field-label">Giorno richiesta</div>
+                        <div class="req-field-value">${giornoLabel}</div>
+                    </div>` : ''}
                 </div>
-                <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">${deliveryInfo}${scheduleInfo}</div>
-                ${r.descrizione ? `<div class="req-desc">${r.descrizione}</div>` : ''}
-                ${r.risposta ? `<div class="resp-box"><div class="resp-box-label"><i class="fas fa-reply"></i> Risposta</div><div class="resp-box-text">${r.risposta}</div></div>` : ''}
-                ${!isArchived && !r.risposta ? `
-                <div class="resp-input">
-                    <textarea id="resp-${r.id}" placeholder="Scrivi la risposta al cliente..."></textarea>
-                    <button onclick="sendResponse('${r.id}')" style="background:var(--green);color:#fff;border:none;padding:8px 14px;border-radius:10px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;align-self:flex-end">
-                        <i class="fas fa-check"></i> Rispondi
-                    </button>
+                ${r.descrizione ? `
+                <div class="req-desc">
+                    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--slate-400);margin-bottom:6px">Descrizione richiesta</div>
+                    ${r.descrizione}
+                </div>` : ''}
+                ${r.risposta ? `
+                <div class="resp-box">
+                    <div class="resp-box-label"><i class="fas fa-reply"></i> Risposta</div>
+                    <div class="resp-box-text">${r.risposta}</div>
                 </div>` : ''}
             </div>
         </div>`;
     }
 
-    // ─── RECAP TABLE ───
+    // ─── RECAP ────────────────────────────────────────────────────────────
     function renderRecap() {
         const all = [...requests].sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
-        const tbody = document.getElementById('recap-body');
-        tbody.innerHTML = all.map(r => {
+        document.getElementById('recap-body').innerHTML = all.map(r => {
             const date = r.created_at ? new Date(r.created_at).toLocaleDateString('it-IT') : '—';
-            const emp = EMP_MAP[r.emporio] || { label: r.emporio, css: '' };
-            const stClass = r.stato === 'risposto' ? 'st-replied' : r.archiviata ? 'st-archived' : 'st-new';
-            const stLabel = r.stato === 'risposto' ? 'Risposto' : r.archiviata ? 'Archiviata' : 'Nuova';
+            const emp  = EMP_MAP[r.emporio] || { label: r.emporio || '—', css: '' };
+            const stClass = r.archiviata ? 'st-esaurita' : 'st-aperta';
+            const stLabel = r.archiviata ? 'Esaudita' : 'Da gestire';
             return `<tr style="border-bottom:1px solid var(--slate-100)">
                 <td class="p-3 font-mono text-xs" style="white-space:nowrap">${date}</td>
                 <td class="p-3"><span class="req-emp ${emp.css}">${emp.label}</span></td>
@@ -428,13 +557,14 @@
         }).join('') || '<tr><td colspan="6" class="p-8 text-center text-slate-400">Nessuna richiesta registrata</td></tr>';
     }
 
-    // ─── LOAD ───
+    // ─── LOAD ─────────────────────────────────────────────────────────────
     async function loadRequests() {
-        const { data, error } = await db.from('info_clienti').select('*').order('created_at', { ascending: false });
+        const { data } = await db.from('info_clienti').select('*').order('created_at', { ascending: false });
         if (data) requests = data;
         render();
     }
 
+    // ─── AUTO-LOGIN per operatori non-admin ────────────────────────────────
     document.addEventListener('DOMContentLoaded', function() {
         if (typeof isAdmin !== 'function' || isAdmin()) return;
         const emp = typeof emporioToId === 'function' ? emporioToId(getEmporioLoggato()) : null;
