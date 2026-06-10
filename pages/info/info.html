@@ -379,8 +379,7 @@
             // NUOVA richiesta
             const newReq = {
                 ...payload,
-                stato:      'aperta',
-                archiviata: false,
+                stato:      'Aperto',
                 created_at: new Date().toISOString(),
             };
             const { data, error } = await db.from('info_clienti').insert([newReq]).select().single();
@@ -402,10 +401,9 @@
         if (!confirm('Segnare questa richiesta come esaudita?')) return;
         const item = requests.find(r => r.id === id);
         if (!item) return;
-        item.archiviata = true;
-        item.stato = 'esaurita';
+        item.stato = 'Esaurito';
         if (!String(id).startsWith('local-')) {
-            await db.from('info_clienti').update({ archiviata: true, stato: 'esaurita' }).eq('id', id);
+            await db.from('info_clienti').update({ stato: 'Esaurito' }).eq('id', id);
         }
         render();
         switchTab('esaudite');
@@ -415,10 +413,9 @@
         if (!confirm('Riaprire questa richiesta?')) return;
         const item = requests.find(r => r.id === id);
         if (!item) return;
-        item.archiviata = false;
-        item.stato = 'aperta';
+        item.stato = 'Aperto';
         if (!String(id).startsWith('local-')) {
-            await db.from('info_clienti').update({ archiviata: false, stato: 'aperta' }).eq('id', id);
+            await db.from('info_clienti').update({ stato: 'Aperto' }).eq('id', id);
         }
         render();
         switchTab('aperte');
@@ -436,21 +433,21 @@
     // ─── RENDER ───────────────────────────────────────────────────────────
     function render() {
         const empReqs  = requests.filter(r => r.emporio === currentEmporio);
-        const aperte   = empReqs.filter(r => !r.archiviata);
-        const esaudite = empReqs.filter(r =>  r.archiviata);
+        const aperte   = empReqs.filter(r => r.stato !== 'Esaurito');
+        const esaudite = empReqs.filter(r => r.stato === 'Esaurito');
 
         document.getElementById('count-aperte').textContent = aperte.length;
 
         document.getElementById('list-aperte').innerHTML = aperte.length
-            ? aperte.map(r => renderCard(r, false)).join('')
+            ? aperte.map(r => renderCard(r)).join('')
             : '<div class="empty-st"><i class="fas fa-inbox" style="font-size:28px;display:block;margin-bottom:10px"></i>Nessuna richiesta da gestire</div>';
 
         document.getElementById('list-esaudite').innerHTML = esaudite.length
-            ? esaudite.map(r => renderCard(r, true)).join('')
+            ? esaudite.map(r => renderCard(r)).join('')
             : '<div class="empty-st"><i class="fas fa-check-circle" style="font-size:28px;display:block;margin-bottom:10px"></i>Nessuna richiesta esaudita</div>';
     }
 
-    function renderCard(r, isEsaurita) {
+    function renderCard(r) {
         const date = r.created_at
             ? new Date(r.created_at).toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' })
             : '—';
@@ -459,6 +456,7 @@
             ? new Date(r.giorno + 'T12:00:00').toLocaleDateString('it-IT', { day:'2-digit', month:'long', year:'numeric' })
             : null;
 
+        const isEsaurita = r.stato === 'Esaurito';
         const stClass = isEsaurita ? 'st-esaurita' : 'st-aperta';
         const stLabel = isEsaurita ? 'Esaudita' : 'Da gestire';
 
@@ -544,8 +542,8 @@
         document.getElementById('recap-body').innerHTML = all.map(r => {
             const date = r.created_at ? new Date(r.created_at).toLocaleDateString('it-IT') : '—';
             const emp  = EMP_MAP[r.emporio] || { label: r.emporio || '—', css: '' };
-            const stClass = r.archiviata ? 'st-esaurita' : 'st-aperta';
-            const stLabel = r.archiviata ? 'Esaudita' : 'Da gestire';
+            const stClass = r.stato === 'Esaurito' ? 'st-esaurita' : 'st-aperta';
+            const stLabel = r.stato === 'Esaurito' ? 'Esaudita' : 'Da gestire';
             return `<tr style="border-bottom:1px solid var(--slate-100)">
                 <td class="p-3 font-mono text-xs" style="white-space:nowrap">${date}</td>
                 <td class="p-3"><span class="req-emp ${emp.css}">${emp.label}</span></td>

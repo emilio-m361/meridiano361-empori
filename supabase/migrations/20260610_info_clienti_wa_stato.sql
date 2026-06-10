@@ -1,14 +1,32 @@
--- Migrazione: info_clienti v2
--- Aggiunge wa_attivo e normalizza i valori di stato
--- Compatibile con record esistenti (nessuna dato viene perso)
-
--- 1. Aggiunge colonna wa_attivo (WhatsApp toggle) con default false
-ALTER TABLE info_clienti
-    ADD COLUMN IF NOT EXISTS wa_attivo BOOLEAN NOT NULL DEFAULT false;
-
--- 2. Normalizza i vecchi valori di stato:
---    'nuova'    → 'aperta'   (richieste non ancora gestite)
---    'risposto' → 'aperta'   (aveva una risposta ma non era marcata esaurita — rimane aperta)
---    Se archiviata=true → 'esaurita' (indipendentemente dal vecchio stato)
-UPDATE info_clienti SET stato = 'esaurita' WHERE archiviata = true  AND stato != 'esaurita';
-UPDATE info_clienti SET stato = 'aperta'   WHERE archiviata = false AND stato IN ('nuova', 'risposto');
+-- Migrazione: info_clienti — aggiunta colonne mancanti
+-- Eseguita manualmente su Supabase il 2026-06-10 in due step:
+--
+-- Step 1 (già eseguito):
+--   ALTER TABLE info_clienti ADD COLUMN IF NOT EXISTS wa_attivo BOOLEAN NOT NULL DEFAULT false;
+--
+-- Step 2 (già eseguito):
+--   ALTER TABLE info_clienti ADD COLUMN IF NOT EXISTS emporio    TEXT;
+--   ALTER TABLE info_clienti ADD COLUMN IF NOT EXISTS cliente    TEXT;
+--   ALTER TABLE info_clienti ADD COLUMN IF NOT EXISTS telefono   TEXT;
+--   ALTER TABLE info_clienti ADD COLUMN IF NOT EXISTS email      TEXT;
+--   ALTER TABLE info_clienti ADD COLUMN IF NOT EXISTS giorno     DATE;
+--   ALTER TABLE info_clienti ADD COLUMN IF NOT EXISTS risposta   TEXT;
+--   ALTER TABLE info_clienti ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+--
+-- Schema finale colonne gestite dall'UI:
+--   id            uuid       PK auto
+--   punto_vendita_id integer  (preesistente, non usato dall'UI)
+--   oggetto       text       (preesistente, non usato dall'UI)
+--   descrizione   text       descrizione richiesta
+--   stato         text       'Aperto' (da gestire) | 'Esaurito' (esaurita) — default 'Aperto'
+--   wa_attivo     boolean    toggle WhatsApp
+--   emporio       text       slug emporio (cremona, casalmaggiore, ...)
+--   cliente       text       nome e cognome cliente
+--   telefono      text       numero di cellulare
+--   email         text       email cliente
+--   giorno        date       giorno della richiesta
+--   risposta      text       risposta data al cliente
+--   created_at    timestamptz data inserimento
+--
+-- NOTA: la colonna "archiviata" NON esiste. Lo stato viene gestito
+--       interamente tramite il campo "stato" (text).
