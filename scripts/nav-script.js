@@ -457,6 +457,10 @@ body { font-family: 'Inter', sans-serif; padding-top: 56px; padding-bottom: 68px
       </a>
       <div class="hd-right">
         <button id="m361-install-btn" onclick="window.__m361InstallApp&&window.__m361InstallApp()" style="display:none;align-items:center;gap:4px;font-size:10px;font-weight:700;background:#B5453A;color:#fff;border:none;border-radius:8px;padding:5px 10px;cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0;line-height:1"><i class="fas fa-download"></i> Installa</button>
+        <button id="m361-bell-btn" onclick="window.__m361BellClick&&window.__m361BellClick()" title="Notifiche" style="position:relative;background:none;border:none;cursor:pointer;padding:4px 8px;color:#64748b;font-size:18px;display:flex;align-items:center;flex-shrink:0;line-height:1">
+          <i class="fas fa-bell"></i>
+          <span id="m361-bell-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:#B5453A;color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:8px;align-items:center;justify-content:center;padding:0 4px;line-height:1">0</span>
+        </button>
         ${nomeBreve ? '<button id="m361-profile-btn" onclick="window.__m361OpenChangePwd&&window.__m361OpenChangePwd()" title="Cambia password" style="background:none;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;color:#64748b;padding:4px 9px;font-family:Inter,sans-serif;display:flex;align-items:center;gap:5px;flex-shrink:0;line-height:1;transition:all .15s" onmouseenter="this.style.borderColor=\'#B5453A\';this.style.color=\'#B5453A\'" onmouseleave="this.style.borderColor=\'#e2e8f0\';this.style.color=\'#64748b\'"><i class=\'fas fa-user\' style=\'font-size:9px\'></i>'+nomeBreve+'</button>' : ''}
         <button id="back-btn" ${isHome ? 'class="hidden"' : ''} onclick="history.back()">
           <i class="fas fa-arrow-left"></i> Indietro
@@ -833,6 +837,19 @@ function buildNav() {
       return !Array.isArray(n.letta_da) || !n.letta_da.includes(nome);
     });
 
+    // Aggiorna badge campanellina
+    whenReady(() => {
+      const badge = document.getElementById('m361-bell-badge');
+      if (badge) {
+        if (nonLette.length > 0) {
+          badge.textContent = nonLette.length;
+          badge.style.display = 'flex';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+    });
+
     if (!nonLette.length) return;
 
     whenReady(() => {
@@ -860,6 +877,13 @@ function buildNav() {
           'color:#64748b;padding:0;line-height:1;flex-shrink:0';
         closeBtn.onclick = async () => {
           banner.remove();
+          // Decrementa badge
+          const badge = document.getElementById('m361-bell-badge');
+          if (badge) {
+            const cnt = (parseInt(badge.textContent) || 1) - 1;
+            if (cnt <= 0) { badge.style.display = 'none'; }
+            else { badge.textContent = cnt; }
+          }
           // Marca come letta
           const { data: fresh } = await _supabase
             .from('notifiche').select('letta_da').eq('id', notif.id).limit(1);
@@ -883,6 +907,12 @@ function buildNav() {
       });
     });
   }
+
+  // Bell click: scrolla alla prima notifica visibile
+  window.__m361BellClick = () => {
+    const first = document.querySelector('[id^="m361-notif-"]');
+    if (first) { first.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  };
 
   // ── PUSH NOTIFICATIONS ──────────────────────────────────────────────────
   // Chiave pubblica VAPID — sostituire dopo aver generato le chiavi con:

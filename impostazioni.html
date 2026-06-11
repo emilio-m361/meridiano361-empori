@@ -715,7 +715,7 @@
         if (!_sectionLoaded[id]) {
             _sectionLoaded[id] = true;
             if (id === 'operatori')  loadUsers();
-            if (id === 'notifiche')  caricaNotificheInviate();
+            if (id === 'notifiche')  caricaNotificheInviate(true);
             if (id === 'info')       caricaInfoApp();
             if (id === 'categorie')  caricaCategorie();
         }
@@ -1601,7 +1601,19 @@
         caricaNotificheInviate();
     }
 
-    async function caricaNotificheInviate() {
+    async function reinviaPush(target, titolo, testo, mittente) {
+        try {
+            const res = await fetch(`${SUPA_URL}/functions/v1/send-notification`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPA_KEY}` },
+                body: JSON.stringify({ target, titolo, testo, mittente }),
+            });
+            const json = await res.json().catch(() => ({}));
+            showToast(`Push reinviato (${json.push_sent ?? 0} dispositivi)`, 'ok');
+        } catch (_) { showToast('Errore reinvio push', 'err'); }
+    }
+
+    async function caricaNotificheInviate(autoResendUltima = false) {
         const lista = document.getElementById('notif-lista');
         if (!lista) return;
 
@@ -1629,9 +1641,21 @@
                     ${n.testo ? `<div style="font-size:12px;color:#64748b;margin-bottom:4px">${escHtml(n.testo)}</div>` : ''}
                     <div style="font-size:11px;color:#94a3b8">→ ${dest} · ${dtFmt} · letta da ${lette}</div>
                 </div>
+                <button onclick="reinviaPush('${escHtml(n.target)}','${escHtml(n.titolo)}','${escHtml(n.testo || '')}','${escHtml(n.mittente || '')}')"
+                        title="Reinvia push" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:7px;cursor:pointer;font-size:12px;font-weight:700;color:#3b82f6;padding:5px 10px;flex-shrink:0;white-space:nowrap">↺ Push</button>
                 <button onclick="eliminaNotifica(${n.id})" title="Elimina" style="background:none;border:none;cursor:pointer;font-size:15px;color:#cbd5e1;padding:0;flex-shrink:0">🗑</button>
             </div>`;
         }).join('');
+
+        // Auto-reinvia l'ultima notifica una volta per sessione
+        if (autoResendUltima) {
+            const last = data[0];
+            const key = `_notif_resent_${last.id}`;
+            if (!sessionStorage.getItem(key)) {
+                sessionStorage.setItem(key, '1');
+                reinviaPush(last.target, last.titolo, last.testo || '', last.mittente || '');
+            }
+        }
     }
 
     async function eliminaNotifica(id) {
