@@ -916,9 +916,9 @@ function buildNav() {
       'display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:56px;z-index:8997;';
 
     banner.innerHTML =
-      '<span style="flex:1;min-width:180px">🔔 Vuoi ricevere notifiche push anche con il telefono bloccato?</span>' +
-      '<button id="m361-push-yes" style="background:#B5453A;color:#fff;border:none;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Abilita</button>' +
-      '<button id="m361-push-no"  style="background:transparent;color:#94a3b8;border:none;padding:7px 12px;font-size:13px;cursor:pointer;font-family:inherit">Non ora</button>';
+      '<span style="flex:1;min-width:180px">🔔 Vuoi ricevere notifiche?</span>' +
+      '<button id="m361-push-yes" style="background:#B5453A;color:#fff;border:none;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Sì</button>' +
+      '<button id="m361-push-no"  style="background:transparent;color:#94a3b8;border:none;padding:7px 12px;font-size:13px;cursor:pointer;font-family:inherit">No</button>';
 
     const anchor = document.getElementById('m361-readonly-banner') || document.getElementById('m361-header');
     document.body.insertBefore(banner, anchor?.nextSibling || document.body.firstChild);
