@@ -294,6 +294,17 @@ body { font-family: 'Inter', sans-serif; padding-top: 56px; padding-bottom: 68px
           <div id="m361-chpwd-spinner" style="display:none;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:spin .8s linear infinite"></div>
           <span id="m361-chpwd-label">Salva nuova password</span>
         </button>
+
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid #f1f5f9">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:10px">Notifiche Push</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <span id="m361-push-modal-status" style="font-size:13px;font-weight:600;color:#475569">—</span>
+            <button id="m361-push-modal-btn"
+              style="background:#B5453A;color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;display:none">
+              Abilita
+            </button>
+          </div>
+        </div>
       </div>
     `;
     document.body.appendChild(overlay);
@@ -369,6 +380,7 @@ body { font-family: 'Inter', sans-serif; padding-top: 56px; padding-bottom: 68px
     window.__m361OpenChangePwd = () => {
       overlay.style.display = 'flex';
       setTimeout(() => document.getElementById('m361-chpwd-new').focus(), 50);
+      _updatePushStatusUI();
     };
   }
 
@@ -908,36 +920,73 @@ function buildNav() {
     });
   }
 
-  // Bell click: scrolla alla prima notifica visibile
+  // Bell click: apre il profilo per gestire le notifiche, o scrolla alle notifiche visibili
   window.__m361BellClick = () => {
     const first = document.querySelector('[id^="m361-notif-"]');
-    if (first) { first.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    if (first) { first.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+    if (window.__m361OpenChangePwd) window.__m361OpenChangePwd();
   };
 
   // ── PUSH NOTIFICATIONS ──────────────────────────────────────────────────
-  // Chiave pubblica VAPID — sostituire dopo aver generato le chiavi con:
-  //   npx web-push generate-vapid-keys --json
   const VAPID_PUBLIC_KEY = 'BDp6t_puD0DL_xwGbaZwMQ_zbfd6ZSzWFuJ8Br87NsxuLhLoeoN4SZin10Vg3YqpgIocZzRXwW-WKQ9sZoLC8aw';
 
   async function initPushNotifications(user) {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-    if (VAPID_PUBLIC_KEY === 'INSERIRE_QUI_LA_VAPID_PUBLIC_KEY') return; // non configurato
 
     try {
-      // Registra il service worker
       await navigator.serviceWorker.register('/sw.js');
-
-      // Mostra banner di richiesta solo se non ancora deciso
-      if (!localStorage.getItem('m361_push_asked')) {
-        showPushBanner(user);
-      }
     } catch (e) {
       console.warn('[M361 push] SW registration failed', e);
+      return;
     }
+
+    const perm = Notification.permission;
+
+    if (perm === 'granted') {
+      // Permesso già concesso: verifica subscription e resync DB
+      _resubscribeIfNeeded(user);
+    } else if (perm === 'default') {
+      // Non ancora deciso: mostra banner una volta per sessione
+      if (!sessionStorage.getItem('m361_push_banner_shown')) {
+        showPushBanner(user);
+      }
+    }
+    // perm === 'denied': non possiamo fare nulla, il browser gestisce
+  }
+
+  async function _resubscribeIfNeeded(user) {
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      let sub = await reg.pushManager.getSubscription();
+      if (!sub) {
+        // Subscription scaduta o persa: ricreo silenziosamente (permesso già granted)
+        sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: _urlB64ToUint8Array(VAPID_PUBLIC_KEY),
+        });
+      }
+      await _upsertSubscription(user, sub);
+      _updatePushStatusUI();
+    } catch (e) {
+      console.warn('[M361 push] resubscribe failed', e);
+    }
+  }
+
+  async function _upsertSubscription(user, sub) {
+    const _supabase = getSupabase();
+    if (!_supabase || !user?.nome) return;
+    const subJson = sub.toJSON ? sub.toJSON() : sub;
+    await _supabase.from('push_subscriptions').upsert({
+      operatore_nome: user.nome,
+      emporio:        (user.emporio || '').toLowerCase(),
+      endpoint:       subJson.endpoint,
+      subscription:   subJson,
+    }, { onConflict: 'endpoint' });
   }
 
   function showPushBanner(user) {
     if (document.getElementById('m361-push-banner')) return;
+    sessionStorage.setItem('m361_push_banner_shown', '1');
 
     const banner = document.createElement('div');
     banner.id = 'm361-push-banner';
@@ -955,38 +1004,86 @@ function buildNav() {
 
     document.getElementById('m361-push-yes').onclick = () => {
       banner.remove();
-      localStorage.setItem('m361_push_asked', '1');
       subscribeToPush(user);
     };
     document.getElementById('m361-push-no').onclick = () => {
       banner.remove();
-      localStorage.setItem('m361_push_asked', '1');
     };
   }
 
   async function subscribeToPush(user) {
-    const _supabase = getSupabase();
-    if (!_supabase || !user?.nome) return;
-
     try {
       const permission = await Notification.requestPermission();
-      if (permission !== 'granted') return;
-
-      const reg = await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: _urlB64ToUint8Array(VAPID_PUBLIC_KEY),
-      });
-
-      const subJson = sub.toJSON();
-      await _supabase.from('push_subscriptions').upsert({
-        operatore_nome: user.nome,
-        emporio:        (user.emporio || '').toLowerCase(),
-        endpoint:       subJson.endpoint,
-        subscription:   subJson,
-      }, { onConflict: 'endpoint' });
+      if (permission !== 'granted') { _updatePushStatusUI(); return; }
+      await _resubscribeIfNeeded(user);
     } catch (e) {
       console.warn('[M361 push] subscribe failed', e);
+    }
+  }
+
+  async function unsubscribeFromPush(user) {
+    try {
+      const _supabase = getSupabase();
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      if (sub) {
+        const endpoint = sub.endpoint;
+        await sub.unsubscribe();
+        if (_supabase) await _supabase.from('push_subscriptions').delete().eq('endpoint', endpoint);
+      }
+      sessionStorage.removeItem('m361_push_banner_shown');
+      _updatePushStatusUI();
+    } catch (e) {
+      console.warn('[M361 push] unsubscribe failed', e);
+    }
+  }
+
+  async function _updatePushStatusUI() {
+    const statusEl = document.getElementById('m361-push-modal-status');
+    const btnEl    = document.getElementById('m361-push-modal-btn');
+    if (!statusEl || !btnEl) return;
+
+    const perm = Notification.permission;
+
+    if (perm === 'denied') {
+      statusEl.textContent = '🚫 Bloccate dal browser';
+      statusEl.style.color = '#94a3b8';
+      btnEl.style.display = 'none';
+      return;
+    }
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      statusEl.textContent = 'Non supportate';
+      statusEl.style.color = '#94a3b8';
+      btnEl.style.display = 'none';
+      return;
+    }
+
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      const user = JSON.parse(localStorage.getItem('m361_user') || '{}');
+
+      // Rimuovi vecchio handler per evitare duplicati
+      const newBtn = btnEl.cloneNode(true);
+      btnEl.parentNode.replaceChild(newBtn, btnEl);
+
+      if (sub) {
+        statusEl.textContent = '✓ Abilitate';
+        statusEl.style.color = '#16a34a';
+        newBtn.textContent = 'Disabilita';
+        newBtn.style.cssText = 'background:#f1f5f9;color:#475569;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;display:block';
+        newBtn.onclick = () => unsubscribeFromPush(user);
+      } else {
+        statusEl.textContent = 'Non attive';
+        statusEl.style.color = '#94a3b8';
+        newBtn.textContent = 'Abilita';
+        newBtn.style.cssText = 'background:#B5453A;color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;display:block';
+        newBtn.onclick = () => subscribeToPush(user);
+      }
+    } catch (e) {
+      statusEl.textContent = 'Non disponibili';
+      statusEl.style.color = '#94a3b8';
+      btnEl.style.display = 'none';
     }
   }
 
