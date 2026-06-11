@@ -920,108 +920,157 @@ function buildNav() {
     });
   }
 
-  // Bell click: apre il profilo per gestire le notifiche, o scrolla alle notifiche visibili
-  window.__m361BellClick = () => {
-    const first = document.querySelector('[id^="m361-notif-"]');
-    if (first) { first.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
-    if (window.__m361OpenChangePwd) window.__m361OpenChangePwd();
-  };
-
   // ── PUSH NOTIFICATIONS ──────────────────────────────────────────────────
   const VAPID_PUBLIC_KEY = 'BDp6t_puD0DL_xwGbaZwMQ_zbfd6ZSzWFuJ8Br87NsxuLhLoeoN4SZin10Vg3YqpgIocZzRXwW-WKQ9sZoLC8aw';
 
-  async function initPushNotifications(user) {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  // Bell click: scrolla alle notifiche testuali oppure apre il pannello push
+  window.__m361BellClick = (e) => {
+    e && e.stopPropagation();
+    const first = document.querySelector('[id^="m361-notif-"]');
+    if (first) { first.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+    _togglePushPanel();
+  };
 
-    try {
-      await navigator.serviceWorker.register('/sw.js');
-    } catch (e) {
-      console.warn('[M361 push] SW registration failed', e);
+  function _togglePushPanel() {
+    const existing = document.getElementById('m361-push-panel');
+    if (existing) { existing.remove(); return; }
+
+    const panel = document.createElement('div');
+    panel.id = 'm361-push-panel';
+    panel.style.cssText =
+      'position:fixed;top:60px;right:12px;width:280px;background:#fff;' +
+      'border:1px solid #e2e8f0;border-radius:16px;padding:18px;' +
+      'box-shadow:0 8px 32px rgba(0,0,0,.14);z-index:10000;font-family:Inter,sans-serif';
+    panel.innerHTML =
+      '<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:12px">🔔 Notifiche Push</div>' +
+      '<div id="m361-pp-status" style="font-size:13px;font-weight:600;color:#475569;margin-bottom:14px;line-height:1.4">Verifica in corso…</div>' +
+      '<button id="m361-pp-btn" style="display:none;width:100%;padding:10px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">—</button>' +
+      '<div id="m361-pp-err" style="display:none;margin-top:10px;font-size:11px;color:#B5453A;line-height:1.4"></div>';
+
+    document.body.appendChild(panel);
+
+    // Chiudi cliccando fuori
+    setTimeout(() => {
+      document.addEventListener('click', function _close(ev) {
+        if (!panel.contains(ev.target) && ev.target !== document.getElementById('m361-bell-btn')) {
+          panel.remove();
+          document.removeEventListener('click', _close);
+        }
+      });
+    }, 50);
+
+    _refreshPushPanel();
+  }
+
+  async function _refreshPushPanel() {
+    const statusEl = document.getElementById('m361-pp-status');
+    const btnEl    = document.getElementById('m361-pp-btn');
+    const errEl    = document.getElementById('m361-pp-err');
+    if (!statusEl) return;
+
+    const user = JSON.parse(localStorage.getItem('m361_user') || '{}');
+
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      statusEl.textContent = 'Non supportate da questo browser.';
+      return;
+    }
+    if (Notification.permission === 'denied') {
+      statusEl.innerHTML = '🚫 <strong>Bloccate dal browser.</strong><br><span style="font-weight:400;color:#64748b">Vai nelle impostazioni del browser e riabilita le notifiche per questo sito.</span>';
       return;
     }
 
-    const perm = Notification.permission;
-
-    if (perm === 'granted') {
-      // Permesso già concesso: verifica subscription e resync DB
-      _resubscribeIfNeeded(user);
-    } else if (perm === 'default') {
-      // Non ancora deciso: mostra banner una volta per sessione
-      if (!sessionStorage.getItem('m361_push_banner_shown')) {
-        showPushBanner(user);
-      }
-    }
-    // perm === 'denied': non possiamo fare nulla, il browser gestisce
-  }
-
-  async function _resubscribeIfNeeded(user) {
     try {
       const reg = await navigator.serviceWorker.ready;
-      let sub = await reg.pushManager.getSubscription();
-      if (!sub) {
-        // Subscription scaduta o persa: ricreo silenziosamente (permesso già granted)
+      const sub = await reg.pushManager.getSubscription();
+
+      if (sub) {
+        // Verifica che la subscription sia anche nel DB
+        const _supabase = getSupabase();
+        let inDB = false;
+        if (_supabase) {
+          const { data } = await _supabase.from('push_subscriptions').select('id').eq('endpoint', sub.endpoint).limit(1);
+          inDB = !!(data && data.length > 0);
+        }
+
+        if (inDB) {
+          statusEl.innerHTML = '✅ <strong style="color:#16a34a">Abilitate</strong><br><span style="font-weight:400;color:#64748b;font-size:12px">Questo dispositivo riceverà le notifiche.</span>';
+        } else {
+          statusEl.innerHTML = '⚠️ <strong>Subscription non salvata.</strong><br><span style="font-weight:400;color:#64748b;font-size:12px">Il permesso è stato dato ma manca il salvataggio.</span>';
+          // Tenta upsert silenzioso
+          await _upsertSubscription(user, sub);
+          statusEl.innerHTML = '✅ <strong style="color:#16a34a">Abilitate</strong><br><span style="font-weight:400;color:#64748b;font-size:12px">Sincronizzate correttamente.</span>';
+        }
+
+        btnEl.textContent = 'Disabilita notifiche';
+        btnEl.style.cssText = 'display:block;width:100%;padding:10px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:#f1f5f9;color:#475569';
+        btnEl.onclick = async () => {
+          btnEl.textContent = 'Disabilitazione…';
+          btnEl.disabled = true;
+          await _pushUnsubscribe(user);
+          _refreshPushPanel();
+        };
+
+      } else {
+        const label = Notification.permission === 'granted'
+          ? '⚠️ Subscription non attiva su questo dispositivo.'
+          : '○ Notifiche non ancora abilitate.';
+        statusEl.textContent = label;
+
+        btnEl.textContent = 'Abilita notifiche';
+        btnEl.style.cssText = 'display:block;width:100%;padding:10px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:#B5453A;color:#fff';
+        btnEl.onclick = async () => {
+          btnEl.textContent = 'Attivazione…';
+          btnEl.disabled = true;
+          errEl.style.display = 'none';
+          const err = await _pushSubscribe(user);
+          if (err) {
+            errEl.textContent = 'Errore: ' + err;
+            errEl.style.display = 'block';
+            btnEl.textContent = 'Riprova';
+            btnEl.disabled = false;
+          } else {
+            _refreshPushPanel();
+          }
+        };
+      }
+    } catch (e) {
+      statusEl.textContent = 'Errore verifica: ' + e.message;
+    }
+  }
+
+  // Restituisce null se ok, stringa di errore se fallisce
+  async function _pushSubscribe(user) {
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') return 'Permesso negato dal browser.';
+
+      let reg;
+      try {
+        reg = await navigator.serviceWorker.register('/sw.js');
+        reg = await navigator.serviceWorker.ready;
+      } catch (e) { return 'Service Worker: ' + e.message; }
+
+      let sub;
+      try {
+        // Prima rimuovi eventuale subscription vecchia (chiavi VAPID cambiate)
+        const old = await reg.pushManager.getSubscription();
+        if (old) await old.unsubscribe();
+
         sub = await reg.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: _urlB64ToUint8Array(VAPID_PUBLIC_KEY),
         });
-      }
-      await _upsertSubscription(user, sub);
-      _updatePushStatusUI();
-    } catch (e) {
-      console.warn('[M361 push] resubscribe failed', e);
-    }
+      } catch (e) { return 'Subscription: ' + e.message; }
+
+      try {
+        await _upsertSubscription(user, sub);
+      } catch (e) { return 'Salvataggio DB: ' + e.message; }
+
+      return null;
+    } catch (e) { return e.message; }
   }
 
-  async function _upsertSubscription(user, sub) {
-    const _supabase = getSupabase();
-    if (!_supabase || !user?.nome) return;
-    const subJson = sub.toJSON ? sub.toJSON() : sub;
-    await _supabase.from('push_subscriptions').upsert({
-      operatore_nome: user.nome,
-      emporio:        (user.emporio || '').toLowerCase(),
-      endpoint:       subJson.endpoint,
-      subscription:   subJson,
-    }, { onConflict: 'endpoint' });
-  }
-
-  function showPushBanner(user) {
-    if (document.getElementById('m361-push-banner')) return;
-    sessionStorage.setItem('m361_push_banner_shown', '1');
-
-    const banner = document.createElement('div');
-    banner.id = 'm361-push-banner';
-    banner.style.cssText =
-      'background:#1e293b;color:#fff;padding:12px 20px;font-size:14px;' +
-      'display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:56px;z-index:8997;';
-
-    banner.innerHTML =
-      '<span style="flex:1;min-width:180px">🔔 Vuoi ricevere notifiche?</span>' +
-      '<button id="m361-push-yes" style="background:#B5453A;color:#fff;border:none;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Sì</button>' +
-      '<button id="m361-push-no"  style="background:transparent;color:#94a3b8;border:none;padding:7px 12px;font-size:13px;cursor:pointer;font-family:inherit">No</button>';
-
-    const anchor = document.getElementById('m361-readonly-banner') || document.getElementById('m361-header');
-    document.body.insertBefore(banner, anchor?.nextSibling || document.body.firstChild);
-
-    document.getElementById('m361-push-yes').onclick = () => {
-      banner.remove();
-      subscribeToPush(user);
-    };
-    document.getElementById('m361-push-no').onclick = () => {
-      banner.remove();
-    };
-  }
-
-  async function subscribeToPush(user) {
-    try {
-      const permission = await Notification.requestPermission();
-      if (permission !== 'granted') { _updatePushStatusUI(); return; }
-      await _resubscribeIfNeeded(user);
-    } catch (e) {
-      console.warn('[M361 push] subscribe failed', e);
-    }
-  }
-
-  async function unsubscribeFromPush(user) {
+  async function _pushUnsubscribe(user) {
     try {
       const _supabase = getSupabase();
       const reg = await navigator.serviceWorker.ready;
@@ -1031,59 +1080,94 @@ function buildNav() {
         await sub.unsubscribe();
         if (_supabase) await _supabase.from('push_subscriptions').delete().eq('endpoint', endpoint);
       }
-      sessionStorage.removeItem('m361_push_banner_shown');
-      _updatePushStatusUI();
-    } catch (e) {
-      console.warn('[M361 push] unsubscribe failed', e);
+    } catch (e) { console.warn('[M361 push] unsubscribe', e); }
+  }
+
+  async function _upsertSubscription(user, sub) {
+    const _supabase = getSupabase();
+    if (!_supabase || !user?.nome) return;
+    const subJson = sub.toJSON ? sub.toJSON() : sub;
+    const { error } = await _supabase.from('push_subscriptions').upsert({
+      operatore_nome: user.nome,
+      emporio:        (user.emporio || '').toLowerCase(),
+      endpoint:       subJson.endpoint,
+      subscription:   subJson,
+    }, { onConflict: 'endpoint' });
+    if (error) throw new Error(error.message);
+  }
+
+  async function initPushNotifications(user) {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+    try { await navigator.serviceWorker.register('/sw.js'); } catch (_) {}
+
+    if (Notification.permission === 'granted') {
+      // Resync silenzioso: se la subscription esiste ma non è nel DB, la salva
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.getSubscription();
+        if (sub) {
+          await _upsertSubscription(user, sub);
+        } else {
+          // Subscription persa ma permesso granted: mostra banner
+          if (!sessionStorage.getItem('m361_push_banner_shown')) {
+            sessionStorage.setItem('m361_push_banner_shown', '1');
+            _showPushBanner(user);
+          }
+        }
+      } catch (_) {}
+    } else if (Notification.permission === 'default') {
+      if (!sessionStorage.getItem('m361_push_banner_shown')) {
+        sessionStorage.setItem('m361_push_banner_shown', '1');
+        _showPushBanner(user);
+      }
     }
   }
 
+  function _showPushBanner(user) {
+    if (document.getElementById('m361-push-banner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'm361-push-banner';
+    banner.style.cssText =
+      'background:#1e293b;color:#fff;padding:12px 20px;font-size:14px;' +
+      'display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:56px;z-index:8997;';
+    banner.innerHTML =
+      '<span style="flex:1;min-width:180px">🔔 Vuoi ricevere notifiche?</span>' +
+      '<button id="m361-push-yes" style="background:#B5453A;color:#fff;border:none;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Sì</button>' +
+      '<button id="m361-push-no" style="background:transparent;color:#94a3b8;border:none;padding:7px 12px;font-size:13px;cursor:pointer;font-family:inherit">No</button>';
+    const anchor = document.getElementById('m361-readonly-banner') || document.getElementById('m361-header');
+    document.body.insertBefore(banner, anchor?.nextSibling || document.body.firstChild);
+    document.getElementById('m361-push-yes').onclick = async () => {
+      banner.remove();
+      const err = await _pushSubscribe(user);
+      if (err) console.warn('[M361 push] banner subscribe:', err);
+    };
+    document.getElementById('m361-push-no').onclick = () => banner.remove();
+  }
+
+  // Aggiorna anche il pannello nel modal profilo se aperto
   async function _updatePushStatusUI() {
     const statusEl = document.getElementById('m361-push-modal-status');
     const btnEl    = document.getElementById('m361-push-modal-btn');
     if (!statusEl || !btnEl) return;
-
-    const perm = Notification.permission;
-
-    if (perm === 'denied') {
-      statusEl.textContent = '🚫 Bloccate dal browser';
-      statusEl.style.color = '#94a3b8';
-      btnEl.style.display = 'none';
-      return;
-    }
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      statusEl.textContent = 'Non supportate';
-      statusEl.style.color = '#94a3b8';
-      btnEl.style.display = 'none';
-      return;
-    }
-
+    const user = JSON.parse(localStorage.getItem('m361_user') || '{}');
     try {
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.getSubscription();
-      const user = JSON.parse(localStorage.getItem('m361_user') || '{}');
-
-      // Rimuovi vecchio handler per evitare duplicati
       const newBtn = btnEl.cloneNode(true);
       btnEl.parentNode.replaceChild(newBtn, btnEl);
-
       if (sub) {
-        statusEl.textContent = '✓ Abilitate';
-        statusEl.style.color = '#16a34a';
+        statusEl.textContent = '✓ Abilitate'; statusEl.style.color = '#16a34a';
         newBtn.textContent = 'Disabilita';
         newBtn.style.cssText = 'background:#f1f5f9;color:#475569;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;display:block';
-        newBtn.onclick = () => unsubscribeFromPush(user);
+        newBtn.onclick = async () => { await _pushUnsubscribe(user); _updatePushStatusUI(); };
       } else {
-        statusEl.textContent = 'Non attive';
-        statusEl.style.color = '#94a3b8';
+        statusEl.textContent = 'Non attive'; statusEl.style.color = '#94a3b8';
         newBtn.textContent = 'Abilita';
         newBtn.style.cssText = 'background:#B5453A;color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;display:block';
-        newBtn.onclick = () => subscribeToPush(user);
+        newBtn.onclick = async () => { await _pushSubscribe(user); _updatePushStatusUI(); };
       }
-    } catch (e) {
-      statusEl.textContent = 'Non disponibili';
-      statusEl.style.color = '#94a3b8';
-      btnEl.style.display = 'none';
+    } catch (_) {
+      if (statusEl) { statusEl.textContent = 'Non supportate'; statusEl.style.color = '#94a3b8'; }
     }
   }
 
