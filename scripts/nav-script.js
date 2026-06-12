@@ -1104,6 +1104,12 @@ function buildNav() {
   // Restituisce null se ok, stringa di errore se fallisce
   async function _pushSubscribe(user) {
     try {
+      // iOS richiede la modalità standalone (aggiunta alla schermata Home)
+      const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+      if (isIOS && window.navigator.standalone !== true) {
+        return 'Su iPhone le notifiche funzionano solo dall\'app installata. Vai su Safari → icona Condividi → "Aggiungi a schermata Home", poi riapri l\'app da lì e riattiva le notifiche.';
+      }
+
       const permission = await Notification.requestPermission();
       if (permission !== 'granted') return 'Permesso negato dal browser.';
 
@@ -1200,9 +1206,20 @@ function buildNav() {
     const anchor = document.getElementById('m361-readonly-banner') || document.getElementById('m361-header');
     document.body.insertBefore(banner, anchor?.nextSibling || document.body.firstChild);
     document.getElementById('m361-push-yes').onclick = async () => {
-      banner.remove();
+      const yesBtn = document.getElementById('m361-push-yes');
+      const noBtn  = document.getElementById('m361-push-no');
+      if (yesBtn) { yesBtn.textContent = '…'; yesBtn.disabled = true; }
+      if (noBtn)  noBtn.disabled = true;
       const err = await _pushSubscribe(user);
-      if (err) console.warn('[M361 push] banner subscribe:', err);
+      if (err) {
+        banner.style.flexWrap = 'wrap';
+        banner.innerHTML =
+          `<span style="flex:1;min-width:180px;font-size:13px;line-height:1.5">⚠️ ${_escHtml(err)}</span>` +
+          `<button id="m361-push-banner-close" style="background:transparent;color:#94a3b8;border:none;padding:7px 12px;font-size:16px;cursor:pointer;font-family:inherit;flex-shrink:0">✕</button>`;
+        document.getElementById('m361-push-banner-close')?.addEventListener('click', () => banner.remove());
+      } else {
+        banner.remove();
+      }
     };
     document.getElementById('m361-push-no').onclick = () => banner.remove();
   }

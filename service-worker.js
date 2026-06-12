@@ -56,15 +56,22 @@ self.addEventListener('push', event => {
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      // Manda banner in-app a tutte le finestre aperte
       list.forEach(c => c.postMessage({ type: 'm361-push', title: data.title, body: data.body }));
+
+      // Se l'app è in foreground, iOS scarta subito la notifica OS — la saltiamo.
+      // Il banner in-app (postMessage sopra) è sufficiente quando l'app è aperta.
+      const isVisible = list.some(c => c.visibilityState === 'visible');
+      if (isVisible) return Promise.resolve();
+
       return self.registration.showNotification(data.title, {
-        body:     data.body || '',
-        icon:     '/icons/icon-192.png',
-        badge:    '/icons/icon-192.png',
-        vibrate:  [200, 100, 200],
-        tag:      'm361-notifica',
-        renotify: true,
-        data:     { url: data.url },
+        body:             data.body || '',
+        icon:             '/icons/icon-192.png',
+        badge:            '/icons/icon-192.png',
+        requireInteraction: true,
+        tag:              'm361-notifica',
+        renotify:         true,
+        data:             { url: data.url },
       });
     })
   );
