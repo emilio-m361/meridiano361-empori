@@ -1,4 +1,4 @@
-const CACHE_NAME = 'm361-empori-v6';
+const CACHE_NAME = 'm361-empori-v7';
 
 const PRECACHE_URLS = [
   '/',
@@ -46,5 +46,40 @@ self.addEventListener('fetch', event => {
     }).catch(() =>
       caches.match(event.request).then(cached => cached || caches.match('/index.html'))
     )
+  );
+});
+
+// ── PUSH NOTIFICATIONS ──────────────────────────────────────────────────────
+self.addEventListener('push', event => {
+  let data = { title: 'M361', body: '', url: '/' };
+  try { data = { ...data, ...event.data.json() }; } catch (_) {}
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      list.forEach(c => c.postMessage({ type: 'm361-push', title: data.title, body: data.body }));
+      return self.registration.showNotification(data.title, {
+        body:     data.body || '',
+        icon:     '/icons/icon-192.png',
+        badge:    '/icons/icon-192.png',
+        vibrate:  [200, 100, 200],
+        tag:      'm361-notifica',
+        renotify: true,
+        data:     { url: data.url },
+      });
+    })
+  );
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      for (const client of list) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      return clients.openWindow(event.notification.data?.url || '/');
+    })
   );
 });

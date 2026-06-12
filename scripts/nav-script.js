@@ -1109,7 +1109,7 @@ function buildNav() {
 
       let reg;
       try {
-        reg = await navigator.serviceWorker.register('/sw.js');
+        reg = await navigator.serviceWorker.register('/service-worker.js');
         reg = await navigator.serviceWorker.ready;
       } catch (e) { return 'Service Worker: ' + e.message; }
 
@@ -1161,7 +1161,7 @@ function buildNav() {
 
   async function initPushNotifications(user) {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-    try { await navigator.serviceWorker.register('/sw.js'); } catch (_) {}
+    try { await navigator.serviceWorker.register('/service-worker.js'); } catch (_) {}
 
     if (Notification.permission === 'granted') {
       // Resync silenzioso: se la subscription esiste ma non è nel DB, la salva
