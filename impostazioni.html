@@ -546,10 +546,10 @@
                     </div>
                 </div>
                 <div class="campo-gruppo" id="gruppo-resp-personale" style="display:none">
-                    <label>Responsabile del Personale</label>
+                    <label>Permessi gestione operatori</label>
                     <label class="check-flag">
                         <input type="checkbox" id="edit-op-resp-personale">
-                        <span>Può gestire gli operatori del proprio emporio nelle Impostazioni</span>
+                        <span>responsabile personale — gestisce operatori del suo emporio</span>
                     </label>
                 </div>
                 <div class="campo-gruppo">
@@ -1184,17 +1184,18 @@
         const empDisplay = EMPORI_LABEL[empChiave] || empChiave;
         const extraChiavi  = EMPORI_ORDER.filter(k => k !== empChiave && document.getElementById('extra-' + k)?.checked);
         const extraDisplay = extraChiavi.map(k => EMPORI_LABEL[k] || k);
+        const respCb = document.getElementById('edit-op-resp-personale');
         return {
             empChiave,
             payload: {
-                nome:               document.getElementById('edit-op-nome').value.trim(),
-                emporio:            empDisplay,
-                ruolo:              document.getElementById('edit-op-ruolo').value,
-                telefono:           document.getElementById('edit-op-telefono').value.trim() || null,
-                email:              document.getElementById('edit-op-email-field').value.trim().toLowerCase() || null,
-                empori_aggiuntivi:  extraDisplay.length > 0 ? extraDisplay : null,
-                note:               document.getElementById('edit-op-note').value.trim() || null,
-                // is_resp_personale salvato separatamente (richiede colonna DB)
+                nome:                document.getElementById('edit-op-nome').value.trim(),
+                emporio:             empDisplay,
+                ruolo:               document.getElementById('edit-op-ruolo').value,
+                telefono:            document.getElementById('edit-op-telefono').value.trim() || null,
+                email:               document.getElementById('edit-op-email-field').value.trim().toLowerCase() || null,
+                empori_aggiuntivi:   extraDisplay.length > 0 ? extraDisplay : null,
+                note:                document.getElementById('edit-op-note').value.trim() || null,
+                is_resp_personale:   respCb ? respCb.checked : false,
             },
         };
     }
@@ -1245,22 +1246,6 @@
             return null;
         }
         return savedId;
-    }
-
-    async function _saveRespPersonale(operatoreId) {
-        const cb = document.getElementById('edit-op-resp-personale');
-        if (!cb || !operatoreId) return;
-        const { error } = await db.from('operatori')
-            .update({ is_resp_personale: cb.checked })
-            .eq('id', operatoreId);
-        if (error) {
-            // Colonna non ancora creata: mostra avviso senza bloccare
-            showModalMsg(
-                '⚠️ Operatore salvato, ma il ruolo Responsabile del Personale non è stato impostato. ' +
-                'Esegui in Supabase SQL Editor: <code>ALTER TABLE operatori ADD COLUMN IF NOT EXISTS is_resp_personale boolean DEFAULT false;</code>',
-                'info'
-            );
-        }
     }
 
     async function salvaModificaOperatore() {
@@ -1325,7 +1310,7 @@
                 if (!conferma) return;
                 // Aggiorna il record esistente invece di inserirne uno nuovo
                 const savedId = await _doSave(false, esistente.id, payload);
-                if (savedId) { if (_isAdmin) await _saveRespPersonale(savedId); afterSave(); }
+                if (savedId) { afterSave(); }
                 return; // non crea account Auth: operatore già esistente
             }
         }
@@ -1333,9 +1318,7 @@
         // ── Percorso standard: INSERT o UPDATE senza conflitti ──
         const savedId = await _doSave(isNuovo, idOrig, payload);
         if (savedId) {
-            if (_isAdmin) await _saveRespPersonale(savedId);
             if (isNuovo && email) await _creaAccountAuth(email);
-            // Salva preferenze notifiche (solo su operatori esistenti/appena creati)
             if (!isNuovo) await saveNotifPrefs(savedId);
             afterSave();
         }
