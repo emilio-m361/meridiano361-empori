@@ -2157,6 +2157,16 @@ function cambiaEmporio(emp) {
 }
 
 function selezionaEmporioTurni(nome) {
+  // Guard: non-admin può accedere solo al proprio emporio
+  const _u   = typeof getOperatoreLoggato === 'function' ? getOperatoreLoggato() : null;
+  const _adm = typeof isAdmin === 'function' ? isAdmin() : true;
+  if (_u && !_adm) {
+    const userEmp = (_u.emporio || '').trim().toLowerCase();
+    if (nome.trim().toLowerCase() !== userEmp) {
+      showToast('Puoi accedere solo al tuo emporio', 'err');
+      return;
+    }
+  }
   document.getElementById('turni-emp-selector').style.display = 'none';
   document.getElementById('turni-main-content').style.display = '';
   const nomeEl = document.getElementById('turni-emp-nome-sel');
@@ -4166,24 +4176,34 @@ if (typeof getOperatoreLoggato === 'function') {
   }
 }
 
-// Auto-selezione emporio: se non-admin ha un emporio fisso, saltare la schermata di selezione
-(function() {
-  let _autoEmp = null;
-  if (typeof getOperatoreLoggato === 'function') {
-    const _u = _uLoggato();
-    if (_u && _u.emporio && !['admin'].includes(_u.ruolo)) {
-      _autoEmp = _u.emporio;
-    }
+// Inizializza selettore emporio: tutti vedono i 5 loghi.
+// I non-admin possono cliccare solo la card del proprio emporio.
+(function initSelectorEmpori() {
+  const _u = typeof getOperatoreLoggato === 'function' ? getOperatoreLoggato() : null;
+  const _admin = typeof isAdmin === 'function' ? isAdmin() : true;
+
+  if (!_admin && _u?.emporio) {
+    const userEmpNorm = _u.emporio.trim().toLowerCase();
+    const cards = document.querySelectorAll('#turni-emp-selector .emp-card');
+    cards.forEach(card => {
+      const m = (card.getAttribute('onclick') || '').match(/selezionaEmporioTurni\('([^']+)'\)/);
+      const cardEmp = m ? m[1].trim().toLowerCase() : '';
+      if (cardEmp !== userEmpNorm) {
+        // Card di altri empori: grigia e non cliccabile
+        card.style.opacity = '0.3';
+        card.style.cursor  = 'not-allowed';
+        card.style.pointerEvents = 'none';
+      } else {
+        // Card del proprio emporio: evidenziata
+        card.style.borderColor = '#B5453A';
+        card.style.boxShadow   = '0 4px 20px rgba(181,69,58,.25)';
+      }
+    });
+
+    // Nascondi "← Cambia emporio" — il non-admin non può cambiare
+    const backBtn = document.querySelector('.turni-back-btn');
+    if (backBtn) backBtn.style.display = 'none';
   }
-  // Se non auto-selezione, controlla sessionStorage per ricordare la scelta precedente
-  if (!_autoEmp) {
-    const _saved = sessionStorage.getItem('emporio_turni');
-    if (_saved && PERSONALE[_saved]) _autoEmp = _saved;
-  }
-  if (_autoEmp) {
-    selezionaEmporioTurni(_autoEmp);
-  }
-  // Altrimenti rimane la schermata di selezione (display già configurato nell'HTML)
 })();
 // Popola automaticamente turni predefiniti per i prossimi 2 mesi (solo se emporio già selezionato)
 (async () => {
