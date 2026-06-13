@@ -1,4 +1,4 @@
-const CACHE_NAME = 'm361-empori-v8';
+const CACHE_NAME = 'm361-empori-v9';
 
 const PRECACHE_URLS = [
   '/',
@@ -64,14 +64,18 @@ self.addEventListener('push', event => {
       const isVisible = list.some(c => c.visibilityState === 'visible');
       if (isVisible) return Promise.resolve();
 
+      // Tag giornaliero: se arrivano più push con lo stesso tag nello stesso giorno
+      // (es. operatore con 2 subscription), la seconda rimpiazza la prima senza
+      // rifare il suono/vibrazione (renotify: false), evitando il flash immediato.
+      const today = new Date().toISOString().slice(0, 10);
       return self.registration.showNotification(data.title, {
-        body:             data.body || '',
-        icon:             '/icons/icon-192.png',
-        badge:            '/icons/icon-192.png',
+        body:               data.body || '',
+        icon:               '/icons/icon-192.png',
+        badge:              '/icons/icon-192.png',
         requireInteraction: true,
-        tag:              'm361-notifica',
-        renotify:         true,
-        data:             { url: data.url },
+        tag:                `m361-${today}`,
+        renotify:           false,
+        data:               { url: data.url },
       });
     })
   );
