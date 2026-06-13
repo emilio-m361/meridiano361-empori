@@ -1,4 +1,4 @@
-const CACHE_NAME = 'm361-empori-v9';
+const CACHE_NAME = 'm361-empori-v10';
 
 const PRECACHE_URLS = [
   '/',
@@ -82,7 +82,8 @@ self.addEventListener('push', event => {
 });
 
 self.addEventListener('notificationclick', event => {
-  event.notification.close();
+  // Non chiudiamo la notifica al click: rimane nel centro notifiche
+  // finché l'utente non la scorre via manualmente.
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
       for (const client of list) {
