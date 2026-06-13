@@ -6,6 +6,38 @@ const CORS = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+type OpEntry  = { nome?: string; rimosso?: boolean };
+type TurnoRec = { emporio: string; turno: string; operatori: OpEntry[] | null };
+type Shift    = { turno: string; emporio: string };
+type Sub      = { operatore_nome: string; endpoint: string; subscription: object };
+type LogEntry = {
+  nome: string;
+  motivo_skip?: string;
+  turni?: Array<{ fascia: string; colleghi: string[] }>;
+  body?: string;
+};
+
+// "Mario" → primo nome — per testi più corti
+function primoNome(nome: string): string {
+  return nome.trim().split(/\s+/)[0];
+}
+
+// ["Maria", "Luca"] → "Maria e Luca" | ["a","b","c"] → "a, b e c"
+function joinNomi(nomi: string[]): string {
+  if (nomi.length === 0) return "";
+  if (nomi.length === 1) return primoNome(nomi[0]);
+  const ini = nomi.slice(0, -1).map(primoNome).join(", ");
+  return `${ini} e ${primoNome(nomi.at(-1)!)}`;
+}
+
+// Nomi degli altri operatori attivi nel record turno, escluso il destinatario
+function altriInTurno(rec: TurnoRec, escludi: string): string[] {
+  const escludiKey = escludi.toLowerCase().trim();
+  return (rec.operatori ?? [])
+    .filter(op => op.nome && !op.rimosso && op.nome.toLowerCase().trim() !== escludiKey)
+    .map(op => op.nome as string);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
 
@@ -14,8 +46,6 @@ Deno.serve(async (req) => {
   const VAPID_SUB  = Deno.env.get("VAPID_SUBJECT")     ?? "mailto:info@meridiano361.it";
 
   // Verifica ora italiana — esegui solo alle 08:00 locali.
-  // Il cron pg_cron lo chiama alle 06:00 e 07:00 UTC, la funzione si auto-skippa
-  // se l'ora locale non è esattamente le 8.
   const now = new Date();
   const romanHour = parseInt(
     now.toLocaleString("en-US", { timeZone: "Europe/Rome", hour: "numeric", hour12: false }),
@@ -23,8 +53,8 @@ Deno.serve(async (req) => {
   );
 
   // ?force=1 permette di testare la funzione a qualsiasi ora
-  const url   = new URL(req.url);
-  const force = url.searchParams.get("force") === "1";
+  const urlObj = new URL(req.url);
+  const force  = urlObj.searchParams.get("force") === "1";
 
   if (!force && romanHour !== 8) {
     return new Response(
@@ -44,16 +74,16 @@ Deno.serve(async (req) => {
     year: "numeric", month: "numeric", day: "numeric",
   });
   const parts = dateFmt.formatToParts(now);
-  const year  = parseInt(parts.find(p => p.type === "year")!.value, 10);
+  const year  = parseInt(parts.find(p => p.type === "year")!.value,  10);
   const month = parseInt(parts.find(p => p.type === "month")!.value, 10);
-  const day   = parseInt(parts.find(p => p.type === "day")!.value, 10);
+  const day   = parseInt(parts.find(p => p.type === "day")!.value,   10);
 
   const DEFAULT_HOURS = {
     mat_open: "09:15", mat_close: "13:00",
     pom_open: "15:00", pom_close: "19:00",
   };
 
-  // Orari per emporio dalla tabella turni_orari
+  // Orari per emporio
   const { data: orariRows } = await db.from("turni_orari").select("emporio, orari");
   const emporiOrari: Record<string, typeof DEFAULT_HOURS> = {};
   for (const row of orariRows ?? []) {
@@ -61,7 +91,7 @@ Deno.serve(async (req) => {
   }
 
   // Turni aperti di oggi
-  const { data: turniOggi, error: turniErr } = await db
+  const { data: rawTurni, error: turniErr } = await db
     .from("turni")
     .select("emporio, turno, operatori")
     .eq("anno", year)
@@ -76,7 +106,13 @@ Deno.serve(async (req) => {
     );
   }
 
-  if (!turniOggi?.length) {
+  const turniOggi: TurnoRec[] = (rawTurni ?? []).map(t => ({
+    emporio:    t.emporio,
+    turno:      t.turno,
+    operatori:  (t.operatori ?? []) as OpEntry[],
+  }));
+
+  if (!turniOggi.length) {
     return new Response(
       JSON.stringify({ skipped: true, reason: "nessun turno aperto oggi", date: `${year}-${month}-${day}` }),
       { headers: { "Content-Type": "application/json", ...CORS } },
@@ -84,18 +120,17 @@ Deno.serve(async (req) => {
   }
 
   // Raggruppa turni per nome operatore → [{turno, emporio}]
-  type Shift = { turno: string; emporio: string };
+  // Solo operatori attivi (non rimosso)
   const operatoriMap = new Map<string, Shift[]>();
   for (const t of turniOggi) {
-    for (const op of (t.operatori ?? []) as Array<{ nome?: string; rimosso?: boolean }>) {
+    for (const op of t.operatori ?? []) {
       if (!op.nome || op.rimosso) continue;
-      const key = op.nome;
-      if (!operatoriMap.has(key)) operatoriMap.set(key, []);
-      operatoriMap.get(key)!.push({ turno: t.turno, emporio: t.emporio });
+      if (!operatoriMap.has(op.nome)) operatoriMap.set(op.nome, []);
+      operatoriMap.get(op.nome)!.push({ turno: t.turno, emporio: t.emporio });
     }
   }
 
-  // Operatori con notifiche turni disabilitate
+  // Preferenze notifiche disabilitate
   const { data: prefsDisab } = await db
     .from("operatore_notif_prefs")
     .select("operatore_id")
@@ -111,12 +146,11 @@ Deno.serve(async (req) => {
   }
 
   // Mappa nome → push subscriptions
-  const { data: subs } = await db
+  const { data: subsRaw } = await db
     .from("push_subscriptions")
     .select("operatore_nome, endpoint, subscription");
-  type Sub = { operatore_nome: string; endpoint: string; subscription: object };
   const nomeToSubs = new Map<string, Sub[]>();
-  for (const sub of (subs ?? []) as Sub[]) {
+  for (const sub of (subsRaw ?? []) as Sub[]) {
     const key = (sub.operatore_nome ?? "").toLowerCase().trim();
     if (!nomeToSubs.has(key)) nomeToSubs.set(key, []);
     nomeToSubs.get(key)!.push(sub);
@@ -131,44 +165,75 @@ Deno.serve(async (req) => {
   webpush.setVapidDetails(VAPID_SUB, VAPID_PUB, VAPID_PRIV);
 
   const results = {
-    date: `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
+    date:               `${year}-${String(month).padStart(2,"0")}-${String(day).padStart(2,"0")}`,
     operatori_in_turno: operatoriMap.size,
     sent: 0, skipped: 0, failed: 0,
     errors: [] as string[],
+    log:   [] as LogEntry[],
   };
 
   for (const [nome, shifts] of operatoriMap.entries()) {
     const opId = nomeToId.get(nome.toLowerCase().trim());
 
-    // Salta se ha disabilitato le notifiche turni
-    if (opId && disabledIds.has(opId)) { results.skipped++; continue; }
+    // Notifiche turni disabilitate dall'operatore
+    if (opId && disabledIds.has(opId)) {
+      results.skipped++;
+      results.log.push({ nome, motivo_skip: "notifiche turni disabilitate" });
+      continue;
+    }
 
-    // Costruisci testo fasce orarie — ordina: mattina prima di pomeriggio
+    // Ordina: mattina prima di pomeriggio
     const sorted = [...shifts].sort((a, b) => {
       if (a.turno === "mattina" && b.turno !== "mattina") return -1;
-      if (a.turno !== "mattina" && b.turno === "mattina") return 1;
+      if (a.turno !== "mattina" && b.turno === "mattina") return  1;
       return 0;
     });
 
-    const fasce: string[] = [];
+    // Costruisci le frasi per ogni fascia con nomi dei colleghi
+    const fasceTesto: string[] = [];
+    const fasceDiag: Array<{ fascia: string; colleghi: string[] }> = [];
     const seen = new Set<string>();
+
     for (const s of sorted) {
+      // Deduplicazione per emporio+turno (evita doppi se stessa fascia appare due volte)
+      const uniqKey = `${s.emporio}:${s.turno}`;
+      if (seen.has(uniqKey)) continue;
+      seen.add(uniqKey);
+
       const orari = emporiOrari[s.emporio] ?? DEFAULT_HOURS;
-      const label = s.turno === "mattina"
+      const orarioLabel = s.turno === "mattina"
         ? `dalle ${orari.mat_open} alle ${orari.mat_close}`
         : `dalle ${orari.pom_open} alle ${orari.pom_close}`;
-      if (!seen.has(label)) { seen.add(label); fasce.push(label); }
+
+      // Colleghi in questa fascia (stesso emporio, stesso turno, giorno già filtrato)
+      const rec = turniOggi.find(t => t.emporio === s.emporio && t.turno === s.turno);
+      const cols = rec ? altriInTurno(rec, nome) : [];
+
+      fasceTesto.push(cols.length > 0 ? `${orarioLabel} con ${joinNomi(cols)}` : orarioLabel);
+      fasceDiag.push({ fascia: orarioLabel, colleghi: cols });
     }
 
-    if (!fasce.length) { results.skipped++; continue; }
+    if (!fasceTesto.length) {
+      results.skipped++;
+      results.log.push({ nome, motivo_skip: "nessuna fascia valida", turni: fasceDiag });
+      continue;
+    }
 
-    // "Oggi sei in turno dalle X alle Y" oppure "… e dalle Z alle W"
-    const body = fasce.length === 1
-      ? `Oggi sei in turno ${fasce[0]}`
-      : `Oggi sei in turno ${fasce.slice(0, -1).join(", ")} e ${fasce.at(-1)}`;
+    // Frase finale: "dalle X alle Y con A" oppure "dalle X alle Y con A e dalle Z alle W con B"
+    const body = `Oggi sei in turno ${
+      fasceTesto.length === 1
+        ? fasceTesto[0]
+        : fasceTesto.slice(0, -1).join(", ") + " e " + fasceTesto.at(-1)
+    }`;
 
     const operatoreSubs = nomeToSubs.get(nome.toLowerCase().trim()) ?? [];
-    if (!operatoreSubs.length) { results.skipped++; continue; }
+    if (!operatoreSubs.length) {
+      results.skipped++;
+      results.log.push({ nome, motivo_skip: "nessun token push registrato", turni: fasceDiag, body });
+      continue;
+    }
+
+    results.log.push({ nome, turni: fasceDiag, body });
 
     const payload = JSON.stringify({
       title: "M361 — Il tuo turno oggi",
@@ -182,17 +247,22 @@ Deno.serve(async (req) => {
         results.sent++;
       } catch (e: unknown) {
         const status = (e as { statusCode?: number })?.statusCode;
+        const msg    = (e as { message?: string })?.message ?? String(e);
         if (status === 404 || status === 410) {
+          // Token scaduto/revocato: rimuovi dal DB
           await db.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
+          const last = results.log.at(-1)!;
+          last.motivo_skip = (last.motivo_skip ?? "") +
+            `token scaduto rimosso (…${sub.endpoint.slice(-20)}) `;
         } else {
           results.failed++;
-          results.errors.push(`${nome}: ${String(e).slice(0, 100)}`);
+          results.errors.push(`${nome}: ${msg.slice(0, 120)}`);
         }
       }
     }
   }
 
-  return new Response(JSON.stringify(results), {
+  return new Response(JSON.stringify(results, null, 2), {
     headers: { "Content-Type": "application/json", ...CORS },
   });
 });
