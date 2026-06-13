@@ -18,11 +18,14 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
-  let body: { target: string; titolo: string; testo: string; mittente?: string };
+  let body: { target: string; titolo: string; testo: string; mittente?: string; tipo?: string };
   try { body = await req.json(); }
   catch { return new Response(JSON.stringify({ error: "invalid json" }), { status: 400, headers: CORS }); }
 
-  const { target, titolo, testo } = body;
+  // tipo: categoria notifica — usato per rispettare le preferenze operatore.
+  // Default "generali" (notifiche admin manuali).
+  const { target, titolo, testo, tipo = "generali" } = body;
+
   const results = {
     push_sent: 0,
     push_failed: 0,
@@ -44,19 +47,41 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify(results), { headers: { "Content-Type": "application/json", ...CORS } });
   }
 
-  let q = db.from("push_subscriptions").select("endpoint, subscription, emporio");
-  if (target !== "tutti") q = (q as typeof q).eq("emporio", target);
-  const { data: subs, error: dbErr } = await q;
+  // Carica subscriptions per emporio target
+  let q = db
+    .from("push_subscriptions")
+    .select("endpoint, subscription, emporio, operatore_nome, operatore_id");
+  if (target !== "tutti") q = q.eq("emporio", target);
+  const { data: rawSubs, error: dbErr } = await q;
 
   if (dbErr) {
     results.errors.push("DB error: " + dbErr.message);
     return new Response(JSON.stringify(results), { headers: { "Content-Type": "application/json", ...CORS } });
   }
 
-  results.subscribers_found = (subs ?? []).length;
+  // Filtra per preferenze notifiche: escludi chi ha disabilitato questa categoria.
+  // Se la riga in operatore_notif_prefs non esiste → default = abilitato.
+  let filteredSubs = rawSubs ?? [];
+  if (filteredSubs.length > 0) {
+    const { data: prefsDisab } = await db
+      .from("operatore_notif_prefs")
+      .select("operatore_id")
+      .eq("tipo", tipo)
+      .eq("abilitato", false);
+
+    if (prefsDisab?.length) {
+      const disabledIds = new Set(prefsDisab.map(p => p.operatore_id as string));
+      // Escludi subscription legate a operatori che hanno disabilitato questa categoria
+      filteredSubs = filteredSubs.filter(s =>
+        !s.operatore_id || !disabledIds.has(s.operatore_id)
+      );
+    }
+  }
+
+  results.subscribers_found = filteredSubs.length;
   const payload = JSON.stringify({ title: titolo, body: testo || "", url: "/" });
 
-  await Promise.all((subs ?? []).map(async (row: { endpoint: string; subscription: object }) => {
+  await Promise.all(filteredSubs.map(async (row) => {
     try {
       await webpush.sendNotification(row.subscription as webpush.PushSubscription, payload);
       results.push_sent++;

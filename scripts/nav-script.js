@@ -1158,6 +1158,7 @@ function buildNav() {
     const subJson = sub.toJSON ? sub.toJSON() : sub;
     const { error } = await _supabase.from('push_subscriptions').upsert({
       operatore_nome: user.nome,
+      operatore_id:   user.id   || null,
       emporio:        (user.emporio || '').toLowerCase(),
       endpoint:       subJson.endpoint,
       subscription:   subJson,

@@ -176,6 +176,15 @@
                 }
 
                 localStorage.setItem('m361_user', JSON.stringify(operatore));
+
+                // Traccia primo e ultimo accesso (best-effort, non blocca il login)
+                try {
+                    const loginNow = new Date().toISOString();
+                    const updatePayload = { last_login_at: loginNow };
+                    if (!operatore.first_login_at) updatePayload.first_login_at = loginNow;
+                    await _supabase.from('operatori').update(updatePayload).eq('id', operatore.id);
+                } catch (_) { /* non bloccare il login se fallisce */ }
+
                 window.location.href = 'index.html';
 
             } catch (err) {

@@ -247,6 +247,14 @@
                     </div>
                     <i class="fas fa-chevron-right menu-card-arrow"></i>
                 </div>
+                <div class="menu-card" onclick="openSection('accessi')">
+                    <span class="menu-card-icon">🔑</span>
+                    <div class="menu-card-body">
+                        <div class="menu-card-title">Accessi</div>
+                        <div class="menu-card-desc">Chi ha fatto login e chi non si è mai connesso</div>
+                    </div>
+                    <i class="fas fa-chevron-right menu-card-arrow"></i>
+                </div>
             </div>
         </div>
 
@@ -419,6 +427,40 @@
             </div>
         </div>
 
+        <!-- ── SEZIONE: ACCESSI ───────────────────────────────────────────── -->
+        <div id="section-accessi" class="section-page">
+            <div class="section-page-head">
+                <button class="back-btn" onclick="closeSection()">
+                    <i class="fas fa-arrow-left"></i> Impostazioni
+                </button>
+                <span class="section-page-title">🔑 Accessi operatori</span>
+            </div>
+            <div class="s-card">
+                <div class="s-card-body" style="padding-bottom:8px">
+                    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+                        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 18px;display:flex;gap:8px;align-items:center">
+                            <span id="acc-count-loggati" style="font-size:22px;font-weight:900;color:#16a34a">—</span>
+                            <span style="font-size:12px;font-weight:700;color:#15803d">hanno fatto login</span>
+                        </div>
+                        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:10px 18px;display:flex;gap:8px;align-items:center">
+                            <span id="acc-count-mai" style="font-size:22px;font-weight:900;color:#dc2626">—</span>
+                            <span style="font-size:12px;font-weight:700;color:#b91c1c">non ancora connessi</span>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+                        <button id="acc-filter-tutti"  onclick="accFiltra('tutti')"   style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #B5453A;background:#B5453A;color:#fff;cursor:pointer;font-family:Inter,sans-serif">Tutti</button>
+                        <button id="acc-filter-loggati" onclick="accFiltra('loggati')" style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;cursor:pointer;font-family:Inter,sans-serif">Solo loggati</button>
+                        <button id="acc-filter-mai"    onclick="accFiltra('mai')"     style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;cursor:pointer;font-family:Inter,sans-serif">Mai loggati</button>
+                    </div>
+                </div>
+                <div id="accessi-tabella-wrap" style="overflow-x:auto">
+                    <div style="text-align:center;padding:40px 0;color:#94a3b8;font-size:14px" id="accessi-loading">
+                        <i class="fas fa-spinner fa-spin" style="margin-right:6px"></i>Caricamento…
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- CONTENUTO RESPONSABILE DEL PERSONALE -->
@@ -513,6 +555,28 @@
                 <div class="campo-gruppo">
                     <label>Note</label>
                     <textarea id="edit-op-note" class="campo-input" rows="2" placeholder="Note sull'operatore..."></textarea>
+                </div>
+
+                <!-- Preferenze notifiche push -->
+                <div class="campo-gruppo" id="gruppo-notif-prefs" style="display:none">
+                    <label style="margin-bottom:10px">Notifiche push</label>
+                    <div id="notif-prefs-loading" style="color:#94a3b8;font-size:13px"><i class="fas fa-spinner fa-spin"></i> Caricamento…</div>
+                    <div id="notif-prefs-body" style="display:none;display:flex;flex-direction:column;gap:8px">
+                        <label style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px;cursor:pointer">
+                            <div>
+                                <div style="font-size:13px;font-weight:700;color:#1e293b">Promemoria turno</div>
+                                <div style="font-size:11px;color:#64748b">Riceve un push alle 8:00 nei giorni in cui è in turno</div>
+                            </div>
+                            <input type="checkbox" id="pref-turni" style="width:18px;height:18px;accent-color:#B5453A;flex-shrink:0" checked>
+                        </label>
+                        <label style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px;cursor:pointer">
+                            <div>
+                                <div style="font-size:13px;font-weight:700;color:#1e293b">Notifiche admin</div>
+                                <div style="font-size:11px;color:#64748b">Messaggi inviati manualmente dall'amministratore</div>
+                            </div>
+                            <input type="checkbox" id="pref-generali" style="width:18px;height:18px;accent-color:#B5453A;flex-shrink:0" checked>
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -714,6 +778,7 @@
             if (id === 'notifiche')  caricaNotificheInviate(true);
             if (id === 'info')       caricaInfoApp();
             if (id === 'categorie')  caricaCategorie();
+            if (id === 'accessi')    caricaAccessi();
         }
     }
 
@@ -1060,6 +1125,18 @@
         document.getElementById('btn-modal-elimina').style.display = _isAdmin ? '' : 'none';
         document.getElementById('edit-op-emporio').disabled = !_isAdmin;
 
+        // Preferenze notifiche (visibili solo per operatori già esistenti)
+        const prefGruppo = document.getElementById('gruppo-notif-prefs');
+        if (prefGruppo) {
+            const opId = document.getElementById('edit-op-id-orig').value.trim();
+            if (opId) {
+                prefGruppo.style.display = '';
+                loadNotifPrefs(opId);
+            } else {
+                prefGruppo.style.display = 'none';
+            }
+        }
+
         document.getElementById('modal-modifica-operatore').style.display = 'flex';
     }
 
@@ -1258,6 +1335,8 @@
         if (savedId) {
             if (_isAdmin) await _saveRespPersonale(savedId);
             if (isNuovo && email) await _creaAccountAuth(email);
+            // Salva preferenze notifiche (solo su operatori esistenti/appena creati)
+            if (!isNuovo) await saveNotifPrefs(savedId);
             afterSave();
         }
         } catch (err) {
@@ -1742,6 +1821,148 @@
         const t = document.getElementById('notif-titolo');
         if (t && t.value && t.value.includes('@')) t.value = '';
     }, 300);
+
+    // ── PREFERENZE NOTIFICHE OPERATORE ───────────────────────────────────────
+
+    const NOTIF_TIPI = ['turni', 'generali'];
+
+    async function loadNotifPrefs(opId) {
+        const loadEl = document.getElementById('notif-prefs-loading');
+        const bodyEl = document.getElementById('notif-prefs-body');
+        if (!loadEl || !bodyEl) return;
+        loadEl.style.display = '';
+        bodyEl.style.display = 'none';
+
+        const { data } = await db
+            .from('operatore_notif_prefs')
+            .select('tipo, abilitato')
+            .eq('operatore_id', opId);
+
+        // Default: tutte abilitate — se non esiste una riga la checkbox resta checked
+        const prefsMap = {};
+        if (data) data.forEach(p => { prefsMap[p.tipo] = p.abilitato; });
+
+        document.getElementById('pref-turni').checked    = prefsMap['turni']    !== false;
+        document.getElementById('pref-generali').checked = prefsMap['generali'] !== false;
+
+        loadEl.style.display = 'none';
+        bodyEl.style.display = 'flex';
+    }
+
+    async function saveNotifPrefs(opId) {
+        if (!opId) return;
+        const gruppoEl = document.getElementById('gruppo-notif-prefs');
+        if (!gruppoEl || gruppoEl.style.display === 'none') return;
+
+        const values = {
+            turni:    document.getElementById('pref-turni')?.checked    ?? true,
+            generali: document.getElementById('pref-generali')?.checked ?? true,
+        };
+
+        for (const [tipo, abilitato] of Object.entries(values)) {
+            await db.from('operatore_notif_prefs').upsert(
+                { operatore_id: opId, tipo, abilitato },
+                { onConflict: 'operatore_id,tipo' }
+            );
+        }
+    }
+
+    // ── SEZIONE ACCESSI ──────────────────────────────────────────────────────
+
+    let _accessiCache = [];
+    let _accessiFiltro = 'tutti';
+
+    async function caricaAccessi() {
+        const wrap = document.getElementById('accessi-tabella-wrap');
+        if (!wrap) return;
+
+        const { data: operatori, error } = await db
+            .from('operatori')
+            .select('id, nome, email, emporio, ruolo, attivo, first_login_at, last_login_at')
+            .order('nome', { ascending: true });
+
+        if (error) {
+            wrap.innerHTML = `<div style="padding:20px;color:#dc2626;font-size:14px">Errore: ${escHtml(error.message)}</div>`;
+            return;
+        }
+
+        _accessiCache = operatori || [];
+        _renderAccessiTabella();
+    }
+
+    function accFiltra(filtro) {
+        _accessiFiltro = filtro;
+        ['tutti','loggati','mai'].forEach(f => {
+            const btn = document.getElementById('acc-filter-' + f);
+            if (!btn) return;
+            btn.style.background  = f === filtro ? '#B5453A' : '#f8fafc';
+            btn.style.color       = f === filtro ? '#fff'    : '#475569';
+            btn.style.borderColor = f === filtro ? '#B5453A' : '#e2e8f0';
+        });
+        _renderAccessiTabella();
+    }
+
+    function _renderAccessiTabella() {
+        const wrap = document.getElementById('accessi-tabella-wrap');
+        if (!wrap) return;
+
+        const loggati = _accessiCache.filter(o => !!o.last_login_at);
+        const mai     = _accessiCache.filter(o => !o.last_login_at);
+
+        document.getElementById('acc-count-loggati').textContent = loggati.length;
+        document.getElementById('acc-count-mai').textContent     = mai.length;
+
+        let filtered = _accessiCache;
+        if (_accessiFiltro === 'loggati') filtered = loggati;
+        if (_accessiFiltro === 'mai')     filtered = mai;
+
+        if (!filtered.length) {
+            wrap.innerHTML = '<div style="padding:24px;text-align:center;color:#94a3b8;font-size:13px">Nessun operatore in questa categoria.</div>';
+            return;
+        }
+
+        const rows = filtered.map(op => {
+            const loggato      = !!op.last_login_at;
+            const primoLogin   = op.first_login_at ? fmtDt(op.first_login_at) : '—';
+            const ultimoLogin  = op.last_login_at  ? fmtDt(op.last_login_at)  : '—';
+            const statoHtml    = loggato
+                ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700">✓ Loggato</span>`
+                : `<span style="display:inline-flex;align-items:center;gap:5px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700">✕ Mai connesso</span>`;
+            const empLabel     = EMPORI_LABEL[normalizzaEmporio(op.emporio)] || op.emporio || '—';
+            return `
+                <tr>
+                    <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9">
+                        <div style="font-weight:600;color:#1e293b;font-size:13px">${escHtml(op.nome || '—')}</div>
+                        <div style="font-size:11px;color:#94a3b8">${escHtml(op.email || '—')}</div>
+                    </td>
+                    <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:12px;color:#475569">${escHtml(empLabel)}</td>
+                    <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9">${statoHtml}</td>
+                    <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:12px;color:#475569;white-space:nowrap">${escHtml(primoLogin)}</td>
+                    <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:12px;color:#475569;white-space:nowrap">${escHtml(ultimoLogin)}</td>
+                </tr>`;
+        }).join('');
+
+        wrap.innerHTML = `
+            <table style="width:100%;border-collapse:collapse;font-size:13px;font-family:Inter,sans-serif">
+                <thead>
+                    <tr style="background:#f8fafc;border-bottom:1px solid #e2e8f0">
+                        <th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Operatore</th>
+                        <th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Emporio</th>
+                        <th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Stato</th>
+                        <th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Primo login</th>
+                        <th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Ultimo accesso</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>`;
+    }
+
+    function fmtDt(iso) {
+        if (!iso) return '—';
+        const d = new Date(iso);
+        return d.toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric' }) +
+               ' ' + d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    }
     </script>
 </body>
 </html>
