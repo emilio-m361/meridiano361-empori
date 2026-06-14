@@ -442,15 +442,20 @@
                             <span id="acc-count-loggati" style="font-size:22px;font-weight:900;color:#16a34a">—</span>
                             <span style="font-size:12px;font-weight:700;color:#15803d">hanno fatto login</span>
                         </div>
+                        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 18px;display:flex;gap:8px;align-items:center">
+                            <span id="acc-count-ultimi15" style="font-size:22px;font-weight:900;color:#1d4ed8">—</span>
+                            <span style="font-size:12px;font-weight:700;color:#1e40af">ultimi 15 giorni</span>
+                        </div>
                         <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:10px 18px;display:flex;gap:8px;align-items:center">
                             <span id="acc-count-mai" style="font-size:22px;font-weight:900;color:#dc2626">—</span>
                             <span style="font-size:12px;font-weight:700;color:#b91c1c">non ancora connessi</span>
                         </div>
                     </div>
                     <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-                        <button id="acc-filter-tutti"  onclick="accFiltra('tutti')"   style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #B5453A;background:#B5453A;color:#fff;cursor:pointer;font-family:Inter,sans-serif">Tutti</button>
-                        <button id="acc-filter-loggati" onclick="accFiltra('loggati')" style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;cursor:pointer;font-family:Inter,sans-serif">Solo loggati</button>
-                        <button id="acc-filter-mai"    onclick="accFiltra('mai')"     style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;cursor:pointer;font-family:Inter,sans-serif">Mai loggati</button>
+                        <button id="acc-filter-tutti"    onclick="accFiltra('tutti')"     style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #B5453A;background:#B5453A;color:#fff;cursor:pointer;font-family:Inter,sans-serif">Tutti</button>
+                        <button id="acc-filter-loggati"  onclick="accFiltra('loggati')"   style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;cursor:pointer;font-family:Inter,sans-serif">Solo loggati</button>
+                        <button id="acc-filter-ultimi15" onclick="accFiltra('ultimi15')"  style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;cursor:pointer;font-family:Inter,sans-serif">Ultimi 15 gg</button>
+                        <button id="acc-filter-mai"      onclick="accFiltra('mai')"       style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;cursor:pointer;font-family:Inter,sans-serif">Mai loggati</button>
                     </div>
                 </div>
                 <div id="accessi-tabella-wrap" style="overflow-x:auto">
@@ -1875,7 +1880,7 @@
 
     function accFiltra(filtro) {
         _accessiFiltro = filtro;
-        ['tutti','loggati','mai'].forEach(f => {
+        ['tutti','loggati','ultimi15','mai'].forEach(f => {
             const btn = document.getElementById('acc-filter-' + f);
             if (!btn) return;
             btn.style.background  = f === filtro ? '#B5453A' : '#f8fafc';
@@ -1885,19 +1890,37 @@
         _renderAccessiTabella();
     }
 
+    function _relativeTime(iso) {
+        if (!iso) return null;
+        const diffMs  = Date.now() - new Date(iso).getTime();
+        const diffMin = Math.floor(diffMs / 60000);
+        if (diffMin < 60)  return diffMin <= 1 ? 'Adesso' : `${diffMin} min fa`;
+        const diffH = Math.floor(diffMin / 60);
+        if (diffH < 24)    return `${diffH} ore fa`;
+        const diffD = Math.floor(diffH / 24);
+        if (diffD === 1)   return 'Ieri';
+        if (diffD < 30)    return `${diffD} giorni fa`;
+        const diffM = Math.floor(diffD / 30);
+        return diffM === 1 ? '1 mese fa' : `${diffM} mesi fa`;
+    }
+
     function _renderAccessiTabella() {
         const wrap = document.getElementById('accessi-tabella-wrap');
         if (!wrap) return;
 
-        const loggati = _accessiCache.filter(o => !!o.last_login_at);
-        const mai     = _accessiCache.filter(o => !o.last_login_at);
+        const cutoff15   = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
+        const loggati    = _accessiCache.filter(o => !!o.last_login_at);
+        const ultimi15   = _accessiCache.filter(o => o.last_login_at && new Date(o.last_login_at) >= cutoff15);
+        const mai        = _accessiCache.filter(o => !o.last_login_at);
 
-        document.getElementById('acc-count-loggati').textContent = loggati.length;
-        document.getElementById('acc-count-mai').textContent     = mai.length;
+        document.getElementById('acc-count-loggati').textContent   = loggati.length;
+        document.getElementById('acc-count-ultimi15').textContent  = ultimi15.length;
+        document.getElementById('acc-count-mai').textContent       = mai.length;
 
         let filtered = _accessiCache;
-        if (_accessiFiltro === 'loggati') filtered = loggati;
-        if (_accessiFiltro === 'mai')     filtered = mai;
+        if (_accessiFiltro === 'loggati')  filtered = loggati;
+        if (_accessiFiltro === 'ultimi15') filtered = ultimi15;
+        if (_accessiFiltro === 'mai')      filtered = mai;
 
         if (!filtered.length) {
             wrap.innerHTML = '<div style="padding:24px;text-align:center;color:#94a3b8;font-size:13px">Nessun operatore in questa categoria.</div>';
@@ -1907,7 +1930,12 @@
         const rows = filtered.map(op => {
             const loggato      = !!op.last_login_at;
             const primoLogin   = op.first_login_at ? fmtDt(op.first_login_at) : '—';
-            const ultimoLogin  = op.last_login_at  ? fmtDt(op.last_login_at)  : '—';
+            const ultimoLoginFmt = op.last_login_at ? fmtDt(op.last_login_at) : '—';
+            const rel          = op.last_login_at ? _relativeTime(op.last_login_at) : null;
+            const ultimoHtml   = op.last_login_at
+                ? `<span title="${escHtml(ultimoLoginFmt)}">${escHtml(rel || ultimoLoginFmt)}</span>
+                   <div style="font-size:10px;color:#94a3b8;margin-top:2px">${escHtml(ultimoLoginFmt)}</div>`
+                : '—';
             const statoHtml    = loggato
                 ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700">✓ Loggato</span>`
                 : `<span style="display:inline-flex;align-items:center;gap:5px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700">✕ Mai connesso</span>`;
@@ -1921,7 +1949,7 @@
                     <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:12px;color:#475569">${escHtml(empLabel)}</td>
                     <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9">${statoHtml}</td>
                     <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:12px;color:#475569;white-space:nowrap">${escHtml(primoLogin)}</td>
-                    <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:12px;color:#475569;white-space:nowrap">${escHtml(ultimoLogin)}</td>
+                    <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:12px;color:#475569">${ultimoHtml}</td>
                 </tr>`;
         }).join('');
 

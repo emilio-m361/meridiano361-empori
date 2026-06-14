@@ -6325,12 +6325,12 @@ function _gcalUpdateHeaderBtn() {
   const btn = document.getElementById('btn-gcal-connect');
   if (!btn) return;
   const S = {
-    connected:  ['#f0fdf4','#86efac','#166534','✅ Calendario'],
-    expired:    ['#fef3c7','#fcd34d','#92400e','⚠️ Ricollega'],
-    revoked:    ['#fef2f2','#fca5a5','#991b1b','⚠️ Ricollega'],
-    blocked:    ['#fef2f2','#fca5a5','#991b1b','⚠️ Ricollega'],
+    connected:  ['#f0fdf4','#86efac','#166534','✅ Calendario Google'],
+    expired:    ['#fef3c7','#fcd34d','#92400e','⚠️ Ricollega Calendario Google'],
+    revoked:    ['#fef2f2','#fca5a5','#991b1b','⚠️ Ricollega Calendario Google'],
+    blocked:    ['#fef2f2','#fca5a5','#991b1b','⚠️ Ricollega Calendario Google'],
   };
-  const v = S[_gcalState] || ['','','','🗓 Calendario'];
+  const v = S[_gcalState] || ['','','','🗓 Calendario Google'];
   [btn.style.background, btn.style.borderColor, btn.style.color] = v;
   btn.innerHTML = v[3];
 }

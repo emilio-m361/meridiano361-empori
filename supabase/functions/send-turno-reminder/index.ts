@@ -52,10 +52,12 @@ Deno.serve(async (req) => {
     10,
   );
 
-  // ?force=1  → ignora il controllo dell'ora
-  // ?operatore=Nome Cognome → invia solo a quell'operatore (case-insensitive, per test)
+  // ?force=1   → ignora il controllo dell'ora
+  // ?dryrun=1  → simula tutto senza inviare push reali (implica force=1)
+  // ?operatore=Nome → invia solo a quell'operatore (case-insensitive, per test)
   const urlObj   = new URL(req.url);
-  const force    = urlObj.searchParams.get("force") === "1";
+  const dryrun   = urlObj.searchParams.get("dryrun") === "1";
+  const force    = dryrun || urlObj.searchParams.get("force") === "1";
   const soloOp   = (urlObj.searchParams.get("operatore") ?? "").toLowerCase().trim();
 
   if (!force && romanHour !== 8) {
@@ -251,7 +253,7 @@ Deno.serve(async (req) => {
 
     for (const sub of operatoreSubs) {
       try {
-        await webpush.sendNotification(sub.subscription as webpush.PushSubscription, payload);
+        if (!dryrun) await webpush.sendNotification(sub.subscription as webpush.PushSubscription, payload);
         results.sent++;
       } catch (e: unknown) {
         const status = (e as { statusCode?: number })?.statusCode;
@@ -270,7 +272,7 @@ Deno.serve(async (req) => {
     }
   }
 
-  return new Response(JSON.stringify(results, null, 2), {
+  return new Response(JSON.stringify({ ...results, dryrun }, null, 2), {
     headers: { "Content-Type": "application/json", ...CORS },
   });
 });
