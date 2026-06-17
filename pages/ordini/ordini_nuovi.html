@@ -1375,7 +1375,7 @@ function calcSubtotal(groupId) {
                     operatore_ids: resps.map(r => r.id),
                     target:        'tutti',
                     titolo:        'Meridiano 361',
-                    testo:         `Nuovo ordine — ${emporio}, da ${orderData.operatore || 'Operatore'}${orderData.cliente_nome ? ' · ' + [orderData.cliente_nome, orderData.cliente_cognome].filter(Boolean).join(' ') : ''}`,
+                    testo:         `Nuovo ordine per ${emporio} creato da ${orderData.operatore || 'Operatore'}`,
                     tipo:          'ordini',
                     url:           '/pages/ordini/ordini_incorso.html',
                 }),
