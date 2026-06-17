@@ -602,17 +602,16 @@ async function invia() {
   renderToolbar();
   renderTable();
 
-  // Notifica push ai responsabili acquisti dell'emporio
-  _notificaRespAcquisti().catch(() => {});
+  // Notifica push ai responsabili acquisti (await per evitare cancellazione in mid-flight)
+  await _notificaRespAcquisti().catch(() => {});
 }
 
 async function _notificaRespAcquisti() {
   const emporio = proposta.emporio || '';
-  // Cerca tutti gli operatori is_resp_acquisti per questo emporio
+  // Resp. acquisti riceve notifiche da tutti gli empori, non solo il proprio
   const { data: resps } = await db
     .from('operatori')
     .select('id')
-    .ilike('emporio', emporio)
     .eq('is_resp_acquisti', true);
 
   if (!resps?.length) return;

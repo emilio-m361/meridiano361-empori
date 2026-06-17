@@ -234,17 +234,17 @@ document.getElementById('modal-crea').addEventListener('click', async () => {
   if (error) { alert('Errore: ' + error.message); return; }
   modal.classList.add('hidden');
 
-  // Notifica push ai responsabili acquisti dell'emporio
-  _notificaRespAcquistiNuovoOrdine(emporio).catch(() => {});
+  // Notifica push ai responsabili acquisti (await per evitare che il redirect cancelli il fetch)
+  await _notificaRespAcquistiNuovoOrdine(emporio).catch(() => {});
 
   window.location.href = `proposta.html?id=${data.id}`;
 });
 
 async function _notificaRespAcquistiNuovoOrdine(emporio) {
+  // Resp. acquisti riceve notifiche da tutti gli empori, non solo il proprio
   const { data: resps } = await db
     .from('operatori')
     .select('id')
-    .ilike('emporio', emporio)
     .eq('is_resp_acquisti', true);
   if (!resps?.length) return;
   const mittente = user?.nome || 'Operatore';
@@ -253,7 +253,7 @@ async function _notificaRespAcquistiNuovoOrdine(emporio) {
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPA_KEY}`, 'apikey': SUPA_KEY },
     body: JSON.stringify({
       operatore_ids: resps.map(r => r.id),
-      target:        emporio.toLowerCase(),
+      target:        'tutti',
       titolo:        `🛒 Nuovo ordine creato da ${mittente} per ${emporio}`,
       testo:         '',
       tipo:          'generali',
