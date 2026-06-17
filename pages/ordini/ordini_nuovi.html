@@ -1374,8 +1374,8 @@ function calcSubtotal(groupId) {
                 body: JSON.stringify({
                     operatore_ids: resps.map(r => r.id),
                     target:        'tutti',
-                    titolo:        `🛍️ Nuovo ordine — ${emporio}`,
-                    testo:         `da ${orderData.operatore || 'Operatore'}${orderData.cliente_nome ? ' · ' + [orderData.cliente_nome, orderData.cliente_cognome].filter(Boolean).join(' ') : ''}`,
+                    titolo:        'Meridiano 361',
+                    testo:         `Nuovo ordine — ${emporio}, da ${orderData.operatore || 'Operatore'}${orderData.cliente_nome ? ' · ' + [orderData.cliente_nome, orderData.cliente_cognome].filter(Boolean).join(' ') : ''}`,
                     tipo:          'ordini',
                     url:           '/pages/ordini/ordini_incorso.html',
                 }),
