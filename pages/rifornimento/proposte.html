@@ -233,8 +233,34 @@ document.getElementById('modal-crea').addEventListener('click', async () => {
   btn.disabled = false; btn.textContent = 'Crea';
   if (error) { alert('Errore: ' + error.message); return; }
   modal.classList.add('hidden');
+
+  // Notifica push ai responsabili acquisti dell'emporio
+  _notificaRespAcquistiNuovoOrdine(emporio).catch(() => {});
+
   window.location.href = `proposta.html?id=${data.id}`;
 });
+
+async function _notificaRespAcquistiNuovoOrdine(emporio) {
+  const { data: resps } = await db
+    .from('operatori')
+    .select('id')
+    .ilike('emporio', emporio)
+    .eq('is_resp_acquisti', true);
+  if (!resps?.length) return;
+  const mittente = user?.nome || 'Operatore';
+  await fetch(`${SUPA_URL}/functions/v1/send-notification`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPA_KEY}`, 'apikey': SUPA_KEY },
+    body: JSON.stringify({
+      operatore_ids: resps.map(r => r.id),
+      target:        emporio.toLowerCase(),
+      titolo:        `🛒 Nuovo ordine creato da ${mittente} per ${emporio}`,
+      testo:         '',
+      tipo:          'generali',
+      url:           `/pages/rifornimento/proposte.html`,
+    }),
+  });
+}
 
 carica();
 </script>
