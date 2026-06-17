@@ -1344,6 +1344,10 @@ function calcSubtotal(groupId) {
                 if (error) throw error;
 
                 modificheNonSalvate = false;
+
+                // Notifica push ai responsabili acquisti (await prima del setTimeout — nessun race condition)
+                await _notificaRespAcquistiNuovoOrdineCliente(orderData).catch(() => {});
+
                 showToastM361('Ordine salvato con successo!', 'success', 1500);
                 setTimeout(() => { window.location.href = 'ordini_incorso.html'; }, 800);
             } catch (error) {
@@ -1354,6 +1358,28 @@ function calcSubtotal(groupId) {
             }
 
             return false;
+        }
+
+        async function _notificaRespAcquistiNuovoOrdineCliente(orderData) {
+            const { data: resps } = await _supabase
+                .from('operatori')
+                .select('id')
+                .eq('is_resp_acquisti', true);
+            if (!resps?.length) return;
+            const cliente = [orderData.cliente_nome, orderData.cliente_cognome].filter(Boolean).join(' ') || orderData.titolo || 'cliente';
+            const emporio = orderData.emporio || '';
+            await fetch(SUPABASE_URL + '/functions/v1/send-notification', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY, 'apikey': SUPABASE_KEY },
+                body: JSON.stringify({
+                    operatore_ids: resps.map(r => r.id),
+                    target:        'tutti',
+                    titolo:        `🛍️ Nuovo ordine da ${cliente} — ${emporio}`,
+                    testo:         '',
+                    tipo:          'generali',
+                    url:           '/pages/ordini/ordini_incorso.html',
+                }),
+            });
         }
 
         // ── BOMBONIERE HELPERS ───────────────────────────────────────────────────
