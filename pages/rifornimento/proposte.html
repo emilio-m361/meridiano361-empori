@@ -242,15 +242,17 @@ document.getElementById('modal-crea').addEventListener('click', async () => {
 
 async function _notificaRespAcquistiNuovoOrdine(emporio) {
   // Resp. acquisti riceve notifiche da tutti gli empori, non solo il proprio
-  const { data: resps } = await db
+  const { data: resps, error: respsErr } = await db
     .from('operatori')
     .select('id')
     .eq('is_resp_acquisti', true);
-  if (!resps?.length) return;
+  if (respsErr) { console.error('[notifica ordine] query operatori:', respsErr); return; }
+  if (!resps?.length) { console.warn('[notifica ordine] nessun resp_acquisti trovato'); return; }
   const mittente = user?.nome || 'Operatore';
-  await fetch(`${SUPA_URL}/functions/v1/send-notification`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPA_KEY}`, 'apikey': SUPA_KEY },
+  const res = await fetch(`${SUPA_URL}/functions/v1/send-notification`, {
+    method:   'POST',
+    keepalive: true,
+    headers:  { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPA_KEY}`, 'apikey': SUPA_KEY },
     body: JSON.stringify({
       operatore_ids: resps.map(r => r.id),
       target:        'tutti',
@@ -260,6 +262,8 @@ async function _notificaRespAcquistiNuovoOrdine(emporio) {
       url:           `/pages/rifornimento/proposte.html`,
     }),
   });
+  const json = await res.json().catch(() => ({}));
+  console.log('[notifica ordine] risposta Edge Function:', json);
 }
 
 carica();
