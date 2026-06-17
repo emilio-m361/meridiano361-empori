@@ -1152,16 +1152,36 @@ function buildNav() {
     } catch (e) { console.warn('[M361 push] unsubscribe', e); }
   }
 
+  function _detectPlatform() {
+    const ua = navigator.userAgent;
+    if (/iPhone|iPad|iPod/.test(ua)) return 'ios';
+    if (/Android/.test(ua))           return 'android';
+    return 'desktop';
+  }
+
+  function _getDeviceId() {
+    let id = localStorage.getItem('m361_device_id');
+    if (!id) {
+      id = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+      localStorage.setItem('m361_device_id', id);
+    }
+    return id;
+  }
+
   async function _upsertSubscription(user, sub) {
     const _supabase = getSupabase();
     if (!_supabase || !user?.nome) return;
     const subJson = sub.toJSON ? sub.toJSON() : sub;
     const { error } = await _supabase.from('push_subscriptions').upsert({
       operatore_nome: user.nome,
-      operatore_id:   user.id   || null,
+      operatore_id:   user.id || null,
       emporio:        (user.emporio || '').toLowerCase(),
       endpoint:       subJson.endpoint,
       subscription:   subJson,
+      platform:       _detectPlatform(),
+      device_id:      _getDeviceId(),
+      last_seen_at:   new Date().toISOString(),
+      updated_at:     new Date().toISOString(),
     }, { onConflict: 'endpoint' });
     if (error) throw new Error(error.message);
   }

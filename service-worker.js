@@ -1,4 +1,4 @@
-const CACHE_NAME = 'm361-empori-v10';
+const CACHE_NAME = 'm361-empori-v11';
 
 const PRECACHE_URLS = [
   '/',
@@ -67,14 +67,16 @@ self.addEventListener('push', event => {
       // Tag giornaliero: se arrivano più push con lo stesso tag nello stesso giorno
       // (es. operatore con 2 subscription), la seconda rimpiazza la prima senza
       // rifare il suono/vibrazione (renotify: false), evitando il flash immediato.
-      const today = new Date().toISOString().slice(0, 10);
+      // Usa il tag dal payload se presente (univoco per invio), altrimenti fallback giornaliero.
+      // renotify:true garantisce suono/vibrazione anche se c'è già una notifica con lo stesso tag.
+      const tag = data.tag || `m361-${new Date().toISOString().slice(0, 10)}`;
       return self.registration.showNotification(data.title, {
         body:               data.body || '',
         icon:               '/icons/icon-192.png',
         badge:              '/icons/icon-192.png',
         requireInteraction: true,
-        tag:                `m361-${today}`,
-        renotify:           false,
+        tag,
+        renotify:           true,
         data:               { url: data.url },
       });
     })

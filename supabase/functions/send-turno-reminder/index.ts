@@ -245,15 +245,28 @@ Deno.serve(async (req) => {
 
     results.log.push({ nome, turni: fasceDiag, body });
 
+    // Tag univoco per invio: non interferisce con push successive sullo stesso device
+    const pushTag = `m361-turno-${results.date}-${Date.now()}`;
+
     const payload = JSON.stringify({
       title: "M361 — Il tuo turno oggi",
       body,
       url: "/pages/turni/turni.html",
+      tag: pushTag,
     });
 
     for (const sub of operatoreSubs) {
       try {
-        if (!dryrun) await webpush.sendNotification(sub.subscription as webpush.PushSubscription, payload);
+        if (!dryrun) {
+          await webpush.sendNotification(
+            sub.subscription as webpush.PushSubscription,
+            payload,
+            { urgency: "high", TTL: 43200 }, // urgency:high forza wake-up su Android anche con battery opt
+          );
+          await db.from("push_subscriptions")
+            .update({ last_push_at: new Date().toISOString(), last_push_ok: true })
+            .eq("endpoint", sub.endpoint);
+        }
         results.sent++;
       } catch (e: unknown) {
         const status = (e as { statusCode?: number })?.statusCode;
@@ -265,8 +278,13 @@ Deno.serve(async (req) => {
           last.motivo_skip = (last.motivo_skip ?? "") +
             `token scaduto rimosso (…${sub.endpoint.slice(-20)}) `;
         } else {
+          if (!dryrun) {
+            await db.from("push_subscriptions")
+              .update({ last_push_at: new Date().toISOString(), last_push_ok: false })
+              .eq("endpoint", sub.endpoint);
+          }
           results.failed++;
-          results.errors.push(`${nome}: ${msg.slice(0, 120)}`);
+          results.errors.push(`${nome} [${sub.endpoint.slice(-12)}]: ${msg.slice(0, 120)}`);
         }
       }
     }

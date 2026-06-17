@@ -1860,14 +1860,26 @@
     let _accessiCache = [];
     let _accessiFiltro = 'tutti';
 
+    let _pushSubsMap = {}; // operatore_id → [{platform, last_push_at, last_push_ok, last_seen_at}]
+
     async function caricaAccessi() {
         const wrap = document.getElementById('accessi-tabella-wrap');
         if (!wrap) return;
 
-        const { data: operatori, error } = await db
-            .from('operatori')
-            .select('id, nome, email, emporio, ruolo, attivo, first_login_at, last_login_at')
-            .order('nome', { ascending: true });
+        const [{ data: operatori, error }, { data: pushSubs }] = await Promise.all([
+            db.from('operatori')
+              .select('id, nome, email, emporio, ruolo, attivo, first_login_at, last_login_at')
+              .order('nome', { ascending: true }),
+            db.from('push_subscriptions')
+              .select('operatore_id, platform, last_push_at, last_push_ok, last_seen_at'),
+        ]);
+
+        _pushSubsMap = {};
+        for (const s of pushSubs || []) {
+            if (!s.operatore_id) continue;
+            if (!_pushSubsMap[s.operatore_id]) _pushSubsMap[s.operatore_id] = [];
+            _pushSubsMap[s.operatore_id].push(s);
+        }
 
         if (error) {
             wrap.innerHTML = `<div style="padding:20px;color:#dc2626;font-size:14px">Errore: ${escHtml(error.message)}</div>`;
@@ -1927,19 +1939,40 @@
             return;
         }
 
+        const PLAT_ICON = { android: '🤖', ios: '🍎', desktop: '💻' };
+
         const rows = filtered.map(op => {
-            const loggato      = !!op.last_login_at;
-            const primoLogin   = op.first_login_at ? fmtDt(op.first_login_at) : '—';
-            const ultimoLoginFmt = op.last_login_at ? fmtDt(op.last_login_at) : '—';
-            const rel          = op.last_login_at ? _relativeTime(op.last_login_at) : null;
-            const ultimoHtml   = op.last_login_at
+            const loggato        = !!op.last_login_at;
+            const primoLogin     = op.first_login_at ? fmtDt(op.first_login_at) : '—';
+            const ultimoLoginFmt = op.last_login_at  ? fmtDt(op.last_login_at)  : '—';
+            const rel            = op.last_login_at  ? _relativeTime(op.last_login_at) : null;
+            const ultimoHtml     = op.last_login_at
                 ? `<span title="${escHtml(ultimoLoginFmt)}">${escHtml(rel || ultimoLoginFmt)}</span>
                    <div style="font-size:10px;color:#94a3b8;margin-top:2px">${escHtml(ultimoLoginFmt)}</div>`
                 : '—';
-            const statoHtml    = loggato
+            const statoHtml = loggato
                 ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700">✓ Loggato</span>`
                 : `<span style="display:inline-flex;align-items:center;gap:5px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700">✕ Mai connesso</span>`;
-            const empLabel     = EMPORI_LABEL[normalizzaEmporio(op.emporio)] || op.emporio || '—';
+            const empLabel = EMPORI_LABEL[normalizzaEmporio(op.emporio)] || op.emporio || '—';
+
+            // Colonna Push: elenco dispositivi con esito ultimo invio
+            const subs = _pushSubsMap[op.id] || [];
+            let pushHtml = '—';
+            if (subs.length) {
+                pushHtml = subs.map(s => {
+                    const icon  = PLAT_ICON[s.platform] || '📡';
+                    const plat  = s.platform || '?';
+                    const ok    = s.last_push_ok;
+                    const when  = s.last_push_at ? _relativeTime(s.last_push_at) : 'mai inviata';
+                    const dot   = ok === true  ? '🟢' : ok === false ? '🔴' : '⚪';
+                    const seen  = s.last_seen_at ? fmtDt(s.last_seen_at) : '—';
+                    return `<div title="Piattaforma: ${plat}\nUltima reg.: ${seen}\nUltimo invio: ${s.last_push_at ? fmtDt(s.last_push_at) : 'mai'}"
+                              style="display:flex;align-items:center;gap:4px;font-size:11px;color:#475569;margin-bottom:2px">
+                              ${icon} ${dot} <span>${escHtml(when)}</span>
+                            </div>`;
+                }).join('');
+            }
+
             return `
                 <tr>
                     <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9">
@@ -1950,6 +1983,7 @@
                     <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9">${statoHtml}</td>
                     <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:12px;color:#475569;white-space:nowrap">${escHtml(primoLogin)}</td>
                     <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:12px;color:#475569">${ultimoHtml}</td>
+                    <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9">${pushHtml}</td>
                 </tr>`;
         }).join('');
 
@@ -1962,6 +1996,7 @@
                         <th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Stato</th>
                         <th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Primo login</th>
                         <th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Ultimo accesso</th>
+                        <th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Push</th>
                     </tr>
                 </thead>
                 <tbody>${rows}</tbody>
