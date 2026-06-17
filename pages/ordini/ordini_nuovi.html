@@ -1374,7 +1374,7 @@ function calcSubtotal(groupId) {
                 body: JSON.stringify({
                     operatore_ids: resps.map(r => r.id),
                     target:        'tutti',
-                    titolo:        `🛍️ Nuovo ordine da ${cliente} — ${emporio}`,
+                    titolo:        `🛍️ Nuovo ordine creato da ${orderData.operatore || 'Operatore'} per ${emporio}`,
                     testo:         '',
                     tipo:          'generali',
                     url:           '/pages/ordini/ordini_incorso.html',
