@@ -1018,7 +1018,8 @@
                     <div class="op-azioni-riga">
                         <button onclick="apriModalModifica('${safeId}')" title="Modifica anagrafica">✏️</button>
                         <button onclick="apriModalPermessi('${safeId}','${safeName}')" title="Gestisci accessi">🔒</button>
-                        <button onclick="inviaInvitoRiga(this)" title="Invia invito accesso app" class="btn-invita-op" style="background:#dbeafe;border-color:#93c5fd;color:#1d4ed8;font-size:10px;font-weight:700;width:auto;padding:0 6px">INVITA</button>
+                        <button onclick="inviaInvitoRiga(this)" title="Crea accesso app (non resetta la password se già esiste)" class="btn-invita-op" style="background:#dbeafe;border-color:#93c5fd;color:#1d4ed8;font-size:10px;font-weight:700;width:auto;padding:0 6px">INVITA</button>
+                        <button onclick="reimpostaPasswordRiga(this)" title="Reimposta password" class="btn-invita-op" style="background:#fef9c3;border-color:#fbbf24;color:#92400e;font-size:10px;font-weight:700;width:auto;padding:0 6px">PW</button>
                         <button onclick="confermaEliminaOperatore('${safeId}','${safeName}')" title="Elimina operatore" class="btn-elimina-op">🗑</button>
                     </div>
                 </td>
@@ -1051,8 +1052,8 @@
 
     async function inviaInvito(email) {
         if (!email) { alert('Aggiungi prima l\'email all\'operatore tramite ✏️ Modifica.'); return; }
-        if (!confirm('Creare/ripristinare l\'accesso per ' + email + ' con password 123456?')) return;
-        showToast('Invio in corso…', 'info');
+        if (!confirm('Creare accesso per ' + email + ' con password 123456?\n\n(Se l\'account esiste già, la password NON viene modificata.)')) return;
+        showToast('Creazione accesso…', 'info');
         try {
             const res  = await fetch(`${SUPA_URL}/functions/v1/invite-user`, {
                 method:  'POST',
@@ -1062,8 +1063,35 @@
             const json = await res.json();
             if (!res.ok || json.error) {
                 showToast('Errore: ' + (json.error || res.statusText), 'err');
+            } else if (json.already_exists) {
+                showToast(`${email} ha già un account — password invariata`, 'info');
             } else {
-                showToast(`Invito inviato a ${email}`, 'ok');
+                showToast(`Accesso creato per ${email} — password: 123456`, 'ok');
+            }
+        } catch (e) {
+            showToast('Errore di rete: ' + e.message, 'err');
+        }
+    }
+
+    async function reimpostaPasswordRiga(btn) {
+        const email = btn.closest('tr').dataset.email;
+        if (!email) { alert('Email mancante.'); return; }
+        const nuovaPw = prompt(`Nuova password per ${email}:\n(lascia vuoto per usare 123456)`);
+        if (nuovaPw === null) return; // annullato
+        const pw = nuovaPw.trim() || '123456';
+        if (!confirm(`Reimpostare la password di ${email} a "${pw}"?\n\nQuesta azione è irreversibile.`)) return;
+        showToast('Reset password…', 'info');
+        try {
+            const res  = await fetch(`${SUPA_URL}/functions/v1/invite-user`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json', 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY },
+                body:    JSON.stringify({ email, password: pw, reset: true }),
+            });
+            const json = await res.json();
+            if (!res.ok || json.error) {
+                showToast('Errore: ' + (json.error || res.statusText), 'err');
+            } else {
+                showToast(`Password di ${email} reimpostata a "${pw}"`, 'ok');
             }
         } catch (e) {
             showToast('Errore di rete: ' + e.message, 'err');
