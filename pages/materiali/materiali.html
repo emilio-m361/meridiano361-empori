@@ -227,8 +227,9 @@ async function render() {
           const url = `${SUPABASE_URL}/storage/v1/object/public/materiali/${f.storage_path}`;
           const data = f.created_at ? new Date(f.created_at).toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' }) : '';
           const dim = f.dimensione ? formatDim(f.dimensione) : '';
-          const deleteBtnHtml = _isAdmin
-            ? `<button class="btn-icon" onclick="eliminaFile('${f.id}','${escJs(f.storage_path)}')" title="Elimina file"><i class="fas fa-trash"></i></button>`
+          const adminBtnsHtml = _isAdmin
+            ? `<button class="btn-icon" onclick="rinominaFile('${f.id}','${escJs(f.nome)}')" title="Rinomina"><i class="fas fa-pen"></i></button>
+               <button class="btn-icon" onclick="eliminaFile('${f.id}','${escJs(f.storage_path)}')" title="Elimina file"><i class="fas fa-trash"></i></button>`
             : '';
           html += `<div class="file-row">
             <div class="icon-circle" style="background:${bg}">
@@ -239,7 +240,7 @@ async function render() {
               <div class="file-meta">${[data, dim].filter(Boolean).join(' · ')}</div>
             </div>
             <a href="${url}" target="_blank" class="btn-icon btn-icon-dl" title="Scarica / Apri"><i class="fas fa-download"></i></a>
-            ${deleteBtnHtml}
+            ${adminBtnsHtml}
           </div>`;
         });
         html += `</div>`;
@@ -349,8 +350,9 @@ async function cercaFile(q) {
       const url = `${SUPABASE_URL}/storage/v1/object/public/materiali/${f.storage_path}`;
       const nomeCartella = f.cartella_id ? (cartellaMap[f.cartella_id] || 'Cartella') : 'Root';
       const dim = f.dimensione ? formatDim(f.dimensione) : '';
-      const deleteBtnHtml = _isAdmin
-        ? `<button class="btn-icon" onclick="eliminaFile('${f.id}','${escJs(f.storage_path)}')" title="Elimina file"><i class="fas fa-trash"></i></button>`
+      const adminBtnsHtml = _isAdmin
+        ? `<button class="btn-icon" onclick="rinominaFile('${f.id}','${escJs(f.nome)}')" title="Rinomina"><i class="fas fa-pen"></i></button>
+           <button class="btn-icon" onclick="eliminaFile('${f.id}','${escJs(f.storage_path)}')" title="Elimina file"><i class="fas fa-trash"></i></button>`
         : '';
       html += `<div class="file-row">
         <div class="icon-circle" style="background:${bg}">
@@ -361,7 +363,7 @@ async function cercaFile(q) {
           <div class="file-meta"><span class="tag-cartella">${escHtml(nomeCartella)}</span>${dim ? ' · ' + dim : ''}</div>
         </div>
         <a href="${url}" target="_blank" class="btn-icon btn-icon-dl" title="Scarica / Apri"><i class="fas fa-download"></i></a>
-        ${deleteBtnHtml}
+        ${adminBtnsHtml}
       </div>`;
     });
     html += `</div>`;
@@ -460,6 +462,15 @@ async function eliminaFile(id, storagePath) {
   const { error: dbErr } = await db.from('materiali_file').delete().eq('id', id);
   if (dbErr) { showToast('File eliminato dallo storage ma errore nel DB: ' + dbErr.message, 'error'); return; }
   showToast('File eliminato', 'success');
+  await render();
+}
+
+async function rinominaFile(id, nomeAttuale) {
+  const nuovoNome = prompt('Nuovo nome del file:', nomeAttuale);
+  if (!nuovoNome || !nuovoNome.trim() || nuovoNome.trim() === nomeAttuale) return;
+  const { error } = await db.from('materiali_file').update({ nome: nuovoNome.trim() }).eq('id', id);
+  if (error) { showToast('Errore nella rinomina: ' + error.message, 'error'); return; }
+  showToast('File rinominato', 'success');
   await render();
 }
 
