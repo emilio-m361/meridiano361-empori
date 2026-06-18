@@ -146,8 +146,9 @@ let _isAdmin = false;
 let searchTimeout = null;
 
 async function init() {
-  // isAdmin() è definita in auth.js — non usare lo stesso nome come variabile
-  _isAdmin = typeof isAdmin === 'function' ? isAdmin() : false;
+  const _u = JSON.parse(localStorage.getItem('m361_user') || '{}');
+  // isAdmin() da auth.js (ruolo admin/dipendente) oppure is_gestore_materiali per utenti selezionati
+  _isAdmin = (typeof isAdmin === 'function' ? isAdmin() : false) || _u.is_gestore_materiali === true;
   if (_isAdmin) document.getElementById('admin-bar').style.display = 'block';
   await render();
 }
