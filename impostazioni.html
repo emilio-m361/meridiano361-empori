@@ -1367,7 +1367,8 @@
         const savedId = await _doSave(isNuovo, idOrig, payload);
         if (savedId) {
             if (isNuovo && email) await _creaAccountAuth(email);
-            if (!isNuovo) await saveNotifPrefs(savedId);
+            if (isNuovo) await _initNotifPrefs(savedId);
+            else         await saveNotifPrefs(savedId);
             afterSave();
         }
         } catch (err) {
@@ -1901,6 +1902,16 @@
         for (const [tipo, abilitato] of Object.entries(values)) {
             await db.from('operatore_notif_prefs').upsert(
                 { operatore_id: opId, tipo, abilitato },
+                { onConflict: 'operatore_id,tipo' }
+            );
+        }
+    }
+
+    async function _initNotifPrefs(opId) {
+        if (!opId) return;
+        for (const tipo of NOTIF_TIPI) {
+            await db.from('operatore_notif_prefs').upsert(
+                { operatore_id: opId, tipo, abilitato: true },
                 { onConflict: 'operatore_id,tipo' }
             );
         }
