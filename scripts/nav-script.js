@@ -155,8 +155,9 @@ body { font-family: 'Inter', sans-serif; padding-top: 56px; padding-bottom: 68px
 #back-btn:hover { color:#B5453A; }
 #back-btn.hidden { display:none; }
 @media(max-width:480px) { #m361-header #header-title { font-size:12px;max-width:120px; } }
-#m361-nav { position:fixed;bottom:0;left:0;right:0;height:60px;background:#B5453A;border-top:2px solid #9e3f3f;z-index:9000;display:flex;align-items:stretch;justify-content:flex-start;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;box-shadow:0 -2px 10px rgba(0,0,0,.15);padding-bottom:env(safe-area-inset-bottom,0px); }
-#m361-nav::-webkit-scrollbar { display:none; }
+#m361-nav { position:fixed;bottom:0;left:0;right:0;height:60px;background:#B5453A;border-top:2px solid #9e3f3f;z-index:9000;display:flex;align-items:stretch;justify-content:flex-start;overflow:hidden;box-shadow:0 -2px 10px rgba(0,0,0,.15);padding-bottom:env(safe-area-inset-bottom,0px); }
+#m361-nav-scroll { flex:1;overflow-x:auto;overflow-y:hidden;display:flex;align-items:stretch;scrollbar-width:none;-webkit-overflow-scrolling:touch; }
+#m361-nav-scroll::-webkit-scrollbar { display:none; }
 @supports(padding-bottom:env(safe-area-inset-bottom)) { #m361-nav { height:calc(60px + env(safe-area-inset-bottom)); } }
 .mn-sep { width:1px;background:rgba(255,255,255,.18);margin:12px 0;flex-shrink:0; }
 .mn-item { display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0 10px;min-width:52px;text-decoration:none;cursor:pointer;transition:all .12s;border:none;background:transparent;flex-shrink:0;font-family:'Inter',sans-serif;-webkit-tap-highlight-color:transparent;min-height:44px; }
@@ -491,9 +492,8 @@ body { font-family: 'Inter', sans-serif; padding-top: 56px; padding-bottom: 68px
      BUILD BOTTOM NAV
   ═══════════════════════════════════════ */
 function buildNav() {
-  // Rimuove eventuali nav esistenti
   document.querySelectorAll('#m361-nav, nav.bottom-nav, .bottom-nav').forEach(n => n.remove());
-  
+
   const currentId = typeof getCurrentId === 'function' ? getCurrentId() : '';
   const userSections = typeof getUserSections === 'function' ? getUserSections() : [];
   const user = JSON.parse(localStorage.getItem('m361_user'));
@@ -502,59 +502,73 @@ function buildNav() {
   nav.id = 'm361-nav';
   nav.setAttribute('role', 'navigation');
 
-  // Funzione per creare i singoli link (mn-item)
+  // Scroll wrapper for all main items
+  const scrollWrap = document.createElement('div');
+  scrollWrap.id = 'm361-nav-scroll';
+
   const renderItem = (item) => {
     const isCurrent = item.id === currentId || window.location.pathname.includes(item.href);
     const a = document.createElement('a');
-    a.className = 'mn-item' 
+    a.className = 'mn-item'
       + (item.active   ? ' mn-active'  : ' mn-wip')
       + (isCurrent     ? ' mn-current' : '')
       + (item.isLogout ? ' mn-logout'  : '');
-    
     a.href = item.isLogout ? '#' : (item.active ? BASE + item.href : '#');
-    
     if (item.isLogout) {
       a.addEventListener('click', e => {
         e.preventDefault();
         if (confirm('Vuoi uscire?')) doLogout();
       });
     }
-    
     a.innerHTML = `<i class="fas ${item.icon}"></i><span>${item.label}</span>`;
     return a;
   };
 
-  // Carica le voci dal tuo array NAV esistente
+  let logoutItem = null;
+
   if (typeof NAV !== 'undefined') {
     NAV.forEach((section, si) => {
-      if (si > 0) {
+      const visibleNonLogout = section.items.filter(item => {
+        if (item.isLogout) return false;
+        if (item.section && userSections.length > 0 && !userSections.includes(item.section)) return false;
+        return true;
+      });
+      if (si > 0 && visibleNonLogout.length > 0) {
         const sep = document.createElement('div');
         sep.className = 'mn-sep';
-        nav.appendChild(sep);
+        scrollWrap.appendChild(sep);
       }
       section.items.forEach(item => {
-        // Filtro permessi sezioni
         if (item.section && userSections.length > 0 && !userSections.includes(item.section)) return;
-        nav.appendChild(renderItem(item));
+        if (item.isLogout) { logoutItem = item; return; }
+        scrollWrap.appendChild(renderItem(item));
       });
     });
   }
 
-  // Tasto Impostazioni: admin completo o responsabile del personale
+  // Tasto Impostazioni nel scroll wrap
   if (user && (user.email === 'e.mazzolari@meridiano361.it' || user.is_resp_personale)) {
     const sep = document.createElement('div');
     sep.className = 'mn-sep';
-    nav.appendChild(sep);
-
+    scrollWrap.appendChild(sep);
     const isFullAdmin = user.email === 'e.mazzolari@meridiano361.it';
-    const adminBtn = {
+    scrollWrap.appendChild(renderItem({
       id: 'impostazioni',
       label: isFullAdmin ? 'Admin' : 'Personale',
       icon: isFullAdmin ? 'fa-gear' : 'fa-users-gear',
       href: 'impostazioni.html',
       active: true
-    };
-    nav.appendChild(renderItem(adminBtn));
+    }));
+  }
+
+  nav.appendChild(scrollWrap);
+
+  // ESCI fisso a destra, fuori dallo scroll
+  if (logoutItem) {
+    const sep = document.createElement('div');
+    sep.className = 'mn-sep';
+    nav.appendChild(sep);
+    nav.appendChild(renderItem(logoutItem));
   }
 
   document.body.appendChild(nav);
