@@ -679,18 +679,23 @@
                 <td class="p-1"><input type="text" class="price-input w-full border-gray-200 border rounded-lg p-2 text-right" value="€ ${(productData.prezzo || 0).toFixed(2).replace('.', ',')}"></td>
                 <td class="p-1"><input type="number" required class="qty-input w-full border-gray-200 border rounded-lg p-2 text-center" value="${productData.qta || 1}" min="1"></td>
                 <td class="p-1 bg-green-50"><input type="number" class="pronta-input w-full border-green-200 border rounded-lg p-2 text-center" value="${productData.merce_pronta || 0}" min="0"></td>
-                <td class="p-1 bg-slate-50"><input type="number" class="forn-input w-full border-slate-200 border rounded-lg p-2 text-center" value="${productData.da_forn || 0}" min="0"></td>
+                <td class="p-1 bg-slate-50">
+                    <input type="number" class="forn-input w-full border-slate-200 border rounded-lg p-2 text-center" value="${productData.da_forn || 0}" min="0">
+                    <input type="hidden" class="forn-at-input" value="${productData.da_forn_at || ''}">
+                </td>
                 <td class="p-1 bg-slate-50">
                     <div class="flex flex-col gap-1">
                         <input type="number" class="emp-q-input w-full border-slate-200 border rounded-lg p-1 text-center" value="${productData.da_emporio_qta || 0}" min="0">
                         <select class="emporio-dropdown w-full border-slate-200 border rounded-lg p-1 text-[9px] bg-white">${getEmporioOptions()}</select>
                     </div>
+                    <input type="hidden" class="emp-at-input" value="${productData.da_emporio_at || ''}">
                 </td>
                 <td class="p-1 bg-slate-50">
                     <div class="flex flex-col gap-1">
                         <input type="number" class="altri-q-input w-full border-slate-200 border rounded-lg p-1 text-center" value="${productData.da_altri_qta || 0}" min="0">
                         <input type="text" placeholder="Specifica..." class="altri-spec-input w-full border-slate-200 border rounded-lg p-1 text-[9px] bg-white" value="${productData.da_altri_spec || productData.da_altri_nome || ''}">
                     </div>
+                    <input type="hidden" class="altri-at-input" value="${productData.da_altri_at || ''}">
                 </td>
                 <td class="p-1 bg-red-50 text-center font-bold text-m361-red do-value">0</td>
                 <td class="p-1 text-right pr-4 font-bold">€ <span class="row-total">0,00</span></td>
@@ -1241,6 +1246,7 @@
             try {
                 const articoli = [];
                 const groupsSavedOmaggio = new Set();
+                const _now = new Date().toISOString();
                 document.querySelectorAll('.product-row').forEach(row => {
                     const gruppoId = parseInt(row.closest('[id^="group-"]').id.replace('group-', ''));
                     const tipologiaInput = document.getElementById(`tipologia-name-${gruppoId}`);
@@ -1250,6 +1256,13 @@
                     const confezCosto = parseFloat(costInp?.value.replace('€','').replace(',','.').trim()) || 0;
                     const qta = parseInt(row.querySelector('.qty-input').value) || 0;
 
+                    const daForn     = parseInt(row.querySelector('.forn-input').value) || 0;
+                    const daEmpQta   = parseInt(row.querySelector('.emp-q-input').value) || 0;
+                    const daAltriQta = parseInt(row.querySelector('.altri-q-input').value) || 0;
+                    const prevFornAt   = row.querySelector('.forn-at-input')?.value || null;
+                    const prevEmpAt    = row.querySelector('.emp-at-input')?.value || null;
+                    const prevAltriAt  = row.querySelector('.altri-at-input')?.value || null;
+
                     articoli.push({
                         gruppo_id: gruppoId,
                         tipologia: tipologiaNome,
@@ -1258,10 +1271,13 @@
                         prezzo: parseFloat(row.querySelector('.price-input').value.replace('€','').replace(',','.').trim()) || 0,
                         qta,
                         merce_pronta: parseInt(row.querySelector('.pronta-input').value) || 0,
-                        da_forn: parseInt(row.querySelector('.forn-input').value) || 0,
-                        da_emporio_qta: parseInt(row.querySelector('.emp-q-input').value) || 0,
+                        da_forn:       daForn,
+                        da_forn_at:    daForn     > 0 ? (prevFornAt  || _now) : null,
+                        da_emporio_qta: daEmpQta,
+                        da_emporio_at:  daEmpQta  > 0 ? (prevEmpAt   || _now) : null,
                         da_emporio_nome: row.querySelector('.emporio-dropdown').value,
-                        da_altri_qta: parseInt(row.querySelector('.altri-q-input').value) || 0,
+                        da_altri_qta:  daAltriQta,
+                        da_altri_at:   daAltriQta > 0 ? (prevAltriAt || _now) : null,
                         da_altri_spec: row.querySelector('.altri-spec-input').value,
                         totale: parseFloat(row.querySelector('.row-total').textContent.replace(',', '.')) || 0,
                         confezionamento: document.getElementById(`check-conf-${gruppoId}`)?.checked || false,

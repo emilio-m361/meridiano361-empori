@@ -1266,6 +1266,10 @@ function calcSubtotal(groupId) {
                     const tipologiaInput = document.getElementById(`tipologia-name-${gruppoId}`);
                     const tipologiaNome = tipologiaInput?.value || '';
 
+                    const _now = new Date().toISOString();
+                    const daForn     = parseInt(row.querySelector('.forn-input').value) || 0;
+                    const daEmpQta   = parseInt(row.querySelector('.emp-q-input').value) || 0;
+                    const daAltriQta = parseInt(row.querySelector('.altri-q-input').value) || 0;
                     articoli.push({
                         gruppo_id: gruppoId,
                         tipologia: tipologiaNome,
@@ -1274,10 +1278,13 @@ function calcSubtotal(groupId) {
                         prezzo: parseFloat(row.querySelector('.price-input').value.replace('€', '').replace(',', '.').trim()) || 0,
                         qta,
                         merce_pronta: parseInt(row.querySelector('.pronta-input').value) || 0,
-                        da_forn: parseInt(row.querySelector('.forn-input').value) || 0,
-                        da_emporio_qta: parseInt(row.querySelector('.emp-q-input').value) || 0,
+                        da_forn:       daForn,
+                        da_forn_at:    daForn     > 0 ? _now : null,
+                        da_emporio_qta: daEmpQta,
+                        da_emporio_at:  daEmpQta  > 0 ? _now : null,
                         da_emporio_nome: row.querySelector('.emporio-dropdown').value,
-                        da_altri_qta: parseInt(row.querySelector('.altri-q-input').value) || 0,
+                        da_altri_qta:  daAltriQta,
+                        da_altri_at:   daAltriQta > 0 ? _now : null,
                         da_altri_spec: row.querySelector('.altri-spec-input').value,
                         totale: parseFloat(row.querySelector('.row-total').textContent.replace(',', '.')) || 0,
                         confezionamento: isConfez,
