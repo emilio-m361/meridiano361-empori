@@ -851,28 +851,20 @@
                 ? new Date(order.data_ordine).toLocaleDateString('it-IT')
                 : '—';
             
-            const _fmtOrdAt = iso => {
-                if (!iso) return null;
-                const d = new Date(iso);
-                return d.toLocaleDateString('it-IT', {day:'2-digit',month:'short'}) + ' ' + d.toLocaleTimeString('it-IT', {hour:'2-digit',minute:'2-digit'});
-            };
             const righe = articoli.map(item => {
                 const qta = item.qta || 0;
                 const pronta = item.merce_pronta || 0;
                 const tuttoProto = pronta >= qta;
-                const pills = [];
-                if ((item.da_forn || 0) > 0 && item.da_forn_at)       pills.push(`<span style="background:#f1f5f9;color:#475569;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600">Forn. ${_fmtOrdAt(item.da_forn_at)}</span>`);
-                if ((item.da_emporio_qta || 0) > 0 && item.da_emporio_at) pills.push(`<span style="background:#f1f5f9;color:#475569;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600">Emp. ${_fmtOrdAt(item.da_emporio_at)}</span>`);
-                if ((item.da_altri_qta || 0) > 0 && item.da_altri_at)  pills.push(`<span style="background:#f1f5f9;color:#475569;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600">Altri ${_fmtOrdAt(item.da_altri_at)}</span>`);
-                const subRow = pills.length ? `<tr><td colspan="6" style="padding:0 10px 8px"><div style="display:flex;gap:5px;flex-wrap:wrap">${pills.join('')}</div></td></tr>` : '';
-                return `<tr>
+                const hasAt = ((item.da_forn || 0) > 0 && item.da_forn_at) || ((item.da_emporio_qta || 0) > 0 && item.da_emporio_at) || ((item.da_altri_qta || 0) > 0 && item.da_altri_at);
+                const trAttrs = hasAt ? `onclick="_showOrdAtTooltip(event,this)" style="cursor:pointer" data-forn-at="${item.da_forn_at||''}" data-emp-at="${item.da_emporio_at||''}" data-altri-at="${item.da_altri_at||''}"` : '';
+                return `<tr ${trAttrs}>
                     <td style="padding:8px 10px;font-family:monospace;font-size:12px">${item.codice || '—'}</td>
                     <td style="padding:8px 10px">${item.descrizione || '—'}</td>
                     <td style="padding:8px 10px;text-align:right;font-family:monospace">€ ${parseFloat(item.prezzo||0).toFixed(2)}</td>
                     <td style="padding:8px 10px;text-align:center;font-weight:700">${qta}</td>
                     <td style="padding:8px 10px;text-align:center;font-weight:700;${tuttoProto ? 'color:#16a34a;background:#dcfce7' : 'color:#94a3b8'}">${pronta}</td>
                     <td style="padding:8px 10px;text-align:right;font-weight:700;font-family:monospace">€ ${parseFloat(item.totale||0).toFixed(2)}</td>
-                </tr>${subRow}`;
+                </tr>`;
             }).join('');
 
             const waLink = order.wa_attivo && order.cliente_cellulare
@@ -1079,6 +1071,31 @@
             <div id="modal-body" style="padding:24px;overflow-y:auto;flex:1"></div>
         </div>
     </div>
+
+    <div id="ord-at-tooltip" style="display:none;position:fixed;z-index:9999;background:#1e293b;color:#f8fafc;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.25);line-height:1.7"></div>
+    <script>
+        function _showOrdAtTooltip(e, row) {
+            e.stopPropagation();
+            const _fmt = iso => {
+                if (!iso) return null;
+                const d = new Date(iso);
+                return d.toLocaleDateString('it-IT', {day:'2-digit',month:'short',year:'numeric'}) + ' alle ' + d.toLocaleTimeString('it-IT', {hour:'2-digit',minute:'2-digit'});
+            };
+            const lines = [];
+            if (row.dataset.fornAt)   lines.push('Fornitore — ordinato il ' + _fmt(row.dataset.fornAt));
+            if (row.dataset.empAt)    lines.push('Empori — ordinato il '    + _fmt(row.dataset.empAt));
+            if (row.dataset.altriAt)  lines.push('Altri — ordinato il '     + _fmt(row.dataset.altriAt));
+            if (!lines.length) return;
+            const tooltip = document.getElementById('ord-at-tooltip');
+            tooltip.innerHTML = lines.map(l => `<div>${l}</div>`).join('');
+            tooltip.style.display = 'block';
+            const rect = e.currentTarget.getBoundingClientRect();
+            const left = Math.min(e.clientX, window.innerWidth - tooltip.offsetWidth - 8);
+            tooltip.style.top  = (rect.bottom + 4) + 'px';
+            tooltip.style.left = Math.max(8, left) + 'px';
+        }
+        document.addEventListener('click', () => { const t = document.getElementById('ord-at-tooltip'); if (t) t.style.display = 'none'; });
+    </script>
 
 </body>
 </html>
