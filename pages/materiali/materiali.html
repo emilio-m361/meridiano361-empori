@@ -45,6 +45,13 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .admin-bar { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 12px 16px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .drop-zone { border: 2px dashed #e2e8f0; border-radius: 14px; padding: 24px 16px; text-align: center; cursor: pointer; transition: all .2s; margin-top: 10px; background: #fafafa; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .drop-zone i { font-size: 28px; color: #cbd5e1; transition: color .2s; }
+    .drop-zone span { font-size: 13px; font-weight: 700; color: #94a3b8; transition: color .2s; }
+    .drop-zone small { font-size: 11px; color: #cbd5e1; }
+    .drop-zone:hover, .drop-zone.drag-over { border-color: #B5453A; background: #fdf1f0; }
+    .drop-zone:hover i, .drop-zone.drag-over i { color: #B5453A; }
+    .drop-zone:hover span, .drop-zone.drag-over span { color: #B5453A; }
 
     .tag-cartella { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #94a3b8; background: #f1f5f9; padding: 2px 8px; border-radius: 6px; }
 
@@ -100,6 +107,15 @@
     <div class="admin-bar">
       <button class="btn-primary" onclick="nuovaCartella()"><i class="fas fa-folder-plus"></i> Nuova cartella</button>
       <button class="btn-secondary" onclick="caricaFile()"><i class="fas fa-upload"></i> Carica file</button>
+    </div>
+    <div id="drop-zone" class="drop-zone"
+         onclick="caricaFile()"
+         ondragover="onDragOver(event)"
+         ondragleave="onDragLeave(event)"
+         ondrop="onDrop(event)">
+      <i class="fas fa-cloud-arrow-up"></i>
+      <span>Trascina qui i file da caricare</span>
+      <small>oppure clicca per scegliere</small>
     </div>
   </div>
 
@@ -370,42 +386,62 @@ async function nuovaCartella() {
   await render();
 }
 
-async function caricaFile() {
+async function uploadFiles(files) {
+  if (!files.length) return;
+  showToast(`Caricamento di ${files.length} file…`, 'info');
+  const user = JSON.parse(localStorage.getItem('m361_user') || '{}');
+  let ok = 0, err = 0;
+  for (const file of files) {
+    const uuid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+    const safeName = file.name.replace(/[^a-zA-Z0-9._\-À-ÿ]/g, '_');
+    const path = `${uuid}_${safeName}`;
+    const { error: upErr } = await db.storage.from('materiali').upload(path, file, { upsert: false });
+    if (upErr) { err++; continue; }
+    const { error: dbErr } = await db.from('materiali_file').insert({
+      cartella_id: currentCartella || null,
+      nome: file.name,
+      storage_path: path,
+      dimensione: file.size,
+      tipo_mime: file.type || null,
+      created_by: user.nome || null
+    });
+    if (dbErr) {
+      await db.storage.from('materiali').remove([path]);
+      err++;
+    } else {
+      ok++;
+    }
+  }
+  if (ok > 0) showToast(`${ok} file caricato${ok !== 1 ? 'i' : ''} con successo`, 'success');
+  if (err > 0) showToast(`${err} file non caricato${err !== 1 ? 'i' : ''} per errore`, 'error');
+  await render();
+}
+
+function caricaFile() {
   const input = document.createElement('input');
   input.type = 'file';
   input.multiple = true;
-  input.onchange = async () => {
-    const files = Array.from(input.files || []);
-    if (!files.length) return;
-    showToast(`Caricamento di ${files.length} file…`, 'info');
-    const user = JSON.parse(localStorage.getItem('m361_user') || '{}');
-    let ok = 0, err = 0;
-    for (const file of files) {
-      const uuid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
-      const safeName = file.name.replace(/[^a-zA-Z0-9._\-À-ÿ]/g, '_');
-      const path = `${uuid}_${safeName}`;
-      const { error: upErr } = await db.storage.from('materiali').upload(path, file, { upsert: false });
-      if (upErr) { err++; continue; }
-      const { error: dbErr } = await db.from('materiali_file').insert({
-        cartella_id: currentCartella || null,
-        nome: file.name,
-        storage_path: path,
-        dimensione: file.size,
-        tipo_mime: file.type || null,
-        created_by: user.nome || null
-      });
-      if (dbErr) {
-        await db.storage.from('materiali').remove([path]);
-        err++;
-      } else {
-        ok++;
-      }
-    }
-    if (ok > 0) showToast(`${ok} file caricato${ok !== 1 ? 'i' : ''} con successo`, 'success');
-    if (err > 0) showToast(`${err} file non caricato${err !== 1 ? 'i' : ''} per errore`, 'error');
-    await render();
-  };
+  input.onchange = () => uploadFiles(Array.from(input.files || []));
   input.click();
+}
+
+function onDragOver(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  document.getElementById('drop-zone').classList.add('drag-over');
+}
+
+function onDragLeave(e) {
+  e.stopPropagation();
+  document.getElementById('drop-zone').classList.remove('drag-over');
+}
+
+function onDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  document.getElementById('drop-zone').classList.remove('drag-over');
+  const files = Array.from(e.dataTransfer.files || []);
+  if (files.length) uploadFiles(files);
 }
 
 async function eliminaCartella(id, nome) {
