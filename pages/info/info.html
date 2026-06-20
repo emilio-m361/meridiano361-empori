@@ -97,36 +97,10 @@
 
     <main class="max-w-4xl mx-auto p-4 md:p-8">
 
-        <div style="margin-bottom:24px">
-            <h1 style="font-size:24px;font-weight:700;color:var(--slate-800);line-height:1.2">Richieste informazioni da clienti</h1>
-            <p style="font-size:13px;color:var(--slate-400);margin-top:4px">Gestione richieste info per emporio</p>
-        </div>
-
         <!-- EMPORIO SELECTION -->
         <div id="emporio-selection">
             <div class="sec-t">Seleziona Emporio</div>
-            <div class="emp-grid mb-6">
-                <button class="emp-btn" onclick="selectEmporio('casalmaggiore')">
-                    <img src="../../assets/images/logo_casalmaggiore.png" alt="CA" onerror="this.outerHTML='<div style=\'width:48px;height:48px;border-radius:12px;background:#fff3e0;display:flex;align-items:center;justify-content:center;font-weight:900;color:#c78044;font-size:16px\'>CA</div>'">
-                    <span>Casalmaggiore</span>
-                </button>
-                <button class="emp-btn" onclick="selectEmporio('cremona')">
-                    <img src="../../assets/images/logo_cremona.png" alt="CR" onerror="this.outerHTML='<div style=\'width:48px;height:48px;border-radius:12px;background:#fce4ec;display:flex;align-items:center;justify-content:center;font-weight:900;color:#B5453A;font-size:16px\'>CR</div>'">
-                    <span>Cremona</span>
-                </button>
-                <button class="emp-btn" onclick="selectEmporio('reggioemilia')">
-                    <img src="../../assets/images/logo_reggio_emilia.png" alt="RE" onerror="this.outerHTML='<div style=\'width:48px;height:48px;border-radius:12px;background:#e8f5e9;display:flex;align-items:center;justify-content:center;font-weight:900;color:#6b8d53;font-size:16px\'>RE</div>'">
-                    <span>Reggio Emilia</span>
-                </button>
-                <button class="emp-btn" onclick="selectEmporio('mantova')">
-                    <img src="../../assets/images/logo_mantova.png" alt="MA" onerror="this.outerHTML='<div style=\'width:48px;height:48px;border-radius:12px;background:#ede9fe;display:flex;align-items:center;justify-content:center;font-weight:900;color:#7C3AED;font-size:16px\'>MA</div>'">
-                    <span>Mantova</span>
-                </button>
-                <button class="emp-btn" onclick="selectEmporio('viadana')">
-                    <img src="../../assets/images/logo_viadana.png" alt="VI" onerror="this.outerHTML='<div style=\'width:48px;height:48px;border-radius:12px;background:#e3f2fd;display:flex;align-items:center;justify-content:center;font-weight:900;color:#4c6d90;font-size:16px\'>VI</div>'">
-                    <span>Viadana</span>
-                </button>
-            </div>
+            <div class="emp-grid" id="emp-grid-container" style="margin-bottom:24px"></div>
         </div>
 
         <!-- MAIN CONTENT (hidden until emporio selected) -->
@@ -568,23 +542,55 @@
         render();
     }
 
-    // ─── AUTO-LOGIN per operatori non-admin ────────────────────────────────
-    document.addEventListener('DOMContentLoaded', function() {
-        if (typeof isAdmin !== 'function' || isAdmin()) return;
-        const emp = typeof emporioToId === 'function' ? emporioToId(getEmporioLoggato()) : null;
-        if (!emp || !EMP_MAP[emp]) return;
-        currentEmporio = emp;
-        const badge = document.getElementById('current-emp-badge');
-        badge.textContent = EMP_MAP[emp].label;
-        badge.className = 'req-emp ' + EMP_MAP[emp].css;
-        document.getElementById('emporio-selection').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
-        const cambiaBtn = document.querySelector('#main-content button[onclick="changeEmporio()"]');
-        if (cambiaBtn) cambiaBtn.style.display = 'none';
-        loadRequests();
-    });
-    </script>
+    // ─── EMPORI ───────────────────────────────────────────────────────────
+    const EMPORI_LIST = [
+        {id:'casalmaggiore', nome:'Casalmaggiore',  img:'../../assets/images/logo_casalmaggiore.png'},
+        {id:'cremona',       nome:'Cremona',         img:'../../assets/images/logo_cremona.png'},
+        {id:'mantova',       nome:'Mantova',         img:'../../assets/images/logo_mantova.png'},
+        {id:'reggioemilia',  nome:'Reggio Emilia',   img:'../../assets/images/logo_reggio_emilia.png'},
+        {id:'viadana',       nome:'Viadana',         img:'../../assets/images/logo_viadana.png'},
+    ];
 
-    <script src="../../scripts/nav-script.js"></script>
+    function nomeToId(nome) {
+        const e = EMPORI_LIST.find(x => x.nome.toLowerCase() === nome.toLowerCase());
+        return e ? e.id : null;
+    }
+
+    function buildEmpiGrid(filtroNomi=null) {
+        const g = document.getElementById('emp-grid-container');
+        g.innerHTML = '';
+        const lista = filtroNomi
+            ? EMPORI_LIST.filter(e => filtroNomi.some(n => n.toLowerCase() === e.nome.toLowerCase()))
+            : EMPORI_LIST;
+        lista.forEach(e => {
+            const btn = document.createElement('button');
+            btn.className = 'emp-btn';
+            btn.innerHTML = `<img src="${e.img}" alt="${e.nome}" style="width:48px;height:48px;object-fit:contain;border-radius:12px"><span>${e.nome}</span>`;
+            btn.onclick = () => selectEmporio(e.id);
+            g.appendChild(btn);
+        });
+    }
+
+    function init() {
+        const user = JSON.parse(localStorage.getItem('m361_user') || 'null');
+        if (!user) return;
+        const allEmpori = [user.emporio, ...(Array.isArray(user.empori_aggiuntivi) ? user.empori_aggiuntivi : [])].filter(Boolean);
+        const uniqNomi  = [...new Set(allEmpori)];
+        const isVeroAdmin = user.ruolo === 'admin';
+
+        if (isVeroAdmin) {
+            buildEmpiGrid(null);
+        } else if (uniqNomi.length === 1) {
+            const id = nomeToId(uniqNomi[0]);
+            if (id) { selectEmporio(id); return; }
+            buildEmpiGrid(null);
+        } else {
+            buildEmpiGrid(uniqNomi.length > 0 ? uniqNomi : null);
+        }
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+    </script>
 </body>
 </html>
