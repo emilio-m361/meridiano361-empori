@@ -151,11 +151,10 @@ function buildSlotHTML(l,v,logoTopB64,logoBotB64){
   const fsVoce=l.font_size_voce||11;
   const fsSez=l.font_size_sez||12;
   const mgT=l.mg_top||15,mgB=l.mg_bottom||15,mgL=l.mg_left||15,mgR=l.mg_right||15;
-  const descPct=l.col_desc_pct||70;
   const linee=l.mostra_linee!==false;
   const logoTopW=l.logo_top_h||33;
   const logoBotW=l.logo_bottom_h||33;
-  const descNowrap=l.desc_nowrap===true;
+  const decimali=l.mostra_decimali!==false;
   const logoTopNascosto=l.logo_top_nascosto===true;
 
   let h=`<div style="padding:${mgT}mm ${mgR}mm ${mgB}mm ${mgL}mm;font-family:'${esc(font)}',sans-serif;font-size:${fsVoce}pt;line-height:1.5;height:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column">`;
@@ -168,14 +167,13 @@ function buildSlotHTML(l,v,logoTopB64,logoBotB64){
   if(l.titolo){h+=`<div style="text-align:center;font-weight:800;margin-bottom:2mm">${esc(l.titolo)}</div>`;}
   if(l.sottotitolo){h+=`<div style="text-align:center;color:#475569;margin-bottom:3mm;font-size:.9em">${esc(l.sottotitolo)}</div>`;}
 
-  h+=`<table style="width:100%;border-collapse:collapse"><colgroup><col style="width:${descPct}%"><col style="width:${100-descPct}%"></colgroup><tbody>`;
+  h+=`<table style="width:100%;border-collapse:collapse"><colgroup><col style="width:85%"><col style="width:15%"></colgroup><tbody>`;
   (v||[]).forEach(row=>{
     if(row.tipo==='voce'){
-      const pt=row.prezzo_testo||(row.prezzo!=null?'€ '+Number(row.prezzo).toFixed(2).replace('.',','):'');
+      const pt=row.prezzo_testo||(row.prezzo!=null?'€ '+(decimali?Number(row.prezzo).toFixed(2):String(Math.round(row.prezzo))).replace('.',','):'');
       const st=`${row.grassetto?'font-weight:800;':''}${row.corsivo?'font-style:italic;':''}`;
       const bd=linee?'border-bottom:0.3pt solid #e2e8f0;':'';
-      const wrapDesc=descNowrap?'white-space:nowrap;overflow:hidden;':'';
-      h+=`<tr><td style="${st}${bd}${wrapDesc}padding:1.5mm 2mm;vertical-align:top">${esc(row.descrizione||'')}</td><td style="${st}${bd}padding:1.5mm 2mm;text-align:right;white-space:nowrap">${esc(pt)}</td></tr>`;
+      h+=`<tr><td style="${st}${bd}white-space:nowrap;overflow:hidden;padding:1.5mm 2mm">${esc(row.descrizione||'')}</td><td style="${st}${bd}padding:1.5mm 2mm;text-align:right;white-space:nowrap">${esc(pt)}</td></tr>`;
     }else if(row.tipo==='sezione'){
       const st=`${row.grassetto?'font-weight:900;':''}${row.corsivo?'font-style:italic;':''}`;
       h+=`<tr><td colspan="2" style="${st}font-size:${fsSez}pt;font-weight:800;text-transform:uppercase;letter-spacing:.04em;border-bottom:1pt solid #1e293b;padding:2.5mm 2mm 1mm;color:#1e293b">${esc(row.descrizione||'')}</td></tr>`;

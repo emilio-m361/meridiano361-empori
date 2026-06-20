@@ -254,23 +254,11 @@
   <div class="ed-sub" id="ed-sub">
     <input class="fi-nome" id="fi-nome" type="text" placeholder="Nome listino (es. Listino Alimentari Giugno)">
     <div class="fmt-group" id="fmt-group"></div>
+    <div class="fmt-group" id="ori-group">
+      <button class="fmt-btn ori-btn on" data-ori="portrait" onclick="onOriChange(this)" title="Verticale"><i class="fas fa-file" style="margin-right:3px"></i>Verticale</button>
+      <button class="fmt-btn ori-btn" data-ori="landscape" onclick="onOriChange(this)" title="Orizzontale"><i class="fas fa-file" style="transform:rotate(90deg);display:inline-block;margin-right:3px"></i>Orizzontale</button>
+    </div>
     <div class="cat-group" id="cat-group"></div>
-  </div>
-  <!-- Barre loghi — visibili a tutti -->
-  <div style="border-bottom:1px solid #e2e8f0">
-    <div style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:#f8fafc;border-bottom:1px solid #f1f5f9">
-      <div id="logo-top-mini" style="width:28px;height:28px;border-radius:6px;overflow:hidden;background:#fff;border:1.5px solid #e2e8f0;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-image" style="color:#cbd5e1;font-size:10px"></i></div>
-      <div style="flex-shrink:0;width:52px"><div style="font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8">Logo alto</div><div id="logo-top-cat-lbl" style="font-size:9px;font-weight:700;color:#475569;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div></div>
-      <input type="range" id="fi-logo-top-h" min="10" max="70" value="33" style="flex:1;accent-color:#B5453A;height:3px;min-width:0" oninput="document.getElementById('rv-logo-top').textContent=this.value+'%';schedPreview()">
-      <span id="rv-logo-top" style="font-size:10px;font-weight:700;color:#64748b;min-width:30px;text-align:right;flex-shrink:0">33%</span>
-      <label class="sw" style="flex-shrink:0;margin-left:4px"><input type="checkbox" id="fi-logo-top-show" checked onchange="renderPreview()"><span class="sw-s"></span></label>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:#f8fafc">
-      <div id="logo-bot-mini" style="width:28px;height:28px;border-radius:6px;overflow:hidden;background:#fff;border:1.5px solid #e2e8f0;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-image" style="color:#cbd5e1;font-size:10px"></i></div>
-      <div style="flex-shrink:0;width:52px"><div style="font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8">Logo basso</div><div id="logo-bot-emp-lbl" style="font-size:9px;font-weight:700;color:#475569;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div></div>
-      <input type="range" id="fi-logo-bot-h" min="10" max="70" value="33" style="flex:1;accent-color:#B5453A;height:3px;min-width:0" oninput="document.getElementById('rv-logo-bot').textContent=this.value+'%';schedPreview()">
-      <span id="rv-logo-bot" style="font-size:10px;font-weight:700;color:#64748b;min-width:30px;text-align:right;flex-shrink:0">33%</span>
-    </div>
   </div>
 
   <!-- Content -->
@@ -319,24 +307,22 @@
       </div>
 
 
-      <!-- Layout -->
-      <div class="set-sec">Layout colonne</div>
+      <!-- Prezzi -->
+      <div class="set-sec">Prezzi</div>
       <div class="set-row">
-        <label class="set-lbl">Larghezza descrizione <span class="range-val" id="rv-desc">70%</span> — prezzo <span id="rv-prz">30%</span></label>
-        <input class="fi-range" type="range" id="fi-col-desc" min="40" max="85" value="70" oninput="onColChange()">
+        <label class="tog-row">
+          <span class="tog-lbl">Mostra decimali (€ 1,50)</span>
+          <label class="sw"><input type="checkbox" id="fi-decimali" checked onchange="onDecimaliChange()"><span class="sw-s"></span></label>
+        </label>
       </div>
+
+      <!-- Layout -->
+      <div class="set-sec">Layout</div>
       <div class="set-row">
         <label class="set-lbl">Linee separatrici</label>
         <label class="tog-row">
           <span class="tog-lbl">Mostra linee tra le righe</span>
           <label class="sw"><input type="checkbox" id="fi-linee" checked onchange="renderPreview()"><span class="sw-s"></span></label>
-        </label>
-      </div>
-      <div class="set-row">
-        <label class="set-lbl">Descrizioni</label>
-        <label class="tog-row">
-          <span class="tog-lbl">Taglia descrizioni lunghe (riga singola)</span>
-          <label class="sw"><input type="checkbox" id="fi-desc-nowrap" onchange="renderPreview()"><span class="sw-s"></span></label>
         </label>
       </div>
 
@@ -384,6 +370,35 @@
       <div class="prev-scroll" id="prev-scroll">
         <div class="prev-outer" id="prev-outer">
           <div class="prev-page" id="prev-page"></div>
+        </div>
+      </div>
+      <!-- Logo controls -->
+      <div style="border-top:1px solid var(--Gl);padding:10px 12px;background:#fff;flex-shrink:0">
+        <div style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--G);margin-bottom:8px">Loghi</div>
+        <!-- Logo vetrina (top) -->
+        <div style="margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
+            <div id="logo-top-mini" style="width:22px;height:22px;border-radius:4px;overflow:hidden;background:#f1f5f9;border:1px solid var(--Gl);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-image" style="color:#cbd5e1;font-size:8px"></i></div>
+            <span style="font-size:10px;font-weight:700;color:var(--S3);flex:1">Vetrina — <span id="logo-top-cat-lbl" style="font-weight:600;color:var(--G)"></span></span>
+            <label class="sw" style="flex-shrink:0"><input type="checkbox" id="fi-logo-top-show" checked onchange="renderPreview()"><span class="sw-s"></span></label>
+          </div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <input type="range" id="fi-logo-top-h" min="10" max="70" value="33" style="flex:1;accent-color:var(--R);height:3px;min-width:0;cursor:pointer" oninput="onLogoTopH(this.value)">
+            <input type="number" id="fi-logo-top-h-num" min="10" max="70" value="33" style="width:42px;padding:3px 4px;border:1.5px solid var(--Gl);border-radius:5px;font-size:11px;font-family:inherit;text-align:center;outline:none" oninput="onLogoTopH(this.value)">
+            <span style="font-size:10px;color:var(--G);flex-shrink:0">%</span>
+          </div>
+        </div>
+        <!-- Logo emporio (bottom) -->
+        <div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
+            <div id="logo-bot-mini" style="width:22px;height:22px;border-radius:4px;overflow:hidden;background:#f1f5f9;border:1px solid var(--Gl);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-image" style="color:#cbd5e1;font-size:8px"></i></div>
+            <span style="font-size:10px;font-weight:700;color:var(--S3);flex:1">Emporio — <span id="logo-bot-emp-lbl" style="font-weight:600;color:var(--G)"></span></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <input type="range" id="fi-logo-bot-h" min="10" max="70" value="33" style="flex:1;accent-color:var(--R);height:3px;min-width:0;cursor:pointer" oninput="onLogoBotH(this.value)">
+            <input type="number" id="fi-logo-bot-h-num" min="10" max="70" value="33" style="width:42px;padding:3px 4px;border:1.5px solid var(--Gl);border-radius:5px;font-size:11px;font-family:inherit;text-align:center;outline:none" oninput="onLogoBotH(this.value)">
+            <span style="font-size:10px;color:var(--G);flex-shrink:0">%</span>
+          </div>
         </div>
       </div>
     </div>
@@ -614,21 +629,24 @@ async function apriEditor(id){
 
 function loadSettings(l){
   const s=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v??e.value;};
+  // Logo sizes (visible to all in preview panel)
+  const ltH=l.logo_top_h||33, lbH=l.logo_bottom_h||33;
+  s('fi-logo-top-h',ltH);s('fi-logo-top-h-num',ltH);
+  s('fi-logo-bot-h',lbH);s('fi-logo-bot-h-num',lbH);
+  document.getElementById('fi-logo-top-show').checked=!l.logo_top_nascosto;
+  // Orientation (visible to all in sub-header)
+  document.querySelectorAll('.ori-btn').forEach(b=>b.classList.remove('on'));
+  const oriBtn=document.querySelector(`.ori-btn[data-ori="${l.orientamento||'portrait'}"]`);
+  if(oriBtn)oriBtn.classList.add('on');
+  // Admin-only settings
   s('fi-font',l.font_famiglia||'Poppins');
   s('fi-sz-voce',l.font_size_voce||11);
   s('fi-sz-sez',l.font_size_sez||12);
-  s('fi-col-desc',l.col_desc_pct||70);
   s('fi-mg-top',l.mg_top||15);s('fi-mg-right',l.mg_right||15);
   s('fi-mg-bottom',l.mg_bottom||15);s('fi-mg-left',l.mg_left||15);
-  s('fi-logo-top-h',l.logo_top_h||33);s('fi-logo-bot-h',l.logo_bottom_h||33);
   s('fi-titolo',l.titolo||'');s('fi-sottotitolo',l.sottotitolo||'');s('fi-piede',l.note_piede||'');
-  document.getElementById('fi-linee').checked=l.mostra_linee!==false;
-  document.getElementById('fi-desc-nowrap').checked=l.desc_nowrap===true;
-  document.getElementById('fi-logo-top-show').checked=!l.logo_top_nascosto;
-  document.getElementById('rv-desc').textContent=(l.col_desc_pct||70)+'%';
-  document.getElementById('rv-prz').textContent=(100-(l.col_desc_pct||70))+'%';
-  document.getElementById('rv-logo-top').textContent=(l.logo_top_h||33)+'%';
-  document.getElementById('rv-logo-bot').textContent=(l.logo_bottom_h||33)+'%';
+  const lineeEl=document.getElementById('fi-linee');if(lineeEl)lineeEl.checked=l.mostra_linee!==false;
+  const decEl=document.getElementById('fi-decimali');if(decEl)decEl.checked=l.mostra_decimali!==false;
   loadGoogleFont(l.font_famiglia||'Poppins');
   setTimeout(()=>{const s=document.getElementById('fi-font');if(s)s.style.fontFamily=l.font_famiglia||'Poppins';},300);
 }
@@ -636,25 +654,17 @@ function loadSettings(l){
 function resetSettings(){
   const set=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v;};
   set('fi-font','Poppins');set('fi-sz-voce','11');set('fi-sz-sez','12');
-  set('fi-col-desc','70');set('fi-mg-top','15');set('fi-mg-right','15');
-  set('fi-mg-bottom','15');set('fi-mg-left','15');
-  set('fi-logo-top-h','33');set('fi-logo-bot-h','33');
+  set('fi-mg-top','15');set('fi-mg-right','15');set('fi-mg-bottom','15');set('fi-mg-left','15');
+  set('fi-logo-top-h','33');set('fi-logo-top-h-num','33');
+  set('fi-logo-bot-h','33');set('fi-logo-bot-h-num','33');
   set('fi-titolo','');set('fi-sottotitolo','');set('fi-piede','');
-  document.getElementById('fi-linee').checked=true;
-  document.getElementById('fi-desc-nowrap').checked=false;
+  const lineeEl=document.getElementById('fi-linee');if(lineeEl)lineeEl.checked=true;
+  const decEl=document.getElementById('fi-decimali');if(decEl)decEl.checked=true;
   document.getElementById('fi-logo-top-show').checked=true;
-  document.getElementById('rv-desc').textContent='70%';
-  document.getElementById('rv-prz').textContent='30%';
-  document.getElementById('rv-logo-top').textContent='33%';
-  document.getElementById('rv-logo-bot').textContent='33%';
+  document.querySelectorAll('.ori-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelector('.ori-btn[data-ori="portrait"]')?.classList.add('on');
 }
 
-function onColChange(){
-  const v=document.getElementById('fi-col-desc').value;
-  document.getElementById('rv-desc').textContent=v+'%';
-  document.getElementById('rv-prz').textContent=(100-v)+'%';
-  schedPreview();
-}
 
 function getSettings(){
   const g=(id)=>{const e=document.getElementById(id);return e?e.value:null;};
@@ -662,14 +672,11 @@ function getSettings(){
     font_famiglia:g('fi-font')||'Poppins',
     font_size_voce:parseInt(g('fi-sz-voce'))||11,
     font_size_sez:parseInt(g('fi-sz-sez'))||12,
-    col_desc_pct:parseInt(g('fi-col-desc'))||70,
     mg_top:parseInt(g('fi-mg-top'))||15,mg_right:parseInt(g('fi-mg-right'))||15,
     mg_bottom:parseInt(g('fi-mg-bottom'))||15,mg_left:parseInt(g('fi-mg-left'))||15,
-    logo_top_h:parseInt(g('fi-logo-top-h'))||35,
-    logo_bottom_h:parseInt(g('fi-logo-bot-h'))||28,
     titolo:g('fi-titolo')||null,sottotitolo:g('fi-sottotitolo')||null,note_piede:g('fi-piede')||null,
     mostra_linee:document.getElementById('fi-linee')?.checked!==false,
-    desc_nowrap:document.getElementById('fi-desc-nowrap')?.checked===true,
+    mostra_decimali:document.getElementById('fi-decimali')?.checked!==false,
   };
 }
 
@@ -679,7 +686,10 @@ async function salvaListino(){
   const settings=_admin?getSettings():{};
   const payload={
     emporio,nome,categoria:getCategoria(),formato:getFormato(),
+    orientamento:getOrientamento(),
     logo_top_nascosto:!(document.getElementById('fi-logo-top-show')?.checked),
+    logo_top_h:parseInt(document.getElementById('fi-logo-top-h')?.value)||33,
+    logo_bottom_h:parseInt(document.getElementById('fi-logo-bot-h')?.value)||33,
     ...settings,operatore_nome:user.nome||null,updated_at:new Date().toISOString(),
   };
   let lid=listino?.id;
@@ -763,10 +773,12 @@ function renderRow(v,i){
     </div>`;
   if(v.tipo==='voce'){
     const st=`${v.grassetto?'font-weight:800;':''}${v.corsivo?'font-style:italic;':''}`;
+    const decimali=document.getElementById('fi-decimali')?.checked!==false;
+    const priceDisplay=v.prezzo_testo!=null?v.prezzo_testo:(v.prezzo!=null?'€ '+(decimali?Number(v.prezzo).toFixed(2):String(Math.round(v.prezzo))).replace('.',','):'');
     return `<div class="voce-row">
       <span class="row-icon"><i class="fas fa-circle-dot" style="font-size:9px"></i></span>
       <input class="fi-r fi-desc" type="text" value="${esc(v.descrizione||'')}" placeholder="Descrizione prodotto" style="${st}" oninput="updateDesc(${i},this.value);schedPreview()">
-      <input class="fi-r fi-prz" type="text" value="${esc(v.prezzo_testo!=null?v.prezzo_testo:(v.prezzo!=null?'€ '+Number(v.prezzo).toFixed(2).replace('.',','):''))}" placeholder="€ 0,00" oninput="updatePrezzo(${i},this.value);schedPreview()">
+      <input class="fi-r fi-prz" type="text" value="${esc(priceDisplay)}" placeholder="${decimali?'€ 0,00':'€ 0'}" oninput="updatePrezzo(${i},this.value)" onblur="reformatPrezzo(${i},this)">
       ${acts}
     </div>`;
   }
@@ -935,24 +947,44 @@ async function eliminaFont(nome){
 /* ── Anteprima live ── */
 let _prevTimer=null;
 function schedPreview(){clearTimeout(_prevTimer);_prevTimer=setTimeout(renderPreview,200);}
+
+function getOrientamento(){return document.querySelector('.ori-btn.on')?.dataset.ori||'portrait';}
+function onOriChange(btn){document.querySelectorAll('.ori-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');schedPreview();}
+function onLogoTopH(v){v=Math.max(10,Math.min(70,parseInt(v)||33));document.getElementById('fi-logo-top-h').value=v;document.getElementById('fi-logo-top-h-num').value=v;schedPreview();}
+function onLogoBotH(v){v=Math.max(10,Math.min(70,parseInt(v)||33));document.getElementById('fi-logo-bot-h').value=v;document.getElementById('fi-logo-bot-h-num').value=v;schedPreview();}
+function onDecimaliChange(){renderRows();}
+function reformatPrezzo(idx,el){
+  const clean=el.value.replace(/^[€$£\s]+/,'').trim().replace(',','.');
+  const n=parseFloat(clean);
+  if(!isNaN(n)){
+    voci[idx].prezzo=n;voci[idx].prezzo_testo=null;
+    const decimali=document.getElementById('fi-decimali')?.checked!==false;
+    el.value='€ '+(decimali?n.toFixed(2):String(Math.round(n))).replace('.',',');
+  }else{
+    voci[idx].prezzo=null;voci[idx].prezzo_testo=el.value.trim()||null;
+  }
+  schedPreview();
+}
+
 function renderPreview(){
   const page=document.getElementById('prev-page');
   const outer=document.getElementById('prev-outer');
   if(!page||!outer||screen!=='editor')return;
   const fmt=getFormato();
-  const FMT={A4:{w:210,h:297},A5:{w:148,h:210},A6:{w:105,h:148}};
-  const f=FMT[fmt]||FMT.A4;
+  const ori=getOrientamento();
+  const FMT_BASE={A4:{w:210,h:297},A5:{w:148,h:210},A6:{w:105,h:148}};
+  const fb=FMT_BASE[fmt]||FMT_BASE.A4;
+  const f=ori==='landscape'?{w:fb.h,h:fb.w}:fb;
   const g=id=>{const e=document.getElementById(id);return e?e.value:null;};
   const font=g('fi-font')||'Poppins';
   const fsVoce=parseInt(g('fi-sz-voce'))||11;
   const fsSez=parseInt(g('fi-sz-sez'))||12;
   const mgT=parseInt(g('fi-mg-top'))||15,mgB=parseInt(g('fi-mg-bottom'))||15;
   const mgL=parseInt(g('fi-mg-left'))||15,mgR=parseInt(g('fi-mg-right'))||15;
-  const descPct=parseInt(g('fi-col-desc'))||70;
   const linee=document.getElementById('fi-linee')?.checked!==false;
-  const descNowrap=document.getElementById('fi-desc-nowrap')?.checked===true;
-  const logoTopH=parseInt(g('fi-logo-top-h'))||35;
-  const logoBotH=parseInt(g('fi-logo-bot-h'))||28;
+  const decimali=document.getElementById('fi-decimali')?.checked!==false;
+  const logoTopW=parseInt(g('fi-logo-top-h'))||33;
+  const logoBotW=parseInt(g('fi-logo-bot-h'))||33;
   const logoTopShow=document.getElementById('fi-logo-top-show')?.checked!==false;
   const titolo=g('fi-titolo')||'';
   const sottotitolo=g('fi-sottotitolo')||'';
@@ -961,20 +993,18 @@ function renderPreview(){
   const logoTopB64=loghiCache['categoria'+catId]||null;
   const logoBotB64=loghiCache['emporio'+emporio]||null;
 
-  const FMT_H={A4:297,A5:210,A6:148};
-  const contentHmm=(FMT_H[fmt]||297)-mgT-mgB;
-  let html=`<div style="padding:${mgT}mm ${mgR}mm ${mgB}mm ${mgL}mm;font-family:'${font}',sans-serif;font-size:${fsVoce}pt;line-height:1.5;box-sizing:border-box;display:flex;flex-direction:column;min-height:${contentHmm}mm">`;
-  if(logoTopB64&&logoTopShow)html+=`<div style="text-align:center;margin-bottom:4mm;flex-shrink:0"><img src="data:image/*;base64,${logoTopB64}" style="max-width:${logoTopH}%;height:auto;max-height:35mm;object-fit:contain"></div>`;
+  let html=`<div style="padding:${mgT}mm ${mgR}mm ${mgB}mm ${mgL}mm;font-family:'${font}',sans-serif;font-size:${fsVoce}pt;line-height:1.5;box-sizing:border-box;display:flex;flex-direction:column;min-height:${f.h}mm">`;
+  if(logoTopB64&&logoTopShow)html+=`<div style="text-align:center;margin-bottom:4mm;flex-shrink:0"><img src="data:image/*;base64,${logoTopB64}" style="max-width:${logoTopW}%;height:auto;max-height:35mm;object-fit:contain"></div>`;
+  html+=`<div style="flex:1">`;
   if(titolo)html+=`<div style="text-align:center;font-weight:800;margin-bottom:2mm">${esc(titolo)}</div>`;
   if(sottotitolo)html+=`<div style="text-align:center;color:#475569;margin-bottom:4mm;font-size:.9em">${esc(sottotitolo)}</div>`;
-  html+=`<div style="flex:1"><table style="width:100%;border-collapse:collapse"><colgroup><col style="width:${descPct}%"><col style="width:${100-descPct}%"></colgroup><tbody>`;
+  html+=`<table style="width:100%;border-collapse:collapse"><colgroup><col style="width:85%"><col style="width:15%"></colgroup><tbody>`;
   voci.forEach(row=>{
     if(row.tipo==='voce'){
-      const pt=row.prezzo_testo||(row.prezzo!=null?'€ '+Number(row.prezzo).toFixed(2).replace('.',','):'');
+      const pt=row.prezzo_testo||(row.prezzo!=null?'€ '+(decimali?Number(row.prezzo).toFixed(2):String(Math.round(row.prezzo))).replace('.',','):'');
       const st=`${row.grassetto?'font-weight:800;':''}${row.corsivo?'font-style:italic;':''}`;
       const bd=linee?'border-bottom:0.3pt solid #e2e8f0;':'';
-      const wrapDesc=descNowrap?'white-space:nowrap;overflow:hidden;':'';
-      html+=`<tr><td style="${st}${bd}${wrapDesc}padding:1.5mm 2mm;vertical-align:top">${esc(row.descrizione||'')}</td><td style="${st}${bd}padding:1.5mm 2mm;text-align:right;white-space:nowrap">${esc(pt)}</td></tr>`;
+      html+=`<tr><td style="${st}${bd}white-space:nowrap;overflow:hidden;padding:1.5mm 2mm">${esc(row.descrizione||'')}</td><td style="${st}${bd}padding:1.5mm 2mm;text-align:right;white-space:nowrap">${esc(pt)}</td></tr>`;
     }else if(row.tipo==='sezione'){
       const st=`${row.grassetto?'font-weight:900;':''}${row.corsivo?'font-style:italic;':''}`;
       html+=`<tr><td colspan="2" style="${st}font-size:${fsSez}pt;font-weight:800;text-transform:uppercase;letter-spacing:.04em;border-bottom:1pt solid #1e293b;padding:2.5mm 2mm 1mm;color:#1e293b">${esc(row.descrizione||'')}</td></tr>`;
@@ -987,7 +1017,7 @@ function renderPreview(){
   html+=`</tbody></table>`;
   if(piede)html+=`<div style="text-align:center;font-size:.8em;color:#64748b;margin-top:4mm;padding-top:2mm;border-top:0.5pt solid #e2e8f0">${esc(piede)}</div>`;
   html+=`</div>`;
-  if(logoBotB64)html+=`<div style="text-align:center;flex-shrink:0"><img src="data:image/*;base64,${logoBotB64}" style="max-width:${logoBotH}%;height:auto;max-height:28mm;object-fit:contain"></div>`;
+  if(logoBotB64)html+=`<div style="text-align:center;flex-shrink:0"><img src="data:image/*;base64,${logoBotB64}" style="max-width:${logoBotW}%;height:auto;max-height:28mm;object-fit:contain"></div>`;
   html+=`</div>`;
 
   const scroll=document.getElementById('prev-scroll');

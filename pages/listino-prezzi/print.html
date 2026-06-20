@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <style id="page-style">/* dinamico */</style>
   <style>
+    @page{margin:0}
     *{box-sizing:border-box;margin:0;padding:0}
     html,body{height:100%}
     body{font-family:'Poppins',sans-serif;background:#e8edf2;color:#1e293b}
@@ -137,16 +138,18 @@ async function loadAndRender(){
   if(!l){showErr('Listino non trovato');return;}
 
   const fmt=l.formato||'A4';
+  const ori=l.orientamento||'portrait';
   const font=l.font_famiglia||'Poppins';
-  const descPct=l.col_desc_pct||70;
   const mgT=l.mg_top||15,mgB=l.mg_bottom||15,mgL=l.mg_left||15,mgR=l.mg_right||15;
   const logoTopW=l.logo_top_h||33;
   const logoBotW=l.logo_bottom_h||33;
   const linee=l.mostra_linee!==false;
-  const descNowrap=l.desc_nowrap===true;
+  const decimali=l.mostra_decimali!==false;
   const logoTopNascosto=l.logo_top_nascosto===true;
-  const FMT_H={A4:297,A5:210,A6:148};
-  const contentHmm=(FMT_H[fmt]||297)-mgT-mgB;
+  const FMT_DIM={A4:{w:210,h:297},A5:{w:148,h:210},A6:{w:105,h:148}};
+  const fd=FMT_DIM[fmt]||FMT_DIM.A4;
+  const pageW=ori==='landscape'?fd.h:fd.w;
+  const pageH=ori==='landscape'?fd.w:fd.h;
 
   document.getElementById('tb-title').textContent=l.nome||'Listino Vetrina';
 
@@ -167,20 +170,20 @@ async function loadAndRender(){
     const fam=font.replace(/\s/g,'+');
     gfLink.href=`https://fonts.googleapis.com/css2?family=${fam}:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap`;
     document.head.appendChild(gfLink);
-    await new Promise(r=>setTimeout(r,600)); // wait for font
+    await new Promise(r=>setTimeout(r,600));
   }
 
-  // Set page @page CSS — margin:0 so the inner padding is the only margin (matches preview)
+  // @page: margin:0 — padding on inner div is the only margin (matches preview)
   const pageStyle=document.getElementById('page-style');
   pageStyle.textContent=`
-    @page{size:${fmt} portrait;margin:0}
+    @page{size:${fmt} ${ori};margin:0}
     body,body *{font-family:"${font}",sans-serif}
   `;
 
   // Set page element size (screen preview)
   const pageEl=document.getElementById('page');
-  pageEl.style.width=FORMATO_W[fmt]||'210mm';
-  pageEl.style.minHeight=FORMATO_H[fmt]||'297mm';
+  pageEl.style.width=pageW+'mm';
+  pageEl.style.minHeight=pageH+'mm';
 
   // Find logos
   const lgMap={};
@@ -188,37 +191,31 @@ async function loadAndRender(){
   const logoTopB64=lgMap['categoria|'+(l.categoria||'altro')]||null;
   const logoBotB64=lgMap['emporio|'+l.emporio]||null;
 
-  // Build HTML
+  // Build HTML — flex column, full page height so bottom logo anchors to bottom
   const inner=document.getElementById('page-inner');
   inner.style.padding=`${mgT}mm ${mgR}mm ${mgB}mm ${mgL}mm`;
   inner.style.fontSize=`${l.font_size_voce||11}pt`;
   inner.style.display='flex';
   inner.style.flexDirection='column';
-  inner.style.minHeight=`${contentHmm}mm`;
+  inner.style.minHeight=`${pageH}mm`;
 
   let html='';
 
-  // Logo top (rispetta il toggle dell'operatore)
-  if(logoTopB64 && !logoTopNascosto){
+  if(logoTopB64&&!logoTopNascosto){
     html+=`<div class="logo-top" style="flex-shrink:0"><img src="data:image/*;base64,${logoTopB64}" style="max-width:${logoTopW}%;height:auto;max-height:35mm;object-fit:contain" alt="Logo"></div>`;
   }
 
-  // Contenuto centrale (cresce per riempire lo spazio)
   html+=`<div style="flex:1">`;
-
-  // Titolo / sottotitolo
   if(l.titolo){html+=`<div class="listino-titolo">${esc(l.titolo)}</div>`;}
   if(l.sottotitolo){html+=`<div class="listino-sottotitolo">${esc(l.sottotitolo)}</div>`;}
 
-  // Table
-  html+=`<table class="lt"><colgroup><col class="col-d" style="width:${descPct}%"><col class="col-p" style="width:${100-descPct}%"></colgroup><tbody>`;
+  html+=`<table class="lt"><colgroup><col class="col-d" style="width:85%"><col class="col-p" style="width:15%"></colgroup><tbody>`;
   (v||[]).forEach(row=>{
     if(row.tipo==='voce'){
-      const prezzoTxt=row.prezzo_testo||(row.prezzo!=null?'€ '+Number(row.prezzo).toFixed(2).replace('.',','):'');
+      const prezzoTxt=row.prezzo_testo||(row.prezzo!=null?'€ '+(decimali?Number(row.prezzo).toFixed(2):String(Math.round(row.prezzo))).replace('.',','):'');
       const st=`${row.grassetto?'font-weight:800;':''}${row.corsivo?'font-style:italic;':''}`;
-      const tdDesc=descNowrap?`${st}white-space:nowrap;overflow:hidden`:st;
       html+=`<tr class="voce${linee?' linee':''}">
-        <td style="${tdDesc}">${esc(row.descrizione||'')}</td>
+        <td style="${st}white-space:nowrap;overflow:hidden">${esc(row.descrizione||'')}</td>
         <td class="col-p" style="${st}">${esc(prezzoTxt)}</td>
       </tr>`;
     } else if(row.tipo==='sezione'){
@@ -231,13 +228,9 @@ async function loadAndRender(){
     }
   });
   html+=`</tbody></table>`;
-
-  // Nota piede
   if(l.note_piede){html+=`<div class="listino-piede">${esc(l.note_piede)}</div>`;}
+  html+=`</div>`;
 
-  html+=`</div>`; // fine flex:1
-
-  // Logo bottom (spinto a fondo pagina dal flex)
   if(logoBotB64){
     html+=`<div class="logo-bot" style="flex-shrink:0"><img src="data:image/*;base64,${logoBotB64}" style="max-width:${logoBotW}%;height:auto;max-height:28mm;object-fit:contain" alt="Logo emporio"></div>`;
   }
