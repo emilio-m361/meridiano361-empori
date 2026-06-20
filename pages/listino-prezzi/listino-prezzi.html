@@ -332,6 +332,13 @@
           <label class="sw"><input type="checkbox" id="fi-linee" checked onchange="renderPreview()"><span class="sw-s"></span></label>
         </label>
       </div>
+      <div class="set-row">
+        <label class="set-lbl">Descrizioni</label>
+        <label class="tog-row">
+          <span class="tog-lbl">Taglia descrizioni lunghe (riga singola)</span>
+          <label class="sw"><input type="checkbox" id="fi-desc-nowrap" onchange="renderPreview()"><span class="sw-s"></span></label>
+        </label>
+      </div>
 
       <!-- Margini -->
       <div class="set-sec">Margini (mm)</div>
@@ -616,6 +623,7 @@ function loadSettings(l){
   s('fi-logo-top-h',l.logo_top_h||33);s('fi-logo-bot-h',l.logo_bottom_h||33);
   s('fi-titolo',l.titolo||'');s('fi-sottotitolo',l.sottotitolo||'');s('fi-piede',l.note_piede||'');
   document.getElementById('fi-linee').checked=l.mostra_linee!==false;
+  document.getElementById('fi-desc-nowrap').checked=l.desc_nowrap===true;
   document.getElementById('fi-logo-top-show').checked=!l.logo_top_nascosto;
   document.getElementById('rv-desc').textContent=(l.col_desc_pct||70)+'%';
   document.getElementById('rv-prz').textContent=(100-(l.col_desc_pct||70))+'%';
@@ -633,6 +641,7 @@ function resetSettings(){
   set('fi-logo-top-h','33');set('fi-logo-bot-h','33');
   set('fi-titolo','');set('fi-sottotitolo','');set('fi-piede','');
   document.getElementById('fi-linee').checked=true;
+  document.getElementById('fi-desc-nowrap').checked=false;
   document.getElementById('fi-logo-top-show').checked=true;
   document.getElementById('rv-desc').textContent='70%';
   document.getElementById('rv-prz').textContent='30%';
@@ -660,6 +669,7 @@ function getSettings(){
     logo_bottom_h:parseInt(g('fi-logo-bot-h'))||28,
     titolo:g('fi-titolo')||null,sottotitolo:g('fi-sottotitolo')||null,note_piede:g('fi-piede')||null,
     mostra_linee:document.getElementById('fi-linee')?.checked!==false,
+    desc_nowrap:document.getElementById('fi-desc-nowrap')?.checked===true,
   };
 }
 
@@ -940,6 +950,7 @@ function renderPreview(){
   const mgL=parseInt(g('fi-mg-left'))||15,mgR=parseInt(g('fi-mg-right'))||15;
   const descPct=parseInt(g('fi-col-desc'))||70;
   const linee=document.getElementById('fi-linee')?.checked!==false;
+  const descNowrap=document.getElementById('fi-desc-nowrap')?.checked===true;
   const logoTopH=parseInt(g('fi-logo-top-h'))||35;
   const logoBotH=parseInt(g('fi-logo-bot-h'))||28;
   const logoTopShow=document.getElementById('fi-logo-top-show')?.checked!==false;
@@ -962,7 +973,8 @@ function renderPreview(){
       const pt=row.prezzo_testo||(row.prezzo!=null?'€ '+Number(row.prezzo).toFixed(2).replace('.',','):'');
       const st=`${row.grassetto?'font-weight:800;':''}${row.corsivo?'font-style:italic;':''}`;
       const bd=linee?'border-bottom:0.3pt solid #e2e8f0;':'';
-      html+=`<tr><td style="${st}${bd}padding:1.5mm 2mm;vertical-align:top">${esc(row.descrizione||'')}</td><td style="${st}${bd}padding:1.5mm 2mm;text-align:right;white-space:nowrap">${esc(pt)}</td></tr>`;
+      const wrapDesc=descNowrap?'white-space:nowrap;overflow:hidden;':'';
+      html+=`<tr><td style="${st}${bd}${wrapDesc}padding:1.5mm 2mm;vertical-align:top">${esc(row.descrizione||'')}</td><td style="${st}${bd}padding:1.5mm 2mm;text-align:right;white-space:nowrap">${esc(pt)}</td></tr>`;
     }else if(row.tipo==='sezione'){
       const st=`${row.grassetto?'font-weight:900;':''}${row.corsivo?'font-style:italic;':''}`;
       html+=`<tr><td colspan="2" style="${st}font-size:${fsSez}pt;font-weight:800;text-transform:uppercase;letter-spacing:.04em;border-bottom:1pt solid #1e293b;padding:2.5mm 2mm 1mm;color:#1e293b">${esc(row.descrizione||'')}</td></tr>`;

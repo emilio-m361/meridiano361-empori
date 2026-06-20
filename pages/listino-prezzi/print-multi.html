@@ -155,6 +155,7 @@ function buildSlotHTML(l,v,logoTopB64,logoBotB64){
   const linee=l.mostra_linee!==false;
   const logoTopW=l.logo_top_h||33;
   const logoBotW=l.logo_bottom_h||33;
+  const descNowrap=l.desc_nowrap===true;
   const logoTopNascosto=l.logo_top_nascosto===true;
 
   let h=`<div style="padding:${mgT}mm ${mgR}mm ${mgB}mm ${mgL}mm;font-family:'${esc(font)}',sans-serif;font-size:${fsVoce}pt;line-height:1.5;height:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column">`;
@@ -173,7 +174,8 @@ function buildSlotHTML(l,v,logoTopB64,logoBotB64){
       const pt=row.prezzo_testo||(row.prezzo!=null?'€ '+Number(row.prezzo).toFixed(2).replace('.',','):'');
       const st=`${row.grassetto?'font-weight:800;':''}${row.corsivo?'font-style:italic;':''}`;
       const bd=linee?'border-bottom:0.3pt solid #e2e8f0;':'';
-      h+=`<tr><td style="${st}${bd}padding:1.5mm 2mm;vertical-align:top">${esc(row.descrizione||'')}</td><td style="${st}${bd}padding:1.5mm 2mm;text-align:right;white-space:nowrap">${esc(pt)}</td></tr>`;
+      const wrapDesc=descNowrap?'white-space:nowrap;overflow:hidden;':'';
+      h+=`<tr><td style="${st}${bd}${wrapDesc}padding:1.5mm 2mm;vertical-align:top">${esc(row.descrizione||'')}</td><td style="${st}${bd}padding:1.5mm 2mm;text-align:right;white-space:nowrap">${esc(pt)}</td></tr>`;
     }else if(row.tipo==='sezione'){
       const st=`${row.grassetto?'font-weight:900;':''}${row.corsivo?'font-style:italic;':''}`;
       h+=`<tr><td colspan="2" style="${st}font-size:${fsSez}pt;font-weight:800;text-transform:uppercase;letter-spacing:.04em;border-bottom:1pt solid #1e293b;padding:2.5mm 2mm 1mm;color:#1e293b">${esc(row.descrizione||'')}</td></tr>`;

@@ -143,6 +143,7 @@ async function loadAndRender(){
   const logoTopW=l.logo_top_h||33;
   const logoBotW=l.logo_bottom_h||33;
   const linee=l.mostra_linee!==false;
+  const descNowrap=l.desc_nowrap===true;
   const logoTopNascosto=l.logo_top_nascosto===true;
   const FMT_H={A4:297,A5:210,A6:148};
   const contentHmm=(FMT_H[fmt]||297)-mgT-mgB;
@@ -169,10 +170,10 @@ async function loadAndRender(){
     await new Promise(r=>setTimeout(r,600)); // wait for font
   }
 
-  // Set page @page CSS
+  // Set page @page CSS — margin:0 so the inner padding is the only margin (matches preview)
   const pageStyle=document.getElementById('page-style');
   pageStyle.textContent=`
-    @page{size:${fmt} portrait;margin:${mgT}mm ${mgR}mm ${mgB}mm ${mgL}mm}
+    @page{size:${fmt} portrait;margin:0}
     body,body *{font-family:"${font}",sans-serif}
   `;
 
@@ -215,8 +216,9 @@ async function loadAndRender(){
     if(row.tipo==='voce'){
       const prezzoTxt=row.prezzo_testo||(row.prezzo!=null?'€ '+Number(row.prezzo).toFixed(2).replace('.',','):'');
       const st=`${row.grassetto?'font-weight:800;':''}${row.corsivo?'font-style:italic;':''}`;
+      const tdDesc=descNowrap?`${st}white-space:nowrap;overflow:hidden`:st;
       html+=`<tr class="voce${linee?' linee':''}">
-        <td style="${st}">${esc(row.descrizione||'')}</td>
+        <td style="${tdDesc}">${esc(row.descrizione||'')}</td>
         <td class="col-p" style="${st}">${esc(prezzoTxt)}</td>
       </tr>`;
     } else if(row.tipo==='sezione'){
