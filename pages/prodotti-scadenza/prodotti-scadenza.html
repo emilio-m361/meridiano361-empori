@@ -270,17 +270,12 @@ const db = supabase.createClient(SB_URL, SB_KEY);
 let user = null, _admin = false, emporio = null;
 let filtro = 'tutti', prodotti = [], editId = null;
 
-/* ── Sconto matrix (5% step, max 50%) ─────────────────────────────── */
-const MTX = [
-  { d:  7, s:[30,40,45,50] },
-  { d: 14, s:[20,25,35,40] },
-  { d: 30, s:[15,20,25,30] },
-  { d: 90, s:[10,10,15,20] },
-];
+/* ── Sconto: scadenza 70%, quantità 30% — step 5%, max 50% ───────── */
 function sconto(qty, gg) {
-  const q = qty<=1?0:qty<=3?1:qty<=10?2:3;
-  for (const r of MTX) if (gg<=r.d) return r.s[q];
-  return qty>10?5:0;
+  if (gg > 90) return 0;
+  const exp = gg <= 7 ? 100 : gg <= 14 ? 75 : gg <= 30 ? 55 : 30;
+  const qts = qty <= 1 ? 10 : qty <= 3 ? 30 : qty <= 10 ? 65 : 100;
+  return Math.min(50, Math.floor((0.7 * exp + 0.3 * qts) / 10) * 5);
 }
 
 /* ── Urgenza ──────────────────────────────────────────────────────── */
