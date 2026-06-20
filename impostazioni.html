@@ -255,6 +255,14 @@
                     </div>
                     <i class="fas fa-chevron-right menu-card-arrow"></i>
                 </div>
+                <div class="menu-card" onclick="openSection('loghi')">
+                    <span class="menu-card-icon">🖼</span>
+                    <div class="menu-card-body">
+                        <div class="menu-card-title">Loghi listini</div>
+                        <div class="menu-card-desc">Logo emporio (in basso) e logo vetrina (in alto) per i listini prezzi</div>
+                    </div>
+                    <i class="fas fa-chevron-right menu-card-arrow"></i>
+                </div>
             </div>
         </div>
 
@@ -462,6 +470,34 @@
                     <div style="text-align:center;padding:40px 0;color:#94a3b8;font-size:14px" id="accessi-loading">
                         <i class="fas fa-spinner fa-spin" style="margin-right:6px"></i>Caricamento…
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── SEZIONE: LOGHI LISTINI ─────────────────────────────────────── -->
+        <div id="section-loghi" class="section-page">
+            <div class="section-page-head">
+                <button class="back-btn" onclick="closeSection()">
+                    <i class="fas fa-arrow-left"></i> Impostazioni
+                </button>
+                <span class="section-page-title">🖼 Loghi listini</span>
+            </div>
+
+            <!-- Logo emporio -->
+            <div class="s-card" style="margin-bottom:16px">
+                <div class="s-card-body">
+                    <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:#94a3b8;margin-bottom:4px">Logo emporio — posizione: basso al centro</div>
+                    <div style="font-size:12px;color:#64748b;margin-bottom:18px">Il logo dell'emporio appare in fondo al listino stampato. Clicca su un riquadro per caricare o sostituire l'immagine.</div>
+                    <div id="loghi-empori-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px"></div>
+                </div>
+            </div>
+
+            <!-- Logo vetrina / marchio -->
+            <div class="s-card">
+                <div class="s-card-body">
+                    <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:#94a3b8;margin-bottom:4px">Logo vetrina / marchio — posizione: alto al centro</div>
+                    <div style="font-size:12px;color:#64748b;margin-bottom:18px">Abbinato alla categoria del listino. Appare in cima alla pagina stampata.</div>
+                    <div id="loghi-categorie-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px"></div>
                 </div>
             </div>
         </div>
@@ -801,7 +837,75 @@
             if (id === 'info')       caricaInfoApp();
             if (id === 'categorie')  caricaCategorie();
             if (id === 'accessi')    caricaAccessi();
+            if (id === 'loghi')      caricaLoghi();
         }
+    }
+
+    // ── LOGHI LISTINI ─────────────────────────────────────────────────────
+    const _LOGHI_EMPORI = [
+        { chiave: 'Casalmaggiore', label: 'Casalmaggiore' },
+        { chiave: 'Cremona',       label: 'Cremona' },
+        { chiave: 'Mantova',       label: 'Mantova' },
+        { chiave: 'Reggio Emilia', label: 'Reggio Emilia' },
+        { chiave: 'Viadana',       label: 'Viadana' },
+    ];
+    const _LOGHI_CATEGORIE = [
+        { chiave: 'alimentari',  label: 'Alimentari' },
+        { chiave: 'casa_regalo', label: 'Casa & Regalo' },
+        { chiave: 'moda',        label: 'Moda' },
+        { chiave: 'cosmesi',     label: 'Cosmesi' },
+        { chiave: 'altro',       label: 'Altro' },
+    ];
+
+    async function caricaLoghi() {
+        const { data: loghi } = await db.from('listini_loghi').select('tipo,chiave,immagine_b64');
+        const map = {};
+        (loghi || []).forEach(l => { map[l.tipo + '|' + l.chiave] = l.immagine_b64; });
+        document.getElementById('loghi-empori-grid').innerHTML =
+            _LOGHI_EMPORI.map(e => _buildLogoCard('emporio', e.chiave, e.label, map['emporio|' + e.chiave])).join('');
+        document.getElementById('loghi-categorie-grid').innerHTML =
+            _LOGHI_CATEGORIE.map(c => _buildLogoCard('categoria', c.chiave, c.label, map['categoria|' + c.chiave])).join('');
+    }
+
+    function _buildLogoCard(tipo, chiave, label, b64) {
+        const safeId = tipo + '-' + chiave.replace(/[^a-z0-9]/gi, '_');
+        const preview = b64
+            ? `<img src="data:image/*;base64,${b64}" style="max-width:100%;max-height:72px;object-fit:contain;display:block;margin:0 auto">`
+            : `<i class="fas fa-image" style="font-size:28px;color:#cbd5e1"></i>`;
+        const delBtn = b64
+            ? `<button onclick="event.stopPropagation();_eliminaLogo('${tipo}','${chiave}')" style="position:absolute;top:6px;right:6px;background:#fef2f2;border:none;border-radius:6px;padding:3px 7px;font-size:10px;font-weight:800;color:#dc2626;cursor:pointer">✕</button>`
+            : '';
+        return `
+        <div style="text-align:center">
+            <div onclick="document.getElementById('lf-${safeId}').click()"
+                 style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:14px 10px;cursor:pointer;transition:border-color .15s;position:relative;min-height:90px;display:flex;align-items:center;justify-content:center"
+                 onmouseenter="this.style.borderColor='#B5453A'" onmouseleave="this.style.borderColor='#e2e8f0'">
+                ${preview}
+                ${delBtn}
+            </div>
+            <div style="font-size:11px;font-weight:700;color:#475569;margin-top:6px;line-height:1.3">${label}</div>
+            <input type="file" id="lf-${safeId}" accept="image/*" style="display:none" onchange="_uploadLogo('${tipo}','${chiave}',this)">
+        </div>`;
+    }
+
+    async function _uploadLogo(tipo, chiave, input) {
+        const file = input.files?.[0];
+        if (!file) return;
+        const b64 = await new Promise(res => {
+            const r = new FileReader(); r.onload = e => res(e.target.result.split(',')[1]); r.readAsDataURL(file);
+        });
+        const { error } = await db.from('listini_loghi').upsert({ tipo, chiave, immagine_b64: b64 }, { onConflict: 'tipo,chiave' });
+        if (error) { showToast('Errore upload: ' + error.message, 'err'); return; }
+        _sectionLoaded['loghi'] = false;
+        caricaLoghi();
+        showToast('Logo salvato ✓', 'ok');
+    }
+
+    async function _eliminaLogo(tipo, chiave) {
+        await db.from('listini_loghi').delete().eq('tipo', tipo).eq('chiave', chiave);
+        _sectionLoaded['loghi'] = false;
+        caricaLoghi();
+        showToast('Logo rimosso');
     }
 
     function closeSection() {
