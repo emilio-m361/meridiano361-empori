@@ -153,19 +153,21 @@ function buildSlotHTML(l,v,logoTopB64,logoBotB64){
   const mgT=l.mg_top||15,mgB=l.mg_bottom||15,mgL=l.mg_left||15,mgR=l.mg_right||15;
   const descPct=l.col_desc_pct||70;
   const linee=l.mostra_linee!==false;
-  const logoTopH=l.logo_top_h||35;
-  const logoBotH=l.logo_bottom_h||28;
+  const logoTopW=l.logo_top_h||33;
+  const logoBotW=l.logo_bottom_h||33;
   const logoTopNascosto=l.logo_top_nascosto===true;
 
   let h=`<div style="padding:${mgT}mm ${mgR}mm ${mgB}mm ${mgL}mm;font-family:'${esc(font)}',sans-serif;font-size:${fsVoce}pt;line-height:1.5;height:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column">`;
 
   if(logoTopB64&&!logoTopNascosto){
-    h+=`<div style="text-align:center;margin-bottom:4mm;flex-shrink:0"><img src="data:image/*;base64,${logoTopB64}" style="height:${logoTopH}mm;max-width:100%;object-fit:contain" alt=""></div>`;
+    h+=`<div style="text-align:center;margin-bottom:4mm;flex-shrink:0"><img src="data:image/*;base64,${logoTopB64}" style="max-width:${logoTopW}%;height:auto;max-height:35mm;object-fit:contain" alt=""></div>`;
   }
-  if(l.titolo){h+=`<div style="text-align:center;font-weight:800;margin-bottom:2mm;flex-shrink:0">${esc(l.titolo)}</div>`;}
-  if(l.sottotitolo){h+=`<div style="text-align:center;color:#475569;margin-bottom:3mm;font-size:.9em;flex-shrink:0">${esc(l.sottotitolo)}</div>`;}
 
-  h+=`<table style="width:100%;border-collapse:collapse;flex:1"><colgroup><col style="width:${descPct}%"><col style="width:${100-descPct}%"></colgroup><tbody>`;
+  h+=`<div style="flex:1">`;
+  if(l.titolo){h+=`<div style="text-align:center;font-weight:800;margin-bottom:2mm">${esc(l.titolo)}</div>`;}
+  if(l.sottotitolo){h+=`<div style="text-align:center;color:#475569;margin-bottom:3mm;font-size:.9em">${esc(l.sottotitolo)}</div>`;}
+
+  h+=`<table style="width:100%;border-collapse:collapse"><colgroup><col style="width:${descPct}%"><col style="width:${100-descPct}%"></colgroup><tbody>`;
   (v||[]).forEach(row=>{
     if(row.tipo==='voce'){
       const pt=row.prezzo_testo||(row.prezzo!=null?'€ '+Number(row.prezzo).toFixed(2).replace('.',','):'');
@@ -182,9 +184,10 @@ function buildSlotHTML(l,v,logoTopB64,logoBotB64){
     }
   });
   h+=`</tbody></table>`;
+  if(l.note_piede){h+=`<div style="text-align:center;font-size:.8em;color:#64748b;margin-top:3mm;padding-top:2mm;border-top:0.5pt solid #e2e8f0">${esc(l.note_piede)}</div>`;}
+  h+=`</div>`; // fine flex:1
 
-  if(l.note_piede){h+=`<div style="text-align:center;font-size:.8em;color:#64748b;margin-top:3mm;padding-top:2mm;border-top:0.5pt solid #e2e8f0;flex-shrink:0">${esc(l.note_piede)}</div>`;}
-  if(logoBotB64){h+=`<div style="text-align:center;margin-top:3mm;flex-shrink:0"><img src="data:image/*;base64,${logoBotB64}" style="height:${logoBotH}mm;max-width:100%;object-fit:contain" alt=""></div>`;}
+  if(logoBotB64){h+=`<div style="text-align:center;flex-shrink:0"><img src="data:image/*;base64,${logoBotB64}" style="max-width:${logoBotW}%;height:auto;max-height:28mm;object-fit:contain" alt=""></div>`;}
 
   h+=`</div>`;
   return h;

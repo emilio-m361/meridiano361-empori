@@ -140,10 +140,12 @@ async function loadAndRender(){
   const font=l.font_famiglia||'Poppins';
   const descPct=l.col_desc_pct||70;
   const mgT=l.mg_top||15,mgB=l.mg_bottom||15,mgL=l.mg_left||15,mgR=l.mg_right||15;
-  const logoTopH=l.logo_top_h||35;
-  const logoBotH=l.logo_bottom_h||28;
+  const logoTopW=l.logo_top_h||33;
+  const logoBotW=l.logo_bottom_h||33;
   const linee=l.mostra_linee!==false;
   const logoTopNascosto=l.logo_top_nascosto===true;
+  const FMT_H={A4:297,A5:210,A6:148};
+  const contentHmm=(FMT_H[fmt]||297)-mgT-mgB;
 
   document.getElementById('tb-title').textContent=l.nome||'Listino Vetrina';
 
@@ -189,13 +191,19 @@ async function loadAndRender(){
   const inner=document.getElementById('page-inner');
   inner.style.padding=`${mgT}mm ${mgR}mm ${mgB}mm ${mgL}mm`;
   inner.style.fontSize=`${l.font_size_voce||11}pt`;
+  inner.style.display='flex';
+  inner.style.flexDirection='column';
+  inner.style.minHeight=`${contentHmm}mm`;
 
   let html='';
 
   // Logo top (rispetta il toggle dell'operatore)
   if(logoTopB64 && !logoTopNascosto){
-    html+=`<div class="logo-top"><img src="data:image/*;base64,${logoTopB64}" style="height:${logoTopH}mm" alt="Logo"></div>`;
+    html+=`<div class="logo-top" style="flex-shrink:0"><img src="data:image/*;base64,${logoTopB64}" style="max-width:${logoTopW}%;height:auto;max-height:35mm;object-fit:contain" alt="Logo"></div>`;
   }
+
+  // Contenuto centrale (cresce per riempire lo spazio)
+  html+=`<div style="flex:1">`;
 
   // Titolo / sottotitolo
   if(l.titolo){html+=`<div class="listino-titolo">${esc(l.titolo)}</div>`;}
@@ -225,9 +233,11 @@ async function loadAndRender(){
   // Nota piede
   if(l.note_piede){html+=`<div class="listino-piede">${esc(l.note_piede)}</div>`;}
 
-  // Logo bottom
+  html+=`</div>`; // fine flex:1
+
+  // Logo bottom (spinto a fondo pagina dal flex)
   if(logoBotB64){
-    html+=`<div class="logo-bot"><img src="data:image/*;base64,${logoBotB64}" style="height:${logoBotH}mm" alt="Logo emporio"></div>`;
+    html+=`<div class="logo-bot" style="flex-shrink:0"><img src="data:image/*;base64,${logoBotB64}" style="max-width:${logoBotW}%;height:auto;max-height:28mm;object-fit:contain" alt="Logo emporio"></div>`;
   }
 
   inner.innerHTML=html;
