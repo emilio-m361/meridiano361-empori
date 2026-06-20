@@ -223,12 +223,46 @@
     <div class="ls-sec" id="ls-sec">Caricamento…</div>
     <div class="ls-grid" id="ls-grid"><div class="spin"></div></div>
   </div>
-  <button class="fab" onclick="nuovoListino()" title="Nuovo listino"><i class="fas fa-plus"></i></button>
+  <button class="fab" onclick="apriNuovoModal()" title="Nuovo documento"><i class="fas fa-plus"></i></button>
   <!-- Barra selezione multipla -->
   <div id="multi-bar" style="display:none;position:sticky;bottom:0;background:#1e293b;padding:10px 14px;align-items:center;gap:10px;z-index:50">
     <span id="multi-count" style="color:#fff;font-size:12px;font-weight:700;flex:1">0 selezionati</span>
     <button onclick="apriModalMultiStampa()" style="background:#B5453A;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px"><i class="fas fa-print"></i> Stampa combinata</button>
     <button onclick="clearSelezione()" style="background:transparent;border:1.5px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);border-radius:8px;padding:7px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">✕</button>
+  </div>
+</div>
+
+<!-- Modal "Nuovo" — scelta tipo documento -->
+<div id="modal-nuovo" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:flex-end;justify-content:center;padding:0">
+  <div style="background:#fff;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <span style="font-size:15px;font-weight:900;color:#1e293b">Crea nuovo documento</span>
+      <button onclick="chiudiNuovoModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8;line-height:1">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;padding-bottom:env(safe-area-inset-bottom,0px)">
+      <button onclick="chiudiNuovoModal();nuovoListino()"
+        style="display:flex;align-items:center;gap:14px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:14px;padding:16px;cursor:pointer;font-family:inherit;text-align:left;width:100%;transition:all .15s"
+        onmouseover="this.style.borderColor='#B5453A';this.style.background='#fdf1f0'" onmouseout="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'">
+        <div style="width:44px;height:44px;background:#fdf1f0;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <i class="fas fa-list-ul" style="color:#B5453A;font-size:18px"></i>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:800;color:#1e293b">Listino Vetrina</div>
+          <div style="font-size:12px;color:#94a3b8;margin-top:2px">Listino prezzi con prodotti e sezioni</div>
+        </div>
+      </button>
+      <button onclick="chiudiNuovoModal();apriAllestimento()"
+        style="display:flex;align-items:center;gap:14px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:14px;padding:16px;cursor:pointer;font-family:inherit;text-align:left;width:100%;transition:all .15s"
+        onmouseover="this.style.borderColor='#334155';this.style.background='#f1f5f9'" onmouseout="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc'">
+        <div style="width:44px;height:44px;background:#f1f5f9;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <i class="fas fa-sign-hanging" style="color:#334155;font-size:18px"></i>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:800;color:#1e293b">Vetrina in Allestimento</div>
+          <div style="font-size:12px;color:#94a3b8;margin-top:2px">Foglio da esporre durante il riallestimento</div>
+        </div>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -500,8 +534,7 @@ function mostra(s){
     sub.textContent='Emporio '+emporio;sub.style.display=emporio?'block':'none';
     title.innerHTML='<i class="fas fa-list-ul" style="font-size:14px;opacity:.65;margin-right:5px"></i>Listino Vetrina';
     acts.innerHTML=`
-      <button class="btn-hd ghost" onclick="apriAllestimento()" title="Foglio vetrina in allestimento"><i class="fas fa-sign-hanging"></i> Allestimento</button>
-      <button class="btn-hd ghost" onclick="nuovoListino()"><i class="fas fa-plus"></i> Nuovo</button>`;
+      <button class="btn-hd ghost" onclick="apriNuovoModal()"><i class="fas fa-plus"></i> Nuovo</button>`;
   } else if(s==='editor'){
     back.style.display='flex';
     sub.textContent='Emporio '+emporio;sub.style.display='block';
@@ -1084,6 +1117,14 @@ function apriStampaCombinataDaEditor(){
   const opDiv=document.getElementById('layout-options');
   opDiv.innerHTML=OPTS.map(o=>`<button onclick="chiudiModalLayout();window.open('print-multi.html?ids=${id}&layout=${o.layout}','_blank')" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:14px;cursor:pointer;font-family:inherit;text-align:left;width:100%;transition:all .15s" onmouseover="this.style.borderColor='#B5453A'" onmouseout="this.style.borderColor='#e2e8f0'"><span style="font-size:13px;font-weight:800;color:#1e293b">${o.label}</span><span style="font-size:11px;color:#64748b">${o.desc}</span></button>`).join('');
   document.getElementById('modal-layout').style.display='flex';
+}
+
+/* ── Modal Nuovo ── */
+function apriNuovoModal(){
+  document.getElementById('modal-nuovo').style.display='flex';
+}
+function chiudiNuovoModal(){
+  document.getElementById('modal-nuovo').style.display='none';
 }
 
 /* ── Vetrina in allestimento ── */

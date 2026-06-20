@@ -8,58 +8,148 @@
   <style id="page-style">/* dinamico */</style>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-    body{font-family:'Georgia',serif;background:#e8edf2;color:#1e293b}
+    html,body{height:100%;font-family:'Inter','Poppins',sans-serif}
+    body{background:#e8edf2;color:#1e293b}
 
-    @media screen{
-      .toolbar{background:#1e293b;padding:10px 18px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100}
-      .toolbar h2{color:#fff;font-size:14px;font-weight:700;flex:1;opacity:.85}
-      .tb-btn{background:#B5453A;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s;font-family:inherit}
-      .tb-btn:hover{background:#8c362d}
-      .tb-btn.ghost{background:transparent;border:1.5px solid rgba(255,255,255,.4);color:rgba(255,255,255,.85)}
-      .tb-btn.ghost:hover{background:rgba(255,255,255,.08)}
-      .page-wrap{padding:24px 16px 60px;display:flex;justify-content:center;align-items:flex-start;min-height:calc(100vh - 52px)}
-      .page{box-shadow:0 4px 24px rgba(0,0,0,.18);border-radius:4px;background:#fff}
+    .toolbar{background:#1e293b;padding:10px 16px;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:200}
+    .toolbar h2{color:#fff;font-size:14px;font-weight:800;flex:1;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .tb-btn{background:#B5453A;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s;font-family:inherit;white-space:nowrap}
+    .tb-btn:hover{background:#8c362d}
+    .tb-btn.ghost{background:transparent;border:1.5px solid rgba(255,255,255,.35);color:rgba(255,255,255,.85)}
+    .tb-btn.ghost:hover{background:rgba(255,255,255,.08)}
+
+    .app-body{display:flex;height:calc(100vh - 48px)}
+
+    /* Settings sidebar */
+    .settings{width:268px;flex-shrink:0;background:#fff;border-right:1px solid #e2e8f0;overflow-y:auto;padding:14px}
+    @media(max-width:700px){
+      .app-body{flex-direction:column}
+      .settings{width:100%;flex-shrink:0;max-height:52vh;border-right:none;border-bottom:1px solid #e2e8f0;overflow-y:auto}
     }
+
+    /* Preview */
+    .preview-area{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px 60px;background:#e8edf2;min-width:0}
     @media print{
-      .toolbar{display:none}
-      .page-wrap{padding:0;background:none;display:block}
-      .page{box-shadow:none;border-radius:0;background:#fff}
+      .toolbar,.settings{display:none}
+      .app-body{display:block;height:auto}
+      .preview-area{padding:0;background:none;display:block;overflow:visible}
+      .page-shadow{box-shadow:none!important;border-radius:0!important}
     }
+    .page-shadow{box-shadow:0 4px 24px rgba(0,0,0,.18);border-radius:4px;background:#fff;flex-shrink:0}
 
-    .page-inner{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-    }
+    /* Settings components */
+    .set-sec{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.14em;color:#94a3b8;margin:14px 0 8px;display:flex;align-items:center;gap:6px}
+    .set-sec:first-child{margin-top:0}
+    .set-sec::before{content:'';width:3px;height:12px;background:#B5453A;border-radius:2px;flex-shrink:0}
+    .set-row{margin-bottom:10px}
+    .set-lbl{font-size:10px;font-weight:700;color:#475569;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
+    .fi-set{width:100%;padding:8px 10px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:inherit;outline:none;color:#1e293b;transition:border-color .15s;background:#fff;resize:vertical}
+    .fi-set:focus{border-color:#B5453A}
+    .fi-range{width:100%;accent-color:#B5453A;cursor:pointer;margin-top:4px}
+    .range-val{font-size:11px;font-weight:800;color:#B5453A}
+    .tog-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f8fafc;border-radius:8px;border:1.5px solid #e2e8f0;cursor:pointer}
+    .tog-lbl{flex:1;font-size:12px;font-weight:700;color:#1e293b}
+    .sw{position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0}
+    .sw input{opacity:0;width:0;height:0}
+    .sw-s{position:absolute;inset:0;background:#cbd5e1;border-radius:20px;cursor:pointer;transition:.2s}
+    .sw-s::before{content:'';position:absolute;height:14px;width:14px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+    .sw input:checked+.sw-s{background:#B5453A}
+    .sw input:checked+.sw-s::before{transform:translateX(16px)}
+    .ori-group{display:flex;gap:0;background:#f1f5f9;border-radius:8px;border:1.5px solid #e2e8f0;overflow:hidden}
+    .ori-btn{border:none;background:transparent;padding:7px 10px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;color:#94a3b8;transition:all .12s;flex:1;text-align:center;white-space:nowrap}
+    .ori-btn.on{background:#1e293b;color:#fff;border-radius:6px}
 
-    .testo-allestimento{
-      font-family:'Georgia',serif;
-      font-weight:700;
-      font-style:italic;
-      color:#1e293b;
-      letter-spacing:.06em;
-      line-height:1.2;
-      text-transform:uppercase;
-    }
-
-    .spin{width:28px;height:28px;border:3px solid #e2e8f0;border-top-color:#B5453A;border-radius:50%;animation:rot .8s linear infinite;margin:60px auto;display:block}
+    .spin{width:28px;height:28px;border:3px solid #e2e8f0;border-top-color:#B5453A;border-radius:50%;animation:rot .8s linear infinite;margin:40px auto;display:block}
     @keyframes rot{to{transform:rotate(360deg)}}
+
+    /* Stile checkboxes inline */
+    .style-toggles{display:flex;gap:8px}
+    .style-cb{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#475569;cursor:pointer;padding:6px 10px;border:1.5px solid #e2e8f0;border-radius:8px;background:#f8fafc;transition:all .12s;user-select:none}
+    .style-cb input{accent-color:#B5453A;cursor:pointer;width:14px;height:14px}
+    .style-cb:has(input:checked){border-color:#B5453A;background:#fdf1f0;color:#B5453A}
   </style>
 </head>
 <body>
 
 <div class="toolbar">
-  <h2>Vetrina in Allestimento — M361</h2>
+  <h2>Vetrina in Allestimento</h2>
   <button class="tb-btn ghost" onclick="window.close()">✕ Chiudi</button>
   <button class="tb-btn" onclick="window.print()">🖨 Stampa / PDF</button>
 </div>
 
-<div class="page-wrap" id="page-wrap">
-  <div class="spin" id="spin"></div>
-  <div class="page" id="page" style="display:none"></div>
+<div class="app-body">
+
+  <!-- Settings panel -->
+  <div class="settings">
+
+    <div class="set-sec">Testo</div>
+    <div class="set-row">
+      <label class="set-lbl">Testo principale</label>
+      <textarea class="fi-set" id="fi-testo" rows="2" oninput="render()">Vetrina
+in Allestimento</textarea>
+    </div>
+    <div class="set-row">
+      <label class="set-lbl">Testo secondario (opzionale)</label>
+      <input class="fi-set" type="text" id="fi-sub" placeholder="es. Nuova collezione" oninput="render()">
+    </div>
+
+    <div class="set-sec">Tipografia</div>
+    <div class="set-row">
+      <label class="set-lbl">Font</label>
+      <select class="fi-set" id="fi-font" onchange="render()">
+        <option value="Georgia">Georgia</option>
+        <option value="Playfair Display">Playfair Display</option>
+        <option value="Cinzel">Cinzel</option>
+        <option value="Poppins">Poppins</option>
+        <option value="Montserrat">Montserrat</option>
+        <option value="Bebas Neue">Bebas Neue</option>
+        <option value="Oswald">Oswald</option>
+      </select>
+    </div>
+    <div class="set-row">
+      <label class="set-lbl">Dimensione <span class="range-val" id="sz-val">52pt</span></label>
+      <input type="range" class="fi-range" id="fi-sz" min="18" max="100" value="52" oninput="onSzChange(this.value)">
+    </div>
+    <div class="set-row">
+      <label class="set-lbl">Stile</label>
+      <div class="style-toggles">
+        <label class="style-cb">
+          <input type="checkbox" id="fi-bold" checked onchange="render()"> <b>Grassetto</b>
+        </label>
+        <label class="style-cb">
+          <input type="checkbox" id="fi-italic" checked onchange="render()"> <i>Corsivo</i>
+        </label>
+      </div>
+    </div>
+    <div class="set-row">
+      <label class="set-lbl">Colore testo</label>
+      <input type="color" id="fi-color" value="#1e293b" oninput="render()"
+        style="width:100%;height:38px;border:1.5px solid #e2e8f0;border-radius:8px;padding:3px 6px;cursor:pointer;background:#fff">
+    </div>
+
+    <div class="set-sec">Layout</div>
+    <div class="set-row">
+      <label class="set-lbl">Orientamento</label>
+      <div class="ori-group">
+        <button class="ori-btn on" data-ori="landscape" onclick="onOriChange(this)">Orizzontale</button>
+        <button class="ori-btn" data-ori="portrait" onclick="onOriChange(this)">Verticale</button>
+      </div>
+    </div>
+    <div class="set-row">
+      <label class="tog-row">
+        <span class="tog-lbl">Mostra logo emporio</span>
+        <label class="sw"><input type="checkbox" id="fi-logo" checked onchange="render()"><span class="sw-s"></span></label>
+      </label>
+    </div>
+
+  </div>
+
+  <!-- Preview area -->
+  <div class="preview-area" id="preview-area">
+    <div class="spin" id="spin"></div>
+    <div class="page-shadow" id="page" style="display:none"></div>
+  </div>
+
 </div>
 
 <script>
@@ -67,40 +157,102 @@ const SB_URL='https://hsalynvxazxqtmsvjrzc.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
 const db=supabase.createClient(SB_URL,SB_KEY);
 
-async function loadAndRender(){
+let logoBotB64=null;
+let emporio='';
+let oriAttuale='landscape';
+
+const GF_FONTS=[
+  {f:'Playfair Display',q:'Playfair+Display:ital,wght@0,700;1,700'},
+  {f:'Cinzel',q:'Cinzel:wght@700'},
+  {f:'Poppins',q:'Poppins:ital,wght@0,700;0,800;1,700'},
+  {f:'Montserrat',q:'Montserrat:ital,wght@0,700;0,800;1,700'},
+  {f:'Bebas Neue',q:'Bebas+Neue'},
+  {f:'Oswald',q:'Oswald:wght@700'},
+];
+
+async function init(){
   const params=new URLSearchParams(location.search);
-  const emporio=params.get('emporio')||'';
+  emporio=params.get('emporio')||'';
 
-  const pageW=297, pageH=210; // A4 landscape mm
-  document.getElementById('page-style').textContent=`@page{size:${pageW}mm ${pageH}mm;margin:0}`;
-
-  const pageEl=document.getElementById('page');
-  pageEl.style.width=pageW+'mm';
-  pageEl.style.height=pageH+'mm';
-
-  let logoBotB64=null;
   if(emporio){
-    const{data:loghi}=await db.from('listini_loghi').select('*');
+    const{data:loghi}=await db.from('listini_loghi').select('tipo,chiave,immagine_b64');
     const lgMap={};
     (loghi||[]).forEach(lg=>{lgMap[lg.tipo+'|'+lg.chiave]=lg.immagine_b64;});
     logoBotB64=lgMap['emporio|'+emporio]||null;
   }
 
-  const logoBotW=40; // % width
-
-  pageEl.innerHTML=`
-    <div class="page-inner" style="padding:20mm;height:${pageH}mm;box-sizing:border-box">
-      <div style="flex:1;display:flex;align-items:center;justify-content:center">
-        <div class="testo-allestimento" style="font-size:52pt">Vetrina<br>in Allestimento</div>
-      </div>
-      ${logoBotB64?`<div style="flex-shrink:0;text-align:center"><img src="data:image/*;base64,${logoBotB64}" style="max-width:${logoBotW}%;height:auto;max-height:28mm;object-fit:contain" alt=""></div>`:''}
-    </div>`;
+  GF_FONTS.forEach(({q})=>{
+    const link=document.createElement('link');
+    link.rel='stylesheet';
+    link.href=`https://fonts.googleapis.com/css2?family=${q}&display=swap`;
+    document.head.appendChild(link);
+  });
 
   document.getElementById('spin').style.display='none';
-  pageEl.style.display='block';
+  document.getElementById('page').style.display='block';
+  render();
 }
 
-loadAndRender();
+function dims(){
+  return oriAttuale==='landscape'?{w:297,h:210}:{w:210,h:297};
+}
+
+function render(){
+  const d=dims();
+  document.getElementById('page-style').textContent=`@page{size:${d.w}mm ${d.h}mm;margin:0}`;
+
+  const pageEl=document.getElementById('page');
+  pageEl.style.width=d.w+'mm';
+  pageEl.style.height=d.h+'mm';
+
+  const testo=document.getElementById('fi-testo').value||'Vetrina\nin Allestimento';
+  const sub=document.getElementById('fi-sub').value.trim();
+  const font=document.getElementById('fi-font').value||'Georgia';
+  const sz=parseInt(document.getElementById('fi-sz').value)||52;
+  const color=document.getElementById('fi-color').value||'#1e293b';
+  const bold=document.getElementById('fi-bold').checked;
+  const italic=document.getElementById('fi-italic').checked;
+  const mostraLogo=document.getElementById('fi-logo').checked;
+
+  const fw=bold?'800':'400';
+  const fst=italic?'italic':'normal';
+  const subSz=Math.max(14,Math.round(sz*0.36));
+
+  const testoHtml=testo.split('\n').map(l=>esc(l)).join('<br>');
+  const subHtml=sub
+    ?`<div style="font-family:'${font}',serif,sans-serif;font-size:${subSz}pt;color:${color};opacity:.6;margin-top:8mm;font-weight:${fw};font-style:${fst};letter-spacing:.08em;text-transform:uppercase;line-height:1.3">${esc(sub)}</div>`
+    :'';
+  const logoHtml=mostraLogo&&logoBotB64
+    ?`<div style="flex-shrink:0;text-align:center;padding-top:12mm"><img src="data:image/*;base64,${logoBotB64}" style="max-width:40%;height:auto;max-height:28mm;object-fit:contain" alt=""></div>`
+    :'';
+
+  pageEl.innerHTML=`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18mm;height:${d.h}mm;box-sizing:border-box">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <div style="font-family:'${font}',serif,sans-serif;font-size:${sz}pt;font-weight:${fw};font-style:${fst};color:${color};letter-spacing:.06em;line-height:1.15;text-transform:uppercase">${testoHtml}</div>
+        ${subHtml}
+      </div>
+      ${logoHtml}
+    </div>`;
+}
+
+function onSzChange(v){
+  v=Math.max(18,Math.min(100,parseInt(v)||52));
+  document.getElementById('fi-sz').value=v;
+  document.getElementById('sz-val').textContent=v+'pt';
+  render();
+}
+
+function onOriChange(btn){
+  document.querySelectorAll('.ori-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  oriAttuale=btn.dataset.ori;
+  render();
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+init();
 </script>
 </body>
 </html>
