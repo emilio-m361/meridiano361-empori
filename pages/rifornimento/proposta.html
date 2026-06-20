@@ -618,11 +618,11 @@ async function invia() {
 
 async function _notificaRespAcquisti() {
   const emporio = proposta.emporio || '';
-  // Resp. acquisti riceve notifiche da tutti gli empori, non solo il proprio
   const { data: resps } = await db
     .from('operatori')
     .select('id')
-    .eq('is_resp_acquisti', true);
+    .eq('is_resp_acquisti', true)
+    .eq('emporio', emporio);
 
   if (!resps?.length) return;
 
@@ -647,7 +647,8 @@ async function _notificaRespAcquistiOrdine(emporio, mittente) {
   const { data: resps } = await db
     .from('operatori')
     .select('id')
-    .eq('is_resp_acquisti', true);
+    .eq('is_resp_acquisti', true)
+    .eq('emporio', emporio);
   if (!resps?.length) return;
   await fetch(`${SUPA_URL}/functions/v1/send-notification`, {
     method: 'POST',

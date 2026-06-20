@@ -1368,13 +1368,14 @@ function calcSubtotal(groupId) {
         }
 
         async function _notificaRespAcquistiNuovoOrdineCliente(orderData) {
+            const emporio = orderData.emporio || '';
             const { data: resps } = await _supabase
                 .from('operatori')
                 .select('id')
-                .eq('is_resp_acquisti', true);
+                .eq('is_resp_acquisti', true)
+                .eq('emporio', emporio);
             if (!resps?.length) return;
             const cliente = [orderData.cliente_nome, orderData.cliente_cognome].filter(Boolean).join(' ') || orderData.titolo || 'cliente';
-            const emporio = orderData.emporio || '';
             await fetch(SUPABASE_URL + '/functions/v1/send-notification', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY, 'apikey': SUPABASE_KEY },
