@@ -122,6 +122,25 @@
   </div>
 </div>
 
+<!-- Accessibilità -->
+<div style="padding:12px 18px 0">
+  <label style="display:flex;align-items:center;justify-content:space-between;background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:13px 16px;cursor:pointer;user-select:none;gap:12px" onclick="toggleTestoGrande()">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:36px;height:36px;border-radius:10px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <i class="fas fa-text-height" style="font-size:16px;color:#16a34a"></i>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#1e293b">Testo grande</div>
+        <div style="font-size:11px;color:#94a3b8;font-weight:600;margin-top:1px">Aumenta la dimensione dell'interfaccia</div>
+      </div>
+    </div>
+    <div id="toggle-grande" style="position:relative;width:44px;height:24px;flex-shrink:0">
+      <div id="toggle-track" style="position:absolute;inset:0;border-radius:12px;background:#cbd5e1;transition:background .2s"></div>
+      <div id="toggle-thumb" style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.2);transition:transform .2s"></div>
+    </div>
+  </label>
+</div>
+
 <div class="mese-nav">
   <button class="mese-btn" onclick="cambioMese(-1)"><i class="fas fa-chevron-left"></i></button>
   <span class="mese-label" id="mese-label">…</span>
@@ -234,6 +253,8 @@ async function init() {
   document.getElementById('profilo-nome').textContent = user.nome || '—';
   document.getElementById('profilo-ruolo').textContent =
     [user.ruolo, user.emporio].filter(Boolean).map(s => s.charAt(0).toUpperCase()+s.slice(1)).join(' · ') || 'Operatore';
+
+  syncToggleGrande();
 
   // Tipo grid nel form
   buildTipoGrid();
@@ -499,6 +520,21 @@ function chiudiTutto() {
   document.getElementById('overlay').classList.remove('open');
   selData = null;
   renderCalendario();
+}
+
+/* ─── Testo grande ─── */
+function syncToggleGrande() {
+  const on = localStorage.getItem('m361_testo_grande') === '1';
+  const track = document.getElementById('toggle-track');
+  const thumb = document.getElementById('toggle-thumb');
+  if (!track || !thumb) return;
+  track.style.background = on ? '#16a34a' : '#cbd5e1';
+  thumb.style.transform = on ? 'translateX(20px)' : 'translateX(0)';
+}
+function toggleTestoGrande() {
+  const on = localStorage.getItem('m361_testo_grande') === '1';
+  if (window.M361 && window.M361.setTestoGrande) window.M361.setTestoGrande(!on);
+  syncToggleGrande();
 }
 
 /* ─── Utility ─── */

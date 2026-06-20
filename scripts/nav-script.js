@@ -191,6 +191,8 @@ body { font-family: 'Inter', sans-serif; padding-top: 56px; padding-bottom: 68px
 .m361-toast.ok,.m361-toast.success{background:#166534}
 .m361-toast.err,.m361-toast.error{background:#991b1b}
 .m361-toast.info{background:#1d4ed8}
+/* ── TESTO GRANDE (accessibilità) ── */
+html.m361-grande{zoom:1.25}
     `;
     document.head.insertBefore(st, document.head.firstChild);
   }
@@ -1395,8 +1397,26 @@ function buildNav() {
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
+  // ── TESTO GRANDE (accessibilità) ─────────────────────────────────────────
+  function applyZoom() {
+    if (localStorage.getItem('m361_testo_grande') === '1') {
+      document.documentElement.classList.add('m361-grande');
+    } else {
+      document.documentElement.classList.remove('m361-grande');
+    }
+  }
+  applyZoom();
+
   // ── GLOBAL TOAST CENTRATO ────────────────────────────────────────────────
   window.M361 = window.M361 || {};
+  window.M361.setTestoGrande = function(enabled) {
+    if (enabled) {
+      localStorage.setItem('m361_testo_grande', '1');
+    } else {
+      localStorage.removeItem('m361_testo_grande');
+    }
+    applyZoom();
+  };
   window.M361.toast = function(msg, tipo, duration) {
     document.querySelectorAll('.m361-toast').forEach(el => {
       clearTimeout(el._t);
