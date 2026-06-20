@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <link rel="icon" href="/faviconm361.png" type="image/png">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="../../assets/style/nav-style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prodotti in Scadenza — M361</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --rosso:#B5453A; --scuro:#1e293b; --f-base:15px;
+      --urg-r:#B5453A; --urg-r-bg:#fef2f2;
+      --urg-o:#d97706; --urg-o-bg:#fffbeb;
+      --urg-y:#b45309; --urg-y-bg:#fefce8;
+      --urg-g:#059669; --urg-g-bg:#f0fdf4;
+      --urg-n:#64748b; --urg-n-bg:#f8fafc;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f1f5f9;font-size:var(--f-base);color:var(--scuro);padding-bottom:100px}
+
+    /* ── Page header ── */
+    .pg-header{background:var(--scuro);color:#fff;padding:18px 18px 14px;display:flex;align-items:center;gap:12px}
+    .pg-header-icon{width:40px;height:40px;background:rgba(255,255,255,.12);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+    .pg-header-title{font-size:18px;font-weight:900;flex:1}
+    .btn-add-fab{background:var(--rosso);color:#fff;border:none;border-radius:12px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s;font-family:inherit}
+    .btn-add-fab:hover{background:#8c362d}
+
+    /* ── Emporio tabs (admin) ── */
+    .emp-bar{display:flex;gap:3px;padding:12px 14px 0;flex-wrap:wrap}
+    .emp-tab{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;border:none;background:#fff;color:#94a3b8;border:1.5px solid #e2e8f0;transition:all .12s;font-family:inherit}
+    .emp-tab.on{background:var(--scuro);color:#fff;border-color:var(--scuro)}
+
+    /* ── Summary pills ── */
+    .summary{display:flex;gap:8px;padding:14px 14px 0;flex-wrap:wrap}
+    .sum-pill{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:800;border:1.5px solid transparent}
+
+    /* ── Filter tabs ── */
+    .filter-bar{display:flex;gap:3px;padding:10px 14px 12px;overflow-x:auto;scrollbar-width:none}
+    .filter-bar::-webkit-scrollbar{display:none}
+    .f-tab{padding:7px 13px;border-radius:9px;font-size:12px;font-weight:800;cursor:pointer;border:none;background:#fff;color:#94a3b8;transition:all .12s;white-space:nowrap;font-family:inherit;border:1.5px solid #e2e8f0}
+    .f-tab.on{color:#fff;border-color:transparent}
+    .f-tab[data-f="tutti"].on{background:var(--scuro)}
+    .f-tab[data-f="urgenti"].on{background:var(--urg-r)}
+    .f-tab[data-f="avviso"].on{background:var(--urg-o)}
+    .f-tab[data-f="prossimi"].on{background:var(--urg-y)}
+    .f-tab[data-f="futuri"].on{background:var(--urg-g)}
+    .f-tab[data-f="promo"].on{background:#7c3aed}
+
+    /* ── Product list ── */
+    .prod-list{display:flex;flex-direction:column;gap:10px;padding:0 14px}
+    .prod-card{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex}
+    .prod-strip{width:5px;flex-shrink:0}
+    .prod-body{flex:1;padding:13px 14px;min-width:0}
+    .prod-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+    .prod-desc{font-size:15px;font-weight:800;color:var(--scuro);flex:1;min-width:0;word-break:break-word}
+    .prod-codice{font-size:11px;color:#94a3b8;font-weight:600;margin-top:1px}
+    .prod-badges{display:flex;gap:5px;flex-wrap:wrap;align-items:center;flex-shrink:0}
+    .badge{padding:3px 8px;border-radius:6px;font-size:11px;font-weight:800;white-space:nowrap;display:inline-flex;align-items:center;gap:3px}
+    .badge-scad{border:1.5px solid}
+    .badge-sconto{letter-spacing:.02em}
+    .badge-promo{background:#7c3aed;color:#fff}
+    .prod-meta{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+    .meta-item{display:flex;align-items:center;gap:5px;font-size:13px;color:#64748b;font-weight:600}
+    .meta-item i{font-size:11px;width:14px;text-align:center}
+    .meta-solo{font-size:11px;color:#94a3b8;font-style:italic}
+    .prod-actions{display:flex;gap:6px;justify-content:flex-end}
+    .btn-act{background:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:700;display:flex;align-items:center;gap:5px;color:#64748b;transition:all .12s}
+    .btn-act:hover{border-color:var(--rosso);color:var(--rosso)}
+    .btn-act.promo-on{background:#f5f3ff;border-color:#7c3aed;color:#7c3aed}
+    .btn-act.danger:hover{border-color:#ef4444;color:#ef4444}
+
+    /* ── Empty state ── */
+    .empty{text-align:center;padding:48px 20px;color:#94a3b8}
+    .empty i{font-size:40px;display:block;margin-bottom:12px;opacity:.4}
+    .empty p{font-size:14px;font-weight:600}
+
+    /* ── Overlay ── */
+    #overlay{position:fixed;inset:0;z-index:9400;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .25s}
+    #overlay.open{opacity:1;pointer-events:auto}
+
+    /* ── Bottom panel (form) ── */
+    .bottom-panel{position:fixed;bottom:0;left:0;right:0;z-index:9500;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.14);transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);max-height:92vh;display:flex;flex-direction:column;max-width:640px;margin:0 auto}
+    .bottom-panel.open{transform:translateY(0)}
+    .panel-handle{width:36px;height:4px;background:#e2e8f0;border-radius:2px;margin:12px auto 0;flex-shrink:0}
+    .panel-body{overflow-y:auto;flex:1;padding:16px 20px calc(20px + env(safe-area-inset-bottom,0px))}
+
+    /* ── Form elements ── */
+    .panel-title{font-size:17px;font-weight:900;color:var(--scuro);margin:0 0 18px}
+    .form-row{margin-bottom:14px}
+    .form-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin-bottom:5px;display:block}
+    .form-input{width:100%;padding:11px 13px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;font-family:inherit;outline:none;transition:border-color .15s;color:var(--scuro)}
+    .form-input:focus{border-color:var(--rosso)}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .check-row{display:flex;align-items:center;gap:10px;padding:12px 13px;background:#f8fafc;border-radius:10px;border:1.5px solid #e2e8f0;cursor:pointer;transition:border-color .15s;margin-bottom:10px}
+    .check-row:hover{border-color:#cbd5e1}
+    .check-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--rosso);flex-shrink:0;cursor:pointer}
+    .check-row-label{font-size:14px;font-weight:700;color:var(--scuro);flex:1}
+    .check-row-sub{font-size:11px;color:#94a3b8;margin-top:1px}
+
+    /* ── Sconto preview ── */
+    .sconto-preview{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+    .sconto-preview-val{font-size:22px;font-weight:900;min-width:52px}
+    .sconto-preview-label{font-size:12px;color:#64748b;font-weight:600;line-height:1.4}
+
+    /* ── Buttons ── */
+    .btn-row{display:flex;gap:10px;margin-top:4px}
+    .btn-primary{background:var(--rosso);color:#fff;border:none;border-radius:10px;padding:13px;font-weight:800;cursor:pointer;font-family:inherit;font-size:15px;flex:1;transition:background .15s}
+    .btn-primary:hover{background:#8c362d}
+    .btn-secondary{background:#fff;color:#475569;border:1.5px solid #e2e8f0;border-radius:10px;padding:13px;font-weight:700;cursor:pointer;font-family:inherit;font-size:15px;flex:1;transition:all .15s}
+
+    /* ── Spinner ── */
+    .spinner{width:28px;height:28px;border:3px solid #e2e8f0;border-top-color:var(--rosso);border-radius:50%;animation:spin .8s linear infinite;margin:40px auto;display:block}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ── Sezione titolo ── */
+    .sec-t{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#94a3b8;display:flex;align-items:center;gap:10px;padding:14px 14px 6px;margin:0}
+    .sec-t::before{content:'';width:3px;height:16px;background:var(--rosso);border-radius:2px}
+
+    /* ── Toast ── */
+    .toast{position:fixed;bottom:24px;right:16px;background:var(--scuro);color:#fff;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:700;z-index:99999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .toast.ok{background:#166534}
+    .toast.err{background:#991b1b}
+
+    @media(max-width:400px){
+      .two-col{grid-template-columns:1fr}
+      .prod-badges{flex-direction:column;align-items:flex-end}
+    }
+  </style>
+</head>
+<body>
+<script src="../../scripts/auth.js"></script>
+<script src="../../scripts/nav-script.js"></script>
+
+<!-- Header -->
+<div class="pg-header">
+  <div class="pg-header-icon"><i class="fas fa-clock-rotate-left"></i></div>
+  <div class="pg-header-title">Prodotti in Scadenza</div>
+  <button class="btn-add-fab" onclick="apriForm()"><i class="fas fa-plus"></i> Aggiungi</button>
+</div>
+
+<!-- Emporio tabs (solo admin) -->
+<div class="emp-bar" id="emp-bar" style="display:none"></div>
+
+<!-- Summary -->
+<div class="summary" id="summary"></div>
+
+<!-- Sezione label -->
+<p class="sec-t" id="sec-label">Prodotti registrati</p>
+
+<!-- Filter tabs -->
+<div class="filter-bar">
+  <button class="f-tab on" data-f="tutti" onclick="setFiltro('tutti',this)">Tutti</button>
+  <button class="f-tab" data-f="urgenti" onclick="setFiltro('urgenti',this)">🔴 Urgenti ≤7g</button>
+  <button class="f-tab" data-f="avviso" onclick="setFiltro('avviso',this)">🟠 Avviso ≤14g</button>
+  <button class="f-tab" data-f="prossimi" onclick="setFiltro('prossimi',this)">🟡 Prossimi ≤30g</button>
+  <button class="f-tab" data-f="futuri" onclick="setFiltro('futuri',this)">🟢 Futuri ≤90g</button>
+  <button class="f-tab" data-f="promo" onclick="setFiltro('promo',this)">🏷 In promo</button>
+</div>
+
+<!-- Lista prodotti -->
+<div class="prod-list" id="prod-list">
+  <div class="spinner"></div>
+</div>
+
+<!-- Overlay -->
+<div id="overlay" onclick="chiudiPanel()"></div>
+
+<!-- Form panel -->
+<div class="bottom-panel" id="form-panel">
+  <div class="panel-handle"></div>
+  <div class="panel-body">
+    <p class="panel-title" id="form-title">Aggiungi prodotto</p>
+
+    <div class="form-row">
+      <label class="form-label">Descrizione *</label>
+      <input type="text" class="form-input" id="f-desc" placeholder="es. Biscotti al miele">
+    </div>
+    <div class="two-col">
+      <div class="form-row">
+        <label class="form-label">Codice</label>
+        <input type="text" class="form-input" id="f-codice" placeholder="opzionale">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Quantità *</label>
+        <input type="number" class="form-input" id="f-qty" min="1" value="1">
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Data di scadenza *</label>
+      <input type="date" class="form-input" id="f-scad">
+    </div>
+
+    <!-- Check: solo alcuni -->
+    <label class="check-row">
+      <input type="checkbox" id="f-solo">
+      <div>
+        <div class="check-row-label">Solo alcuni hanno questa scadenza</div>
+        <div class="check-row-sub">es. 3 su 10 biscotti scadono prima degli altri</div>
+      </div>
+    </label>
+
+    <!-- Check: in promo -->
+    <label class="check-row">
+      <input type="checkbox" id="f-promo">
+      <div>
+        <div class="check-row-label">Già messo in promo a scaffale</div>
+        <div class="check-row-sub">prodotto già scontato e visibile al cliente</div>
+      </div>
+    </label>
+
+    <!-- Sconto suggerito preview -->
+    <div class="sconto-preview" id="sconto-preview">
+      <div class="sconto-preview-val" id="sconto-val">—</div>
+      <div class="sconto-preview-label">Sconto consigliato basato su quantità e giorni alla scadenza</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="chiudiPanel()">Annulla</button>
+      <button class="btn-primary" onclick="salva()"><i class="fas fa-check"></i> Salva</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
+const db = supabase.createClient(SB_URL, SB_KEY);
+
+let user     = null;
+let _admin   = false;
+let emporio  = null;   // emporio attivo nel filtro
+let filtro   = 'tutti';
+let prodotti = [];
+let editId   = null;
+
+// ── Sconto matrix ──────────────────────────────────────────────────────────
+// Righe: giorni alla scadenza   Colonne: qty bucket [1, 2-3, 4-10, >10]
+const SCONTO_MATRIX = [
+  { giorni:   7, sconti: [30, 40, 45, 50] },
+  { giorni:  14, sconti: [20, 25, 35, 40] },
+  { giorni:  30, sconti: [15, 20, 25, 30] },
+  { giorni:  90, sconti: [10, 10, 15, 20] },
+];
+function calcolaSconto(qty, giorniAllaScad) {
+  const qb = qty <= 1 ? 0 : qty <= 3 ? 1 : qty <= 10 ? 2 : 3;
+  for (const row of SCONTO_MATRIX) {
+    if (giorniAllaScad <= row.giorni) return row.sconti[qb];
+  }
+  return qty > 10 ? 5 : 0;
+}
+
+// ── Urgenza ────────────────────────────────────────────────────────────────
+function urgenza(giorni) {
+  if (giorni < 0)   return { color:'#6b7280', bg:'#f3f4f6', label:'Scaduto' };
+  if (giorni <= 7)  return { color:'var(--urg-r)', bg:'var(--urg-r-bg)', label:`${giorni}g` };
+  if (giorni <= 14) return { color:'var(--urg-o)', bg:'var(--urg-o-bg)', label:`${giorni}g` };
+  if (giorni <= 30) return { color:'var(--urg-y)', bg:'var(--urg-y-bg)', label:`${giorni}g` };
+  if (giorni <= 90) return { color:'var(--urg-g)', bg:'var(--urg-g-bg)', label:`${giorni}g` };
+  return { color:'var(--urg-n)', bg:'var(--urg-n-bg)', label:`${giorni}g` };
+}
+function giorniAlla(scadStr) {
+  const oggi  = new Date(); oggi.setHours(0,0,0,0);
+  const scad  = new Date(scadStr + 'T00:00:00');
+  return Math.round((scad - oggi) / 86400000);
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+async function init() {
+  user   = JSON.parse(localStorage.getItem('m361_user') || 'null');
+  if (!user) return;
+  _admin  = typeof isAdmin === 'function' && isAdmin();
+  emporio = user.emporio || null;
+
+  if (_admin) {
+    // carica lista empori
+    const { data } = await db.from('operatori').select('emporio').eq('attivo', true).not('emporio', 'is', null);
+    const emps = [...new Set((data||[]).map(r=>r.emporio).filter(Boolean))].sort();
+    buildEmpBar(emps);
+  }
+
+  await carica();
+}
+
+function buildEmpBar(emps) {
+  const bar = document.getElementById('emp-bar');
+  bar.style.display = 'flex';
+  // "Tutti" per admin
+  const btnTutti = document.createElement('button');
+  btnTutti.className = 'emp-tab' + (!emporio ? ' on' : '');
+  btnTutti.textContent = 'Tutti';
+  btnTutti.onclick = () => { emporio = null; setActiveEmp(btnTutti); carica(); };
+  bar.appendChild(btnTutti);
+
+  for (const e of emps) {
+    const btn = document.createElement('button');
+    btn.className = 'emp-tab' + (emporio === e ? ' on' : '');
+    btn.textContent = e;
+    btn.onclick = () => { emporio = e; setActiveEmp(btn); carica(); };
+    bar.appendChild(btn);
+  }
+}
+function setActiveEmp(el) {
+  document.querySelectorAll('.emp-tab').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+}
+
+async function carica() {
+  document.getElementById('prod-list').innerHTML = '<div class="spinner"></div>';
+  let q = db.from('prodotti_scadenza').select('*').order('scadenza', { ascending: true });
+  if (!_admin || emporio) q = q.eq('emporio', emporio || user.emporio);
+  const { data, error } = await q;
+  if (error) {
+    document.getElementById('prod-list').innerHTML =
+      `<div class="empty"><i class="fas fa-circle-exclamation"></i><p>Errore: ${esc(error.message)}</p></div>`;
+    return;
+  }
+  prodotti = (data || []).map(p => ({
+    ...p,
+    _giorni: giorniAlla(p.scadenza),
+    _sconto: calcolaSconto(p.quantita, giorniAlla(p.scadenza)),
+  }));
+  renderSummary();
+  renderList();
+}
+
+function renderSummary() {
+  const urg = prodotti.filter(p => p._giorni >= 0 && p._giorni <= 7).length;
+  const avv = prodotti.filter(p => p._giorni > 7 && p._giorni <= 14).length;
+  const pro = prodotti.filter(p => p._giorni > 14 && p._giorni <= 30).length;
+  const fut = prodotti.filter(p => p._giorni > 30 && p._giorni <= 90).length;
+  const tot = prodotti.length;
+
+  document.getElementById('summary').innerHTML = [
+    urg ? `<div class="sum-pill badge-scad" style="color:var(--urg-r);background:var(--urg-r-bg);border-color:var(--urg-r)44">🔴 ${urg} urgenti</div>` : '',
+    avv ? `<div class="sum-pill badge-scad" style="color:var(--urg-o);background:var(--urg-o-bg);border-color:var(--urg-o)44">🟠 ${avv} avviso</div>` : '',
+    pro ? `<div class="sum-pill badge-scad" style="color:var(--urg-y);background:var(--urg-y-bg);border-color:var(--urg-y)44">🟡 ${pro} prossimi</div>` : '',
+    fut ? `<div class="sum-pill" style="color:var(--urg-g);background:var(--urg-g-bg);border-color:var(--urg-g)44">🟢 ${fut} futuri</div>` : '',
+    `<div class="sum-pill" style="color:#64748b;background:#f1f5f9;border-color:#e2e8f0">Tot. ${tot}</div>`,
+  ].join('');
+}
+
+function renderList() {
+  const lista = prodottiFiltrati();
+  const el    = document.getElementById('prod-list');
+
+  if (!lista.length) {
+    el.innerHTML = `<div class="empty"><i class="fas fa-box-open"></i><p>Nessun prodotto${filtro !== 'tutti' ? ' per questo filtro' : ''}</p></div>`;
+    return;
+  }
+
+  el.innerHTML = lista.map(p => {
+    const u = urgenza(p._giorni);
+    const scad = new Date(p.scadenza + 'T00:00:00').toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' });
+    const scontoLabel = p._sconto > 0 ? `−${p._sconto}%` : null;
+    const scontoColor = p._sconto >= 40 ? 'var(--urg-r)' : p._sconto >= 25 ? 'var(--urg-o)' : p._sconto >= 15 ? 'var(--urg-y)' : 'var(--urg-g)';
+    const scontoBg    = p._sconto >= 40 ? 'var(--urg-r-bg)' : p._sconto >= 25 ? 'var(--urg-o-bg)' : p._sconto >= 15 ? 'var(--urg-y-bg)' : 'var(--urg-g-bg)';
+
+    return `<div class="prod-card">
+      <div class="prod-strip" style="background:${u.color}"></div>
+      <div class="prod-body">
+        <div class="prod-top">
+          <div style="flex:1;min-width:0">
+            <div class="prod-desc">${esc(p.descrizione)}</div>
+            ${p.codice ? `<div class="prod-codice">${esc(p.codice)}</div>` : ''}
+          </div>
+          <div class="prod-badges">
+            <span class="badge badge-scad" style="color:${u.color};background:${u.bg};border-color:${u.color}55">
+              <i class="fas fa-clock" style="font-size:9px"></i> ${u.label}
+            </span>
+            ${scontoLabel ? `<span class="badge badge-sconto" style="color:${scontoColor};background:${scontoBg};border:1.5px solid ${scontoColor}55">${scontoLabel}</span>` : ''}
+            ${p.in_promo ? `<span class="badge badge-promo"><i class="fas fa-tag" style="font-size:9px"></i> Promo</span>` : ''}
+          </div>
+        </div>
+        <div class="prod-meta">
+          <div class="meta-item"><i class="fas fa-boxes-stacked"></i> ${p.quantita} pz</div>
+          <div class="meta-item"><i class="fas fa-calendar-day"></i> ${scad}</div>
+          ${_admin ? `<div class="meta-item" style="font-size:11px;color:#94a3b8"><i class="fas fa-store"></i> ${esc(p.emporio)}</div>` : ''}
+        </div>
+        ${p.solo_alcuni ? `<div class="meta-solo" style="margin-bottom:8px"><i class="fas fa-circle-info" style="font-size:10px"></i> Solo alcuni di questi hanno questa scadenza</div>` : ''}
+        <div class="prod-actions">
+          <button class="btn-act ${p.in_promo ? 'promo-on' : ''}" onclick="togglePromo('${p.id}',${p.in_promo})">
+            <i class="fas fa-tag"></i> ${p.in_promo ? 'In promo' : 'Segna promo'}
+          </button>
+          <button class="btn-act" onclick="apriModifica('${p.id}')"><i class="fas fa-pen"></i> Modifica</button>
+          <button class="btn-act danger" onclick="elimina('${p.id}')"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function prodottiFiltrati() {
+  return prodotti.filter(p => {
+    if (filtro === 'urgenti')  return p._giorni >= 0 && p._giorni <= 7;
+    if (filtro === 'avviso')   return p._giorni > 7 && p._giorni <= 14;
+    if (filtro === 'prossimi') return p._giorni > 14 && p._giorni <= 30;
+    if (filtro === 'futuri')   return p._giorni > 30 && p._giorni <= 90;
+    if (filtro === 'promo')    return p.in_promo;
+    return true;
+  });
+}
+
+function setFiltro(f, el) {
+  filtro = f;
+  document.querySelectorAll('.f-tab').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  renderList();
+}
+
+// ── Toggle promo ──────────────────────────────────────────────────────────
+async function togglePromo(id, attuale) {
+  const { error } = await db.from('prodotti_scadenza').update({ in_promo: !attuale, updated_at: new Date().toISOString() }).eq('id', id);
+  if (error) { toast('Errore: ' + error.message, 'err'); return; }
+  toast(!attuale ? 'Segnato in promo ✓' : 'Promo rimossa', 'ok');
+  await carica();
+}
+
+// ── Form ──────────────────────────────────────────────────────────────────
+function apriForm() {
+  editId = null;
+  document.getElementById('form-title').textContent = 'Aggiungi prodotto';
+  document.getElementById('f-desc').value  = '';
+  document.getElementById('f-codice').value = '';
+  document.getElementById('f-qty').value   = '1';
+  document.getElementById('f-scad').value  = '';
+  document.getElementById('f-solo').checked  = false;
+  document.getElementById('f-promo').checked = false;
+  aggiornaSconto();
+  apriPanel();
+}
+
+function apriModifica(id) {
+  const p = prodotti.find(x => x.id === id);
+  if (!p) return;
+  editId = id;
+  document.getElementById('form-title').textContent = 'Modifica prodotto';
+  document.getElementById('f-desc').value   = p.descrizione || '';
+  document.getElementById('f-codice').value  = p.codice || '';
+  document.getElementById('f-qty').value    = p.quantita || 1;
+  document.getElementById('f-scad').value   = p.scadenza || '';
+  document.getElementById('f-solo').checked  = !!p.solo_alcuni;
+  document.getElementById('f-promo').checked = !!p.in_promo;
+  aggiornaSconto();
+  apriPanel();
+}
+
+function aggiornaSconto() {
+  const qty  = parseInt(document.getElementById('f-qty').value) || 1;
+  const scad = document.getElementById('f-scad').value;
+  const el   = document.getElementById('sconto-val');
+  const pre  = document.getElementById('sconto-preview');
+  if (!scad) { el.textContent = '—'; pre.style.borderColor = '#e2e8f0'; return; }
+  const giorni  = giorniAlla(scad);
+  const sconto  = calcolaSconto(qty, giorni);
+  if (sconto <= 0) {
+    el.textContent = 'Nessuno';
+    el.style.color = '#94a3b8';
+    pre.style.borderColor = '#e2e8f0';
+  } else {
+    el.textContent = `−${sconto}%`;
+    const c = sconto >= 40 ? 'var(--urg-r)' : sconto >= 25 ? 'var(--urg-o)' : sconto >= 15 ? 'var(--urg-y)' : 'var(--urg-g)';
+    el.style.color = c;
+    pre.style.borderColor = c;
+  }
+}
+
+async function salva() {
+  const desc = document.getElementById('f-desc').value.trim();
+  const scad = document.getElementById('f-scad').value;
+  const qty  = parseInt(document.getElementById('f-qty').value) || 1;
+  if (!desc) { document.getElementById('f-desc').focus(); return; }
+  if (!scad) { document.getElementById('f-scad').focus(); return; }
+
+  const giorni = giorniAlla(scad);
+  const payload = {
+    emporio:         emporio || user.emporio,
+    codice:          document.getElementById('f-codice').value.trim() || null,
+    descrizione:     desc,
+    quantita:        qty,
+    scadenza:        scad,
+    solo_alcuni:     document.getElementById('f-solo').checked,
+    in_promo:        document.getElementById('f-promo').checked,
+    sconto_suggerito: calcolaSconto(qty, giorni),
+    operatore_nome:  user.nome || null,
+    updated_at:      new Date().toISOString(),
+  };
+
+  const { error } = editId
+    ? await db.from('prodotti_scadenza').update(payload).eq('id', editId)
+    : await db.from('prodotti_scadenza').insert({ ...payload, notif_30g_at: null, notif_14g_at: null, notif_1g_at: null });
+
+  if (error) { toast('Errore: ' + error.message, 'err'); return; }
+  toast(editId ? 'Prodotto aggiornato ✓' : 'Prodotto aggiunto ✓', 'ok');
+  chiudiPanel();
+  await carica();
+}
+
+async function elimina(id) {
+  if (!confirm('Eliminare questo prodotto?')) return;
+  const { error } = await db.from('prodotti_scadenza').delete().eq('id', id);
+  if (error) { toast('Errore: ' + error.message, 'err'); return; }
+  toast('Prodotto eliminato', 'ok');
+  await carica();
+}
+
+// ── Panel ─────────────────────────────────────────────────────────────────
+function apriPanel() {
+  document.getElementById('form-panel').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+function chiudiPanel() {
+  document.getElementById('form-panel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+// ── Live sconto update ────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  ['f-qty', 'f-scad'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', aggiornaSconto);
+    document.getElementById(id)?.addEventListener('change', aggiornaSconto);
+  });
+});
+
+// ── Toast ─────────────────────────────────────────────────────────────────
+function toast(msg, tipo = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast show${tipo ? ' ' + tipo : ''}`;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Start ─────────────────────────────────────────────────────────────────
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
+</script>
+</body>
+</html>
