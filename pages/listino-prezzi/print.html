@@ -101,7 +101,7 @@
 <body>
 
 <div class="toolbar">
-  <h2 id="tb-title">Listino prezzi</h2>
+  <h2 id="tb-title">Listino Vetrina</h2>
   <button class="tb-btn ghost" onclick="window.close()"><i class="fas fa-times"></i> Chiudi</button>
   <button class="tb-btn" onclick="window.print()"><i class="fas fa-print"></i> Stampa / PDF</button>
 </div>
@@ -143,8 +143,9 @@ async function loadAndRender(){
   const logoTopH=l.logo_top_h||35;
   const logoBotH=l.logo_bottom_h||28;
   const linee=l.mostra_linee!==false;
+  const logoTopNascosto=l.logo_top_nascosto===true;
 
-  document.getElementById('tb-title').textContent=l.nome||'Listino prezzi';
+  document.getElementById('tb-title').textContent=l.nome||'Listino Vetrina';
 
   // Inject custom fonts
   if(fonts?.length){
@@ -191,8 +192,8 @@ async function loadAndRender(){
 
   let html='';
 
-  // Logo top
-  if(logoTopB64){
+  // Logo top (rispetta il toggle dell'operatore)
+  if(logoTopB64 && !logoTopNascosto){
     html+=`<div class="logo-top"><img src="data:image/*;base64,${logoTopB64}" style="height:${logoTopH}mm" alt="Logo"></div>`;
   }
 

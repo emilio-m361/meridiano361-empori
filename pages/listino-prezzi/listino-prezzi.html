@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="../../assets/style/nav-style.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Listino Prezzi — M361</title>
+  <title>Listino Vetrina — M361</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -189,7 +189,7 @@
 <div class="hd" id="hd">
   <button class="btn-back" id="btn-back" onclick="tornaIndietro()" style="display:none"><i class="fas fa-arrow-left"></i></button>
   <div style="flex:1;min-width:0">
-    <h1 id="hd-title"><i class="fas fa-list-ul" style="font-size:14px;opacity:.65;margin-right:5px"></i>Listino Prezzi</h1>
+    <h1 id="hd-title"><i class="fas fa-list-ul" style="font-size:14px;opacity:.65;margin-right:5px"></i>Listino Vetrina</h1>
     <div class="hd-sub" id="hd-sub" style="display:none"></div>
   </div>
   <div id="hd-acts" style="display:flex;gap:6px"></div>
@@ -224,6 +224,21 @@
     <div class="fmt-group" id="fmt-group"></div>
     <div class="cat-group" id="cat-group"></div>
   </div>
+  <!-- Logo vetrina bar — visible to all users -->
+  <div id="logo-top-bar" style="display:flex;align-items:center;gap:10px;padding:9px 14px;background:#f8fafc;border-bottom:1px solid #e2e8f0">
+    <div id="logo-top-mini" style="width:38px;height:38px;border-radius:8px;overflow:hidden;background:#fff;border:1.5px solid #e2e8f0;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <i class="fas fa-image" style="color:#cbd5e1;font-size:14px"></i>
+    </div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8">Logo in alto</div>
+      <div id="logo-top-cat-lbl" style="font-size:11px;font-weight:700;color:#475569">—</div>
+    </div>
+    <label class="tog-row" style="margin:0;gap:6px">
+      <span class="tog-lbl" style="font-size:11px;color:#64748b">Mostra</span>
+      <label class="sw"><input type="checkbox" id="fi-logo-top-show" checked><span class="sw-s"></span></label>
+    </label>
+  </div>
+
   <!-- Content -->
   <div class="ed-wrap">
     <!-- Rows editor -->
@@ -264,32 +279,11 @@
       </div>
 
       <!-- Loghi -->
-      <div class="set-sec">Loghi</div>
+      <div class="set-sec">Logo vetrina (in alto)</div>
       <div class="set-row">
-        <label class="set-lbl">Logo vetrina (in alto) <span style="color:var(--G);font-weight:500">— per categoria</span></label>
-        <div class="logo-area" id="logo-top-area">
-          <input type="file" accept="image/*" onchange="uploadLogo('top',this)">
-          <div id="logo-top-preview"><div class="logo-ph"><i class="fas fa-image"></i></div></div>
-          <div class="logo-lbl" id="logo-top-lbl">Clicca per caricare</div>
-          <span class="logo-del" id="logo-top-del" onclick="deleteLogo('top',event)" style="display:none">✕ Rimuovi</span>
-        </div>
-        <div style="margin-top:6px">
-          <label class="set-lbl">Altezza logo <span class="range-val" id="rv-logo-top">35mm</span></label>
-          <input class="fi-range" type="range" id="fi-logo-top-h" min="10" max="80" value="35" oninput="document.getElementById('rv-logo-top').textContent=this.value+'mm'">
-        </div>
-      </div>
-      <div class="set-row">
-        <label class="set-lbl">Logo emporio (in basso)</label>
-        <div class="logo-area" id="logo-bot-area">
-          <input type="file" accept="image/*" onchange="uploadLogo('bot',this)">
-          <div id="logo-bot-preview"><div class="logo-ph"><i class="fas fa-image"></i></div></div>
-          <div class="logo-lbl" id="logo-bot-lbl">Clicca per caricare</div>
-          <span class="logo-del" id="logo-bot-del" onclick="deleteLogo('bot',event)" style="display:none">✕ Rimuovi</span>
-        </div>
-        <div style="margin-top:6px">
-          <label class="set-lbl">Altezza logo <span class="range-val" id="rv-logo-bot">28mm</span></label>
-          <input class="fi-range" type="range" id="fi-logo-bot-h" min="10" max="80" value="28" oninput="document.getElementById('rv-logo-bot').textContent=this.value+'mm'">
-        </div>
+        <label class="set-lbl">Altezza logo <span class="range-val" id="rv-logo-top">35mm</span></label>
+        <input class="fi-range" type="range" id="fi-logo-top-h" min="10" max="80" value="35" oninput="document.getElementById('rv-logo-top').textContent=this.value+'mm'">
+        <div style="font-size:10px;color:var(--G);margin-top:4px">Il logo proviene da <b>Impostazioni → Loghi listini</b>. Usa il toggle in cima all'editor per mostrarlo o nasconderlo.</div>
       </div>
 
       <!-- Layout -->
@@ -425,11 +419,11 @@ function mostra(s){
   acts.innerHTML='';
   if(s==='empori'){
     back.style.display='none';sub.style.display='none';
-    title.innerHTML='<i class="fas fa-list-ul" style="font-size:14px;opacity:.65;margin-right:5px"></i>Listino Prezzi';
+    title.innerHTML='<i class="fas fa-list-ul" style="font-size:14px;opacity:.65;margin-right:5px"></i>Listino Vetrina';
   } else if(s==='lista'){
     back.style.display=_admin?'flex':'none';
     sub.textContent='Emporio '+emporio;sub.style.display=emporio?'block':'none';
-    title.innerHTML='<i class="fas fa-list-ul" style="font-size:14px;opacity:.65;margin-right:5px"></i>Listino Prezzi';
+    title.innerHTML='<i class="fas fa-list-ul" style="font-size:14px;opacity:.65;margin-right:5px"></i>Listino Vetrina';
     acts.innerHTML=`<button class="btn-hd ghost" onclick="nuovoListino()"><i class="fas fa-plus"></i> Nuovo</button>`;
   } else if(s==='editor'){
     back.style.display='flex';
@@ -556,13 +550,13 @@ function loadSettings(l){
   s('fi-col-desc',l.col_desc_pct||70);
   s('fi-mg-top',l.mg_top||15);s('fi-mg-right',l.mg_right||15);
   s('fi-mg-bottom',l.mg_bottom||15);s('fi-mg-left',l.mg_left||15);
-  s('fi-logo-top-h',l.logo_top_h||35);s('fi-logo-bot-h',l.logo_bottom_h||28);
+  s('fi-logo-top-h',l.logo_top_h||35);
   s('fi-titolo',l.titolo||'');s('fi-sottotitolo',l.sottotitolo||'');s('fi-piede',l.note_piede||'');
   document.getElementById('fi-linee').checked=l.mostra_linee!==false;
+  document.getElementById('fi-logo-top-show').checked=!l.logo_top_nascosto;
   document.getElementById('rv-desc').textContent=(l.col_desc_pct||70)+'%';
   document.getElementById('rv-prz').textContent=(100-(l.col_desc_pct||70))+'%';
   document.getElementById('rv-logo-top').textContent=(l.logo_top_h||35)+'mm';
-  document.getElementById('rv-logo-bot').textContent=(l.logo_bottom_h||28)+'mm';
   loadGoogleFont(l.font_famiglia||'Poppins');
   setTimeout(()=>{const s=document.getElementById('fi-font');if(s)s.style.fontFamily=l.font_famiglia||'Poppins';},300);
 }
@@ -572,13 +566,13 @@ function resetSettings(){
   set('fi-font','Poppins');set('fi-sz-voce','11');set('fi-sz-sez','12');
   set('fi-col-desc','70');set('fi-mg-top','15');set('fi-mg-right','15');
   set('fi-mg-bottom','15');set('fi-mg-left','15');
-  set('fi-logo-top-h','35');set('fi-logo-bot-h','28');
+  set('fi-logo-top-h','35');
   set('fi-titolo','');set('fi-sottotitolo','');set('fi-piede','');
   document.getElementById('fi-linee').checked=true;
+  document.getElementById('fi-logo-top-show').checked=true;
   document.getElementById('rv-desc').textContent='70%';
   document.getElementById('rv-prz').textContent='30%';
   document.getElementById('rv-logo-top').textContent='35mm';
-  document.getElementById('rv-logo-bot').textContent='28mm';
 }
 
 function onColChange(){
@@ -597,7 +591,7 @@ function getSettings(){
     mg_top:parseInt(g('fi-mg-top'))||15,mg_right:parseInt(g('fi-mg-right'))||15,
     mg_bottom:parseInt(g('fi-mg-bottom'))||15,mg_left:parseInt(g('fi-mg-left'))||15,
     logo_top_h:parseInt(g('fi-logo-top-h'))||35,
-    logo_bottom_h:parseInt(g('fi-logo-bot-h'))||28,
+    logo_bottom_h:28,
     titolo:g('fi-titolo')||null,sottotitolo:g('fi-sottotitolo')||null,note_piede:g('fi-piede')||null,
     mostra_linee:document.getElementById('fi-linee')?.checked!==false,
   };
@@ -609,6 +603,7 @@ async function salvaListino(){
   const settings=_admin?getSettings():{};
   const payload={
     emporio,nome,categoria:getCategoria(),formato:getFormato(),
+    logo_top_nascosto:!(document.getElementById('fi-logo-top-show')?.checked),
     ...settings,operatore_nome:user.nome||null,updated_at:new Date().toISOString(),
   };
   let lid=listino?.id;
@@ -731,8 +726,7 @@ async function loadLoghi(categoria){
       loghiCache[k.tipo+k.chiave]=data?.immagine_b64||null;
     }
   }
-  showLogoPreview('top',loghiCache['categoria'+categoria]);
-  showLogoPreview('bot',loghiCache['emporio'+emporio]);
+  _aggiornaLogoTopBar(categoria,loghiCache['categoria'+categoria]);
 }
 
 async function aggiornaCatLogo(){
@@ -741,45 +735,23 @@ async function aggiornaCatLogo(){
     const{data}=await db.from('listini_loghi').select('immagine_b64').eq('tipo','categoria').eq('chiave',cat).maybeSingle();
     loghiCache['categoria'+cat]=data?.immagine_b64||null;
   }
-  showLogoPreview('top',loghiCache['categoria'+cat]);
+  _aggiornaLogoTopBar(cat,loghiCache['categoria'+cat]);
 }
 
-function showLogoPreview(which,b64){
-  const prev=document.getElementById('logo-'+which+'-preview');
-  const lbl=document.getElementById('logo-'+which+'-lbl');
-  const del=document.getElementById('logo-'+which+'-del');
-  if(b64){
-    prev.innerHTML=`<img src="data:image/*;base64,${b64}" alt="">`;
-    lbl.textContent='Clicca per cambiare';
-    if(del)del.style.display='inline';
-  } else {
-    prev.innerHTML='<div class="logo-ph"><i class="fas fa-image"></i></div>';
-    lbl.textContent='Clicca per caricare';
-    if(del)del.style.display='none';
+function _aggiornaLogoTopBar(catId,b64){
+  const mini=document.getElementById('logo-top-mini');
+  const lbl=document.getElementById('logo-top-cat-lbl');
+  const catObj=CATEGORIE.find(c=>c.id===catId);
+  if(lbl)lbl.textContent=catObj?catObj.label:'—';
+  if(mini){
+    if(b64){
+      mini.innerHTML=`<img src="data:image/*;base64,${b64}" alt="" style="max-width:100%;max-height:100%;object-fit:contain">`;
+    } else {
+      mini.innerHTML=`<i class="fas fa-image" style="color:#cbd5e1;font-size:14px"></i>`;
+    }
   }
 }
 
-async function uploadLogo(which,input){
-  const file=input.files[0];if(!file)return;
-  const b64=await fileToB64(file);
-  const tipo=which==='top'?'categoria':'emporio';
-  const chiave=which==='top'?getCategoria():emporio;
-  const{error}=await db.from('listini_loghi').upsert({tipo,chiave,immagine_b64:b64,updated_at:new Date().toISOString()},{onConflict:'tipo,chiave'});
-  if(error){toast('Errore upload logo','err');return;}
-  loghiCache[tipo+chiave]=b64;
-  showLogoPreview(which,b64);
-  toast('Logo salvato ✓','ok');
-}
-
-async function deleteLogo(which,e){
-  e.stopPropagation();
-  const tipo=which==='top'?'categoria':'emporio';
-  const chiave=which==='top'?getCategoria():emporio;
-  await db.from('listini_loghi').delete().eq('tipo',tipo).eq('chiave',chiave);
-  loghiCache[tipo+chiave]=null;
-  showLogoPreview(which,null);
-  toast('Logo rimosso','ok');
-}
 
 /* ── Font ── */
 function buildFontSelect(){
