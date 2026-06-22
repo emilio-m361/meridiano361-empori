@@ -9,7 +9,7 @@ const CORS = {
 type OpEntry  = { nome?: string; rimosso?: boolean };
 type TurnoRec = { emporio: string; turno: string; operatori: OpEntry[] | null };
 type Shift    = { turno: string; emporio: string };
-type Sub      = { operatore_nome: string; endpoint: string; subscription: object };
+type Sub      = { operatore_nome: string; operatore_id: string | null; endpoint: string; subscription: object };
 type LogEntry = {
   nome: string;
   motivo_skip?: string;
@@ -142,22 +142,38 @@ Deno.serve(async (req) => {
     .eq("abilitato", false);
   const disabledIds = new Set((prefsDisab ?? []).map(p => p.operatore_id as string));
 
-  // Mappa nome → id operatore (case-insensitive)
+  // Mappa nome canonico → id operatore (case-insensitive, da tabella operatori)
   const { data: tuttiOp } = await db.from("operatori").select("id, nome");
-  const nomeToId = new Map<string, string>();
+  const nomeToId = new Map<string, string>(); // nome_lower → uuid
+  const idToNome = new Map<string, string>(); // uuid → nome canonico
   for (const op of tuttiOp ?? []) {
-    if (op.nome) nomeToId.set(op.nome.toLowerCase().trim(), op.id);
+    if (op.nome) {
+      nomeToId.set(op.nome.toLowerCase().trim(), op.id);
+      idToNome.set(op.id, op.nome);
+    }
   }
 
-  // Mappa nome → push subscriptions
+  // ── Lookup subscription: doppio indice per massima robustezza ────────────
+  // 1) Per operatore_id (affidabile anche se operatore_nome è sbagliato/diverso)
+  // 2) Per operatore_nome (fallback per subscription senza operatore_id)
+  // Questo risolve il caso in cui il nome nel record turno ≠ nome nella subscription.
   const { data: subsRaw } = await db
     .from("push_subscriptions")
-    .select("operatore_nome, endpoint, subscription");
-  const nomeToSubs = new Map<string, Sub[]>();
+    .select("operatore_nome, operatore_id, endpoint, subscription");
+
+  const nomeToSubs = new Map<string, Sub[]>(); // nome_lower → [sub]
+  const idToSubs   = new Map<string, Sub[]>(); // operatore_id → [sub]
+
   for (const sub of (subsRaw ?? []) as Sub[]) {
     const key = (sub.operatore_nome ?? "").toLowerCase().trim();
-    if (!nomeToSubs.has(key)) nomeToSubs.set(key, []);
-    nomeToSubs.get(key)!.push(sub);
+    if (key) {
+      if (!nomeToSubs.has(key)) nomeToSubs.set(key, []);
+      nomeToSubs.get(key)!.push(sub);
+    }
+    if (sub.operatore_id) {
+      if (!idToSubs.has(sub.operatore_id)) idToSubs.set(sub.operatore_id, []);
+      idToSubs.get(sub.operatore_id)!.push(sub);
+    }
   }
 
   if (!VAPID_PUB || !VAPID_PRIV) {
@@ -183,7 +199,19 @@ Deno.serve(async (req) => {
       continue;
     }
 
-    const opId = nomeToId.get(nome.toLowerCase().trim());
+    // Risolvi operatore_id: prima exact match sul nome del turno, poi partial match
+    // se il nome nel turno è una sottostringa del nome canonico o viceversa.
+    let opId = nomeToId.get(nome.toLowerCase().trim());
+    if (!opId) {
+      // Fallback: partial match — cerca se qualche operatore canonico contiene il nome del turno
+      const nomeKey = nome.toLowerCase().trim();
+      for (const [canonKey, id] of nomeToId.entries()) {
+        if (canonKey.includes(nomeKey) || nomeKey.includes(canonKey)) {
+          opId = id;
+          break;
+        }
+      }
+    }
 
     // Notifiche turni disabilitate dall'operatore
     if (opId && disabledIds.has(opId)) {
@@ -202,20 +230,18 @@ Deno.serve(async (req) => {
     // Costruisci le frasi per ogni fascia con nomi dei colleghi
     const fasceTesto: string[] = [];
     const fasceDiag: Array<{ fascia: string; colleghi: string[] }> = [];
-    const seen = new Set<string>();
+    const seenFasce = new Set<string>();
 
     for (const s of sorted) {
-      // Deduplicazione per emporio+turno (evita doppi se stessa fascia appare due volte)
       const uniqKey = `${s.emporio}:${s.turno}`;
-      if (seen.has(uniqKey)) continue;
-      seen.add(uniqKey);
+      if (seenFasce.has(uniqKey)) continue;
+      seenFasce.add(uniqKey);
 
       const orari = emporiOrari[s.emporio] ?? DEFAULT_HOURS;
       const orarioLabel = s.turno === "mattina"
         ? `dalle ${orari.mat_open} alle ${orari.mat_close}`
         : `dalle ${orari.pom_open} alle ${orari.pom_close}`;
 
-      // Colleghi in questa fascia (stesso emporio, stesso turno, giorno già filtrato)
       const rec = turniOggi.find(t => t.emporio === s.emporio && t.turno === s.turno);
       const cols = rec ? altriInTurno(rec, nome) : [];
 
@@ -229,14 +255,48 @@ Deno.serve(async (req) => {
       continue;
     }
 
-    // Frase finale: "dalle X alle Y con A" oppure "dalle X alle Y con A e dalle Z alle W con B"
     const body = `Oggi sei in turno ${
       fasceTesto.length === 1
         ? fasceTesto[0]
         : fasceTesto.slice(0, -1).join(", ") + " e " + fasceTesto.at(-1)
     }`;
 
-    const operatoreSubs = nomeToSubs.get(nome.toLowerCase().trim()) ?? [];
+    // ── Cerca subscription: prima per ID, poi per nome, deduplicando per endpoint ──
+    const seenEndpoints = new Set<string>();
+    const operatoreSubs: Sub[] = [];
+
+    // 1) Per operatore_id (più affidabile — funziona anche se il nome è diverso)
+    if (opId) {
+      for (const s of idToSubs.get(opId) ?? []) {
+        if (!seenEndpoints.has(s.endpoint)) {
+          seenEndpoints.add(s.endpoint);
+          operatoreSubs.push(s);
+        }
+      }
+    }
+
+    // 2) Per nome del turno (fallback — copre subscription senza operatore_id)
+    for (const s of nomeToSubs.get(nome.toLowerCase().trim()) ?? []) {
+      if (!seenEndpoints.has(s.endpoint)) {
+        seenEndpoints.add(s.endpoint);
+        operatoreSubs.push(s);
+      }
+    }
+
+    // 3) Se opId trovato, prova anche per nome canonico (copre il caso in cui
+    //    il nome nel turno era "Chiara" ma la subscription ha "Chiara Monteverdi")
+    if (opId) {
+      const nomeCanon = (idToNome.get(opId) ?? "").toLowerCase().trim();
+      if (nomeCanon && nomeCanon !== nome.toLowerCase().trim()) {
+        for (const s of nomeToSubs.get(nomeCanon) ?? []) {
+          if (!seenEndpoints.has(s.endpoint)) {
+            seenEndpoints.add(s.endpoint);
+            operatoreSubs.push(s);
+          }
+        }
+      }
+    }
+
     if (!operatoreSubs.length) {
       results.skipped++;
       results.log.push({ nome, motivo_skip: "nessun token push registrato", turni: fasceDiag, body });
@@ -245,7 +305,6 @@ Deno.serve(async (req) => {
 
     results.log.push({ nome, turni: fasceDiag, body });
 
-    // Tag univoco per invio: non interferisce con push successive sullo stesso device
     const pushTag = `m361-turno-${results.date}-${Date.now()}`;
 
     const payload = JSON.stringify({
@@ -261,7 +320,7 @@ Deno.serve(async (req) => {
           await webpush.sendNotification(
             sub.subscription as webpush.PushSubscription,
             payload,
-            { urgency: "high", TTL: 43200 }, // urgency:high forza wake-up su Android anche con battery opt
+            { urgency: "high", TTL: 43200 },
           );
           await db.from("push_subscriptions")
             .update({ last_push_at: new Date().toISOString(), last_push_ok: true })
@@ -272,7 +331,6 @@ Deno.serve(async (req) => {
         const status = (e as { statusCode?: number })?.statusCode;
         const msg    = (e as { message?: string })?.message ?? String(e);
         if (status === 404 || status === 410) {
-          // Token scaduto/revocato: rimuovi dal DB
           await db.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
           const last = results.log.at(-1)!;
           last.motivo_skip = (last.motivo_skip ?? "") +

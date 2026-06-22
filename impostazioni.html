@@ -2131,9 +2131,9 @@
                 : `<span style="display:inline-flex;align-items:center;gap:5px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700">✕ Mai connesso</span>`;
             const empLabel = EMPORI_LABEL[normalizzaEmporio(op.emporio)] || op.emporio || '—';
 
-            // Colonna Push: elenco dispositivi con esito ultimo invio
+            // Colonna Push: elenco dispositivi con esito ultimo invio + pulsante test
             const subs = _pushSubsMap[op.id] || [];
-            let pushHtml = '—';
+            let pushHtml = '<span style="color:#94a3b8;font-size:11px">Nessun dispositivo</span>';
             if (subs.length) {
                 pushHtml = subs.map(s => {
                     const icon  = PLAT_ICON[s.platform] || '📡';
@@ -2148,6 +2148,14 @@
                             </div>`;
                 }).join('');
             }
+            const nomeEnc = encodeURIComponent(op.nome || '');
+            const testBtn = op.nome
+                ? `<button onclick="testPushOperatore('${escHtml(op.nome)}')"
+                     title="Invia notifica push di prova a ${escHtml(op.nome)}"
+                     style="margin-top:5px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700;color:#3b82f6;padding:3px 8px;white-space:nowrap;display:block">
+                     ▶ Test push
+                   </button>`
+                : '';
 
             return `
                 <tr>
@@ -2158,7 +2166,7 @@
                     <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9">${statoHtml}</td>
                     <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:12px;color:#475569;white-space:nowrap">${escHtml(primoLogin)}</td>
                     <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:12px;color:#475569">${ultimoHtml}</td>
-                    <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9">${pushHtml}</td>
+                    <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9">${pushHtml}${testBtn}</td>
                 </tr>`;
         }).join('');
 
@@ -2183,6 +2191,43 @@
         const d = new Date(iso);
         return d.toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric' }) +
                ' ' + d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // ── TEST PUSH SINGOLO OPERATORE ──────────────────────────────────────────
+    // Chiama send-turno-reminder?force=1&operatore=<nome> per inviare una notifica
+    // reale al solo operatore specificato (utile per diagnosticare problemi di subscription).
+    async function testPushOperatore(nome) {
+        if (!confirm(`Inviare una notifica push di prova a "${nome}"?\n(Arriverà solo se ha turno oggi, altrimenti il sistema risponderà "nessun turno".)`)) return;
+        showToast(`Invio push a ${nome}…`, 'info', 4000);
+        try {
+            const url = 'https://hsalynvxazxqtmsvjrzc.supabase.co/functions/v1/send-turno-reminder'
+                      + '?force=1&operatore=' + encodeURIComponent(nome);
+            const res  = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json',
+                           'Authorization': 'Bearer ' + SUPA_KEY },
+                body: '{}',
+            });
+            const json = await res.json();
+            // Trova il log dell'operatore cercato
+            const entry = (json.log || []).find(e =>
+                (e.nome || '').toLowerCase().includes(nome.toLowerCase().split(' ')[0].toLowerCase())
+            );
+            if (json.sent > 0) {
+                showToast(`✅ Push inviata a ${nome}`, 'ok');
+            } else if (entry?.motivo_skip) {
+                showToast(`⚠️ ${nome}: ${entry.motivo_skip}`, 'err', 7000);
+            } else if (json.skipped === 0 && json.operatori_in_turno === 0) {
+                showToast(`ℹ️ ${nome} non ha turni aperti oggi`, 'info', 5000);
+            } else {
+                showToast(`⚠️ Nessuna push inviata — vedi console`, 'err', 5000);
+                console.warn('[test push]', json);
+            }
+            // Ricarica tabella accessi per aggiornare last_push_at
+            setTimeout(() => caricaAccessi(), 2000);
+        } catch (e) {
+            showToast('Errore rete: ' + e.message, 'err', 6000);
+        }
     }
     </script>
 </body>
