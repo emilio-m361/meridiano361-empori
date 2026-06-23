@@ -31,16 +31,17 @@
       position: relative;
     }
 
-    /* logo senza contenitore — blend elimina il bianco JPG */
+    /* rettangolo bianco esattamente delle dimensioni del logo, senza cornice */
     .lw-logo {
       display: block;
       width: fit-content;
+      background: #fff;
+      line-height: 0;
     }
     .lw-logo img {
-      height: 52px;
+      height: 64px;
       width: auto;
       display: block;
-      mix-blend-mode: multiply;
     }
 
     /* testo configurabile in basso */
@@ -70,12 +71,12 @@
 
     /* titolo: regular weight come onearth */
     .lw-title {
-      font-size: 34px;
+      font-size: 27px;
       font-weight: 400;
       color: #111827;
       margin-bottom: 36px;
-      line-height: 1.2;
-      letter-spacing: -.3px;
+      line-height: 1.25;
+      letter-spacing: -.2px;
     }
 
     /* label uppercase come onearth */
@@ -257,7 +258,7 @@
         padding: 24px 20px;
       }
       .lw-caption { display: none; }
-      .lw-logo img { height: 32px; }
+      .lw-logo img { height: 36px; }
 
       .lw-form {
         flex: 1;
