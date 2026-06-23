@@ -8,16 +8,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/emilio-m361/meridiano361-empori.git"
+    "url": "git+https://github.com/meridiano361/meridiano361-empori.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/emilio-m361/meridiano361-empori/issues"
+    "url": "https://github.com/meridiano361/meridiano361-empori/issues"
   },
-  "homepage": "https://github.com/emilio-m361/meridiano361-empori#readme",
+  "homepage": "https://github.com/meridiano361/meridiano361-empori#readme",
   "dependencies": {
     "@supabase/supabase-js": "^2.106.2"
   },
