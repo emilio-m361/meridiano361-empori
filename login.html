@@ -31,19 +31,16 @@
       position: relative;
     }
 
-    /* logo in pill bianca */
+    /* logo senza contenitore — blend elimina il bianco JPG */
     .lw-logo {
-      display: inline-flex;
-      align-items: center;
-      background: #fff;
-      border-radius: 10px;
-      padding: 12px 20px;
+      display: block;
       width: fit-content;
     }
     .lw-logo img {
-      height: 44px;
+      height: 52px;
       width: auto;
       display: block;
+      mix-blend-mode: multiply;
     }
 
     /* testo configurabile in basso */
@@ -260,8 +257,7 @@
         padding: 24px 20px;
       }
       .lw-caption { display: none; }
-      .lw-logo img { height: 28px; }
-      .lw-logo { padding: 8px 14px; }
+      .lw-logo img { height: 32px; }
 
       .lw-form {
         flex: 1;
@@ -287,7 +283,7 @@
   <!-- ── Pannello brand ── -->
   <div class="lw-brand">
     <div class="lw-logo">
-      <img src="/assets/images/logom361_rosso.jpg" alt="Meridiano 361">
+      <img src="/assets/images/logom361_nero.jpg" alt="Meridiano 361">
     </div>
     <div class="lw-caption" id="login-caption">piattaforma gestione empori</div>
   </div>
@@ -298,7 +294,7 @@
 
       <!-- Vista login -->
       <div id="login-view">
-        <h1 class="lw-title">Bentornato.</h1>
+        <h1 class="lw-title">Gestire l'emporio con cura.</h1>
 
         <div id="error-msg" class="lw-error">
           <i class="fas fa-exclamation-circle"></i>
@@ -326,9 +322,8 @@
             <span id="btn-label">Accedi</span>
           </button>
 
-          <button type="button" class="lw-link" onclick="showRecovery()">
-            Hai dimenticato la password?
-          </button>
+          <a href="/richiedi-accesso.html" class="lw-link" style="margin-top:20px">Richiedi credenziali di accesso</a>
+          <button type="button" class="lw-link" onclick="showRecovery()" style="margin-top:8px">Ho dimenticato la password</button>
         </form>
       </div>
 

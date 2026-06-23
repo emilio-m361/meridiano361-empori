@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <link rel="icon" href="/faviconm361.png" type="image/png">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Richiedi accesso | M361 Empori</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 24px rgba(0,0,0,.07);
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    .icon-wrap {
+      width: 56px; height: 56px;
+      background: #fdf1f0;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .icon-wrap i { color: #B5453A; font-size: 22px; }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 400;
+      color: #111827;
+      margin-bottom: 10px;
+      letter-spacing: -.2px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #64748b;
+      font-weight: 400;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #B5453A;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      padding: 0 24px;
+      height: 48px;
+      font-size: 14px;
+      font-weight: 700;
+      transition: background .15s;
+    }
+    .contact-link:hover { background: #8c362d; }
+
+    .back-link {
+      display: block;
+      margin-top: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #94a3b8;
+      text-decoration: none;
+      transition: color .15s;
+    }
+    .back-link:hover { color: #B5453A; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon-wrap">
+      <i class="fas fa-key"></i>
+    </div>
+    <h1>Richiedi credenziali di accesso.</h1>
+    <p>Per richiedere l'accesso alla piattaforma M361 Empori contatta il responsabile del tuo emporio o scrivi a Emilio Mazzolari.</p>
+    <a href="mailto:emilio.mazzolari@meridiano361.it" class="contact-link">
+      <i class="fas fa-envelope"></i>
+      Scrivi una email
+    </a>
+    <a href="/login.html" class="back-link">← Torna al login</a>
+  </div>
+</body>
+</html>
