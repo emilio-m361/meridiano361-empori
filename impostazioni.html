@@ -571,6 +571,75 @@
                         <div id="pref-left-image-msg" style="margin-top:8px;font-size:12px;font-weight:700;display:none"></div>
                     </div>
 
+                    <!-- Posizione immagine -->
+                    <div style="margin-bottom:28px">
+                        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:4px">Posizione immagine</div>
+                        <div style="font-size:12px;color:#64748b;margin-bottom:12px">Scegli quale parte dell'immagine viene mostrata per prima.</div>
+                        <div style="display:inline-grid;grid-template-columns:repeat(3,38px);gap:3px;background:#e2e8f0;border-radius:8px;padding:3px">
+                            <button type="button" class="pref-pos-btn" data-pos="top left"      onclick="setPrefPos('top left')"      title="In alto a sinistra"   style="height:38px;width:38px;border:none;background:#f8fafc;border-radius:5px;cursor:pointer;display:flex;align-items:flex-start;justify-content:flex-start;padding:7px;transition:background .12s"><span style="width:8px;height:8px;border-radius:50%;background:#cbd5e1;display:block;flex-shrink:0"></span></button>
+                            <button type="button" class="pref-pos-btn" data-pos="top center"    onclick="setPrefPos('top center')"    title="In alto al centro"    style="height:38px;width:38px;border:none;background:#f8fafc;border-radius:5px;cursor:pointer;display:flex;align-items:flex-start;justify-content:center;padding-top:7px;transition:background .12s"><span style="width:8px;height:8px;border-radius:50%;background:#cbd5e1;display:block;flex-shrink:0"></span></button>
+                            <button type="button" class="pref-pos-btn" data-pos="top right"     onclick="setPrefPos('top right')"     title="In alto a destra"     style="height:38px;width:38px;border:none;background:#f8fafc;border-radius:5px;cursor:pointer;display:flex;align-items:flex-start;justify-content:flex-end;padding:7px;transition:background .12s"><span style="width:8px;height:8px;border-radius:50%;background:#cbd5e1;display:block;flex-shrink:0"></span></button>
+                            <button type="button" class="pref-pos-btn" data-pos="center left"   onclick="setPrefPos('center left')"   title="Al centro a sinistra" style="height:38px;width:38px;border:none;background:#f8fafc;border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:flex-start;padding-left:7px;transition:background .12s"><span style="width:8px;height:8px;border-radius:50%;background:#cbd5e1;display:block;flex-shrink:0"></span></button>
+                            <button type="button" class="pref-pos-btn" data-pos="center center" onclick="setPrefPos('center center')" title="Al centro"             style="height:38px;width:38px;border:none;background:#B5453A;border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .12s"><span style="width:8px;height:8px;border-radius:50%;background:#fff;display:block;flex-shrink:0"></span></button>
+                            <button type="button" class="pref-pos-btn" data-pos="center right"  onclick="setPrefPos('center right')"  title="Al centro a destra"   style="height:38px;width:38px;border:none;background:#f8fafc;border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:flex-end;padding-right:7px;transition:background .12s"><span style="width:8px;height:8px;border-radius:50%;background:#cbd5e1;display:block;flex-shrink:0"></span></button>
+                            <button type="button" class="pref-pos-btn" data-pos="bottom left"   onclick="setPrefPos('bottom left')"   title="In basso a sinistra"  style="height:38px;width:38px;border:none;background:#f8fafc;border-radius:5px;cursor:pointer;display:flex;align-items:flex-end;justify-content:flex-start;padding:7px;transition:background .12s"><span style="width:8px;height:8px;border-radius:50%;background:#cbd5e1;display:block;flex-shrink:0"></span></button>
+                            <button type="button" class="pref-pos-btn" data-pos="bottom center" onclick="setPrefPos('bottom center')" title="In basso al centro"    style="height:38px;width:38px;border:none;background:#f8fafc;border-radius:5px;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px;transition:background .12s"><span style="width:8px;height:8px;border-radius:50%;background:#cbd5e1;display:block;flex-shrink:0"></span></button>
+                            <button type="button" class="pref-pos-btn" data-pos="bottom right"  onclick="setPrefPos('bottom right')"  title="In basso a destra"    style="height:38px;width:38px;border:none;background:#f8fafc;border-radius:5px;cursor:pointer;display:flex;align-items:flex-end;justify-content:flex-end;padding:7px;transition:background .12s"><span style="width:8px;height:8px;border-radius:50%;background:#cbd5e1;display:block;flex-shrink:0"></span></button>
+                        </div>
+                    </div>
+
+                    <!-- Dimensione immagine -->
+                    <div style="margin-bottom:28px">
+                        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:10px">Dimensione immagine</div>
+                        <div style="display:flex;flex-direction:column;gap:9px">
+                            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:13px;color:#374151;font-family:'Inter',sans-serif">
+                                <input type="radio" name="pref-img-size" value="cover" style="accent-color:#B5453A;width:15px;height:15px;margin-top:2px;flex-shrink:0"> <span><strong>Copri tutto</strong> — riempie il pannello, può ritagliare i bordi</span></label>
+                            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:13px;color:#374151;font-family:'Inter',sans-serif">
+                                <input type="radio" name="pref-img-size" value="contain" style="accent-color:#B5453A;width:15px;height:15px;margin-top:2px;flex-shrink:0"> <span><strong>Adatta</strong> — mostra l'immagine intera, può lasciare spazio vuoto ai lati</span></label>
+                            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:13px;color:#374151;font-family:'Inter',sans-serif">
+                                <input type="radio" name="pref-img-size" value="auto" style="accent-color:#B5453A;width:15px;height:15px;margin-top:2px;flex-shrink:0"> <span><strong>Dimensione originale</strong> — nessun ridimensionamento</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Overlay -->
+                    <div style="margin-bottom:28px;padding:18px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0">
+                        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:4px">Overlay</div>
+                        <div style="font-size:12px;color:#64748b;margin-bottom:16px">Un velo colorato sopra l'immagine — utile per scurire lo sfondo e rendere il testo più leggibile.</div>
+                        <div style="margin-bottom:14px">
+                            <div style="font-size:11px;font-weight:600;color:#64748b;margin-bottom:8px">Colore del velo</div>
+                            <div style="display:flex;align-items:center;gap:12px">
+                                <input type="color" id="pref-overlay-color" value="#000000"
+                                    oninput="document.getElementById('pref-overlay-color-val').textContent=this.value"
+                                    style="width:44px;height:36px;border:1.5px solid #e2e8f0;border-radius:8px;padding:2px 3px;cursor:pointer;background:#fff">
+                                <span id="pref-overlay-color-val" style="font-size:12px;font-family:monospace;color:#475569;font-weight:600">#000000</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size:11px;font-weight:600;color:#64748b;margin-bottom:8px">Opacità — <span id="pref-overlay-pct">0</span>%</div>
+                            <input type="range" id="pref-overlay-opacity" min="0" max="100" value="0" step="1"
+                                oninput="document.getElementById('pref-overlay-pct').textContent=this.value"
+                                style="width:100%;accent-color:#B5453A;cursor:pointer">
+                        </div>
+                    </div>
+
+                    <!-- Effetti immagine -->
+                    <div style="margin-bottom:28px;padding:18px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0">
+                        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:4px">Effetti immagine</div>
+                        <div style="font-size:12px;color:#64748b;margin-bottom:16px">Applicati solo all'immagine — il testo rimane invariato.</div>
+                        <div style="margin-bottom:16px">
+                            <div style="font-size:11px;font-weight:600;color:#64748b;margin-bottom:8px">Luminosità — <span id="pref-brightness-pct">100</span>%</div>
+                            <input type="range" id="pref-brightness" min="20" max="200" value="100" step="5"
+                                oninput="document.getElementById('pref-brightness-pct').textContent=this.value"
+                                style="width:100%;accent-color:#B5453A;cursor:pointer">
+                        </div>
+                        <div>
+                            <div style="font-size:11px;font-weight:600;color:#64748b;margin-bottom:8px">Sfocatura — <span id="pref-blur-px">0</span> px</div>
+                            <input type="range" id="pref-blur" min="0" max="20" value="0" step="1"
+                                oninput="document.getElementById('pref-blur-px').textContent=this.value"
+                                style="width:100%;accent-color:#B5453A;cursor:pointer">
+                        </div>
+                    </div>
+
                     <!-- Colore sfondo -->
                     <div style="margin-bottom:28px">
                         <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:4px">Colore di sfondo</div>
@@ -2513,6 +2582,36 @@
                 document.getElementById('pref-left-logo-preview-img').src = s.login_left_logo_url;
                 document.getElementById('pref-left-logo-preview').style.display = 'block';
             }
+
+            // Position picker
+            if (s.login_left_image_position) setPrefPos(s.login_left_image_position);
+
+            // Image size radio
+            if (s.login_left_image_size) {
+                const r = document.querySelector(`input[name="pref-img-size"][value="${s.login_left_image_size}"]`);
+                if (r) r.checked = true;
+            }
+
+            // Overlay
+            if (s.login_left_overlay_color) {
+                document.getElementById('pref-overlay-color').value = s.login_left_overlay_color;
+                document.getElementById('pref-overlay-color-val').textContent = s.login_left_overlay_color;
+            }
+            if (s.login_left_overlay_opacity !== undefined) {
+                const opVal = s.login_left_overlay_opacity || '0';
+                document.getElementById('pref-overlay-opacity').value = opVal;
+                document.getElementById('pref-overlay-pct').textContent = opVal;
+            }
+
+            // Brightness & blur
+            if (s.login_left_img_brightness) {
+                document.getElementById('pref-brightness').value = s.login_left_img_brightness;
+                document.getElementById('pref-brightness-pct').textContent = s.login_left_img_brightness;
+            }
+            if (s.login_left_img_blur) {
+                document.getElementById('pref-blur').value = s.login_left_img_blur;
+                document.getElementById('pref-blur-px').textContent = s.login_left_img_blur;
+            }
         } catch (e) {
             console.warn('caricaLoginSettings error:', e);
         }
@@ -2563,11 +2662,29 @@
         }
     }
 
+    let _prefImagePos = 'center center';
+
+    function setPrefPos(pos) {
+        _prefImagePos = pos;
+        document.querySelectorAll('.pref-pos-btn').forEach(btn => {
+            const active = btn.dataset.pos === pos;
+            btn.style.background = active ? '#B5453A' : '#f8fafc';
+            btn.querySelector('span').style.background = active ? '#fff' : '#cbd5e1';
+        });
+    }
+
     async function saveLoginLeft() {
         const msg  = document.getElementById('pref-left-save-msg');
+        const sizeEl = document.querySelector('input[name="pref-img-size"]:checked');
         const rows = [
-            { key: 'login_left_bg_color', value: document.getElementById('pref-left-bg-color').value },
-            { key: 'login_caption',       value: (document.getElementById('pref-caption').value || '').trim() },
+            { key: 'login_left_bg_color',        value: document.getElementById('pref-left-bg-color').value },
+            { key: 'login_caption',              value: (document.getElementById('pref-caption').value || '').trim() },
+            { key: 'login_left_image_position',  value: _prefImagePos },
+            { key: 'login_left_image_size',      value: sizeEl ? sizeEl.value : 'cover' },
+            { key: 'login_left_overlay_color',   value: document.getElementById('pref-overlay-color').value },
+            { key: 'login_left_overlay_opacity', value: document.getElementById('pref-overlay-opacity').value },
+            { key: 'login_left_img_brightness',  value: document.getElementById('pref-brightness').value },
+            { key: 'login_left_img_blur',        value: document.getElementById('pref-blur').value },
         ];
         try {
             for (const row of rows) {

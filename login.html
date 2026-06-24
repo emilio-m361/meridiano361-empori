@@ -37,6 +37,27 @@
       flex-direction: column;
       padding: 52px 48px 44px;
       position: relative;
+      overflow: hidden;
+    }
+
+    /* layer immagine di sfondo (riceve filtri CSS senza toccare il testo) */
+    #login-bg-img {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
+
+    /* layer overlay (velo colorato sopra l'immagine) */
+    #login-bg-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0;
+      background: #000;
     }
 
     /* rettangolo bianco esattamente delle dimensioni del logo, senza cornice */
@@ -45,6 +66,8 @@
       width: fit-content;
       background: #fff;
       line-height: 0;
+      position: relative;
+      z-index: 2;
     }
     .lw-logo img {
       height: 64px;
@@ -60,6 +83,8 @@
       color: rgba(255,255,255,.6);
       letter-spacing: .02em;
       line-height: 1.5;
+      position: relative;
+      z-index: 2;
     }
 
     /* ── Pannello form (destra) ── */
@@ -291,6 +316,8 @@
 
   <!-- ── Pannello brand ── -->
   <div class="lw-brand" id="login-brand">
+    <div id="login-bg-img"></div>
+    <div id="login-bg-overlay"></div>
     <div class="lw-logo">
       <img src="/assets/images/logom361_nero.jpg" alt="Meridiano 361" id="login-logo">
     </div>
@@ -399,14 +426,25 @@
       if (s.login_btn_color) {
         el('submit-btn').style.background = s.login_btn_color;
       }
-      if (s.login_left_bg_color && !s.login_left_image_url) {
+      if (s.login_left_bg_color) {
         brand.style.backgroundColor = s.login_left_bg_color;
       }
       if (s.login_left_image_url) {
-        brand.style.backgroundImage    = `url('${s.login_left_image_url}')`;
-        brand.style.backgroundSize     = 'cover';
-        brand.style.backgroundPosition = 'center';
-        if (s.login_left_bg_color) brand.style.backgroundColor = s.login_left_bg_color;
+        const bgImg = el('login-bg-img');
+        bgImg.style.backgroundImage    = `url('${s.login_left_image_url}')`;
+        bgImg.style.backgroundSize     = s.login_left_image_size     || 'cover';
+        bgImg.style.backgroundPosition = s.login_left_image_position || 'center center';
+        const brightness = s.login_left_img_brightness || '100';
+        const blur       = s.login_left_img_blur       || '0';
+        if (brightness !== '100' || blur !== '0') {
+          bgImg.style.filter = `brightness(${brightness}%) blur(${parseFloat(blur)}px)`;
+        }
+        const overlay = el('login-bg-overlay');
+        const opac = parseFloat(s.login_left_overlay_opacity || '0') / 100;
+        if (opac > 0) {
+          overlay.style.background = s.login_left_overlay_color || '#000000';
+          overlay.style.opacity    = String(opac);
+        }
       }
     } catch (_) { /* keep HTML defaults */ }
   })();
