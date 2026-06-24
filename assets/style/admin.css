@@ -19,7 +19,7 @@ body.adm-mode #m361-nav { display: none !important; }
 .adm-sidebar {
   width: 220px;
   flex-shrink: 0;
-  background: #18181b;
+  background: #B5453A;
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -109,7 +109,7 @@ body.adm-mode #m361-nav { display: none !important; }
 }
 .adm-nav-item.adm-active {
   background: #fff;
-  color: #18181b;
+  color: #B5453A;
   font-weight: 700;
 }
 .adm-nav-item.adm-active i { opacity: 1; }
@@ -160,7 +160,7 @@ body.adm-mode #m361-nav { display: none !important; }
   margin-bottom: 24px;
 }
 .adm-hamburger {
-  background: #18181b;
+  background: #B5453A;
   border: none;
   color: #fff;
   width: 38px;
@@ -302,7 +302,7 @@ body.adm-mode #m361-nav { display: none !important; }
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: #18181b;
+  background: #B5453A;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -315,7 +315,7 @@ body.adm-mode #m361-nav { display: none !important; }
   letter-spacing: .01em;
 }
 .adm-btn:hover,
-#admin-content .btn-primary:hover { background: #000; }
+#admin-content .btn-primary:hover { background: #8c362d; }
 
 .adm-btn-ghost {
   display: inline-flex;
@@ -335,7 +335,7 @@ body.adm-mode #m361-nav { display: none !important; }
 .adm-btn-ghost:hover { background: #f9fafb; border-color: #d1d5db; }
 
 #admin-content .btn-esporta {
-  background: #18181b;
+  background: #B5453A;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -349,7 +349,7 @@ body.adm-mode #m361-nav { display: none !important; }
   align-items: center;
   gap: 7px;
 }
-#admin-content .btn-esporta:hover { background: #000; }
+#admin-content .btn-esporta:hover { background: #8c362d; }
 #admin-content .btn-esporta[style*="background:#1e40af"] {
   background: #1d4ed8 !important;
 }
@@ -488,7 +488,7 @@ body.adm-mode #m361-nav { display: none !important; }
 #admin-content .emporio-nome { color: #374151; font-size: 12px; font-weight: 700; }
 #admin-content .emporio-count { color: #9ca3af; }
 #admin-content .btn-aggiungi-op {
-  background: #18181b;
+  background: #B5453A;
   border: none;
   color: #fff;
   padding: 4px 10px;
@@ -498,7 +498,7 @@ body.adm-mode #m361-nav { display: none !important; }
   cursor: pointer;
   font-family: 'Inter', sans-serif;
 }
-#admin-content .btn-aggiungi-op:hover { background: #000; }
+#admin-content .btn-aggiungi-op:hover { background: #8c362d; }
 
 /* ═══ FORM FIELDS (modal, notifiche, etc.) ══════════════════════════ */
 #admin-content input[type="text"],
@@ -574,7 +574,7 @@ body.adm-mode #m361-nav { display: none !important; }
 
 /* ═══ PERMISSIONS TABLE ══════════════════════════════════════════════ */
 #admin-content .tabella-permessi th {
-  background: #18181b;
+  background: #B5453A;
   color: rgba(255,255,255,.85);
   font-size: 10px;
   letter-spacing: .1em;
