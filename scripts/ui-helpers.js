@@ -12,14 +12,14 @@
     @keyframes m361-toast-out { from{opacity:1;transform:translateX(-50%) translateY(0)} to{opacity:0;transform:translateX(-50%) translateY(10px)} }
     .m361-toast { position:fixed;bottom:90px;left:50%;transform:translateX(-50%);
       color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:700;
-      font-family:Inter,sans-serif;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,.25);
+      font-family:Nunito,sans-serif;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,.25);
       display:flex;align-items:center;gap:8px;white-space:nowrap;
       max-width:calc(100vw - 32px);pointer-events:none;
       animation:m361-toast-in .2s ease forwards; }
     .m361-toast.out { animation:m361-toast-out .2s ease forwards; }
     #m361-modal { position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99998;
       display:flex;align-items:center;justify-content:center;padding:16px;
-      font-family:Inter,sans-serif; }
+      font-family:Nunito,sans-serif; }
     .m361-modal-box { background:#fff;border-radius:14px;max-width:380px;width:100%;
       box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden; }
     .m361-modal-head { color:#fff;padding:16px 20px;display:flex;align-items:center;gap:10px; }

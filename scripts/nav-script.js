@@ -131,7 +131,7 @@
     if (!document.getElementById('m361-fonts')) {
       const f = document.createElement('link');
       f.id = 'm361-fonts'; f.rel = 'stylesheet';
-      f.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap';
+      f.href = 'https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap';
       document.head.appendChild(f);
     }
   }
@@ -145,7 +145,7 @@
     st.id = 'm361-styles';
     st.textContent = `
 *, *::before, *::after { box-sizing: border-box; }
-body { font-family: 'Inter', sans-serif; padding-top: 56px; padding-bottom: 68px; }
+body { font-family: 'Nunito', sans-serif; padding-top: 56px; padding-bottom: 68px; }
 #m361-header { position:fixed;top:0;left:0;right:0;height:56px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;padding:0 18px;z-index:9000;box-shadow:0 1px 4px rgba(0,0,0,.05);gap:12px; }
 #m361-header .hd-left { display:flex;align-items:center;gap:0;text-decoration:none;flex:1;min-width:0; }
 #m361-header .hd-logo { height:28px;object-fit:contain;flex-shrink:0; }
@@ -153,7 +153,7 @@ body { font-family: 'Inter', sans-serif; padding-top: 56px; padding-bottom: 68px
 #m361-header .hd-sep { width:1px;height:22px;background:#e5e7eb;margin:0 12px;flex-shrink:0; }
 #m361-header #header-title { font-size:14px;font-weight:700;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px; }
 #m361-header .hd-right { display:flex;align-items:center;gap:8px;flex-shrink:0; }
-#back-btn { display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#64748b;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:color .15s; }
+#back-btn { display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#64748b;background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;transition:color .15s; }
 #back-btn:hover { color:#B5453A; }
 #back-btn.hidden { display:none; }
 @media(max-width:480px) { #m361-header #header-title { font-size:12px;max-width:120px; } }
@@ -162,7 +162,7 @@ body { font-family: 'Inter', sans-serif; padding-top: 56px; padding-bottom: 68px
 #m361-nav-scroll::-webkit-scrollbar { display:none; }
 @supports(padding-bottom:env(safe-area-inset-bottom)) { #m361-nav { height:calc(60px + env(safe-area-inset-bottom)); } }
 .mn-sep { width:1px;background:rgba(255,255,255,.18);margin:12px 0;flex-shrink:0; }
-.mn-item { display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0 10px;min-width:52px;text-decoration:none;cursor:pointer;transition:all .12s;border:none;background:transparent;flex-shrink:0;font-family:'Inter',sans-serif;-webkit-tap-highlight-color:transparent;min-height:44px; }
+.mn-item { display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0 10px;min-width:52px;text-decoration:none;cursor:pointer;transition:all .12s;border:none;background:transparent;flex-shrink:0;font-family:'Nunito',sans-serif;-webkit-tap-highlight-color:transparent;min-height:44px; }
 .mn-item i { font-size:15px;color:rgba(255,255,255,.6);transition:color .12s;line-height:1; }
 .mn-item span { font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;color:rgba(255,255,255,.6);white-space:nowrap;transition:color .12s; }
 .mn-item.mn-current { background:rgba(255,255,255,.22);border-radius:10px;margin:7px 2px;padding:0 9px; }
@@ -274,7 +274,7 @@ html.m361-grande{zoom:1.25}
     overlay.id = 'm361-chpwd-overlay';
     overlay.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99999;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)';
     overlay.innerHTML = `
-      <div style="background:#fff;border-radius:24px;padding:32px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.2);font-family:'Inter',sans-serif">
+      <div style="background:#fff;border-radius:24px;padding:32px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.2);font-family:'Nunito',sans-serif">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
           <div style="display:flex;align-items:center;gap:10px">
             <div style="width:36px;height:36px;background:#fef2f2;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
@@ -299,18 +299,18 @@ html.m361-grande{zoom:1.25}
         <div style="margin-bottom:14px">
           <label style="display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:6px">Nuova password</label>
           <input type="password" id="m361-chpwd-new" placeholder="Minimo 6 caratteri" minlength="6"
-            style="width:100%;padding:12px 16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;transition:border-color .15s"
+            style="width:100%;padding:12px 16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:'Nunito',sans-serif;outline:none;box-sizing:border-box;transition:border-color .15s"
             onfocus="this.style.borderColor='#B5453A'" onblur="this.style.borderColor='#e2e8f0'">
         </div>
         <div style="margin-bottom:24px">
           <label style="display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:6px">Conferma password</label>
           <input type="password" id="m361-chpwd-conf" placeholder="Ripeti la password" minlength="6"
-            style="width:100%;padding:12px 16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;transition:border-color .15s"
+            style="width:100%;padding:12px 16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:'Nunito',sans-serif;outline:none;box-sizing:border-box;transition:border-color .15s"
             onfocus="this.style.borderColor='#B5453A'" onblur="this.style.borderColor='#e2e8f0'">
         </div>
 
         <button id="m361-chpwd-submit"
-          style="width:100%;background:#B5453A;color:#fff;font-weight:800;font-size:14px;border:none;border-radius:14px;padding:14px;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .15s"
+          style="width:100%;background:#B5453A;color:#fff;font-weight:800;font-size:14px;border:none;border-radius:14px;padding:14px;cursor:pointer;font-family:'Nunito',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .15s"
           onmouseenter="this.style.background='#a14545'" onmouseleave="this.style.background='#B5453A'">
           <div id="m361-chpwd-spinner" style="display:none;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:spin .8s linear infinite"></div>
           <span id="m361-chpwd-label">Salva nuova password</span>
@@ -321,7 +321,7 @@ html.m361-grande{zoom:1.25}
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
             <span id="m361-push-modal-status" style="font-size:13px;font-weight:600;color:#475569">—</span>
             <button id="m361-push-modal-btn"
-              style="background:#B5453A;color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;display:none">
+              style="background:#B5453A;color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;display:none">
               Abilita
             </button>
           </div>
@@ -430,7 +430,7 @@ html.m361-grande{zoom:1.25}
       btn.id = 'm361-guide-btn';
       btn.title = 'Guida pagina';
       btn.innerHTML = '<i class="fas fa-circle-question"></i>';
-      btn.style.cssText = 'background:none;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;color:#94a3b8;font-size:13px;padding:5px 8px;transition:all .15s;font-family:Inter,sans-serif;line-height:1;display:flex;align-items:center;min-height:32px;flex-shrink:0';
+      btn.style.cssText = 'background:none;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;color:#94a3b8;font-size:13px;padding:5px 8px;transition:all .15s;font-family:Nunito,sans-serif;line-height:1;display:flex;align-items:center;min-height:32px;flex-shrink:0';
       btn.onmouseenter = () => { btn.style.color = '#B5453A'; btn.style.borderColor = '#B5453A'; };
       btn.onmouseleave = () => { btn.style.color = '#94a3b8'; btn.style.borderColor = '#e2e8f0'; };
       btn.onclick = () => { if (typeof window.__m361ToggleGuida === 'function') window.__m361ToggleGuida(); };
@@ -490,7 +490,7 @@ html.m361-grande{zoom:1.25}
         <span id="header-title">${pageTitle}</span>
       </a>
       <div class="hd-right">
-        <button id="m361-install-btn" onclick="window.__m361InstallApp&&window.__m361InstallApp()" style="display:none;align-items:center;gap:4px;font-size:10px;font-weight:700;background:#B5453A;color:#fff;border:none;border-radius:8px;padding:5px 10px;cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0;line-height:1"><i class="fas fa-download"></i> Installa</button>
+        <button id="m361-install-btn" onclick="window.__m361InstallApp&&window.__m361InstallApp()" style="display:none;align-items:center;gap:4px;font-size:10px;font-weight:700;background:#B5453A;color:#fff;border:none;border-radius:8px;padding:5px 10px;cursor:pointer;font-family:'Nunito',sans-serif;flex-shrink:0;line-height:1"><i class="fas fa-download"></i> Installa</button>
         <button id="back-btn" ${isHome ? 'class="hidden"' : ''} onclick="history.back()">
           <i class="fas fa-arrow-left"></i> Indietro
         </button>
@@ -498,7 +498,7 @@ html.m361-grande{zoom:1.25}
           <i class="fas fa-bell"></i>
           <span id="m361-bell-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:#B5453A;color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:8px;align-items:center;justify-content:center;padding:0 4px;line-height:1">0</span>
         </button>
-        ${nomeFull ? `<button id="m361-profile-btn" onclick="window.__m361OpenChangePwd&&window.__m361OpenChangePwd()" title="Impostazioni profilo" style="background:none;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;padding:5px 10px;font-family:Inter,sans-serif;display:flex;align-items:center;flex-shrink:0;transition:border-color .15s" onmouseenter="this.style.borderColor='#B5453A'" onmouseleave="this.style.borderColor='#e2e8f0'">
+        ${nomeFull ? `<button id="m361-profile-btn" onclick="window.__m361OpenChangePwd&&window.__m361OpenChangePwd()" title="Impostazioni profilo" style="background:none;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;padding:5px 10px;font-family:Nunito,sans-serif;display:flex;align-items:center;flex-shrink:0;transition:border-color .15s" onmouseenter="this.style.borderColor='#B5453A'" onmouseleave="this.style.borderColor='#e2e8f0'">
           <div class="hd-user-info">
             <span class="hd-user-name">${nomeFull}</span>
             <span class="hd-user-email">${emailFull}</span>
@@ -1007,7 +1007,7 @@ function buildNav() {
     panel.style.cssText =
       'position:fixed;top:60px;right:12px;width:320px;max-height:80vh;' +
       'background:#fff;border:1px solid #e2e8f0;border-radius:16px;' +
-      'box-shadow:0 8px 32px rgba(0,0,0,.14);z-index:10000;font-family:Inter,sans-serif;' +
+      'box-shadow:0 8px 32px rgba(0,0,0,.14);z-index:10000;font-family:Nunito,sans-serif;' +
       'display:flex;flex-direction:column;overflow:hidden';
     panel.innerHTML =
       '<div style="padding:14px 16px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">' +
@@ -1347,12 +1347,12 @@ function buildNav() {
       if (sub) {
         statusEl.textContent = '✓ Abilitate'; statusEl.style.color = '#16a34a';
         newBtn.textContent = 'Disabilita';
-        newBtn.style.cssText = 'background:#f1f5f9;color:#475569;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;display:block';
+        newBtn.style.cssText = 'background:#f1f5f9;color:#475569;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif;white-space:nowrap;display:block';
         newBtn.onclick = async () => { await _pushUnsubscribe(user); _updatePushStatusUI(); };
       } else {
         statusEl.textContent = 'Non attive'; statusEl.style.color = '#94a3b8';
         newBtn.textContent = 'Abilita';
-        newBtn.style.cssText = 'background:#B5453A;color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;display:block';
+        newBtn.style.cssText = 'background:#B5453A;color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif;white-space:nowrap;display:block';
         newBtn.onclick = async () => { await _pushSubscribe(user); _updatePushStatusUI(); };
       }
     } catch (_) {
@@ -1376,7 +1376,7 @@ function buildNav() {
       'background:#1e293b;color:#fff;padding:14px 20px 14px 20px;border-radius:14px;' +
       'box-shadow:0 8px 28px rgba(0,0,0,.28);z-index:10001;' +
       'min-width:280px;max-width:calc(100vw - 32px);' +
-      'font-family:Inter,sans-serif;' +
+      'font-family:Nunito,sans-serif;' +
       'animation:m361-slide-down .3s ease';
     const closeBtn = document.createElement('button');
     closeBtn.textContent = '✕';

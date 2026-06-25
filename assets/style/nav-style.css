@@ -3,8 +3,7 @@
  * Stili condivisi per header, bottom nav, e componenti base.
  *
  * FONT (max 3, caricati da nav-script.js):
- *   1. Inter     — testo UI, label, titoli
- *   2. DM Mono   — valori numerici, monospace
+ *   1. Nunito    — font unico per tutta l'app
  *
  * Includi questo file PRIMA di nav-script.js in ogni pagina:
  *   <link rel="stylesheet" href="../../assets/style/nav-style.css">
@@ -32,8 +31,8 @@
   --brown:      #7a4f2b;
   --blue-emp:   #4c5d88;
 
-  --font-main:  'Inter', sans-serif;
-  --font-mono:  'DM Mono', 'Courier New', monospace;
+  --font-main:  'Nunito', sans-serif;
+  --font-mono:  'Nunito', sans-serif;
   --radius:     20px;
   --shadow-sm:  0 1px 4px rgba(0,0,0,.07);
   --shadow-md:  0 4px 16px rgba(0,0,0,.10);
