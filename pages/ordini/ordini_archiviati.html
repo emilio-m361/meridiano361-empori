@@ -80,6 +80,7 @@
         </a>
     </div>
 
+<script src="../../scripts/auth.js"></script>
 <script src="../../scripts/nav-script.js"></script>
 
     <main class="max-w-7xl mx-auto p-4 md:p-8">
@@ -206,10 +207,9 @@
         let tuttiOrdini = [];
 
         async function caricaArchivio() {
-            const { data, error } = await _supabase
-                .from('ordini_archiviati')
-                .select('*')
-                .order('data_evasione', { ascending: false });
+            let _q = _supabase.from('ordini_archiviati').select('*').order('data_evasione', { ascending: false });
+            if (typeof filtraPerEmporio === 'function') _q = filtraPerEmporio(_q);
+            const { data, error } = await _q;
 
             if (error) {
                 document.getElementById('table-body').innerHTML = `<tr><td colspan="7" class="p-8 text-center text-red-500">Errore: ${error.message}</td></tr>`;
@@ -228,7 +228,7 @@
 
             const ora = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
             document.getElementById('stat-data').innerText = `oggi, ${ora}`;
-            renderTabella(tuttiOrdini);
+            filtra();
         }
 
         function renderTabella(ordini) {
@@ -241,7 +241,7 @@
             tbody.innerHTML = ordini.map(ord => {
                 const dataEvasione = ord.data_evasione ? new Date(ord.data_evasione).toLocaleDateString('it-IT') : '-';
                 const nome = `${ord.cliente_nome || ''} ${ord.cliente_cognome || ''}`.trim();
-                const citta = ord.citta || '-';
+                const citta = ord.emporio || ord.citta || '-';
                 const canale = ord.canale ? `<div class="text-[10px] text-slate-400 italic">${ord.canale}</div>` : '';
                 const totale = ord.totale_ordine ? `€ ${parseFloat(ord.totale_ordine).toFixed(2)}` : '€ 0.00';
                 const stato = ord.stato || 'Evaso';
@@ -289,7 +289,7 @@
             const filtrati = tuttiOrdini.filter(ord => {
                 const searchStr = `${ord.cliente_nome || ''} ${ord.cliente_cognome || ''} ${ord.id}`.toLowerCase();
                 const matchTesto = !testo || searchStr.includes(testo);
-                const matchCitta = !citta || (ord.citta || '').toLowerCase() === citta;
+                const matchCitta = !citta || (ord.emporio || ord.citta || '').toLowerCase() === citta;
                 const matchAnno = !anno || (ord.data_evasione && new Date(ord.data_evasione).getFullYear() == anno);
                 return matchTesto && matchCitta && matchAnno;
             });
@@ -382,7 +382,22 @@
             if (e.target === this) chiudiModal();
         });
 
-        window.onload = caricaArchivio;
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof inizializzaSelectEmporio === 'function') {
+                inizializzaSelectEmporio('filter-citta');
+            }
+            if (typeof isAdmin === 'function' && isAdmin()) {
+                const emp = typeof getEmporioLoggato === 'function' ? getEmporioLoggato() : null;
+                if (emp) {
+                    const sel = document.getElementById('filter-citta');
+                    if (sel) {
+                        const opt = Array.from(sel.options).find(o => o.value.toLowerCase() === emp.toLowerCase());
+                        if (opt) sel.value = opt.value;
+                    }
+                }
+            }
+            caricaArchivio();
+        });
     </script>
 </body>
 </html>

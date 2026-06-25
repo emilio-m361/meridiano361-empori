@@ -1040,9 +1040,19 @@
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.addEventListener('click', () => filterOrders(btn.getAttribute('data-filter')));
             });
-            // Blocca filtro emporio per operatori non-admin
+            // Pre-seleziona emporio: blocca per non-admin, convenienza per admin
             if (typeof inizializzaSelectEmporio === 'function') {
                 inizializzaSelectEmporio('filtro-emporio');
+            }
+            if (typeof isAdmin === 'function' && isAdmin()) {
+                const emp = typeof getEmporioLoggato === 'function' ? getEmporioLoggato() : null;
+                if (emp) {
+                    const sel = document.getElementById('filtro-emporio');
+                    if (sel) {
+                        const opt = Array.from(sel.options).find(o => o.value.toLowerCase() === emp.toLowerCase());
+                        if (opt) sel.value = opt.value;
+                    }
+                }
             }
             loadOrders();
         });
