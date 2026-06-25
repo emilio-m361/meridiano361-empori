@@ -10,7 +10,7 @@
     <title>Prezzi da Fare</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --red:#B5453A;--red-dark:#8c362d;--red-light:#fdf1f0;
@@ -27,8 +27,8 @@
             --s400:#94a3b8;--s500:#64748b;--s600:#475569;--s700:#334155;--s800:#1e293b;
         }
         *{box-sizing:border-box}
-        body{font-family:'Inter',sans-serif;background:#f0f2f5;font-size:15px}
-        .mono{font-family:'DM Mono',monospace}
+        body{font-family:'Nunito', sans-serif;background:#f0f2f5;font-size:15px}
+        .mono{font-family:'Nunito', sans-serif}
 
         /* EMPORIO SELECTOR */
         .emp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
@@ -73,8 +73,8 @@
         .pz-check{width:18px;height:18px;cursor:pointer;accent-color:var(--green)}
 
         /* INLINE EDIT */
-        .edit-input{border:none;border-bottom:2px solid var(--m-primary);background:transparent;font-family:'Inter',sans-serif;font-size:15px;font-weight:400;color:var(--s800);outline:none;width:100%;padding:1px 2px}
-        .edit-input.mono-in{font-family:'DM Mono',monospace}
+        .edit-input{border:none;border-bottom:2px solid var(--m-primary);background:transparent;font-family:'Nunito', sans-serif;font-size:15px;font-weight:400;color:var(--s800);outline:none;width:100%;padding:1px 2px}
+        .edit-input.mono-in{font-family:'Nunito', sans-serif}
         .edit-input:focus{background:rgba(124,61,61,.05);border-radius:4px 4px 0 0}
 
         /* PILLS */
@@ -88,7 +88,7 @@
         @media(min-width:640px){.af-grid{grid-template-columns:1fr 1fr 80px 100px}}
         .f-g{display:flex;flex-direction:column;gap:3px}
         .f-l{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--s400)}
-        .f-i{border:1px solid var(--s200);border-radius:9px;padding:9px 10px;font-size:15px;font-family:'Inter',sans-serif;outline:none;background:#fff;transition:border .15s;width:100%}
+        .f-i{border:1px solid var(--s200);border-radius:9px;padding:9px 10px;font-size:15px;font-family:'Nunito', sans-serif;outline:none;background:#fff;transition:border .15s;width:100%}
         .f-i:focus{border-color:var(--red)}
 
         /* FILTERS */
@@ -103,8 +103,8 @@
         .st tbody tr:hover{background:var(--s50)}
         .st tr.done{opacity:.42}
         .st tr.done td{text-decoration:line-through;text-decoration-color:var(--s300)}
-        .st .tot td{background:var(--red);color:#fff;font-weight:900;padding:10px;font-family:'DM Mono',monospace}
-        .st .tot td:first-child{font-family:'Inter',sans-serif}
+        .st .tot td{background:var(--red);color:#fff;font-weight:900;padding:10px;font-family:'Nunito', sans-serif}
+        .st .tot td:first-child{font-family:'Nunito', sans-serif}
         .ec{font-size:9px;font-weight:900;text-transform:uppercase;padding:2px 7px;border-radius:6px;white-space:nowrap}
 
         /* BACK */
@@ -113,12 +113,12 @@
 
         /* COUNTER */
         .fc{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--s800);color:#fff;padding:7px 16px;border-radius:11px;font-size:12px;font-weight:800;z-index:8000;display:flex;align-items:center;gap:8px;box-shadow:0 4px 14px rgba(0,0,0,.25);pointer-events:none}
-        .fc-n{font-family:'DM Mono',monospace;font-size:16px;color:#fbbf24}
+        .fc-n{font-family:'Nunito', sans-serif;font-size:16px;color:#fbbf24}
 
         /* STATS */
         .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
         .stat{background:#fff;border-radius:12px;border:1px solid var(--s200);padding:12px;text-align:center}
-        .stat-n{font-size:24px;font-weight:900;font-family:'DM Mono',monospace}
+        .stat-n{font-size:24px;font-weight:900;font-family:'Nunito', sans-serif}
         .stat-l{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--s400)}
 
         /* Emporio color helpers */

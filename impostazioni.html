@@ -14,14 +14,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --red:#B5453A; --red-dark:#8c362d; }
-        body { font-family: 'Inter', sans-serif; background: #f0f2f5; }
+        body { font-family: 'Nunito', sans-serif; background: #f0f2f5; }
 
         /* === LAYOUT === */
         .impostazioni-container { max-width: 100%; padding: 24px 32px; }
 
         /* === ACCORDION SECTIONS (usate in resp-content) === */
         .settings-section { margin-bottom: 16px; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
-        .settings-section-header { width: 100%; background: #f8fafc; border: none; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: 700; color: #1e293b; cursor: pointer; text-align: left; font-family: 'Inter', sans-serif; }
+        .settings-section-header { width: 100%; background: #f8fafc; border: none; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: 700; color: #1e293b; cursor: pointer; text-align: left; font-family: 'Nunito', sans-serif; }
         .settings-section-header:hover { background: #f1f5f9; }
         .settings-section-body { padding: 20px; border-top: 1px solid #e2e8f0; background: #fff; }
         .arrow { font-size: 12px; color: #94a3b8; transition: transform .2s; display: inline-block; }
@@ -44,7 +44,7 @@
         .section-page { display:none; }
         .section-page.active { display:block; }
         .section-page-head { display:flex; align-items:center; gap:14px; margin-bottom:20px; flex-wrap:wrap; }
-        .back-btn { display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:700; color:#B5453A; background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:7px 14px; cursor:pointer; transition:all .15s; font-family:'Inter',sans-serif; white-space:nowrap; }
+        .back-btn { display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:700; color:#B5453A; background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:7px 14px; cursor:pointer; transition:all .15s; font-family:'Nunito', sans-serif; white-space:nowrap; }
         .back-btn:hover { background:#fdf1f0; border-color:#fca5a5; }
         .section-page-title { font-size:18px; font-weight:800; color:#1e293b; }
 
@@ -65,9 +65,9 @@
         .emporio-nome { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; }
         .emporio-count { font-size: 11px; color: #94a3b8; }
         .emporio-corpo { display: none; }
-        .btn-aggiungi-op { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); color: #fff; padding: 4px 10px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+        .btn-aggiungi-op { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); color: #fff; padding: 4px 10px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Nunito', sans-serif; }
         .btn-aggiungi-op:hover { background: #B5453A; border-color: #B5453A; }
-        .btn-permessi-tutti { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); color: #fff; padding: 4px 10px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+        .btn-permessi-tutti { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); color: #fff; padding: 4px 10px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Nunito', sans-serif; }
         .btn-permessi-tutti:hover { background: rgba(255,255,255,.25); }
 
         .tabella-operatori { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -112,23 +112,23 @@
         .modal-op-msg-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
 
         /* === BUTTONS === */
-        .btn-primary   { background: #B5453A; color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: 'Inter', sans-serif; transition: background .15s; }
+        .btn-primary   { background: #B5453A; color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: 'Nunito', sans-serif; transition: background .15s; }
         .btn-primary:hover { background: #8c362d; }
-        .btn-secondary { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: all .15s; }
+        .btn-secondary { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Nunito', sans-serif; transition: all .15s; }
         .btn-secondary:hover { background: #e2e8f0; }
-        .btn-danger    { background: #fee2e2; color: #B5453A; border: 1px solid #fecaca; padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: all .15s; }
+        .btn-danger    { background: #fee2e2; color: #B5453A; border: 1px solid #fecaca; padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Nunito', sans-serif; transition: all .15s; }
         .btn-danger:hover { background: #B5453A; color: #fff; }
         .elimina-avviso { background: #fee2e2; border: 1px solid #fca5a5; border-radius: 8px; padding: 12px 16px; font-size: 14px; color: #B5453A; margin-bottom: 12px; }
         .elimina-avviso strong { display: block; font-size: 16px; margin-top: 4px; color: #1e293b; }
         .elimina-testo { font-size: 13px; color: #64748b; line-height: 1.5; }
-        #btn-conferma-elimina { background: #B5453A; color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: background .15s; }
+        #btn-conferma-elimina { background: #B5453A; color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Nunito', sans-serif; transition: background .15s; }
         #btn-conferma-elimina:disabled { background: #fca5a5; cursor: not-allowed; }
         #btn-conferma-elimina:not(:disabled):hover { background: #991b1b; }
 
         /* === FORM FIELDS === */
         .campo-gruppo { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
         .campo-gruppo label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #64748b; }
-        .campo-input { width: 100%; padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; color: #1e293b; background: #f8fafc; transition: border .15s; box-sizing: border-box; }
+        .campo-input { width: 100%; padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: 'Nunito', sans-serif; color: #1e293b; background: #f8fafc; transition: border .15s; box-sizing: border-box; }
         .campo-input:focus { outline: none; border-color: #B5453A; background: #fff; }
         .empori-aggiuntivi { display: flex; flex-wrap: wrap; gap: 12px; padding: 8px 0; }
         .check-flag { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #475569; cursor: pointer; }
@@ -159,7 +159,7 @@
         .empori-table tr:last-child td { border-bottom: none; }
 
         /* === BACKUP / INFO === */
-        .btn-esporta { background: #1e293b; color: #fff; border: none; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: background .15s; }
+        .btn-esporta { background: #1e293b; color: #fff; border: none; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Nunito', sans-serif; transition: background .15s; }
         .btn-esporta:hover { background: #0f172a; }
         .info-app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
         .info-app-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; }
@@ -459,10 +459,10 @@
                         </div>
                     </div>
                     <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-                        <button id="acc-filter-tutti"    onclick="accFiltra('tutti')"     style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #B5453A;background:#B5453A;color:#fff;cursor:pointer;font-family:Inter,sans-serif">Tutti</button>
-                        <button id="acc-filter-loggati"  onclick="accFiltra('loggati')"   style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;cursor:pointer;font-family:Inter,sans-serif">Solo loggati</button>
-                        <button id="acc-filter-ultimi15" onclick="accFiltra('ultimi15')"  style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;cursor:pointer;font-family:Inter,sans-serif">Ultimi 15 gg</button>
-                        <button id="acc-filter-mai"      onclick="accFiltra('mai')"       style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;cursor:pointer;font-family:Inter,sans-serif">Mai loggati</button>
+                        <button id="acc-filter-tutti"    onclick="accFiltra('tutti')"     style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #B5453A;background:#B5453A;color:#fff;cursor:pointer;font-family:Nunito, sans-serif">Tutti</button>
+                        <button id="acc-filter-loggati"  onclick="accFiltra('loggati')"   style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;cursor:pointer;font-family:Nunito, sans-serif">Solo loggati</button>
+                        <button id="acc-filter-ultimi15" onclick="accFiltra('ultimi15')"  style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;cursor:pointer;font-family:Nunito, sans-serif">Ultimi 15 gg</button>
+                        <button id="acc-filter-mai"      onclick="accFiltra('mai')"       style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;cursor:pointer;font-family:Nunito, sans-serif">Mai loggati</button>
                     </div>
                 </div>
                 <div id="accessi-tabella-wrap" style="overflow-x:auto">
@@ -536,9 +536,9 @@
                         <div style="font-size:12px;color:#64748b;margin-bottom:10px">Il logo appare in alto a sinistra. Se non impostato viene usato il logo M361 di default.</div>
                         <div id="pref-left-logo-preview" style="display:none;margin-bottom:10px">
                             <img id="pref-left-logo-preview-img" style="height:44px;border-radius:4px;border:1px solid #e2e8f0;display:block" alt="Anteprima logo">
-                            <button onclick="removeLoginAsset('login_left_logo_url','pref-left-logo-preview')" style="margin-top:6px;font-size:11px;color:#dc2626;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;padding:0;display:block">✕ Ripristina logo default</button>
+                            <button onclick="removeLoginAsset('login_left_logo_url','pref-left-logo-preview')" style="margin-top:6px;font-size:11px;color:#dc2626;background:none;border:none;cursor:pointer;font-family:'Nunito', sans-serif;padding:0;display:block">✕ Ripristina logo default</button>
                         </div>
-                        <label style="display:inline-flex;align-items:center;gap:8px;background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:12px;font-weight:700;color:#475569;font-family:'Inter',sans-serif;transition:border-color .15s" onmouseover="this.style.borderColor='#B5453A'" onmouseout="this.style.borderColor='#e2e8f0'">
+                        <label style="display:inline-flex;align-items:center;gap:8px;background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:12px;font-weight:700;color:#475569;font-family:'Nunito', sans-serif;transition:border-color .15s" onmouseover="this.style.borderColor='#B5453A'" onmouseout="this.style.borderColor='#e2e8f0'">
                             <i class="fas fa-image" style="color:#B5453A"></i> Carica logo
                             <input type="file" accept="image/*" style="display:none" onchange="uploadLoginAsset(this,'login_left_logo_url','pref-left-logo-preview','pref-left-logo-preview-img')">
                         </label>
@@ -551,9 +551,9 @@
                         <div style="font-size:12px;color:#64748b;margin-bottom:10px">Se impostata, copre il colore di sfondo. Formato consigliato: verticale, max 5 MB.</div>
                         <div id="pref-left-image-preview" style="display:none;margin-bottom:10px">
                             <img id="pref-left-image-preview-img" style="height:72px;border-radius:8px;object-fit:cover;border:1px solid #e2e8f0;display:block" alt="Anteprima sfondo">
-                            <button onclick="removeLoginAsset('login_left_image_url','pref-left-image-preview')" style="margin-top:6px;font-size:11px;color:#dc2626;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;padding:0;display:block">✕ Rimuovi immagine</button>
+                            <button onclick="removeLoginAsset('login_left_image_url','pref-left-image-preview')" style="margin-top:6px;font-size:11px;color:#dc2626;background:none;border:none;cursor:pointer;font-family:'Nunito', sans-serif;padding:0;display:block">✕ Rimuovi immagine</button>
                         </div>
-                        <label style="display:inline-flex;align-items:center;gap:8px;background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:12px;font-weight:700;color:#475569;font-family:'Inter',sans-serif;transition:border-color .15s" onmouseover="this.style.borderColor='#B5453A'" onmouseout="this.style.borderColor='#e2e8f0'">
+                        <label style="display:inline-flex;align-items:center;gap:8px;background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:12px;font-weight:700;color:#475569;font-family:'Nunito', sans-serif;transition:border-color .15s" onmouseover="this.style.borderColor='#B5453A'" onmouseout="this.style.borderColor='#e2e8f0'">
                             <i class="fas fa-upload" style="color:#B5453A"></i> Carica immagine
                             <input type="file" accept="image/*" style="display:none" onchange="uploadLoginAsset(this,'login_left_image_url','pref-left-image-preview','pref-left-image-preview-img')">
                         </label>
@@ -581,13 +581,13 @@
                     <div style="margin-bottom:28px">
                         <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:10px">Dimensione immagine</div>
                         <div style="display:flex;flex-direction:column;gap:9px">
-                            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:13px;color:#374151;font-family:'Inter',sans-serif">
+                            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:13px;color:#374151;font-family:'Nunito', sans-serif">
                                 <input type="radio" name="pref-img-size" value="cover" onchange="onImgSizeChange()" style="accent-color:#B5453A;width:15px;height:15px;margin-top:2px;flex-shrink:0"> <span><strong>Copri tutto</strong> — riempie il pannello, può ritagliare i bordi</span></label>
-                            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:13px;color:#374151;font-family:'Inter',sans-serif">
+                            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:13px;color:#374151;font-family:'Nunito', sans-serif">
                                 <input type="radio" name="pref-img-size" value="contain" onchange="onImgSizeChange()" style="accent-color:#B5453A;width:15px;height:15px;margin-top:2px;flex-shrink:0"> <span><strong>Adatta</strong> — mostra l'immagine intera, può lasciare spazio vuoto ai lati</span></label>
-                            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:13px;color:#374151;font-family:'Inter',sans-serif">
+                            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:13px;color:#374151;font-family:'Nunito', sans-serif">
                                 <input type="radio" name="pref-img-size" value="auto" onchange="onImgSizeChange()" style="accent-color:#B5453A;width:15px;height:15px;margin-top:2px;flex-shrink:0"> <span><strong>Dimensione originale</strong> — nessun ridimensionamento</span></label>
-                            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:13px;color:#374151;font-family:'Inter',sans-serif">
+                            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:13px;color:#374151;font-family:'Nunito', sans-serif">
                                 <input type="radio" name="pref-img-size" value="custom" onchange="onImgSizeChange()" style="accent-color:#B5453A;width:15px;height:15px;margin-top:2px;flex-shrink:0"> <span><strong>Personalizzata</strong> — imposta larghezza e altezza manualmente</span></label>
                         </div>
                         <!-- Pannello dimensioni personalizzate -->
@@ -660,7 +660,7 @@
                                 oninput="document.getElementById('pref-left-bg-color-val').textContent=this.value"
                                 style="width:44px;height:36px;border:1.5px solid #e2e8f0;border-radius:8px;padding:2px 3px;cursor:pointer;background:#fff">
                             <span id="pref-left-bg-color-val" style="font-size:12px;font-family:monospace;color:#475569;font-weight:600">#B5453A</span>
-                            <button onclick="pref_resetColor('pref-left-bg-color','pref-left-bg-color-val','#B5453A')" style="font-size:11px;color:#94a3b8;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;padding:0">Reset</button>
+                            <button onclick="pref_resetColor('pref-left-bg-color','pref-left-bg-color-val','#B5453A')" style="font-size:11px;color:#94a3b8;background:none;border:none;cursor:pointer;font-family:'Nunito', sans-serif;padding:0">Reset</button>
                         </div>
                     </div>
 
@@ -670,13 +670,13 @@
                         <div style="font-size:12px;color:#64748b;margin-bottom:10px">Appare in basso a sinistra, sotto il logo.</div>
                         <input type="text" id="pref-caption"
                             placeholder="Il portale riservato agli operatori degli empori di Meridiano 361"
-                            style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;color:#1e293b;outline:none;transition:border-color .15s"
+                            style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:'Nunito', sans-serif;color:#1e293b;outline:none;transition:border-color .15s"
                             onfocus="this.style.borderColor='#B5453A'" onblur="this.style.borderColor='#e2e8f0'">
                     </div>
 
                     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
                         <button onclick="saveLoginLeft()"
-                            style="background:#B5453A;color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;cursor:pointer;font-family:'Inter',sans-serif"
+                            style="background:#B5453A;color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;cursor:pointer;font-family:'Nunito', sans-serif"
                             onmouseover="this.style.background='#8c362d'" onmouseout="this.style.background='#B5453A'">
                             Salva
                         </button>
@@ -697,7 +697,7 @@
                         <div style="font-size:12px;color:#64748b;margin-bottom:8px">Il titolo grande sopra il form di login.</div>
                         <input type="text" id="pref-title"
                             placeholder="Gestire l'emporio, con cura."
-                            style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;color:#1e293b;outline:none;transition:border-color .15s"
+                            style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:'Nunito', sans-serif;color:#1e293b;outline:none;transition:border-color .15s"
                             onfocus="this.style.borderColor='#B5453A'" onblur="this.style.borderColor='#e2e8f0'">
                     </div>
 
@@ -708,7 +708,7 @@
                             <div style="font-size:11px;font-weight:600;color:#64748b;margin-bottom:6px">Testo</div>
                             <input type="text" id="pref-btn-text"
                                 placeholder="Accedi"
-                                style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:#1e293b;outline:none;transition:border-color .15s;background:#fff"
+                                style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:'Nunito', sans-serif;color:#1e293b;outline:none;transition:border-color .15s;background:#fff"
                                 onfocus="this.style.borderColor='#B5453A'" onblur="this.style.borderColor='#e2e8f0'">
                         </div>
                         <div>
@@ -718,14 +718,14 @@
                                     oninput="document.getElementById('pref-btn-color-val').textContent=this.value"
                                     style="width:44px;height:36px;border:1.5px solid #e2e8f0;border-radius:8px;padding:2px 3px;cursor:pointer;background:#fff">
                                 <span id="pref-btn-color-val" style="font-size:12px;font-family:monospace;color:#475569;font-weight:600">#B5453A</span>
-                                <button onclick="pref_resetColor('pref-btn-color','pref-btn-color-val','#B5453A')" style="font-size:11px;color:#94a3b8;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;padding:0">Reset</button>
+                                <button onclick="pref_resetColor('pref-btn-color','pref-btn-color-val','#B5453A')" style="font-size:11px;color:#94a3b8;background:none;border:none;cursor:pointer;font-family:'Nunito', sans-serif;padding:0">Reset</button>
                             </div>
                         </div>
                     </div>
 
                     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
                         <button onclick="saveLoginRight()"
-                            style="background:#B5453A;color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;cursor:pointer;font-family:'Inter',sans-serif"
+                            style="background:#B5453A;color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;cursor:pointer;font-family:'Nunito', sans-serif"
                             onmouseover="this.style.background='#8c362d'" onmouseout="this.style.background='#B5453A'">
                             Salva
                         </button>
@@ -747,14 +747,14 @@
                             <div style="font-size:11px;font-weight:600;color:#64748b;margin-bottom:6px">Testo</div>
                             <input type="text" id="pref-link1-text"
                                 placeholder="Richiedi credenziali di accesso"
-                                style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:#1e293b;outline:none;transition:border-color .15s;background:#fff"
+                                style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:'Nunito', sans-serif;color:#1e293b;outline:none;transition:border-color .15s;background:#fff"
                                 onfocus="this.style.borderColor='#B5453A'" onblur="this.style.borderColor='#e2e8f0'">
                         </div>
                         <div>
                             <div style="font-size:11px;font-weight:600;color:#64748b;margin-bottom:6px">URL destinazione</div>
                             <input type="text" id="pref-link1-url"
                                 placeholder="/richiedi-accesso.html"
-                                style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:#1e293b;outline:none;transition:border-color .15s;background:#fff"
+                                style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:'Nunito', sans-serif;color:#1e293b;outline:none;transition:border-color .15s;background:#fff"
                                 onfocus="this.style.borderColor='#B5453A'" onblur="this.style.borderColor='#e2e8f0'">
                         </div>
                     </div>
@@ -765,14 +765,14 @@
                         <div style="font-size:11px;font-weight:600;color:#64748b;margin-bottom:6px">Testo</div>
                         <input type="text" id="pref-link2-text"
                             placeholder="Ho dimenticato la password"
-                            style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:#1e293b;outline:none;transition:border-color .15s;background:#fff"
+                            style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:'Nunito', sans-serif;color:#1e293b;outline:none;transition:border-color .15s;background:#fff"
                             onfocus="this.style.borderColor='#B5453A'" onblur="this.style.borderColor='#e2e8f0'">
                         <div style="margin-top:8px;font-size:11px;color:#94a3b8">Questo link apre il modulo di recupero password — l'URL non è configurabile.</div>
                     </div>
 
                     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
                         <button onclick="saveLoginLinks()"
-                            style="background:#B5453A;color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;cursor:pointer;font-family:'Inter',sans-serif"
+                            style="background:#B5453A;color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;cursor:pointer;font-family:'Nunito', sans-serif"
                             onmouseover="this.style.background='#8c362d'" onmouseout="this.style.background='#B5453A'">
                             Salva
                         </button>
@@ -2514,7 +2514,7 @@
         }).join('');
 
         wrap.innerHTML = `
-            <table style="width:100%;border-collapse:collapse;font-size:13px;font-family:Inter,sans-serif">
+            <table style="width:100%;border-collapse:collapse;font-size:13px;font-family:Nunito, sans-serif">
                 <thead>
                     <tr style="background:#f8fafc;border-bottom:1px solid #e2e8f0">
                         <th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Operatore</th>

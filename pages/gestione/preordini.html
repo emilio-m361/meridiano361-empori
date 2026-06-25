@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../../assets/style/nav-style.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background: #f8fafc; }
+        body { font-family: 'Nunito', sans-serif; background: #f8fafc; }
 
         .toolbar {
             position: sticky; top: 56px; z-index: 20;
@@ -24,7 +24,7 @@
         #save-badge {
             position: fixed; top: 64px; right: 14px; z-index: 50;
             padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
-            font-family: 'Inter', sans-serif; pointer-events: none; display: none;
+            font-family: 'Nunito', sans-serif; pointer-events: none; display: none;
         }
         #save-badge.saving { display: block; background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
         #save-badge.saved  { display: block; background: #f0fdf4; color: #16A34A; border: 1px solid #bbf7d0; }
@@ -121,22 +121,22 @@
         .td-ord-prec.inv-val { background: #fff7ed; }
 
         /* ── TOTALS ── */
-        .td-tot-ord  { background: #f0fdf4; color: #16A34A; font-weight: 700; min-width: 54px; text-align: right; font-family: 'DM Mono', monospace; font-size: 12px; }
-        .td-tot-conf { background: #f0fdf4; color: #4ade80; font-weight: 600; min-width: 44px; text-align: right; font-family: 'DM Mono', monospace; font-size: 11px; }
-        .td-tot-vend { background: #f8fafc; color: #94a3b8; min-width: 54px; text-align: right; font-family: 'DM Mono', monospace; font-size: 12px; }
+        .td-tot-ord  { background: #f0fdf4; color: #16A34A; font-weight: 700; min-width: 54px; text-align: right; font-family: 'Nunito', sans-serif; font-size: 12px; }
+        .td-tot-conf { background: #f0fdf4; color: #4ade80; font-weight: 600; min-width: 44px; text-align: right; font-family: 'Nunito', sans-serif; font-size: 11px; }
+        .td-tot-vend { background: #f8fafc; color: #94a3b8; min-width: 54px; text-align: right; font-family: 'Nunito', sans-serif; font-size: 12px; }
         .td-del { width: 26px; text-align: center; }
 
         /* ── INPUTS (left info cols) ── */
         .inp-r {
             width: 100%; border: none; background: transparent;
-            font-family: 'Inter', sans-serif; font-size: 12px; padding: 2px 3px; outline: none;
+            font-family: 'Nunito', sans-serif; font-size: 12px; padding: 2px 3px; outline: none;
         }
         .inp-r:focus { background: #eff6ff; border-radius: 2px; }
 
         /* ── QUANTITY INPUTS (base) ── */
         .cella-qty {
             width: 46px; border: none; background: transparent;
-            font-family: 'DM Mono', monospace; text-align: center;
+            font-family: 'Nunito', sans-serif; text-align: center;
             padding: 2px 3px; outline: none; display: block; margin: 0 auto; cursor: text;
         }
         .cella-qty:focus { background: #eff6ff; border-radius: 2px; }
@@ -157,7 +157,7 @@
         #qty-warn {
             position: fixed; z-index: 300; background: #1e293b; color: white;
             border-radius: 8px; padding: 10px 14px; font-size: 12px;
-            font-family: 'Inter', sans-serif; box-shadow: 0 8px 24px rgba(0,0,0,.35);
+            font-family: 'Nunito', sans-serif; box-shadow: 0 8px 24px rgba(0,0,0,.35);
             max-width: 290px; line-height: 1.5;
         }
         #qty-warn .warn-msg { color: #fbbf24; margin-bottom: 8px; font-weight: 600; font-size: 11px; }
@@ -170,7 +170,7 @@
             display: inline-flex; align-items: center; gap: 4px;
             padding: 5px 11px; border-radius: 6px; font-size: 11px; font-weight: 700;
             cursor: pointer; border: 1px solid #e2e8f0; background: white; color: #374151;
-            white-space: nowrap; transition: all .12s; font-family: 'Inter', sans-serif;
+            white-space: nowrap; transition: all .12s; font-family: 'Nunito', sans-serif;
         }
         .btn-tb:hover { background: #f8fafc; border-color: #cbd5e1; }
         .btn-tb.prim { background: #B5453A; color: white; border-color: #B5453A; }
@@ -191,7 +191,7 @@
         .flabel { display: block; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px; }
         .finput {
             width: 100%; padding: 7px 10px; border: 1px solid #e2e8f0;
-            border-radius: 6px; font-size: 13px; font-family: 'Inter', sans-serif; outline: none; background: white;
+            border-radius: 6px; font-size: 13px; font-family: 'Nunito', sans-serif; outline: none; background: white;
         }
         .finput:focus { border-color: #B5453A; }
         .fgroup { margin-bottom: 11px; }
@@ -606,13 +606,13 @@ function renderTable() {
         html += '<tr class="tr-subtotal" data-fk="' + fk + '">' +
             '<td colspan="5" style="text-align:right;font-size:9px;text-transform:uppercase;letter-spacing:.04em">TOTALE ' + esc(forn) + '</td>';
         emporiAttivi.forEach(emp => {
-            html += '<td style="text-align:center;color:#94a3b8;font-family:\'DM Mono\',monospace">' + (subEmpVend[emp.codice] || '') + '</td>';
-            html += '<td style="text-align:center;font-family:\'DM Mono\',monospace;color:#16A34A;font-weight:700">' + (subEmpOrd[emp.codice] || '') + '</td>';
+            html += '<td style="text-align:center;color:#94a3b8;font-family:\'Nunito\',monospace">' + (subEmpVend[emp.codice] || '') + '</td>';
+            html += '<td style="text-align:center;font-family:\'Nunito\',monospace;color:#16A34A;font-weight:700">' + (subEmpOrd[emp.codice] || '') + '</td>';
             html += '<td></td><td></td>';
         });
-        html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#16A34A;background:#f0fdf4">' + (subOrd || '') + '</td>';
+        html += '<td style="text-align:right;font-family:\'Nunito\',monospace;color:#16A34A;background:#f0fdf4">' + (subOrd || '') + '</td>';
         html += '<td style="background:#f0fdf4"></td>';
-        html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#94a3b8;background:#f8fafc">' + (subVend || '') + '</td>';
+        html += '<td style="text-align:right;font-family:\'Nunito\',monospace;color:#94a3b8;background:#f8fafc">' + (subVend || '') + '</td>';
         html += '<td></td></tr>';
     });
 
@@ -623,13 +623,13 @@ function renderTable() {
     emporiAttivi.forEach(emp => {
         const gO = righe.reduce((s,r) => s + (parseFloat(quantitaMap[r.id]?.[emp.codice]?.ordine_corrente)    || 0), 0);
         const gV = righe.reduce((s,r) => s + (parseFloat(quantitaMap[r.id]?.[emp.codice]?.venduto_precedente) || 0), 0);
-        foot += '<td style="text-align:center;color:#94a3b8;font-family:\'DM Mono\',monospace;font-size:11px">' + (gV || '') + '</td>';
-        foot += '<td style="text-align:center;color:#4ade80;font-family:\'DM Mono\',monospace;font-weight:700">' + (gO || '') + '</td>';
+        foot += '<td style="text-align:center;color:#94a3b8;font-family:\'Nunito\',monospace;font-size:11px">' + (gV || '') + '</td>';
+        foot += '<td style="text-align:center;color:#4ade80;font-family:\'Nunito\',monospace;font-weight:700">' + (gO || '') + '</td>';
         foot += '<td></td><td></td>';
     });
-    foot += '<td style="text-align:right;color:#4ade80;font-family:\'DM Mono\',monospace;font-size:13px;background:#0f3d1e">' + (grandOrd || '') + '</td>';
+    foot += '<td style="text-align:right;color:#4ade80;font-family:\'Nunito\',monospace;font-size:13px;background:#0f3d1e">' + (grandOrd || '') + '</td>';
     foot += '<td style="background:#0f3d1e"></td>';
-    foot += '<td style="text-align:right;color:#94a3b8;font-family:\'DM Mono\',monospace">' + (grandVend || '') + '</td>';
+    foot += '<td style="text-align:right;color:#94a3b8;font-family:\'Nunito\',monospace">' + (grandVend || '') + '</td>';
     foot += '<td></td></tr>';
     tfoot.innerHTML = foot;
 
@@ -1035,21 +1035,21 @@ function renderRiepilogo() {
         const delta = tV > 0 ? ((tO - tV) / tV * 100).toFixed(1) : null;
         const dCol  = delta === null ? '#94a3b8' : (parseFloat(delta) >= 0 ? '#15803d' : '#dc2626');
         html += '<tr><td style="font-weight:600">' + esc(cat) + '</td>';
-        html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#64748b">' + (tV || '—') + '</td>';
-        html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#16A34A;font-weight:700">' + (tO || '—') + '</td>';
-        html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:' + dCol + ';font-weight:600">' + (delta !== null ? delta + '%' : '—') + '</td>';
-        emporiAttivi.forEach(emp => { html += '<td style="text-align:right;font-family:\'DM Mono\',monospace">' + (empO[emp.codice] || '') + '</td>'; });
+        html += '<td style="text-align:right;font-family:\'Nunito\',monospace;color:#64748b">' + (tV || '—') + '</td>';
+        html += '<td style="text-align:right;font-family:\'Nunito\',monospace;color:#16A34A;font-weight:700">' + (tO || '—') + '</td>';
+        html += '<td style="text-align:right;font-family:\'Nunito\',monospace;color:' + dCol + ';font-weight:600">' + (delta !== null ? delta + '%' : '—') + '</td>';
+        emporiAttivi.forEach(emp => { html += '<td style="text-align:right;font-family:\'Nunito\',monospace">' + (empO[emp.codice] || '') + '</td>'; });
         html += '</tr>';
     });
     const gDelta = gV > 0 ? ((gO - gV) / gV * 100).toFixed(1) : null;
     const gdCol  = gDelta === null ? '#94a3b8' : (parseFloat(gDelta) >= 0 ? '#4ade80' : '#fca5a5');
     html += '<tr style="background:#1e293b;color:white;font-weight:700"><td>TOTALE</td>';
-    html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#94a3b8">' + (gV || '—') + '</td>';
-    html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#4ade80">' + (gO || '—') + '</td>';
-    html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:' + gdCol + '">' + (gDelta !== null ? gDelta + '%' : '—') + '</td>';
+    html += '<td style="text-align:right;font-family:\'Nunito\',monospace;color:#94a3b8">' + (gV || '—') + '</td>';
+    html += '<td style="text-align:right;font-family:\'Nunito\',monospace;color:#4ade80">' + (gO || '—') + '</td>';
+    html += '<td style="text-align:right;font-family:\'Nunito\',monospace;color:' + gdCol + '">' + (gDelta !== null ? gDelta + '%' : '—') + '</td>';
     emporiAttivi.forEach(emp => {
         const t = righe.reduce((s,r) => s + (parseFloat(quantitaMap[r.id]?.[emp.codice]?.ordine_corrente) || 0), 0);
-        html += '<td style="text-align:right;font-family:\'DM Mono\',monospace;color:#4ade80">' + (t || '') + '</td>';
+        html += '<td style="text-align:right;font-family:\'Nunito\',monospace;color:#4ade80">' + (t || '') + '</td>';
     });
     html += '</tr></tbody>';
     document.getElementById('summary-table').innerHTML = html;
