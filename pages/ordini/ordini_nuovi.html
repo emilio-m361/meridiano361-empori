@@ -440,22 +440,24 @@
                     <!-- Inline new client form -->
                     <div id="nuovo-cliente-form" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
                         <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Aggiungi alla rubrica</div>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+                        <div class="grid grid-cols-2 gap-3 mb-3">
                             <input type="text" id="nc-nome" placeholder="Nome *" class="form-input">
                             <input type="text" id="nc-cognome" placeholder="Cognome *" class="form-input">
-                            <input type="text" id="nc-tel" placeholder="Telefono" class="form-input">
-                            <select id="nc-emporio" class="form-select">
-                                <option value="">Emporio (opz.)</option>
-                                <option value="Casalmaggiore">Casalmaggiore</option>
-                                <option value="Cremona">Cremona</option>
-                                <option value="Reggio Emilia">Reggio Emilia</option>
-                                <option value="Mantova">Mantova</option>
-                                <option value="Viadana">Viadana</option>
-                            </select>
                         </div>
-                        <textarea id="nc-note" placeholder="Note..." class="form-input mb-3" rows="2"></textarea>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div class="relative">
+                                <input type="tel" id="nc-tel" placeholder="Cellulare" class="form-input pr-10">
+                                <button type="button" id="nc-wa-btn" onclick="toggleNcWa()"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+                                    title="WhatsApp sì/no">
+                                    <i class="fab fa-whatsapp fa-lg text-green-500"></i>
+                                </button>
+                            </div>
+                            <input type="email" id="nc-email" placeholder="Email" class="form-input">
+                        </div>
+                        <input type="hidden" id="nc-wa" value="true">
                         <div class="flex gap-2">
-                            <button type="button" onclick="saveNuovoCliente()" class="bg-[#B5453A] text-white text-xs font-bold rounded-xl px-4 py-2">Salva cliente</button>
+                            <button type="button" onclick="saveNuovoCliente()" class="bg-[#B5453A] text-white text-xs font-bold rounded-xl px-4 py-2"><i class="fas fa-check mr-1"></i>Salva cliente</button>
                             <button type="button" onclick="toggleNuovoClienteForm()" class="text-xs font-bold border border-slate-200 rounded-xl px-3 py-2 text-slate-500">Annulla</button>
                         </div>
                     </div>
@@ -1114,32 +1116,52 @@ function calcSubtotal(groupId) {
             document.getElementById('cust-nome').value = c.nome || '';
             document.getElementById('cust-cognome').value = c.cognome || '';
             document.getElementById('cust-cel').value = c.telefono || '';
+            const emailEl = document.getElementById('cust-email');
+            if (emailEl) emailEl.value = c.email || '';
             document.getElementById('cognome-ac-dropdown').classList.add('hidden');
         }
 
         function toggleNuovoClienteForm() {
-            document.getElementById('nuovo-cliente-form').classList.toggle('hidden');
+            const form = document.getElementById('nuovo-cliente-form');
+            form.classList.toggle('hidden');
+            if (!form.classList.contains('hidden')) {
+                document.getElementById('nc-wa').value = 'true';
+                const icon = document.querySelector('#nc-wa-btn i');
+                if (icon) { icon.className = 'fab fa-whatsapp fa-lg text-green-500'; }
+            }
+        }
+
+        function toggleNcWa() {
+            const input = document.getElementById('nc-wa');
+            const icon  = document.querySelector('#nc-wa-btn i');
+            const isWa  = input.value === 'true';
+            input.value = isWa ? 'false' : 'true';
+            icon.className = isWa
+                ? 'fab fa-whatsapp fa-lg text-slate-300'
+                : 'fab fa-whatsapp fa-lg text-green-500';
         }
 
         async function saveNuovoCliente() {
-            const nome = document.getElementById('nc-nome').value.trim();
+            const nome    = document.getElementById('nc-nome').value.trim();
             const cognome = document.getElementById('nc-cognome').value.trim();
             if (!nome || !cognome) { await m361Alert('Nome e cognome obbligatori', '', 'warning'); return; }
+            const tel = document.getElementById('nc-tel').value.trim();
             const clienteData = {
                 nome,
                 cognome,
-                telefono: document.getElementById('nc-tel').value.trim() || null,
-                emporio: document.getElementById('nc-emporio').value || null,
-                note: document.getElementById('nc-note').value.trim() || null
+                telefono: tel || null,
+                wa:       document.getElementById('nc-wa').value === 'true',
+                email:    document.getElementById('nc-email').value.trim() || null,
             };
             try {
                 const { error } = await _supabase.from('clienti').insert([clienteData]);
                 if (error) throw error;
                 document.getElementById('cust-nome').value = nome;
                 document.getElementById('cust-cognome').value = cognome;
-                document.getElementById('cust-cel').value = clienteData.telefono || '';
-                ['nc-nome','nc-cognome','nc-tel','nc-note'].forEach(id => document.getElementById(id).value = '');
-                document.getElementById('nc-emporio').value = '';
+                document.getElementById('cust-cel').value = tel;
+                const emailEl = document.getElementById('cust-email');
+                if (emailEl) emailEl.value = clienteData.email || '';
+                ['nc-nome','nc-cognome','nc-tel','nc-email'].forEach(id => document.getElementById(id).value = '');
                 toggleNuovoClienteForm();
                 showToastM361(`${nome} ${cognome} aggiunto alla rubrica!`, 'success');
             } catch(e) {
