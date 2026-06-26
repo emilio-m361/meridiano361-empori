@@ -499,12 +499,12 @@ html.m361-grande{zoom:1.25}
           <i class="fas fa-bell"></i>
           <span id="m361-bell-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:#B5453A;color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:8px;align-items:center;justify-content:center;padding:0 4px;line-height:1">0</span>
         </button>
-        ${nomeFull ? `<button id="m361-profile-btn" onclick="window.__m361OpenChangePwd&&window.__m361OpenChangePwd()" title="Impostazioni profilo" style="background:none;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;padding:5px 10px;font-family:Nunito,sans-serif;display:flex;align-items:center;flex-shrink:0;transition:border-color .15s" onmouseenter="this.style.borderColor='#B5453A'" onmouseleave="this.style.borderColor='#e2e8f0'">
+        ${nomeFull ? `<a href="${BASE}pages/profilo/profilo.html" id="m361-profile-btn" title="Il tuo profilo" style="background:none;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;padding:5px 10px;font-family:Nunito,sans-serif;display:flex;align-items:center;flex-shrink:0;transition:border-color .15s;text-decoration:none" onmouseenter="this.style.borderColor='#B5453A'" onmouseleave="this.style.borderColor='#e2e8f0'">
           <div class="hd-user-info">
             <span class="hd-user-name">${nomeFull}</span>
             <span class="hd-user-email">${emailFull}</span>
           </div>
-        </button>` : ''}
+        </a>` : ''}
         <button id="m361-logout-btn" onclick="if(confirm('Vuoi uscire?'))window.__m361Logout&&window.__m361Logout()" title="Esci" style="background:none;border:none;cursor:pointer;padding:6px 8px;color:#64748b;font-size:17px;display:flex;align-items:center;flex-shrink:0;line-height:1;transition:color .15s" onmouseenter="this.style.color='#B5453A'" onmouseleave="this.style.color='#64748b'">
           <i class="fas fa-right-from-bracket"></i>
         </button>
@@ -567,20 +567,6 @@ function buildNav() {
         scrollWrap.appendChild(renderItem(item));
       });
     });
-  }
-
-  // Profilo personale — per ora solo Emilio (tester iniziale)
-  if (user && user.email === 'e.mazzolari@meridiano361.it') {
-    const sep = document.createElement('div');
-    sep.className = 'mn-sep';
-    scrollWrap.appendChild(sep);
-    scrollWrap.appendChild(renderItem({
-      id: 'profilo',
-      label: 'Profilo',
-      icon: 'fa-circle-user',
-      href: 'pages/profilo/profilo.html',
-      active: true
-    }));
   }
 
   nav.appendChild(scrollWrap);

@@ -141,6 +141,39 @@
   </label>
 </div>
 
+<!-- Sicurezza account -->
+<div style="padding:10px 18px 0">
+  <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;overflow:hidden">
+    <button onclick="toggleCambioPassword()" style="width:100%;background:none;border:none;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;cursor:pointer;font-family:inherit">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:36px;border-radius:10px;background:#fef3c7;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <i class="fas fa-lock" style="font-size:15px;color:#d97706"></i>
+        </div>
+        <div style="text-align:left">
+          <div style="font-size:14px;font-weight:800;color:#1e293b">Cambia password</div>
+          <div style="font-size:11px;color:#94a3b8;font-weight:600;margin-top:1px">Aggiorna le credenziali di accesso</div>
+        </div>
+      </div>
+      <i id="pwd-chevron" class="fas fa-chevron-down" style="color:#94a3b8;font-size:13px;transition:transform .2s"></i>
+    </button>
+    <div id="pwd-form" style="display:none;border-top:1.5px solid #f1f5f9;padding:16px">
+      <div id="pwd-err" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:10px 13px;font-size:12px;font-weight:700;color:#dc2626;margin-bottom:12px"></div>
+      <div id="pwd-ok" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 13px;font-size:12px;font-weight:700;color:#16a34a;margin-bottom:12px">Password aggiornata</div>
+      <div class="form-field">
+        <label class="form-label">Nuova password</label>
+        <input type="password" id="pwd-new" class="form-input" placeholder="Minimo 6 caratteri" minlength="6">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Conferma password</label>
+        <input type="password" id="pwd-conf" class="form-input" placeholder="Ripeti la password" minlength="6">
+      </div>
+      <button class="btn-primary" id="pwd-btn" onclick="salvaPassword()">
+        <i class="fas fa-check"></i> Salva password
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="mese-nav">
   <button class="mese-btn" onclick="cambioMese(-1)"><i class="fas fa-chevron-left"></i></button>
   <span class="mese-label" id="mese-label">…</span>
@@ -535,6 +568,48 @@ function toggleTestoGrande() {
   const on = localStorage.getItem('m361_testo_grande') === '1';
   if (window.M361 && window.M361.setTestoGrande) window.M361.setTestoGrande(!on);
   syncToggleGrande();
+}
+
+/* ─── Sicurezza: cambia password ─── */
+function toggleCambioPassword() {
+  const form = document.getElementById('pwd-form');
+  const chevron = document.getElementById('pwd-chevron');
+  const open = form.style.display === 'block';
+  form.style.display = open ? 'none' : 'block';
+  chevron.style.transform = open ? '' : 'rotate(180deg)';
+  if (!open) document.getElementById('pwd-new').focus();
+}
+
+async function salvaPassword() {
+  const pwd  = document.getElementById('pwd-new').value.trim();
+  const conf = document.getElementById('pwd-conf').value.trim();
+  const errEl = document.getElementById('pwd-err');
+  const okEl  = document.getElementById('pwd-ok');
+  const btn   = document.getElementById('pwd-btn');
+
+  errEl.style.display = 'none';
+  okEl.style.display  = 'none';
+
+  if (pwd.length < 6)      { errEl.textContent = 'La password deve avere almeno 6 caratteri'; errEl.style.display = 'block'; return; }
+  if (pwd !== conf)         { errEl.textContent = 'Le due password non coincidono'; errEl.style.display = 'block'; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvataggio…';
+
+  try {
+    const { error } = await db.auth.updateUser({ password: pwd });
+    if (error) throw error;
+    okEl.style.display = 'block';
+    document.getElementById('pwd-new').value  = '';
+    document.getElementById('pwd-conf').value = '';
+    setTimeout(() => toggleCambioPassword(), 1800);
+  } catch (e) {
+    errEl.textContent = e.message || 'Errore durante il salvataggio';
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-check"></i> Salva password';
+  }
 }
 
 /* ─── Utility ─── */
