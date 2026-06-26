@@ -149,14 +149,14 @@ body { font-family: 'Nunito', sans-serif; padding-top: 56px; padding-bottom: 68p
 #m361-header { position:fixed;top:0;left:0;right:0;height:56px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;padding:0 18px;z-index:9000;box-shadow:0 1px 4px rgba(0,0,0,.05);gap:12px; }
 #m361-header .hd-left { display:flex;align-items:center;gap:0;text-decoration:none;flex:1;min-width:0; }
 #m361-header .hd-logo { height:28px;object-fit:contain;flex-shrink:0; }
-#m361-header .hd-logo-fb { font-weight:900;font-size:15px;color:#B5453A;letter-spacing:.08em;flex-shrink:0;display:none; }
+#m361-header .hd-logo-fb { font-weight:900;font-size:16px;color:#B5453A;letter-spacing:.08em;flex-shrink:0;display:none; }
 #m361-header .hd-sep { width:1px;height:22px;background:#e5e7eb;margin:0 12px;flex-shrink:0; }
-#m361-header #header-title { font-size:14px;font-weight:700;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px; }
+#m361-header #header-title { font-size:15px;font-weight:700;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px; }
 #m361-header .hd-right { display:flex;align-items:center;gap:8px;flex-shrink:0; }
-#back-btn { display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#64748b;background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;transition:color .15s; }
+#back-btn { display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#64748b;background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;transition:color .15s; }
 #back-btn:hover { color:#B5453A; }
 #back-btn.hidden { display:none; }
-@media(max-width:480px) { #m361-header #header-title { font-size:12px;max-width:120px; } }
+@media(max-width:480px) { #m361-header #header-title { font-size:13px;max-width:120px; } }
 #m361-nav { position:fixed;bottom:0;left:0;right:0;height:60px;background:#B5453A;border-top:2px solid #9e3f3f;z-index:9000;display:flex;align-items:stretch;justify-content:flex-start;overflow:hidden;box-shadow:0 -2px 10px rgba(0,0,0,.15);padding-bottom:env(safe-area-inset-bottom,0px); }
 #m361-nav-scroll { flex:1;overflow-x:auto;overflow-y:hidden;display:flex;align-items:stretch;scrollbar-width:none;-webkit-overflow-scrolling:touch; }
 #m361-nav-scroll::-webkit-scrollbar { display:none; }
@@ -164,8 +164,8 @@ body { font-family: 'Nunito', sans-serif; padding-top: 56px; padding-bottom: 68p
 .mn-sep { width:1px;background:rgba(255,255,255,.18);margin:12px 0;flex-shrink:0; }
 #m361-nav-right { flex-shrink:0;display:flex;align-items:stretch;border-left:1px solid rgba(255,255,255,.18); }
 .mn-item { display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0 10px;min-width:52px;text-decoration:none;cursor:pointer;transition:all .12s;border:none;background:transparent;flex-shrink:0;font-family:'Nunito',sans-serif;-webkit-tap-highlight-color:transparent;min-height:44px; }
-.mn-item i { font-size:15px;color:rgba(255,255,255,.6);transition:color .12s;line-height:1; }
-.mn-item span { font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;color:rgba(255,255,255,.6);white-space:nowrap;transition:color .12s; }
+.mn-item i { font-size:16px;color:rgba(255,255,255,.6);transition:color .12s;line-height:1; }
+.mn-item span { font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;color:rgba(255,255,255,.6);white-space:nowrap;transition:color .12s; }
 .mn-item.mn-current { background:rgba(255,255,255,.22);border-radius:10px;margin:7px 2px;padding:0 9px; }
 .mn-item.mn-current i,.mn-item.mn-current span { color:#fff; }
 .mn-item.mn-active:not(.mn-current):hover { background:rgba(255,255,255,.12); }
@@ -176,14 +176,14 @@ body { font-family: 'Nunito', sans-serif; padding-top: 56px; padding-bottom: 68p
 .mn-item.mn-logout:hover i,.mn-item.mn-logout:hover span { color:#fff; }
 /* ── User info block (top-right) ── */
 .hd-user-info { display:flex;flex-direction:column;align-items:flex-start;gap:0;line-height:1; }
-.hd-user-name { font-size:12px;font-weight:700;color:#1e293b;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis; }
-.hd-user-email { font-size:10px;font-weight:500;color:#94a3b8;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;margin-top:2px; }
+.hd-user-name { font-size:13px;font-weight:700;color:#1e293b;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis; }
+.hd-user-email { font-size:11px;font-weight:500;color:#94a3b8;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;margin-top:2px; }
 @media(max-width:640px) { .hd-user-email { display:none; } .hd-user-name { max-width:90px; } }
 @media(max-width:480px) {
   #m361-nav { height:54px; }
   .mn-item { padding:0 7px;min-width:44px;gap:1px; }
-  .mn-item i { font-size:14px; }
-  .mn-item span { font-size:7px;letter-spacing:0; }
+  .mn-item i { font-size:15px; }
+  .mn-item span { font-size:8px;letter-spacing:0; }
   .mn-item.mn-current { margin:6px 1px;padding:0 7px;border-radius:8px; }
   .mn-sep { margin:14px 0; }
 }
@@ -192,7 +192,7 @@ body { font-family: 'Nunito', sans-serif; padding-top: 56px; padding-bottom: 68p
   to   { opacity:1; transform:translateX(-50%) translateY(0); }
 }
 /* ── TOAST CENTRATO ── */
-.m361-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.88);background:#1e293b;color:#fff;padding:14px 28px;border-radius:16px;font-size:14px;font-weight:700;z-index:99999;box-shadow:0 8px 40px rgba(0,0,0,.28);pointer-events:none;white-space:nowrap;max-width:calc(100vw - 40px);text-align:center;opacity:0;transition:opacity .18s,transform .18s;line-height:1.4}
+.m361-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.88);background:#1e293b;color:#fff;padding:14px 28px;border-radius:16px;font-size:15px;font-weight:700;z-index:99999;box-shadow:0 8px 40px rgba(0,0,0,.28);pointer-events:none;white-space:nowrap;max-width:calc(100vw - 40px);text-align:center;opacity:0;transition:opacity .18s,transform .18s;line-height:1.4}
 .m361-toast.m361-show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 .m361-toast.ok,.m361-toast.success{background:#166534}
 .m361-toast.err,.m361-toast.error{background:#991b1b}
@@ -281,48 +281,48 @@ html.m361-grande{zoom:1.25}
             <div style="width:36px;height:36px;background:#fef2f2;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
               <i class="fas fa-lock" style="color:#B5453A;font-size:14px"></i>
             </div>
-            <span style="font-size:15px;font-weight:800;color:#1e293b">Cambia password</span>
+            <span style="font-size:16px;font-weight:800;color:#1e293b">Cambia password</span>
           </div>
           <button id="m361-chpwd-close" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;padding:4px;line-height:1" title="Chiudi">
             <i class="fas fa-times"></i>
           </button>
         </div>
 
-        <div id="m361-chpwd-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:10px 14px;font-size:12px;font-weight:700;color:#dc2626;margin-bottom:16px;display:flex;align-items:center;gap:8px">
+        <div id="m361-chpwd-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:700;color:#dc2626;margin-bottom:16px;display:flex;align-items:center;gap:8px">
           <i class="fas fa-exclamation-circle"></i>
           <span id="m361-chpwd-error-text"></span>
         </div>
-        <div id="m361-chpwd-ok" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:10px 14px;font-size:12px;font-weight:700;color:#16a34a;margin-bottom:16px;display:flex;align-items:center;gap:8px">
+        <div id="m361-chpwd-ok" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:700;color:#16a34a;margin-bottom:16px;display:flex;align-items:center;gap:8px">
           <i class="fas fa-check-circle"></i>
           <span>Password aggiornata con successo!</span>
         </div>
 
         <div style="margin-bottom:14px">
-          <label style="display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:6px">Nuova password</label>
+          <label style="display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:6px">Nuova password</label>
           <input type="password" id="m361-chpwd-new" placeholder="Minimo 6 caratteri" minlength="6"
-            style="width:100%;padding:12px 16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:'Nunito',sans-serif;outline:none;box-sizing:border-box;transition:border-color .15s"
+            style="width:100%;padding:12px 16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;font-size:15px;font-family:'Nunito',sans-serif;outline:none;box-sizing:border-box;transition:border-color .15s"
             onfocus="this.style.borderColor='#B5453A'" onblur="this.style.borderColor='#e2e8f0'">
         </div>
         <div style="margin-bottom:24px">
-          <label style="display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:6px">Conferma password</label>
+          <label style="display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:6px">Conferma password</label>
           <input type="password" id="m361-chpwd-conf" placeholder="Ripeti la password" minlength="6"
-            style="width:100%;padding:12px 16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:'Nunito',sans-serif;outline:none;box-sizing:border-box;transition:border-color .15s"
+            style="width:100%;padding:12px 16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;font-size:15px;font-family:'Nunito',sans-serif;outline:none;box-sizing:border-box;transition:border-color .15s"
             onfocus="this.style.borderColor='#B5453A'" onblur="this.style.borderColor='#e2e8f0'">
         </div>
 
         <button id="m361-chpwd-submit"
-          style="width:100%;background:#B5453A;color:#fff;font-weight:800;font-size:14px;border:none;border-radius:14px;padding:14px;cursor:pointer;font-family:'Nunito',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .15s"
+          style="width:100%;background:#B5453A;color:#fff;font-weight:800;font-size:15px;border:none;border-radius:14px;padding:14px;cursor:pointer;font-family:'Nunito',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .15s"
           onmouseenter="this.style.background='#a14545'" onmouseleave="this.style.background='#B5453A'">
           <div id="m361-chpwd-spinner" style="display:none;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:spin .8s linear infinite"></div>
           <span id="m361-chpwd-label">Salva nuova password</span>
         </button>
 
         <div style="margin-top:20px;padding-top:20px;border-top:1px solid #f1f5f9">
-          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:10px">Notifiche Push</div>
+          <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:10px">Notifiche Push</div>
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-            <span id="m361-push-modal-status" style="font-size:13px;font-weight:600;color:#475569">—</span>
+            <span id="m361-push-modal-status" style="font-size:14px;font-weight:600;color:#475569">—</span>
             <button id="m361-push-modal-btn"
-              style="background:#B5453A;color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;display:none">
+              style="background:#B5453A;color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;display:none">
               Abilita
             </button>
           </div>
@@ -491,13 +491,13 @@ html.m361-grande{zoom:1.25}
         <span id="header-title">${pageTitle}</span>
       </a>
       <div class="hd-right">
-        <button id="m361-install-btn" onclick="window.__m361InstallApp&&window.__m361InstallApp()" style="display:none;align-items:center;gap:4px;font-size:10px;font-weight:700;background:#B5453A;color:#fff;border:none;border-radius:8px;padding:5px 10px;cursor:pointer;font-family:'Nunito',sans-serif;flex-shrink:0;line-height:1"><i class="fas fa-download"></i> Installa</button>
+        <button id="m361-install-btn" onclick="window.__m361InstallApp&&window.__m361InstallApp()" style="display:none;align-items:center;gap:4px;font-size:11px;font-weight:700;background:#B5453A;color:#fff;border:none;border-radius:8px;padding:5px 10px;cursor:pointer;font-family:'Nunito',sans-serif;flex-shrink:0;line-height:1"><i class="fas fa-download"></i> Installa</button>
         <button id="back-btn" ${isHome ? 'class="hidden"' : ''} onclick="history.back()">
           <i class="fas fa-arrow-left"></i> Indietro
         </button>
         <button id="m361-bell-btn" onclick="window.__m361BellClick&&window.__m361BellClick()" title="Notifiche" style="position:relative;background:none;border:none;cursor:pointer;padding:4px 8px;color:#64748b;font-size:18px;display:flex;align-items:center;flex-shrink:0;line-height:1">
           <i class="fas fa-bell"></i>
-          <span id="m361-bell-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:#B5453A;color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:8px;align-items:center;justify-content:center;padding:0 4px;line-height:1">0</span>
+          <span id="m361-bell-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:#B5453A;color:#fff;font-size:10px;font-weight:800;min-width:16px;height:16px;border-radius:8px;align-items:center;justify-content:center;padding:0 4px;line-height:1">0</span>
         </button>
         ${nomeFull ? `<a href="${BASE}pages/profilo/profilo.html" id="m361-profile-btn" title="Il tuo profilo" style="background:none;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;padding:5px 10px;font-family:Nunito,sans-serif;display:flex;align-items:center;flex-shrink:0;transition:border-color .15s;text-decoration:none" onmouseenter="this.style.borderColor='#B5453A'" onmouseleave="this.style.borderColor='#e2e8f0'">
           <div class="hd-user-info">
@@ -999,16 +999,16 @@ function buildNav() {
       'display:flex;flex-direction:column;overflow:hidden';
     panel.innerHTML =
       '<div style="padding:14px 16px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">' +
-        '<span style="font-size:13px;font-weight:800;color:#1e293b">🔔 Notifiche</span>' +
+        '<span style="font-size:14px;font-weight:800;color:#1e293b">🔔 Notifiche</span>' +
         '<button id="m361-np-close" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:16px;padding:0;line-height:1">✕</button>' +
       '</div>' +
       '<div id="m361-np-list" style="overflow-y:auto;flex:1;padding:8px 0">' +
-        '<div style="padding:16px;text-align:center;color:#94a3b8;font-size:13px">Caricamento…</div>' +
+        '<div style="padding:16px;text-align:center;color:#94a3b8;font-size:14px">Caricamento…</div>' +
       '</div>' +
       '<div style="padding:12px 16px;border-top:1px solid #f1f5f9;flex-shrink:0">' +
-        '<div id="m361-pp-status" style="font-size:12px;font-weight:600;color:#475569;margin-bottom:8px;line-height:1.4">—</div>' +
-        '<button id="m361-pp-btn" style="display:none;width:100%;padding:8px;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">—</button>' +
-        '<div id="m361-pp-err" style="display:none;margin-top:6px;font-size:11px;color:#B5453A;line-height:1.4"></div>' +
+        '<div id="m361-pp-status" style="font-size:13px;font-weight:600;color:#475569;margin-bottom:8px;line-height:1.4">—</div>' +
+        '<button id="m361-pp-btn" style="display:none;width:100%;padding:8px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">—</button>' +
+        '<div id="m361-pp-err" style="display:none;margin-top:6px;font-size:12px;color:#B5453A;line-height:1.4"></div>' +
       '</div>';
 
     document.body.appendChild(panel);
@@ -1034,7 +1034,7 @@ function buildNav() {
     const _supabase = getSupabase();
     const user = JSON.parse(localStorage.getItem('m361_user') || '{}');
     if (!_supabase || !user?.nome) {
-      listEl.innerHTML = '<div style="padding:16px;font-size:13px;text-align:center;line-height:1.6;color:#dc2626">⚠️ Sessione non allineata.<br><span style="color:#64748b">Esci e rientra per ripristinare le notifiche.</span></div>';
+      listEl.innerHTML = '<div style="padding:16px;font-size:14px;text-align:center;line-height:1.6;color:#dc2626">⚠️ Sessione non allineata.<br><span style="color:#64748b">Esci e rientra per ripristinare le notifiche.</span></div>';
       return;
     }
 
@@ -1046,7 +1046,7 @@ function buildNav() {
       .limit(20);
 
     if (error || !data?.length) {
-      listEl.innerHTML = '<div style="padding:16px;color:#94a3b8;font-size:13px;text-align:center">Nessuna notifica</div>';
+      listEl.innerHTML = '<div style="padding:16px;color:#94a3b8;font-size:14px;text-align:center">Nessuna notifica</div>';
       return;
     }
 
@@ -1054,7 +1054,7 @@ function buildNav() {
     const mie = data.filter(n => n.target === 'tutti' || n.target === emporio);
 
     if (!mie.length) {
-      listEl.innerHTML = '<div style="padding:16px;color:#94a3b8;font-size:13px;text-align:center">Nessuna notifica per te</div>';
+      listEl.innerHTML = '<div style="padding:16px;color:#94a3b8;font-size:14px;text-align:center">Nessuna notifica per te</div>';
       return;
     }
 
@@ -1068,9 +1068,9 @@ function buildNav() {
         <div style="display:flex;align-items:flex-start;gap:8px">
           <span style="width:6px;height:6px;border-radius:50%;background:${letta ? '#e2e8f0' : '#3b82f6'};flex-shrink:0;margin-top:5px"></span>
           <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:${letta ? '500' : '700'};color:#1e293b;margin-bottom:2px">${_escHtml(n.titolo)}</div>
-            ${n.testo ? `<div style="font-size:12px;color:#64748b;margin-bottom:4px;line-height:1.4">${_escHtml(n.testo)}</div>` : ''}
-            <div style="font-size:10px;color:#94a3b8">${dtStr} · da ${_escHtml(n.mittente || '—')}</div>
+            <div style="font-size:14px;font-weight:${letta ? '500' : '700'};color:#1e293b;margin-bottom:2px">${_escHtml(n.titolo)}</div>
+            ${n.testo ? `<div style="font-size:13px;color:#64748b;margin-bottom:4px;line-height:1.4">${_escHtml(n.testo)}</div>` : ''}
+            <div style="font-size:11px;color:#94a3b8">${dtStr} · da ${_escHtml(n.mittente || '—')}</div>
           </div>
         </div>
       </div>`;
@@ -1137,7 +1137,7 @@ function buildNav() {
         }
         statusEl.innerHTML = `✅ <span style="color:#16a34a">Push abilitati</span> <span style="color:#94a3b8;font-size:11px">(${_escHtml(user.nome)})</span>`;
         btnEl.textContent = 'Disabilita push';
-        btnEl.style.cssText = 'display:block;width:100%;padding:8px;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;background:#f1f5f9;color:#475569';
+        btnEl.style.cssText = 'display:block;width:100%;padding:8px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:#f1f5f9;color:#475569';
         btnEl.onclick = async () => {
           btnEl.textContent = 'Disabilitazione…'; btnEl.disabled = true;
           await _pushUnsubscribe(user); _refreshPushStatus();
@@ -1145,7 +1145,7 @@ function buildNav() {
       } else {
         statusEl.textContent = Notification.permission === 'granted' ? '⚠️ Push non attivi' : '○ Push non abilitati';
         btnEl.textContent = 'Abilita push';
-        btnEl.style.cssText = 'display:block;width:100%;padding:8px;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;background:#B5453A;color:#fff';
+        btnEl.style.cssText = 'display:block;width:100%;padding:8px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:#B5453A;color:#fff';
         btnEl.onclick = async () => {
           btnEl.textContent = 'Attivazione…'; btnEl.disabled = true;
           errEl.style.display = 'none';
@@ -1284,7 +1284,7 @@ function buildNav() {
     const banner = document.createElement('div');
     banner.id = 'm361-push-banner';
     banner.style.cssText =
-      'background:#1e293b;color:#fff;padding:12px 20px;font-size:13px;' +
+      'background:#1e293b;color:#fff;padding:12px 20px;font-size:14px;' +
       'display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:56px;z-index:8997;';
     const anchor = document.getElementById('m361-readonly-banner') || document.getElementById('m361-header');
 
@@ -1292,7 +1292,7 @@ function buildNav() {
       // Errore (es. iOS non standalone): mostra messaggio + pulsante riprova + ✕
       banner.innerHTML =
         `<span style="flex:1;min-width:180px;line-height:1.5">⚠️ ${_escHtml(errMsg)}</span>` +
-        `<button id="m361-push-retry" style="background:#B5453A;color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0">Riprova</button>` +
+        `<button id="m361-push-retry" style="background:#B5453A;color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0">Riprova</button>` +
         `<button id="m361-push-banner-close" style="background:transparent;color:#94a3b8;border:none;padding:7px 10px;font-size:18px;cursor:pointer;font-family:inherit;flex-shrink:0">✕</button>`;
       document.body.insertBefore(banner, anchor?.nextSibling || document.body.firstChild);
       document.getElementById('m361-push-retry').onclick = async () => {
@@ -1307,7 +1307,7 @@ function buildNav() {
       // Fallback (non dovrebbe essere necessario con auto-trigger)
       banner.innerHTML =
         '<span style="flex:1;min-width:180px">Attiva le notifiche per ricevere i promemoria turno</span>' +
-        '<button id="m361-push-yes" style="background:#B5453A;color:#fff;border:none;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Attiva</button>' +
+        '<button id="m361-push-yes" style="background:#B5453A;color:#fff;border:none;padding:7px 16px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">Attiva</button>' +
         '<button id="m361-push-banner-close" style="background:transparent;color:#94a3b8;border:none;padding:7px 10px;font-size:18px;cursor:pointer;font-family:inherit">✕</button>';
       document.body.insertBefore(banner, anchor?.nextSibling || document.body.firstChild);
       document.getElementById('m361-push-yes').onclick = async () => {
@@ -1335,12 +1335,12 @@ function buildNav() {
       if (sub) {
         statusEl.textContent = '✓ Abilitate'; statusEl.style.color = '#16a34a';
         newBtn.textContent = 'Disabilita';
-        newBtn.style.cssText = 'background:#f1f5f9;color:#475569;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif;white-space:nowrap;display:block';
+        newBtn.style.cssText = 'background:#f1f5f9;color:#475569;border:none;border-radius:10px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif;white-space:nowrap;display:block';
         newBtn.onclick = async () => { await _pushUnsubscribe(user); _updatePushStatusUI(); };
       } else {
         statusEl.textContent = 'Non attive'; statusEl.style.color = '#94a3b8';
         newBtn.textContent = 'Abilita';
-        newBtn.style.cssText = 'background:#B5453A;color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif;white-space:nowrap;display:block';
+        newBtn.style.cssText = 'background:#B5453A;color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif;white-space:nowrap;display:block';
         newBtn.onclick = async () => { await _pushSubscribe(user); _updatePushStatusUI(); };
       }
     } catch (_) {
@@ -1374,8 +1374,8 @@ function buildNav() {
       'font-family:inherit';
     closeBtn.onclick = (e) => { e.stopPropagation(); el.remove(); };
     el.innerHTML =
-      `<div style="font-weight:700;font-size:14px;padding-right:28px${body ? ';margin-bottom:6px' : ''}">🔔 ${_escHtml(title)}</div>` +
-      (body ? `<div style="font-size:13px;color:#cbd5e1;line-height:1.5">${_escHtml(body)}</div>` : '');
+      `<div style="font-weight:700;font-size:15px;padding-right:28px${body ? ';margin-bottom:6px' : ''}">🔔 ${_escHtml(title)}</div>` +
+      (body ? `<div style="font-size:14px;color:#cbd5e1;line-height:1.5">${_escHtml(body)}</div>` : '');
     el.appendChild(closeBtn);
     document.body.appendChild(el);
   }

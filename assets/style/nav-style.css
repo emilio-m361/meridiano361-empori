@@ -39,6 +39,7 @@
 }
 
 html {
+  font-size: clamp(15px, 0.5vw + 13px, 18px);
   -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -77,7 +78,7 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
 
 /* ── SECTION TITLE ── */
 .sec-title {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: .14em;
   text-transform: uppercase;
@@ -113,7 +114,7 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
   border-radius: 12px;
   font-family: var(--font-main);
   font-weight: 800;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: .12em;
   text-transform: uppercase;
   cursor: pointer;
@@ -134,7 +135,7 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
   border: 1px solid var(--slate-200);
   border-radius: 12px;
   padding: 11px 14px;
-  font-size: 13px;
+  font-size: 14px;
   font-family: var(--font-main);
   color: var(--slate-700);
   background: #fff;
@@ -152,7 +153,7 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
 }
 
 .field-label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: .1em;
   text-transform: uppercase;
@@ -193,8 +194,8 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
   flex-shrink: 0;
 }
 .nav-card-icon svg, .nav-card-icon i { width: 24px; height: 24px; font-size: 20px; color: var(--red); }
-.nav-card-title { font-size: 16px; font-weight: 800; color: var(--slate-700); }
-.nav-card-sub { font-size: 12px; font-weight: 600; color: var(--slate-400); }
+.nav-card-title { font-size: 17px; font-weight: 800; color: var(--slate-700); }
+.nav-card-sub { font-size: 13px; font-weight: 600; color: var(--slate-400); }
 
 /* WIP cards */
 .nav-card.wip {
@@ -210,7 +211,7 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
 .nav-card.wip .nav-card-title { color: var(--slate-400); }
 
 .wip-badge {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: .1em;
   text-transform: uppercase;
@@ -234,7 +235,7 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
 
 /* ── SEZIONE HEADER (group labels) ── */
 .group-label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 900;
   letter-spacing: .18em;
   text-transform: uppercase;
@@ -263,36 +264,36 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
 
 /* ── TAB BAR ── */
 .tab-bar { display:flex; gap:4px; background:var(--slate-100); border-radius:14px; padding:4px; margin-bottom:20px; flex-wrap:wrap; }
-.tab-btn { padding:9px 16px; border:none; border-radius:10px; font-family:var(--font-main); font-weight:700; font-size:12px; cursor:pointer; background:transparent; color:var(--slate-500); transition:all .15s; display:flex; align-items:center; gap:6px; white-space:nowrap; }
+.tab-btn { padding:9px 16px; border:none; border-radius:10px; font-family:var(--font-main); font-weight:700; font-size:13px; cursor:pointer; background:transparent; color:var(--slate-500); transition:all .15s; display:flex; align-items:center; gap:6px; white-space:nowrap; }
 .tab-btn:hover { background:rgba(255,255,255,.7); color:var(--slate-700); }
 .tab-btn.active { background:#fff; color:var(--slate-800); box-shadow:0 1px 4px rgba(0,0,0,.08); font-weight:800; }
-.badge-count { background:var(--red); color:#fff; border-radius:999px; font-size:9px; font-weight:800; padding:2px 7px; min-width:18px; text-align:center; display:inline-block; line-height:1.4; }
+.badge-count { background:var(--red); color:#fff; border-radius:999px; font-size:10px; font-weight:800; padding:2px 7px; min-width:18px; text-align:center; display:inline-block; line-height:1.4; }
 
 /* ── EMPORIO SELECTOR ── */
 .emp-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(120px,1fr)); gap:10px; margin-bottom:20px; }
 .emp-btn { background:#fff; border:1.5px solid var(--slate-200); border-radius:16px; padding:16px 12px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:8px; transition:all .15s; font-family:var(--font-main); }
 .emp-btn:hover { border-color:var(--red); background:var(--red-light); }
 .emp-btn.selected { border-color:var(--red); background:var(--red-light); box-shadow:0 2px 8px rgba(181,69,58,.12); }
-.emp-btn span { font-size:12px; font-weight:800; color:var(--slate-700); }
+.emp-btn span { font-size:13px; font-weight:800; color:var(--slate-700); }
 .emp-btn.selected span { color:var(--red); }
 
 /* ── CONTENT CARDS ── */
 .card-r { background:#fff; border-radius:20px; border:1px solid var(--slate-200); box-shadow:var(--shadow-sm); overflow:hidden; }
-.sec-t { font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--slate-400); display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.sec-t { font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--slate-400); display:flex; align-items:center; gap:10px; margin-bottom:16px; }
 .sec-t::before { content:''; display:block; width:3px; height:14px; background:var(--red); border-radius:2px; flex-shrink:0; }
 
 /* ── STATUS BADGES ── */
-.badge-green { background:#dcfce7; color:#166534; border-radius:999px; font-size:10px; font-weight:800; padding:3px 10px; display:inline-block; }
-.badge-red   { background:#fee2e2; color:#991b1b; border-radius:999px; font-size:10px; font-weight:800; padding:3px 10px; display:inline-block; }
-.badge-amber { background:#fef3c7; color:#92400e; border-radius:999px; font-size:10px; font-weight:800; padding:3px 10px; display:inline-block; }
-.badge-blue  { background:#dbeafe; color:#1e40af; border-radius:999px; font-size:10px; font-weight:800; padding:3px 10px; display:inline-block; }
-.badge-gray  { background:var(--slate-100); color:var(--slate-500); border-radius:999px; font-size:10px; font-weight:800; padding:3px 10px; display:inline-block; }
+.badge-green { background:#dcfce7; color:#166534; border-radius:999px; font-size:11px; font-weight:800; padding:3px 10px; display:inline-block; }
+.badge-red   { background:#fee2e2; color:#991b1b; border-radius:999px; font-size:11px; font-weight:800; padding:3px 10px; display:inline-block; }
+.badge-amber { background:#fef3c7; color:#92400e; border-radius:999px; font-size:11px; font-weight:800; padding:3px 10px; display:inline-block; }
+.badge-blue  { background:#dbeafe; color:#1e40af; border-radius:999px; font-size:11px; font-weight:800; padding:3px 10px; display:inline-block; }
+.badge-gray  { background:var(--slate-100); color:var(--slate-500); border-radius:999px; font-size:11px; font-weight:800; padding:3px 10px; display:inline-block; }
 
 /* ── FILTER CHIPS ── */
 .filter-chip, .fb, .fbtn {
   display:inline-flex; align-items:center; gap:5px;
   padding:7px 14px; border-radius:10px; border:1.5px solid var(--slate-200);
-  background:#fff; font-family:var(--font-main); font-size:11px; font-weight:800;
+  background:#fff; font-family:var(--font-main); font-size:12px; font-weight:800;
   text-transform:uppercase; letter-spacing:.06em; color:var(--slate-600);
   cursor:pointer; transition:all .15s; white-space:nowrap;
 }
@@ -303,18 +304,18 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
 .req-card { background:#fff; border:1px solid var(--slate-200); border-radius:16px; box-shadow:var(--shadow-sm); overflow:hidden; margin-bottom:10px; }
 .req-header { padding:12px 16px; display:flex; align-items:center; justify-content:space-between; gap:10px; border-bottom:1px solid var(--slate-100); }
 .req-body { padding:14px 16px; }
-.req-field-label { font-size:9px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--slate-400); }
-.req-field-value { font-size:13px; font-weight:600; color:var(--slate-700); }
-.req-desc { background:var(--slate-50); border:1px solid var(--slate-100); border-radius:10px; padding:12px; font-size:13px; color:var(--slate-600); }
+.req-field-label { font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--slate-400); }
+.req-field-value { font-size:14px; font-weight:600; color:var(--slate-700); }
+.req-desc { background:var(--slate-50); border:1px solid var(--slate-100); border-radius:10px; padding:12px; font-size:14px; color:var(--slate-600); }
 
 /* ── EMPTY STATE ── */
 .empty-state { text-align:center; padding:48px 24px; color:var(--slate-400); }
 .empty-state i { font-size:40px; margin-bottom:14px; display:block; }
-.empty-state p { font-size:15px; font-weight:600; margin:0; }
-.empty-state small { font-size:13px; color:var(--slate-300); }
+.empty-state p { font-size:16px; font-weight:600; margin:0; }
+.empty-state small { font-size:14px; color:var(--slate-300); }
 
 /* ── FLOAT COUNTER ── */
-.float-counter { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; padding:8px 20px; border-radius:999px; font-size:12px; font-weight:800; z-index:8000; box-shadow:0 4px 12px rgba(0,0,0,.2); pointer-events:none; white-space:nowrap; }
+.float-counter { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; padding:8px 20px; border-radius:999px; font-size:13px; font-weight:800; z-index:8000; box-shadow:0 4px 12px rgba(0,0,0,.2); pointer-events:none; white-space:nowrap; }
 
 /* ═══════════════════════════════════════════════════
    MOBILE RESPONSIVE
@@ -391,7 +392,7 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
 @media (max-width: 768px) {
 
   /* Layout */
-  body { font-size: 14px; padding-top: 50px; }
+  body { font-size: 1rem; padding-top: 50px; }
   .main, .page-main, main { padding: 12px 10px !important; }
   .max-w-4xl, .max-w-7xl, .max-w-3xl, .max-w-6xl { max-width: 100% !important; padding-left: 10px !important; padding-right: 10px !important; }
 
@@ -399,8 +400,8 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
   #m361-header { padding: 0 10px; height: 50px; }
   #m361-header .hd-logo { height: 22px; }
   #m361-header .hd-sep { margin: 0 6px; height: 18px; }
-  #m361-header #header-title { font-size: 11px; max-width: 120px; }
-  #back-btn { font-size: 10px; gap: 4px; }
+  #m361-header #header-title { font-size: 12px; max-width: 120px; }
+  #back-btn { font-size: 11px; gap: 4px; }
 
   /* Grids */
   .grid-auto { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
@@ -411,7 +412,7 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
   .nav-card { padding: 16px 14px; gap: 6px; border-radius: 16px !important; }
   .nav-card-icon { width: 36px; height: 36px; border-radius: 10px; }
   .nav-card-icon svg, .nav-card-icon i { width: 18px; height: 18px; font-size: 16px; }
-  .nav-card-title { font-size: 13px; }
+  .nav-card-title { font-size: 14px; }
 
   /* Padding overrides */
   .p-8, .p-6 { padding: 12px !important; }
@@ -438,31 +439,31 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
   }
 
   /* ── TABELLE: compatte ── */
-  table { font-size: 11px !important; }
+  table { font-size: 12px !important; }
   th, td { padding: 5px 6px !important; white-space: nowrap; }
-  thead th { font-size: 8px !important; }
+  thead th { font-size: 9px !important; }
 
   /* Pren-table */
-  .pren-table input[type="number"] { width: 40px !important; font-size: 12px !important; padding: 3px 2px !important; }
+  .pren-table input[type="number"] { width: 40px !important; font-size: 13px !important; padding: 3px 2px !important; }
   .pren-table input[type="text"],
-  .pren-table input[type="tel"] { font-size: 12px !important; padding: 4px 5px !important; min-width: 70px; }
-  .prod-info .prod-desc { font-size: 8px !important; }
-  .prod-info .prod-code { font-size: 7px !important; }
-  .prod-info .prod-price { font-size: 7px !important; }
+  .pren-table input[type="tel"] { font-size: 13px !important; padding: 4px 5px !important; min-width: 70px; }
+  .prod-info .prod-desc { font-size: 9px !important; }
+  .prod-info .prod-code { font-size: 8px !important; }
+  .prod-info .prod-price { font-size: 8px !important; }
 
   /* Sint-table */
-  .sint-table th, .sint-table td { padding: 8px 6px !important; font-size: 12px !important; }
-  .sint-table tbody td { font-size: 14px !important; }
+  .sint-table th, .sint-table td { padding: 8px 6px !important; font-size: 13px !important; }
+  .sint-table tbody td { font-size: 15px !important; }
 
   /* ── ORDINI: filtri e cards ── */
-  .filter-btn, .fbtn { font-size: 9px !important; padding: 6px 9px !important; border-radius: 8px !important; }
+  .filter-btn, .fbtn { font-size: 10px !important; padding: 6px 9px !important; border-radius: 8px !important; }
   .order-card { padding: 12px !important; }
   .order-card .grid { display: flex !important; flex-direction: column !important; gap: 8px !important; }
   .customer-name { font-size: 14px !important; }
   .info-text { font-size: 10px !important; }
   .btn-action { width: 34px !important; height: 34px !important; min-width: 34px; }
-  .btn-complete { font-size: 9px !important; padding: 7px 10px !important; white-space: nowrap; }
-  .bulk-actions { flex-wrap: wrap; padding: 8px 10px !important; gap: 6px !important; font-size: 11px; }
+  .btn-complete { font-size: 10px !important; padding: 7px 10px !important; white-space: nowrap; }
+  .bulk-actions { flex-wrap: wrap; padding: 8px 10px !important; gap: 6px !important; font-size: 12px; }
 
   /* Quick Nav ("Vai a:") */
   [class*="border-b"][class*="flex"][class*="gap-3"] {
@@ -475,8 +476,8 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
 
   /* ── TABS ── */
   .tab-bar { padding: 3px; gap: 2px; border-radius: 12px; flex-wrap: wrap; }
-  .tab-btn { padding: 7px 10px; font-size: 9px; border-radius: 8px; }
-  .tab-btn .badge-count { font-size: 7px; padding: 1px 5px; min-width: 16px; }
+  .tab-btn { padding: 7px 10px; font-size: 10px; border-radius: 8px; }
+  .tab-btn .badge-count { font-size: 8px; padding: 1px 5px; min-width: 16px; }
 
   /* ── MODAL: full-screen ── */
   #order-summary-modal > div,
@@ -489,36 +490,36 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
 
   /* ── SECTION TITLES ── */
   .sec-title, .sec-title-r, .sec-t, .group-label {
-    font-size: 9px !important; margin-bottom: 12px !important;
+    font-size: 10px !important; margin-bottom: 12px !important;
   }
 
   /* ── EMPORIO CARDS (info clienti, etc) ── */
   .emp-grid { gap: 8px !important; }
   .emp-btn { padding: 14px 10px !important; border-radius: 12px !important; }
   .emp-btn img, .emp-btn > div:first-child { width: 40px !important; height: 40px !important; }
-  .emp-btn span { font-size: 11px !important; }
+  .emp-btn span { font-size: 12px !important; }
 
   /* ── REQUEST CARDS ── */
   .req-card { border-radius: 12px !important; }
   .req-header { padding: 10px 12px !important; }
   .req-body { padding: 12px !important; }
-  .req-field-label { font-size: 8px !important; }
-  .req-field-value { font-size: 12px !important; }
-  .req-desc { padding: 10px !important; font-size: 12px !important; border-radius: 8px !important; }
-  .resp-input textarea { font-size: 14px !important; min-height: 50px !important; }
+  .req-field-label { font-size: 9px !important; }
+  .req-field-value { font-size: 13px !important; }
+  .req-desc { padding: 10px !important; font-size: 13px !important; border-radius: 8px !important; }
+  .resp-input textarea { font-size: 15px !important; min-height: 50px !important; }
 
   /* ── PREZZI ── */
   .emp-card { border-radius: 14px !important; }
   .emp-header { padding: 10px 12px !important; }
-  .emp-name { font-size: 13px !important; }
+  .emp-name { font-size: 14px !important; }
   .pz-table tbody td, .pz-table thead th { padding: 8px 10px !important; }
 
   /* ── FLOATING ELEMENTS ── */
-  .float-counter { bottom: 64px !important; font-size: 10px !important; padding: 6px 14px !important; }
-  [style*="position:fixed"][style*="bottom:72px"] { bottom: 62px !important; padding: 10px 14px !important; font-size: 10px !important; }
+  .float-counter { bottom: 64px !important; font-size: 11px !important; padding: 6px 14px !important; }
+  [style*="position:fixed"][style*="bottom:72px"] { bottom: 62px !important; padding: 10px 14px !important; font-size: 11px !important; }
 
   /* ── BUTTONS GENERAL ── */
-  .btn { font-size: 10px; padding: 10px 16px; }
+  .btn { font-size: 11px; padding: 10px 16px; }
   .btn-primary { padding: 11px 18px; }
   .btn-dark { padding: 11px 20px; }
 
@@ -533,17 +534,17 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
   body { padding-top: 46px; }
   #m361-header { height: 46px; padding: 0 8px; }
   #m361-header .hd-logo { height: 20px; }
-  #m361-header #header-title { max-width: 80px; font-size: 10px; }
+  #m361-header #header-title { max-width: 80px; font-size: 11px; }
   #m361-header .hd-sep { margin: 0 4px; }
 
   .grid-auto { grid-template-columns: 1fr !important; }
   .nav-card { padding: 12px !important; }
-  .nav-card-title { font-size: 12px; }
+  .nav-card-title { font-size: 13px; }
 
-  table { font-size: 10px !important; }
+  table { font-size: 11px !important; }
   th, td { padding: 4px 5px !important; }
 
-  .tab-btn { padding: 6px 8px; font-size: 8px; }
+  .tab-btn { padding: 6px 8px; font-size: 9px; }
   .emp-grid { grid-template-columns: repeat(2, 1fr) !important; }
 }
 
