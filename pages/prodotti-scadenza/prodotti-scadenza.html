@@ -70,8 +70,22 @@
     .fp[data-f="promo"].on{background:#B5453A}
 
     /* ── Titolo sezione ── */
-    .sec{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.14em;color:var(--G)}
+    .sec{display:flex;align-items:center;gap:8px;padding:10px 14px 4px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.14em;color:var(--G)}
     .sec::before{content:'';width:3px;height:14px;background:var(--R);border-radius:2px;flex-shrink:0}
+
+    /* ── Sort header ── */
+    .th-sort{cursor:pointer;user-select:none;white-space:nowrap}
+    .th-sort:hover{color:#fff;opacity:.85}
+    .sort-ico{font-size:9px;margin-left:4px;opacity:.5}
+    .sort-ico.asc::before{content:'▲'}
+    .sort-ico.desc::before{content:'▼'}
+    .sort-ico.active{opacity:1}
+
+    /* ── Sort select (mobile) ── */
+    .sort-bar{display:none;padding:6px 14px 2px;align-items:center;gap:8px}
+    @media(max-width:639px){.sort-bar{display:flex}}
+    .sort-sel{flex:1;border:1.5px solid var(--Gl);border-radius:9px;padding:7px 10px;font-size:12px;font-family:'Nunito',sans-serif;font-weight:700;color:var(--S);background:#fff;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+    .sort-dir{background:var(--bg);border:1.5px solid var(--Gl);border-radius:9px;padding:7px 12px;font-size:12px;font-family:'Nunito',sans-serif;font-weight:800;color:var(--S3);cursor:pointer;flex-shrink:0}
 
     /* ══ DESKTOP TABLE (≥640px) ══ */
     @media(min-width:640px){
@@ -240,6 +254,19 @@
   </div>
 </div>
 
+<div class="sort-bar">
+  <select class="sort-sel" id="sort-sel" onchange="setSort(this.value)">
+    <option value="gg">Giorni alla scadenza</option>
+    <option value="desc">Prodotto (A→Z)</option>
+    <option value="qty">Quantità</option>
+    <option value="scad">Data scadenza</option>
+    <option value="prezzo">Prezzo</option>
+  </select>
+  <button class="sort-dir" id="sort-dir-btn" onclick="toggleDir()" title="Inverti ordine">
+    <span id="sort-dir-ico">↑</span>
+  </button>
+</div>
+
 <div class="sec" id="sec-lbl">Caricamento…</div>
 
 <div class="prod-list" id="prod-list">
@@ -343,6 +370,7 @@ const EMPORI=[
 
 let user=null,_admin=false,_selettoreEmpori=false,emporio=null;
 let filtro='tutti',ricerca='',prodotti=[],editId=null;
+let sortCol='gg',sortDir='asc';
 let modoSconto='pct'; // 'none' | 'pct' | 'price'
 
 /* ── Formula: scadenza 70%, quantità 30%, base 15%, max 50% ── */
@@ -458,6 +486,35 @@ function filtra(){
   });
 }
 
+function ordina(lista){
+  const dir=sortDir==='asc'?1:-1;
+  return [...lista].sort((a,b)=>{
+    switch(sortCol){
+      case 'desc':  return dir*((a.descrizione||'').localeCompare(b.descrizione||'','it'));
+      case 'qty':   return dir*(a.quantita-b.quantita);
+      case 'scad':  return dir*((a.scadenza||'').localeCompare(b.scadenza||''));
+      case 'prezzo':return dir*((a.prezzo_iniziale||0)-(b.prezzo_iniziale||0));
+      case 'gg':
+      default:      return dir*(a._gg-b._gg);
+    }
+  });
+}
+
+function setSort(col){
+  if(sortCol===col){ sortDir=sortDir==='asc'?'desc':'asc'; }
+  else { sortCol=col; sortDir='asc'; }
+  // Sync mobile select
+  const sel=document.getElementById('sort-sel');
+  if(sel) sel.value=sortCol;
+  document.getElementById('sort-dir-ico').textContent=sortDir==='asc'?'↑':'↓';
+  render();
+}
+function toggleDir(){
+  sortDir=sortDir==='asc'?'desc':'asc';
+  document.getElementById('sort-dir-ico').textContent=sortDir==='asc'?'↑':'↓';
+  render();
+}
+
 function onSearch(inp){
   ricerca=inp.value;
   document.getElementById('search-clear').style.display=ricerca?'block':'none';
@@ -472,7 +529,7 @@ function clearSearch(){
 }
 
 function render(){
-  const lista=filtra();
+  const lista=ordina(filtra());
   const extra=ricerca?` per "${ricerca}"`:filtro!=='tutti'?' nel filtro selezionato':'';
   document.getElementById('sec-lbl').textContent=`${lista.length} prodott${lista.length===1?'o':'i'}${extra}`;
 
@@ -484,10 +541,24 @@ function render(){
   }
 
   /* ── Desktop table ── */
+  const si=sortCol,sd=sortDir;
+  function thSort(col,label,align=''){
+    const active=si===col;
+    const ico=active?(sd==='asc'?'▲':'▼'):'↕';
+    const op=active?'1':'.35';
+    return `<th class="th-sort" style="${align?'text-align:'+align+';':''}" onclick="setSort('${col}')">
+      ${label}<span style="font-size:9px;margin-left:3px;opacity:${op}">${ico}</span></th>`;
+  }
   const thead=`<thead><tr>
-    <th>Prodotto</th><th>Qtà</th><th>Scadenza</th><th style="text-align:center">Giorni</th>
-    <th style="text-align:center">Sconto</th><th style="text-align:right">Prezzo</th>
-    <th style="text-align:right">Scontato</th><th style="text-align:center">Stato</th><th></th>
+    ${thSort('desc','Prodotto')}
+    ${thSort('qty','Qtà')}
+    ${thSort('scad','Scadenza')}
+    ${thSort('gg','Giorni','center')}
+    <th style="text-align:center">Sconto</th>
+    ${thSort('prezzo','Prezzo','right')}
+    <th style="text-align:right">Scontato</th>
+    <th style="text-align:center">Stato</th>
+    <th></th>
   </tr></thead>`;
 
   const rows=lista.map(p=>{
