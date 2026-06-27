@@ -12,71 +12,89 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --red:#B5453A;--red-dark:#8c362d;--red-light:#fdf1f0;
-      --s50:#f8fafc;--s100:#f1f5f9;--s200:#e2e8f0;--s300:#cbd5e1;
-      --s400:#94a3b8;--s500:#64748b;--s600:#475569;--s700:#334155;--s800:#1e293b;
-    }
+    :root{--red:#B5453A;--red-dk:#8c362d;--s50:#f8fafc;--s100:#f1f5f9;--s200:#e2e8f0;--s300:#cbd5e1;--s400:#94a3b8;--s500:#64748b;--s600:#475569;--s700:#334155;--s800:#1e293b}
     *{box-sizing:border-box}
     body{font-family:'Nunito',sans-serif;background:#f0f2f5;font-size:15px}
 
-    .sec-t{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--s400);display:flex;align-items:center;gap:10px;margin-bottom:14px}
-    .sec-t::before{content:'';width:3px;height:16px;background:var(--red);border-radius:2px;flex-shrink:0}
+    /* YEAR TABS */
+    .year-tabs{display:flex;gap:4px;background:#fff;padding:4px;border-radius:12px;border:1px solid var(--s200);margin-bottom:16px;width:fit-content}
+    .year-tab{padding:7px 18px;border-radius:9px;font-size:13px;font-weight:800;cursor:pointer;border:none;background:transparent;color:var(--s400);transition:all .14s;font-family:'Nunito',sans-serif}
+    .year-tab.active{background:var(--red);color:#fff}
 
-    /* CALENDAR GRID */
-    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--s200);border:1px solid var(--s200);border-radius:16px;overflow:hidden}
-    .cal-head{background:var(--s100);padding:8px 4px;text-align:center;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--s500)}
-    .cal-day{background:#fff;min-height:80px;padding:6px;cursor:pointer;transition:background .12s;position:relative}
-    .cal-day:hover{background:#fef9f9}
-    .cal-day.today{background:#fff5f5}
-    .cal-day.other-month{background:#fafbfc}
-    .cal-day.other-month .day-num{color:var(--s300)}
-    .day-num{font-size:12px;font-weight:800;color:var(--s600);margin-bottom:4px;line-height:1}
-    .cal-day.today .day-num{width:22px;height:22px;background:var(--red);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px}
-    .ev-chip{font-size:10px;font-weight:700;padding:2px 5px;border-radius:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;cursor:pointer;color:#fff;display:block;line-height:1.3}
-    .ev-chip:hover{opacity:.85}
-    .ev-more{font-size:9px;font-weight:700;color:var(--s400);margin-top:1px}
+    /* SETTORE CHIPS */
+    .s-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+    .s-chip{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:800;cursor:pointer;border:2px solid transparent;transition:all .12s;opacity:.6}
+    .s-chip.active{opacity:1;border-color:currentColor}
 
-    /* CATEGORIE COLORS */
-    .cat-promo{background:#B5453A}
-    .cat-scadenza{background:#D97706}
-    .cat-consegna{background:#059669}
-    .cat-riunione{background:#7c3aed}
-    .cat-altro{background:#475569}
+    /* TABLE */
+    .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:14px;border:1px solid var(--s200);background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+    .cal-tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:900px}
+    .cal-tbl thead th{padding:8px 10px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--s500);background:var(--s50);border-bottom:2px solid var(--s200);white-space:nowrap;text-align:left;position:sticky;top:0;z-index:2}
+    .cal-tbl td{padding:7px 10px;border-bottom:1px solid var(--s100);vertical-align:middle}
 
-    /* CHIPS FILTRO */
-    .filter-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
-    .fchip{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:800;cursor:pointer;border:2px solid transparent;transition:all .12s}
-    .fchip.active{border-color:currentColor}
+    /* Raggruppamento campagna: riga superiore ha bordo top marcato */
+    .cal-tbl tr.ev-first td{border-top:2px solid var(--s200)}
+    .cal-tbl tr:last-child td{border-bottom:none}
 
-    /* LISTA EVENTI */
-    .ev-row{background:#fff;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;border:1px solid var(--s200);cursor:pointer;transition:all .14s}
-    .ev-row:hover{border-color:var(--s400);box-shadow:0 2px 8px rgba(0,0,0,.07)}
-    .ev-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-    .ev-info{flex:1;min-width:0}
-    .ev-title{font-size:14px;font-weight:800;color:var(--s800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .ev-meta{font-size:11px;color:var(--s400);margin-top:1px}
-    .ev-cat-badge{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;padding:2px 7px;border-radius:6px;color:#fff;flex-shrink:0}
+    .td-titolo{font-weight:800;font-size:13px;cursor:pointer;min-width:130px;line-height:1.3}
+    .td-titolo:hover{text-decoration:underline;text-underline-offset:2px}
+    .td-settore{font-weight:900;font-size:14px;text-align:center;width:52px}
+    .td-tipo{color:var(--s600);font-size:12px;white-space:nowrap;width:90px}
+    .td-mecc{color:var(--s700);font-size:12px;max-width:220px;line-height:1.35}
+    .td-data{white-space:nowrap;font-size:12px;color:var(--s600);width:88px}
+    .td-pdv{font-weight:900;font-size:11px;color:var(--s500);text-align:center;width:42px;letter-spacing:.06em}
+    .td-ader{text-align:center;width:50px;font-size:12px;font-weight:800}
+    .td-ader.si{color:#16a34a}
+    .td-ader.no{color:#94a3b8}
+    .td-azioni{font-size:12px;color:var(--s600);min-width:100px;cursor:pointer;transition:background .12s}
+    .td-azioni:hover{background:#fef9f9}
+    .td-ris{font-size:12px;color:var(--s700);min-width:130px;cursor:pointer;transition:background .12s}
+    .td-ris:hover{background:#f0fdf4}
+    .td-ris.empty{color:var(--s300)}
 
-    /* FORM MODALE */
-    .form-input{width:100%;border:1px solid var(--s200);border-radius:10px;padding:10px 14px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:600;color:var(--s800);background:#fff;outline:none;transition:border .15s}
-    .form-input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(181,69,58,.1)}
-    .form-label{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--s500);margin-bottom:4px;display:block}
-    .btn-primary{background:var(--red);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:background .15s}
-    .btn-primary:hover{background:var(--red-dark)}
-    .btn-ghost{background:var(--s100);color:var(--s600);border:1px solid var(--s200);border-radius:10px;padding:11px 20px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
-    .btn-danger{background:#fff;color:#B5453A;border:1px solid #fecaca;border-radius:10px;padding:11px 18px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
-    .btn-danger:hover{background:#fef2f2}
+    /* MOBILE CARDS */
+    .mobile-cards{display:none}
+    .ev-card{background:#fff;border-radius:14px;border:1px solid var(--s200);overflow:hidden;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+    .ev-card-head{padding:12px 16px;border-bottom:1px solid var(--s100);cursor:pointer;display:flex;align-items:flex-start;gap:12px}
+    .ev-card-titolo{font-size:15px;font-weight:900;line-height:1.2;flex:1}
+    .ev-card-meta{font-size:11px;color:var(--s400);margin-top:3px;font-weight:600}
+    .ev-card-body{padding:10px 16px}
+    .pdv-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--s100);font-size:12px}
+    .pdv-row:last-child{border-bottom:none}
+    .pdv-lbl{font-weight:900;color:var(--s500);font-size:11px;width:36px;letter-spacing:.06em}
+    .badge-si{background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:800}
+    .badge-no{background:var(--s100);color:var(--s400);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:800}
 
-    @media(max-width:600px){
-      .cal-day{min-height:56px;padding:4px 3px}
-      .ev-chip{display:none}
-      .day-num{font-size:11px}
+    @media(max-width:700px){
+      .tbl-wrap{display:none}
+      .mobile-cards{display:block}
     }
+
+    /* FORM MODAL */
+    .form-label{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--s500);margin-bottom:4px;display:block}
+    .form-input{width:100%;border:1px solid var(--s200);border-radius:9px;padding:9px 13px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:600;color:var(--s800);background:#fff;outline:none;transition:border .15s}
+    .form-input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(181,69,58,.1)}
+    .btn-prim{background:var(--red);color:#fff;border:none;border-radius:9px;padding:10px 22px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer}
+    .btn-ghost{background:var(--s100);color:var(--s600);border:1px solid var(--s200);border-radius:9px;padding:10px 18px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
+    .btn-del{background:#fff;color:var(--red);border:1px solid #fecaca;border-radius:9px;padding:10px 16px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
+
+    /* PDV FORM TABLE */
+    .pdv-form-tbl{width:100%;border-collapse:collapse;font-size:13px}
+    .pdv-form-tbl th{padding:6px 8px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--s500);background:var(--s50);border-bottom:1px solid var(--s200);text-align:left}
+    .pdv-form-tbl td{padding:6px 8px;border-bottom:1px solid var(--s100);vertical-align:middle}
+    .pdv-form-tbl tr:last-child td{border-bottom:none}
+    .pdv-name{font-weight:900;font-size:12px;color:var(--s600);letter-spacing:.06em;width:42px}
+    .mini-inp{border:1px solid var(--s200);border-radius:7px;padding:5px 9px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;width:100%;outline:none;transition:border .12s}
+    .mini-inp:focus{border-color:var(--red)}
+
+    /* INLINE EDIT POPOVER */
+    .inline-pop{position:fixed;z-index:99999;background:#fff;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.18);padding:12px;border:1px solid var(--s200);display:flex;gap:8px;align-items:center;min-width:220px}
+    .inline-pop input{flex:1;border:1px solid var(--s200);border-radius:7px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;outline:none}
+    .inline-pop input:focus{border-color:var(--red)}
+    .inline-pop button{background:var(--red);color:#fff;border:none;border-radius:7px;padding:7px 14px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap}
   </style>
 </head>
 <body>
-
 <script src="../../scripts/nav-script.js"></script>
 <script src="../../scripts/ui-helpers.js"></script>
 <script>
@@ -84,353 +102,498 @@ function getCurrentId(){ return 'calendario'; }
 function getCurrentPageId(){ return 'calendario'; }
 </script>
 
-<div id="m361-content" style="padding:16px;max-width:900px;margin:0 auto">
+<div id="m361-content" style="padding:16px;max-width:1140px;margin:0 auto">
 
   <!-- Header -->
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
     <div>
       <div style="font-size:20px;font-weight:900;color:var(--s800)">Calendario Commerciale</div>
-      <div style="font-size:12px;color:var(--s400);font-weight:600;margin-top:1px">Promozioni, scadenze e appuntamenti</div>
+      <div style="font-size:12px;color:var(--s400);font-weight:600;margin-top:2px">Campagne, settori, PDV e risultati</div>
     </div>
-    <button onclick="openForm()" class="btn-primary" style="display:flex;align-items:center;gap:8px">
-      <i class="fas fa-plus"></i> Nuovo evento
+    <button onclick="openForm()" class="btn-prim" style="display:flex;align-items:center;gap:8px">
+      <i class="fas fa-plus"></i> Nuova campagna
     </button>
   </div>
 
-  <!-- Navigazione mese -->
-  <div style="background:#fff;border-radius:16px;border:1px solid var(--s200);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
-    <button onclick="changeMonth(-1)" style="background:var(--s100);border:none;border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:16px;color:var(--s600);display:flex;align-items:center;justify-content:center">
-      <i class="fas fa-chevron-left"></i>
-    </button>
-    <div style="font-size:18px;font-weight:900;color:var(--s800)" id="month-label"></div>
-    <button onclick="changeMonth(1)" style="background:var(--s100);border:none;border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:16px;color:var(--s600);display:flex;align-items:center;justify-content:center">
-      <i class="fas fa-chevron-right"></i>
-    </button>
+  <!-- Year tabs -->
+  <div class="year-tabs" id="year-tabs">
+    <button class="year-tab active" data-year="2026" onclick="setAnno(2026)">2026</button>
+    <button class="year-tab" data-year="2025" onclick="setAnno(2025)">2025</button>
+    <button class="year-tab" data-year="2024" onclick="setAnno(2024)">2024</button>
+    <button class="year-tab" data-year="2023" onclick="setAnno(2023)">2023</button>
   </div>
 
-  <!-- Filtro categorie -->
-  <div class="filter-chips" id="filter-chips">
-    <div class="fchip active" data-cat="" style="background:#1e293b;color:#fff" onclick="setFilter('')">Tutti</div>
-    <div class="fchip" data-cat="promo" style="background:#fef2f2;color:#B5453A" onclick="setFilter('promo')"><i class="fas fa-tag mr-1"></i>Promozione</div>
-    <div class="fchip" data-cat="scadenza" style="background:#fffbeb;color:#D97706" onclick="setFilter('scadenza')"><i class="fas fa-clock mr-1"></i>Scadenza</div>
-    <div class="fchip" data-cat="consegna" style="background:#f0fdf4;color:#059669" onclick="setFilter('consegna')"><i class="fas fa-truck mr-1"></i>Consegna</div>
-    <div class="fchip" data-cat="riunione" style="background:#f5f3ff;color:#7c3aed" onclick="setFilter('riunione')"><i class="fas fa-users mr-1"></i>Riunione</div>
-    <div class="fchip" data-cat="altro" style="background:var(--s100);color:var(--s600)" onclick="setFilter('altro')"><i class="fas fa-circle mr-1"></i>Altro</div>
+  <!-- Settore chips -->
+  <div class="s-chips" id="s-chips">
+    <div class="s-chip active" data-s="" style="color:var(--s800);background:var(--s100)" onclick="setSettore('')">Tutti</div>
+    <div class="s-chip" data-s="M" style="color:#3b82f6;background:#eff6ff" onclick="setSettore('M')">M — Moda</div>
+    <div class="s-chip" data-s="C" style="color:#8b5cf6;background:#f5f3ff" onclick="setSettore('C')">C — Casa</div>
+    <div class="s-chip" data-s="G" style="color:#1e293b;background:var(--s100)" onclick="setSettore('G')">G — Generale</div>
+    <div class="s-chip" data-s="A" style="color:#d97706;background:#fffbeb" onclick="setSettore('A')">A — Alimentare</div>
+    <div class="s-chip" data-s="N" style="color:#16a34a;background:#f0fdf4" onclick="setSettore('N')">N — Naturale</div>
   </div>
 
-  <!-- Griglia calendario -->
-  <div style="background:#fff;border-radius:16px;border:1px solid var(--s200);overflow:hidden;margin-bottom:20px">
-    <div class="cal-grid" id="cal-grid"></div>
+  <!-- Table (desktop) -->
+  <div class="tbl-wrap">
+    <table class="cal-tbl" id="cal-tbl">
+      <thead>
+        <tr>
+          <th id="th-anno">2026</th>
+          <th>SETTORE</th>
+          <th>TIPOLOGIA</th>
+          <th>MECCANICA</th>
+          <th>DATA INIZIO</th>
+          <th>DATA FINE</th>
+          <th>PDV</th>
+          <th>ADESIONI</th>
+          <th>AZIONI</th>
+          <th id="th-ris0">RISULTATO 2026</th>
+          <th id="th-ris1">RISULTATO 2025</th>
+          <th id="th-ris2">RISULTATO 2024</th>
+          <th id="th-ris3">RISULTATO 2023</th>
+        </tr>
+      </thead>
+      <tbody id="cal-body"></tbody>
+    </table>
   </div>
 
-  <!-- Lista eventi del mese -->
-  <div class="sec-t">Eventi del mese</div>
-  <div id="ev-list" style="display:flex;flex-direction:column;gap:8px"></div>
-  <div id="ev-empty" style="display:none;text-align:center;padding:32px 16px;color:var(--s400);font-size:14px;font-weight:600">
-    <i class="fas fa-calendar-xmark" style="font-size:28px;margin-bottom:8px;display:block;opacity:.4"></i>
-    Nessun evento per questo mese
+  <!-- Cards (mobile) -->
+  <div class="mobile-cards" id="mobile-cards"></div>
+
+  <!-- Empty state -->
+  <div id="empty-state" style="display:none;text-align:center;padding:48px 16px;color:var(--s400)">
+    <i class="fas fa-calendar-xmark" style="font-size:32px;margin-bottom:10px;display:block;opacity:.35"></i>
+    <div style="font-size:14px;font-weight:700">Nessuna campagna per quest'anno</div>
+    <div style="font-size:12px;margin-top:4px">Clicca "Nuova campagna" per aggiungerne una</div>
   </div>
 
 </div>
 
-<!-- MODALE FORM -->
-<div id="ev-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99998;display:none;align-items:center;justify-content:center;padding:16px;font-family:'Nunito',sans-serif">
-  <div style="background:#fff;border-radius:16px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+<!-- MODAL FORM -->
+<div id="ev-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99998;align-items:flex-start;justify-content:center;padding:16px;padding-top:60px;font-family:'Nunito',sans-serif;overflow-y:auto">
+  <div style="background:#fff;border-radius:16px;width:100%;max-width:580px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.22);margin:0 auto">
+
+    <!-- Modal header -->
     <div style="background:var(--red);color:#fff;padding:16px 20px;font-size:16px;font-weight:800;display:flex;align-items:center;gap:10px">
-      <i class="fas fa-calendar-plus"></i>
-      <span id="modal-title">Nuovo evento</span>
+      <i class="fas fa-bullhorn"></i>
+      <span id="modal-title">Nuova campagna</span>
     </div>
-    <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
-      <div>
-        <label class="form-label">Titolo *</label>
-        <input type="text" id="f-titolo" class="form-input" placeholder="Es. Promozione estate" autocomplete="off">
+
+    <!-- Tabs -->
+    <div style="display:flex;border-bottom:2px solid var(--s100);background:var(--s50)">
+      <button class="modal-tab active" id="tab-info" onclick="switchTab('info')" style="flex:1;padding:11px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;border:none;background:transparent;cursor:pointer;color:var(--red);border-bottom:2px solid var(--red);margin-bottom:-2px">
+        <i class="fas fa-info-circle mr-1"></i> Info campagna
+      </button>
+      <button class="modal-tab" id="tab-pdv" onclick="switchTab('pdv')" style="flex:1;padding:11px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;border:none;background:transparent;cursor:pointer;color:var(--s400);border-bottom:2px solid transparent;margin-bottom:-2px">
+        <i class="fas fa-store mr-1"></i> PDV & Risultati
+      </button>
+    </div>
+
+    <!-- Tab: Info -->
+    <div id="panel-info" style="padding:20px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:grid;grid-template-columns:1fr auto;gap:10px">
+        <div>
+          <label class="form-label">Titolo campagna *</label>
+          <input type="text" id="f-titolo" class="form-input" placeholder="Es. SALDI MODA AI25" autocomplete="off">
+        </div>
+        <div style="min-width:80px">
+          <label class="form-label">Anno *</label>
+          <select id="f-anno" class="form-input">
+            <option value="2026">2026</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+          </select>
+        </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div>
-          <label class="form-label">Data inizio *</label>
-          <input type="date" id="f-data" class="form-input">
+          <label class="form-label">Settore</label>
+          <select id="f-settore" class="form-input">
+            <option value="M">M — Moda</option>
+            <option value="C">C — Casa</option>
+            <option value="G" selected>G — Generale</option>
+            <option value="A">A — Alimentare</option>
+            <option value="N">N — Naturale</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Tipologia</label>
+          <select id="f-tipologia" class="form-input">
+            <option value="">—</option>
+            <option value="Saldi">Saldi</option>
+            <option value="Promo">Promo</option>
+            <option value="Prenotazione">Prenotazione</option>
+            <option value="Focus">Focus</option>
+            <option value="Evento">Evento</option>
+            <option value="Altro">Altro</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="form-label">Meccanica</label>
+        <textarea id="f-meccanica" class="form-input" rows="3" placeholder="Descrizione della meccanica promozionale…" style="resize:vertical"></textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <label class="form-label">Data inizio</label>
+          <input type="date" id="f-data-ini" class="form-input">
         </div>
         <div>
           <label class="form-label">Data fine</label>
-          <input type="date" id="f-data-fine" class="form-input">
+          <input type="date" id="f-data-fin" class="form-input">
         </div>
       </div>
-      <div>
-        <label class="form-label">Categoria</label>
-        <select id="f-categoria" class="form-input">
-          <option value="promo">🏷 Promozione</option>
-          <option value="scadenza">⏰ Scadenza</option>
-          <option value="consegna">🚚 Consegna</option>
-          <option value="riunione">👥 Riunione</option>
-          <option value="altro" selected>● Altro</option>
-        </select>
-      </div>
-      <div>
-        <label class="form-label">Note</label>
-        <textarea id="f-note" class="form-input" rows="2" placeholder="Dettagli aggiuntivi…" style="resize:vertical"></textarea>
+    </div>
+
+    <!-- Tab: PDV -->
+    <div id="panel-pdv" style="padding:20px;display:none">
+      <div style="font-size:11px;color:var(--s400);font-weight:700;margin-bottom:12px">Partecipazione per punto vendita e risultati storici</div>
+      <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--s200)">
+        <table class="pdv-form-tbl">
+          <thead>
+            <tr>
+              <th>PDV</th>
+              <th>Aderisce</th>
+              <th>Azioni</th>
+              <th>Ris. 2026</th>
+              <th>Ris. 2025</th>
+              <th>Ris. 2024</th>
+              <th>Ris. 2023</th>
+            </tr>
+          </thead>
+          <tbody id="pdv-form-body"></tbody>
+        </table>
       </div>
     </div>
-    <div style="padding:12px 20px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid var(--s100)">
-      <button id="f-delete-btn" onclick="deleteEvento()" class="btn-danger" style="display:none"><i class="fas fa-trash"></i> Elimina</button>
+
+    <!-- Footer -->
+    <div style="padding:12px 20px 18px;display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid var(--s100)">
+      <button id="f-del-btn" onclick="deleteEvento()" class="btn-del" style="display:none"><i class="fas fa-trash"></i> Elimina</button>
       <div style="display:flex;gap:8px;margin-left:auto">
         <button onclick="closeForm()" class="btn-ghost">Annulla</button>
-        <button onclick="saveEvento()" class="btn-primary">Salva</button>
+        <button onclick="saveEvento()" class="btn-prim">Salva</button>
       </div>
     </div>
   </div>
 </div>
 
+<!-- INLINE EDIT POPOVER -->
+<div id="inline-pop" class="inline-pop" style="display:none">
+  <input type="text" id="inline-inp" placeholder="Valore…" autocomplete="off">
+  <button onclick="saveInline()">OK</button>
+</div>
+
 <script>
-const SUPABASE_URL = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgwNzIxMzEsImV4cCI6MjA1MzY0ODEzMX0.CYcO9bVJBLpOPqcIBsC5hFXDiNMSBswjBi0s_w2rHQw';
-const _sb = window.supabase?.createClient(SUPABASE_URL, SUPABASE_ANON);
+const SB_URL  = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgwNzIxMzEsImV4cCI6MjA1MzY0ODEzMX0.CYcO9bVJBLpOPqcIBsC5hFXDiNMSBswjBi0s_w2rHQw';
+const _sb = window.supabase?.createClient(SB_URL, SB_ANON);
 
-const CATEGORIE = {
-  promo:    { label:'Promozione', color:'#B5453A', cls:'cat-promo'    },
-  scadenza: { label:'Scadenza',   color:'#D97706', cls:'cat-scadenza' },
-  consegna: { label:'Consegna',   color:'#059669', cls:'cat-consegna' },
-  riunione: { label:'Riunione',   color:'#7c3aed', cls:'cat-riunione' },
-  altro:    { label:'Altro',      color:'#475569', cls:'cat-altro'    },
+const SETTORI = {
+  M: { label:'Moda',      color:'#3b82f6' },
+  C: { label:'Casa',      color:'#8b5cf6' },
+  G: { label:'Generale',  color:'#1e293b' },
+  A: { label:'Alimentare',color:'#d97706' },
+  N: { label:'Naturale',  color:'#16a34a' },
 };
-
-const MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
-               'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
-const GIORNI = ['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
+const PDV_LIST = ['CR','CA','VI','WEB'];
+const ANNI     = [2026,2025,2024,2023];
+const MESI     = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
 
 let _eventi = [];
-let _currentYear, _currentMonth;
-let _activeFilter = '';
+let _annoAttivo = 2026;
+let _settoreAttivo = '';
 let _editId = null;
+let _inlineCtx = null; // {evId, pdv, key}
 
-function _today(){ const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; }
+function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtDate(ds){
+  if(!ds) return '';
+  const [,m,d] = ds.split('-');
+  return `${parseInt(d)} ${MESI[parseInt(m)-1]}`;
+}
+function defaultPdvData(){
+  const o={};
+  PDV_LIST.forEach(p=>{ o[p]={aderisce:true,azioni:'',r2026:'',r2025:'',r2024:'',r2023:''}; });
+  return o;
+}
 
-function changeMonth(dir) {
-  _currentMonth += dir;
-  if (_currentMonth > 11) { _currentMonth = 0; _currentYear++; }
-  if (_currentMonth < 0)  { _currentMonth = 11; _currentYear--; }
+/* ── DATA ── */
+async function loadEventi(){
+  if(!_sb) return;
+  const {data,error} = await _sb.from('calendario_eventi').select('*').eq('anno',_annoAttivo).order('data_inizio',{nullsFirst:true}).order('id');
+  if(error){ showToastM361('Errore caricamento: '+error.message,'error'); return; }
+  _eventi = data||[];
   render();
 }
 
-function setFilter(cat) {
-  _activeFilter = cat;
-  document.querySelectorAll('.fchip').forEach(c => {
-    const isMine = c.dataset.cat === cat;
-    c.classList.toggle('active', isMine);
-    if (isMine) c.style.fontWeight = '900';
-    else c.style.fontWeight = '700';
+function filtered(){
+  if(!_settoreAttivo) return _eventi;
+  return _eventi.filter(e=>e.settore===_settoreAttivo);
+}
+
+/* ── RENDER ── */
+function render(){
+  const evs = filtered();
+  document.getElementById('empty-state').style.display = evs.length?'none':'block';
+
+  // Update headers
+  document.getElementById('th-anno').textContent = _annoAttivo;
+  ANNI.forEach((a,i)=>{ const el=document.getElementById('th-ris'+i); if(el) el.textContent='RISULTATO '+a; });
+
+  renderTable(evs);
+  renderMobile(evs);
+}
+
+function renderTable(evs){
+  const tbody = document.getElementById('cal-body');
+  if(!tbody) return;
+  if(!evs.length){ tbody.innerHTML=''; return; }
+
+  let html='';
+  evs.forEach(ev=>{
+    const s    = SETTORI[ev.settore]||SETTORI.G;
+    const pdv  = ev.pdv_data||defaultPdvData();
+    const mecH = escH(ev.meccanica||'');
+    const isFw = !!mecH; // has meccanica
+
+    PDV_LIST.forEach((pk,pi)=>{
+      const d   = pdv[pk]||{aderisce:false,azioni:'',r2026:'',r2025:'',r2024:'',r2023:''};
+      const isF = pi===0;
+      html+=`<tr class="${isF?'ev-first':''}">`;
+
+      if(isF){
+        html+=`
+          <td class="td-titolo" rowspan="4" style="color:${s.color}" onclick="openForm(${ev.id})">${escH(ev.titolo)}</td>
+          <td class="td-settore" rowspan="4" style="color:${s.color}">${escH(ev.settore||'')}</td>
+          <td class="td-tipo" rowspan="4">${escH(ev.tipologia||'')}</td>
+          <td class="td-mecc" rowspan="4">${mecH}</td>
+          <td class="td-data" rowspan="4">${fmtDate(ev.data_inizio)}</td>
+          <td class="td-data" rowspan="4">${fmtDate(ev.data_fine)}</td>`;
+      }
+
+      const rKey = 'r'+_annoAttivo;
+      const ris  = ANNI.map(a=>{ const v=d['r'+a]||''; return v; });
+
+      html+=`
+        <td class="td-pdv">${pk}</td>
+        <td class="td-ader ${d.aderisce?'si':'no'}">${d.aderisce?'sì':'no'}</td>
+        <td class="td-azioni" onclick="openInline(event,${ev.id},'${pk}','azioni')" title="Clicca per modificare">${escH(d.azioni||'')}&nbsp;</td>
+        <td class="td-ris${ris[0]?'':' empty'}" onclick="openInline(event,${ev.id},'${pk}','${rKey}')" title="Clicca per modificare">${escH(ris[0])||'—'}</td>
+        <td class="td-ris${ris[1]?'':' empty'}">${escH(ris[1])||'—'}</td>
+        <td class="td-ris${ris[2]?'':' empty'}">${escH(ris[2])||'—'}</td>
+        <td class="td-ris${ris[3]?'':' empty'}">${escH(ris[3])||'—'}</td>
+      </tr>`;
+    });
   });
-  renderList();
-  renderGrid();
+  tbody.innerHTML=html;
 }
 
-async function loadEventi() {
-  if (!_sb) return;
-  const startOf = `${_currentYear}-${String(_currentMonth+1).padStart(2,'0')}-01`;
-  const endOf   = new Date(_currentYear, _currentMonth+1, 0);
-  const endStr  = `${_currentYear}-${String(_currentMonth+1).padStart(2,'0')}-${String(endOf.getDate()).padStart(2,'0')}`;
-  const { data } = await _sb.from('calendario_eventi').select('*')
-    .or(`data.gte.${startOf},data_fine.gte.${startOf}`)
-    .lte('data', endStr)
-    .order('data');
-  _eventi = data || [];
-  renderGrid();
-  renderList();
-}
-
-function filteredEventi() {
-  if (!_activeFilter) return _eventi;
-  return _eventi.filter(e => e.categoria === _activeFilter);
-}
-
-function eventiForDay(dateStr) {
-  return filteredEventi().filter(e => {
-    const start = e.data;
-    const end   = e.data_fine || e.data;
-    return dateStr >= start && dateStr <= end;
-  });
-}
-
-function renderGrid() {
-  const grid = document.getElementById('cal-grid');
-  if (!grid) return;
-
-  // Intestazioni
-  let html = GIORNI.map(g => `<div class="cal-head">${g}</div>`).join('');
-
-  const firstDay = new Date(_currentYear, _currentMonth, 1);
-  let startDow = firstDay.getDay(); // 0=dom
-  startDow = startDow === 0 ? 6 : startDow - 1; // converti a lun=0
-
-  const daysInMonth = new Date(_currentYear, _currentMonth + 1, 0).getDate();
-  const todayStr = new Date().toISOString().split('T')[0];
-
-  // Celle giorni precedenti
-  const prevDays = new Date(_currentYear, _currentMonth, 0).getDate();
-  for (let i = startDow - 1; i >= 0; i--) {
-    const d = prevDays - i;
-    const m = _currentMonth === 0 ? 12 : _currentMonth;
-    const y = _currentMonth === 0 ? _currentYear - 1 : _currentYear;
-    const ds = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    html += `<div class="cal-day other-month" onclick="openForm('${ds}')">
-      <div class="day-num">${d}</div></div>`;
-  }
-
-  // Celle del mese corrente
-  for (let d = 1; d <= daysInMonth; d++) {
-    const ds = `${_currentYear}-${String(_currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const isToday = ds === todayStr;
-    const evs = eventiForDay(ds);
-    const maxShow = 2;
-    let chipsHtml = evs.slice(0, maxShow).map(e => {
-      const cat = CATEGORIE[e.categoria] || CATEGORIE.altro;
-      return `<span class="ev-chip ${cat.cls}" onclick="event.stopPropagation();openForm(null,${e.id})" title="${escHtml(e.titolo)}">${escHtml(e.titolo)}</span>`;
+function renderMobile(evs){
+  const wrap=document.getElementById('mobile-cards');
+  if(!wrap) return;
+  if(!evs.length){ wrap.innerHTML=''; return; }
+  wrap.innerHTML=evs.map(ev=>{
+    const s=SETTORI[ev.settore]||SETTORI.G;
+    const pdv=ev.pdv_data||defaultPdvData();
+    const dateStr=[fmtDate(ev.data_inizio),fmtDate(ev.data_fine)].filter(Boolean).join(' → ');
+    const pdvRows=PDV_LIST.map(pk=>{
+      const d=pdv[pk]||{};
+      const rKey='r'+_annoAttivo;
+      return `<div class="pdv-row">
+        <span class="pdv-lbl">${pk}</span>
+        <span class="${d.aderisce?'badge-si':'badge-no'}">${d.aderisce?'sì':'no'}</span>
+        ${d.azioni?`<span style="font-size:11px;color:var(--s600);flex:1">${escH(d.azioni)}</span>`:'<span style="flex:1"></span>'}
+        ${d[rKey]?`<span style="font-size:11px;color:var(--s700);font-weight:700">${escH(d[rKey])}</span>`:''}
+      </div>`;
     }).join('');
-    if (evs.length > maxShow) chipsHtml += `<div class="ev-more">+${evs.length - maxShow} altri</div>`;
-    const dayNumHtml = isToday
-      ? `<div class="day-num" style="display:flex"><span style="width:22px;height:22px;background:var(--red);color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px">${d}</span></div>`
-      : `<div class="day-num">${d}</div>`;
-    html += `<div class="cal-day${isToday?' today':''}" onclick="openForm('${ds}')">
-      ${dayNumHtml}${chipsHtml}</div>`;
-  }
-
-  // Riempi fino a completare la griglia (multiplo di 7)
-  const total = startDow + daysInMonth;
-  const remainder = total % 7 === 0 ? 0 : 7 - (total % 7);
-  for (let d = 1; d <= remainder; d++) {
-    const m = _currentMonth === 11 ? 1 : _currentMonth + 2;
-    const y = _currentMonth === 11 ? _currentYear + 1 : _currentYear;
-    const ds = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    html += `<div class="cal-day other-month" onclick="openForm('${ds}')">
-      <div class="day-num">${d}</div></div>`;
-  }
-
-  grid.innerHTML = html;
-}
-
-function renderList() {
-  const list   = document.getElementById('ev-list');
-  const empty  = document.getElementById('ev-empty');
-  const evs    = filteredEventi();
-  if (!evs.length) {
-    list.innerHTML = '';
-    empty.style.display = 'block';
-    return;
-  }
-  empty.style.display = 'none';
-  list.innerHTML = evs.map(e => {
-    const cat = CATEGORIE[e.categoria] || CATEGORIE.altro;
-    const dateLabel = e.data_fine && e.data_fine !== e.data
-      ? `${formatDate(e.data)} → ${formatDate(e.data_fine)}`
-      : formatDate(e.data);
-    return `<div class="ev-row" onclick="openForm(null,${e.id})">
-      <div class="ev-dot" style="background:${cat.color}"></div>
-      <div class="ev-info">
-        <div class="ev-title">${escHtml(e.titolo)}</div>
-        <div class="ev-meta"><i class="fas fa-calendar mr-1"></i>${dateLabel}${e.note ? ' · '+escHtml(e.note.substring(0,50)) : ''}</div>
+    return `<div class="ev-card">
+      <div class="ev-card-head" onclick="openForm(${ev.id})">
+        <div style="flex:1">
+          <div class="ev-card-titolo" style="color:${s.color}">${escH(ev.titolo)}</div>
+          <div class="ev-card-meta">
+            ${ev.settore?`<span style="font-weight:900;color:${s.color}">${ev.settore}</span> · `:''}
+            ${ev.tipologia?escH(ev.tipologia)+' · ':''}
+            ${dateStr}
+          </div>
+          ${ev.meccanica?`<div style="font-size:11px;color:var(--s500);margin-top:4px;line-height:1.35">${escH(ev.meccanica)}</div>`:''}
+        </div>
+        <i class="fas fa-chevron-right" style="color:var(--s300);font-size:13px;margin-top:2px"></i>
       </div>
-      <span class="ev-cat-badge" style="background:${cat.color}">${cat.label}</span>
+      <div class="ev-card-body">${pdvRows}</div>
     </div>`;
   }).join('');
 }
 
-function formatDate(ds) {
-  if (!ds) return '';
-  const [y,m,d] = ds.split('-');
-  return `${d} ${MESI[parseInt(m)-1].substring(0,3)} ${y}`;
+/* ── FILTERS ── */
+function setAnno(a){
+  _annoAttivo=a;
+  document.querySelectorAll('.year-tab').forEach(t=>t.classList.toggle('active',+t.dataset.year===a));
+  loadEventi();
+}
+function setSettore(s){
+  _settoreAttivo=s;
+  document.querySelectorAll('.s-chip').forEach(c=>c.classList.toggle('active',c.dataset.s===s));
+  render();
 }
 
-function escHtml(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+/* ── FORM ── */
+function buildPdvForm(pdv){
+  const body=document.getElementById('pdv-form-body');
+  if(!body) return;
+  body.innerHTML=PDV_LIST.map(pk=>{
+    const d=pdv[pk]||{aderisce:true,azioni:'',r2026:'',r2025:'',r2024:'',r2023:''};
+    return `<tr>
+      <td class="pdv-name">${pk}</td>
+      <td style="text-align:center">
+        <input type="checkbox" id="pdv-ader-${pk}" ${d.aderisce?'checked':''} style="width:16px;height:16px;accent-color:var(--red);cursor:pointer">
+      </td>
+      <td><input type="text" id="pdv-azioni-${pk}" class="mini-inp" value="${escH(d.azioni||'')}" placeholder="azioni…"></td>
+      <td><input type="text" id="pdv-r2026-${pk}" class="mini-inp" value="${escH(d.r2026||'')}" placeholder="es. 66 pz | €4.446"></td>
+      <td><input type="text" id="pdv-r2025-${pk}" class="mini-inp" value="${escH(d.r2025||'')}" placeholder=""></td>
+      <td><input type="text" id="pdv-r2024-${pk}" class="mini-inp" value="${escH(d.r2024||'')}" placeholder=""></td>
+      <td><input type="text" id="pdv-r2023-${pk}" class="mini-inp" value="${escH(d.r2023||'')}" placeholder=""></td>
+    </tr>`;
+  }).join('');
 }
 
-function render() {
-  document.getElementById('month-label').textContent = `${MESI[_currentMonth]} ${_currentYear}`;
+function openForm(evId){
+  _editId=evId||null;
+  const ev=evId?_eventi.find(e=>e.id===evId):null;
+  document.getElementById('modal-title').textContent=evId?'Modifica campagna':'Nuova campagna';
+  document.getElementById('f-del-btn').style.display=evId?'block':'none';
+
+  document.getElementById('f-titolo').value  = ev?.titolo||'';
+  document.getElementById('f-anno').value    = ev?.anno||_annoAttivo;
+  document.getElementById('f-settore').value = ev?.settore||'G';
+  document.getElementById('f-tipologia').value = ev?.tipologia||'';
+  document.getElementById('f-meccanica').value = ev?.meccanica||'';
+  document.getElementById('f-data-ini').value  = ev?.data_inizio||'';
+  document.getElementById('f-data-fin').value  = ev?.data_fine||'';
+
+  const pdv = ev?.pdv_data||defaultPdvData();
+  buildPdvForm(pdv);
+
+  switchTab('info');
+  document.getElementById('ev-modal').style.display='flex';
+  setTimeout(()=>document.getElementById('f-titolo').focus(),60);
+}
+function closeForm(){ document.getElementById('ev-modal').style.display='none'; _editId=null; }
+
+function switchTab(t){
+  document.getElementById('panel-info').style.display = t==='info'?'flex':'none';
+  document.getElementById('panel-pdv').style.display  = t==='pdv' ?'block':'none';
+  document.getElementById('tab-info').style.color = t==='info'?'var(--red)':'var(--s400)';
+  document.getElementById('tab-info').style.borderBottomColor = t==='info'?'var(--red)':'transparent';
+  document.getElementById('tab-pdv').style.color = t==='pdv'?'var(--red)':'var(--s400)';
+  document.getElementById('tab-pdv').style.borderBottomColor = t==='pdv'?'var(--red)':'transparent';
+}
+
+function collectPdvData(){
+  const pdv={};
+  PDV_LIST.forEach(pk=>{
+    pdv[pk]={
+      aderisce: document.getElementById('pdv-ader-'+pk)?.checked??true,
+      azioni:   document.getElementById('pdv-azioni-'+pk)?.value||'',
+      r2026:    document.getElementById('pdv-r2026-'+pk)?.value||'',
+      r2025:    document.getElementById('pdv-r2025-'+pk)?.value||'',
+      r2024:    document.getElementById('pdv-r2024-'+pk)?.value||'',
+      r2023:    document.getElementById('pdv-r2023-'+pk)?.value||'',
+    };
+  });
+  return pdv;
+}
+
+async function saveEvento(){
+  const titolo=document.getElementById('f-titolo').value.trim();
+  if(!titolo){ showToastM361('Inserisci il titolo','warning'); switchTab('info'); document.getElementById('f-titolo').focus(); return; }
+  const row={
+    anno:       parseInt(document.getElementById('f-anno').value),
+    titolo,
+    settore:    document.getElementById('f-settore').value,
+    tipologia:  document.getElementById('f-tipologia').value||null,
+    meccanica:  document.getElementById('f-meccanica').value.trim()||null,
+    data_inizio:document.getElementById('f-data-ini').value||null,
+    data_fine:  document.getElementById('f-data-fin').value||null,
+    pdv_data:   collectPdvData(),
+  };
+  let err;
+  if(_editId){
+    ({error:err}=await _sb.from('calendario_eventi').update(row).eq('id',_editId));
+  } else {
+    ({error:err}=await _sb.from('calendario_eventi').insert([row]));
+  }
+  if(err){ showToastM361('Errore: '+err.message,'error'); return; }
+  closeForm();
+  showToastM361(_editId?'Campagna aggiornata':'Campagna aggiunta','success');
   loadEventi();
 }
 
-// --- FORM ---
-function openForm(dateStr, evId) {
-  _editId = evId || null;
-  const modal = document.getElementById('ev-modal');
-  const delBtn = document.getElementById('f-delete-btn');
-  document.getElementById('modal-title').textContent = evId ? 'Modifica evento' : 'Nuovo evento';
-  delBtn.style.display = evId ? 'block' : 'none';
-
-  if (evId) {
-    const ev = _eventi.find(e => e.id === evId);
-    if (!ev) return;
-    document.getElementById('f-titolo').value    = ev.titolo || '';
-    document.getElementById('f-data').value      = ev.data   || '';
-    document.getElementById('f-data-fine').value = ev.data_fine || '';
-    document.getElementById('f-categoria').value = ev.categoria || 'altro';
-    document.getElementById('f-note').value      = ev.note   || '';
-  } else {
-    document.getElementById('f-titolo').value    = '';
-    document.getElementById('f-data').value      = dateStr || '';
-    document.getElementById('f-data-fine').value = '';
-    document.getElementById('f-categoria').value = 'altro';
-    document.getElementById('f-note').value      = '';
-  }
-
-  modal.style.display = 'flex';
-  setTimeout(() => document.getElementById('f-titolo').focus(), 50);
-}
-
-function closeForm() {
-  document.getElementById('ev-modal').style.display = 'none';
-  _editId = null;
-}
-
-async function saveEvento() {
-  const titolo = document.getElementById('f-titolo').value.trim();
-  if (!titolo) { showToastM361('Inserisci un titolo', 'warning'); return; }
-  const data = document.getElementById('f-data').value;
-  if (!data) { showToastM361('Inserisci una data', 'warning'); return; }
-
-  const row = {
-    titolo,
-    data,
-    data_fine: document.getElementById('f-data-fine').value || null,
-    categoria: document.getElementById('f-categoria').value,
-    note:      document.getElementById('f-note').value.trim() || null,
-    colore:    CATEGORIE[document.getElementById('f-categoria').value]?.color || '#475569',
-  };
-
-  let err;
-  if (_editId) {
-    ({ error: err } = await _sb.from('calendario_eventi').update(row).eq('id', _editId));
-  } else {
-    ({ error: err } = await _sb.from('calendario_eventi').insert([row]));
-  }
-
-  if (err) { showToastM361('Errore: ' + err.message, 'error'); return; }
+async function deleteEvento(){
+  if(!_editId) return;
+  const ev=_eventi.find(e=>e.id===_editId);
+  const ok=await m361Confirm(`Eliminare "${ev?.titolo}"?`,'Elimina campagna','Elimina','Annulla','error');
+  if(!ok) return;
+  const {error}=await _sb.from('calendario_eventi').delete().eq('id',_editId);
+  if(error){ showToastM361('Errore eliminazione','error'); return; }
   closeForm();
-  showToastM361(_editId ? 'Evento aggiornato' : 'Evento aggiunto', 'success');
-  render();
+  showToastM361('Campagna eliminata','success');
+  loadEventi();
 }
 
-async function deleteEvento() {
-  if (!_editId) return;
-  const ev = _eventi.find(e => e.id === _editId);
-  const ok = await m361Confirm(`Eliminare "${ev?.titolo}"?`, 'Elimina evento', 'Elimina', 'Annulla', 'error');
-  if (!ok) return;
-  const { error } = await _sb.from('calendario_eventi').delete().eq('id', _editId);
-  if (error) { showToastM361('Errore eliminazione', 'error'); return; }
-  closeForm();
-  showToastM361('Evento eliminato', 'success');
-  render();
+/* ── INLINE EDIT (risultati / azioni) ── */
+function openInline(evt, evId, pdv, key){
+  evt.stopPropagation();
+  const ev=_eventi.find(e=>e.id===evId);
+  if(!ev) return;
+  const current=(ev.pdv_data?.[pdv]?.[key])||'';
+  _inlineCtx={evId,pdv,key};
+  const pop=document.getElementById('inline-pop');
+  const inp=document.getElementById('inline-inp');
+  inp.value=current;
+  pop.style.display='flex';
+  // Position near click
+  const x=Math.min(evt.clientX, window.innerWidth-240);
+  const y=Math.min(evt.clientY+8, window.innerHeight-70);
+  pop.style.left=x+'px';
+  pop.style.top=y+'px';
+  inp.focus();
+  inp.select();
 }
-
-// Chiudi modale cliccando fuori
-document.getElementById('ev-modal').addEventListener('click', function(e){
-  if (e.target === this) closeForm();
+async function saveInline(){
+  if(!_inlineCtx) return;
+  const {evId,pdv,key}=_inlineCtx;
+  const ev=_eventi.find(e=>e.id===evId);
+  if(!ev) return;
+  const val=document.getElementById('inline-inp').value.trim();
+  const pdvData=JSON.parse(JSON.stringify(ev.pdv_data||defaultPdvData()));
+  if(!pdvData[pdv]) pdvData[pdv]={aderisce:true,azioni:'',r2026:'',r2025:'',r2024:'',r2023:''};
+  pdvData[pdv][key]=val;
+  const {error}=await _sb.from('calendario_eventi').update({pdv_data:pdvData}).eq('id',evId);
+  if(error){ showToastM361('Errore: '+error.message,'error'); return; }
+  ev.pdv_data=pdvData;
+  closeInline();
+  render();
+  M361.toast('Salvato','ok');
+}
+function closeInline(){
+  document.getElementById('inline-pop').style.display='none';
+  _inlineCtx=null;
+}
+document.getElementById('inline-inp').addEventListener('keydown',e=>{
+  if(e.key==='Enter') saveInline();
+  if(e.key==='Escape') closeInline();
+});
+document.addEventListener('click',e=>{
+  const pop=document.getElementById('inline-pop');
+  if(pop.style.display!=='none' && !pop.contains(e.target)) closeInline();
 });
 
+// Chiudi modal cliccando overlay
+document.getElementById('ev-modal').addEventListener('click',function(e){ if(e.target===this) closeForm(); });
+
 // INIT
-const _now = _today();
-_currentYear  = _now.y;
-_currentMonth = _now.m;
-render();
+loadEventi();
 </script>
 </body>
 </html>
