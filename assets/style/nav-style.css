@@ -409,11 +409,11 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
 
   /* Cards */
   .card, .card-pad, .card-r { padding: 14px !important; }
-  .nav-card { padding: 22px 18px; gap: 10px; border-radius: 18px !important; }
-  .nav-card-icon { width: 52px; height: 52px; border-radius: 14px; }
-  .nav-card-icon svg, .nav-card-icon i { width: 26px; height: 26px; font-size: 22px; }
-  .nav-card-title { font-size: 16px; font-weight: 800; }
-  .nav-card-sub   { font-size: 12px; }
+  .nav-card { padding: 14px 10px; gap: 8px; border-radius: 18px !important; aspect-ratio: 1 / 1; align-items: center; justify-content: center; }
+  .nav-card-icon { width: 48px; height: 48px; border-radius: 14px; }
+  .nav-card-icon svg, .nav-card-icon i { width: 24px; height: 24px; font-size: 20px; }
+  .nav-card-title { font-size: 13px; font-weight: 800; text-align: center; }
+  .nav-card-sub   { font-size: 11px; }
 
   /* Padding overrides */
   .p-8, .p-6 { padding: 12px !important; }
@@ -538,9 +538,9 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
   #m361-header #header-title { max-width: 80px; font-size: 11px; }
   #m361-header .hd-sep { margin: 0 4px; }
 
-  .grid-auto { grid-template-columns: 1fr !important; }
-  .nav-card { padding: 12px !important; }
-  .nav-card-title { font-size: 13px; }
+  .grid-auto { grid-template-columns: repeat(2, 1fr) !important; }
+  .nav-card { padding: 12px 8px !important; gap: 6px !important; aspect-ratio: 1 / 1; align-items: center; justify-content: center; }
+  .nav-card-title { font-size: 12px !important; text-align: center; }
 
   table { font-size: 11px !important; }
   th, td { padding: 4px 5px !important; }

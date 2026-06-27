@@ -178,11 +178,11 @@ body { font-family: 'Nunito', sans-serif; padding-top: 56px; padding-bottom: 68p
 .hd-user-info { display:flex;flex-direction:column;align-items:flex-start;gap:0;line-height:1; }
 .hd-user-name { font-size:13px;font-weight:700;color:#1e293b;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis; }
 .hd-user-email { font-size:11px;font-weight:500;color:#94a3b8;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;margin-top:2px; }
-.hd-avatar { display:none;width:34px;height:34px;border-radius:50%;background:#B5453A;color:#fff;font-size:14px;font-weight:900;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:0; }
+.hd-avatar { display:none;width:32px;height:32px;align-items:center;justify-content:center;flex-shrink:0;color:#B5453A;font-size:30px;line-height:1; }
 @media(max-width:640px) {
   .hd-user-info { display:none; }
   .hd-avatar { display:flex; }
-  #m361-profile-btn { padding:3px !important; border:none !important; border-radius:50% !important; }
+  #m361-profile-btn { padding:4px !important; border:none !important; border-radius:8px !important; }
 }
 @media(max-width:480px) {
   #m361-nav { height:54px; }
@@ -507,7 +507,7 @@ html.m361-grande{zoom:1.25}
           <span id="m361-bell-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:#B5453A;color:#fff;font-size:10px;font-weight:800;min-width:16px;height:16px;border-radius:8px;align-items:center;justify-content:center;padding:0 4px;line-height:1">0</span>
         </button>
         ${nomeFull ? `<a href="${BASE}pages/profilo/profilo.html" id="m361-profile-btn" title="${nomeFull}" style="background:none;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;padding:5px 10px;font-family:Nunito,sans-serif;display:flex;align-items:center;flex-shrink:0;transition:border-color .15s;text-decoration:none" onmouseenter="this.style.borderColor='#B5453A'" onmouseleave="this.style.borderColor='#e2e8f0'">
-          <span class="hd-avatar">${(nomeFull[0]||'?').toUpperCase()}</span>
+          <span class="hd-avatar"><i class="fas fa-circle-user"></i></span>
           <div class="hd-user-info">
             <span class="hd-user-name">${nomeFull}</span>
             <span class="hd-user-email">${emailFull}</span>
