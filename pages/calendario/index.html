@@ -8,6 +8,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calendario Commerciale</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
@@ -130,7 +131,7 @@ function getCurrentPageId(){ return 'calendario'; }
     <div class="s-chip" data-s="C" style="color:#8b5cf6;background:#f5f3ff" onclick="setSettore('C')">C — Casa</div>
     <div class="s-chip" data-s="G" style="color:#1e293b;background:var(--s100)" onclick="setSettore('G')">G — Generale</div>
     <div class="s-chip" data-s="A" style="color:#d97706;background:#fffbeb" onclick="setSettore('A')">A — Alimentare</div>
-    <div class="s-chip" data-s="N" style="color:#16a34a;background:#f0fdf4" onclick="setSettore('N')">N — Naturale</div>
+    <div class="s-chip" data-s="N" style="color:#16a34a;background:#f0fdf4" onclick="setSettore('N')">N — Natyr</div>
   </div>
 
   <!-- Table (desktop) -->
@@ -214,7 +215,7 @@ function getCurrentPageId(){ return 'calendario'; }
             <option value="C">C — Casa</option>
             <option value="G" selected>G — Generale</option>
             <option value="A">A — Alimentare</option>
-            <option value="N">N — Naturale</option>
+            <option value="N">N — Natyr</option>
           </select>
         </div>
         <div>
@@ -286,15 +287,15 @@ function getCurrentPageId(){ return 'calendario'; }
 
 <script>
 const SB_URL  = 'https://hsalynvxazxqtmsvjrzc.supabase.co';
-const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgwNzIxMzEsImV4cCI6MjA1MzY0ODEzMX0.CYcO9bVJBLpOPqcIBsC5hFXDiNMSBswjBi0s_w2rHQw';
-const _sb = window.supabase?.createClient(SB_URL, SB_ANON);
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYWx5bnZ4YXp4cXRtc3ZqcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjQ3MjcsImV4cCI6MjA5MzMwMDcyN30.JW4nsMrrfuI8BTg4bn2v74seVJ-_prfxZ1PQp5T18a8';
+const _sb = window._supabase || (window.supabase?.createClient(SB_URL, SB_ANON));
 
 const SETTORI = {
   M: { label:'Moda',      color:'#3b82f6' },
   C: { label:'Casa',      color:'#8b5cf6' },
   G: { label:'Generale',  color:'#1e293b' },
   A: { label:'Alimentare',color:'#d97706' },
-  N: { label:'Naturale',  color:'#16a34a' },
+  N: { label:'Natyr',     color:'#16a34a' },
 };
 const PDV_LIST = ['CR','CA','VI','WEB'];
 const ANNI     = [2026,2025,2024,2023];
@@ -505,6 +506,7 @@ function collectPdvData(){
 }
 
 async function saveEvento(){
+  if(!_sb){ showToastM361('Connessione non disponibile, ricarica la pagina','error'); return; }
   const titolo=document.getElementById('f-titolo').value.trim();
   if(!titolo){ showToastM361('Inserisci il titolo','warning'); switchTab('info'); document.getElementById('f-titolo').focus(); return; }
   const row={
@@ -574,7 +576,7 @@ async function saveInline(){
   ev.pdv_data=pdvData;
   closeInline();
   render();
-  M361.toast('Salvato','ok');
+  showToastM361('Salvato','success');
 }
 function closeInline(){
   document.getElementById('inline-pop').style.display='none';
