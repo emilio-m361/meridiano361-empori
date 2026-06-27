@@ -50,11 +50,14 @@
     .filters::-webkit-scrollbar{display:none}
 
     /* ── Search ── */
-    .search-wrap{background:#fff;border-bottom:1px solid var(--Gl);padding:8px 12px;display:flex;align-items:center;gap:8px}
-    .search-inp{flex:1;border:1.5px solid var(--Gl);border-radius:9px;padding:8px 12px 8px 34px;font-size:13px;font-family:'Nunito',sans-serif;font-weight:600;color:var(--S);outline:none;transition:border-color .15s;background:#fff}
-    .search-inp:focus{border-color:var(--R)}
-    .search-ico{position:absolute;left:24px;top:50%;transform:translateY(-50%);color:var(--G);font-size:13px;pointer-events:none}
-    .search-clear{background:none;border:none;cursor:pointer;color:var(--G);font-size:13px;padding:4px;display:none;flex-shrink:0}
+    .search-wrap{background:#fff;border-bottom:1px solid var(--Gl);padding:8px 14px}
+    .search-box{display:flex;align-items:center;gap:10px;background:var(--bg);border:1.5px solid var(--Gl);border-radius:12px;padding:0 14px;transition:border-color .18s,box-shadow .18s,background .18s}
+    .search-box:focus-within{border-color:var(--R);box-shadow:0 0 0 3px rgba(181,69,58,.1);background:#fff}
+    .search-box .sico{color:var(--G);font-size:13px;flex-shrink:0;transition:color .18s}
+    .search-box:focus-within .sico{color:var(--R)}
+    .search-inp{flex:1;border:none;background:transparent;padding:10px 0;font-size:13px;font-family:'Nunito',sans-serif;font-weight:600;color:var(--S);outline:none}
+    .search-inp::placeholder{color:var(--G);font-weight:500}
+    .search-clear{background:none;border:none;cursor:pointer;color:var(--G);font-size:14px;padding:4px 0;display:none;flex-shrink:0;transition:color .12s;line-height:1}
     .search-clear:hover{color:var(--R)}
     .fp{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:800;cursor:pointer;border:1.5px solid var(--Gl);background:#fff;color:var(--G);transition:all .12s;white-space:nowrap;font-family:inherit;letter-spacing:.03em}
     .fp:hover:not(.on){border-color:#cbd5e1;color:var(--S3)}
@@ -225,16 +228,16 @@
 </div>
 
 <div class="search-wrap">
-  <div style="position:relative;flex:1">
-    <i class="fas fa-search search-ico"></i>
+  <div class="search-box">
+    <i class="fas fa-search sico"></i>
     <input type="text" class="search-inp" id="search-inp"
       placeholder="Cerca per nome o codice…"
       autocomplete="off" autocorrect="off" spellcheck="false"
       oninput="onSearch(this)">
+    <button class="search-clear" id="search-clear" onclick="clearSearch()" title="Cancella">
+      <i class="fas fa-times"></i>
+    </button>
   </div>
-  <button class="search-clear" id="search-clear" onclick="clearSearch()" title="Cancella ricerca">
-    <i class="fas fa-times-circle"></i>
-  </button>
 </div>
 
 <div class="sec" id="sec-lbl">Caricamento…</div>
