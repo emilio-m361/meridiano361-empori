@@ -404,15 +404,16 @@ h2, h3, h4, h5, h6 { font-weight: 600; }
   #back-btn { font-size: 11px; gap: 4px; }
 
   /* Grids */
-  .grid-auto { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
-  .grid-2, .grid-4 { grid-template-columns: 1fr !important; gap: 8px; }
+  .grid-auto { grid-template-columns: repeat(2, 1fr) !important; gap: 12px; }
+  .grid-2, .grid-4 { grid-template-columns: 1fr !important; gap: 10px; }
 
   /* Cards */
   .card, .card-pad, .card-r { padding: 14px !important; }
-  .nav-card { padding: 16px 14px; gap: 6px; border-radius: 16px !important; }
-  .nav-card-icon { width: 36px; height: 36px; border-radius: 10px; }
-  .nav-card-icon svg, .nav-card-icon i { width: 18px; height: 18px; font-size: 16px; }
-  .nav-card-title { font-size: 14px; }
+  .nav-card { padding: 22px 18px; gap: 10px; border-radius: 18px !important; }
+  .nav-card-icon { width: 52px; height: 52px; border-radius: 14px; }
+  .nav-card-icon svg, .nav-card-icon i { width: 26px; height: 26px; font-size: 22px; }
+  .nav-card-title { font-size: 16px; font-weight: 800; }
+  .nav-card-sub   { font-size: 12px; }
 
   /* Padding overrides */
   .p-8, .p-6 { padding: 12px !important; }
