@@ -6,7 +6,7 @@
     <link rel="manifest" href="/manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guida</title>
+    <title>Aiuto</title>
     <link rel="stylesheet" href="../../assets/style/nav-style.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
@@ -20,85 +20,81 @@
 
         /* ── SIDEBAR ── */
         .sidebar {
-            width: 280px; flex-shrink: 0; background: #fff;
+            width: 220px; flex-shrink: 0; background: #fff;
             border-right: 1px solid #e2e8f0;
             position: sticky; top: 56px; height: calc(100vh - 56px);
             overflow-y: auto; display: flex; flex-direction: column;
         }
         .sidebar-search {
-            padding: 16px; border-bottom: 1px solid #f1f5f9; flex-shrink: 0;
+            padding: 12px 12px 10px; border-bottom: 1px solid #f1f5f9; flex-shrink: 0; position: relative;
         }
         .sidebar-search input {
-            width: 100%; padding: 8px 12px 8px 36px; border: 1px solid #e2e8f0;
-            border-radius: 10px; font-size: 13px; background: #f8fafc;
-            outline: none; font-family: 'Nunito', sans-serif;
+            width: 100%; padding: 8px 10px 8px 32px; border: 1px solid #e2e8f0;
+            border-radius: 10px; font-size: 12px; background: #f8fafc;
+            outline: none; font-family: 'Nunito', sans-serif; color: #334155;
         }
         .sidebar-search input:focus { border-color: var(--red); background: #fff; }
         .sidebar-search .search-icon {
-            position: absolute; left: 28px; top: 50%; transform: translateY(-50%);
-            color: #94a3b8; font-size: 12px; pointer-events: none;
+            position: absolute; left: 22px; top: 50%; transform: translateY(-50%);
+            color: #94a3b8; font-size: 11px; pointer-events: none;
         }
-        .sidebar-search { position: relative; }
-        .sidebar-nav { flex: 1; padding: 8px 0; }
-        .nav-group-label {
-            padding: 12px 16px 4px; font-size: 9px; font-weight: 800;
-            text-transform: uppercase; letter-spacing: .12em; color: #94a3b8;
-        }
+        .sidebar-nav { flex: 1; padding: 6px 8px; }
         .nav-item {
             display: flex; align-items: center; gap: 10px;
-            padding: 9px 16px; cursor: pointer; border-radius: 0;
-            font-size: 13px; font-weight: 500; color: #475569;
-            transition: all .12s; border-left: 3px solid transparent;
-            text-decoration: none;
+            padding: 9px 10px; cursor: pointer; border-radius: 8px;
+            font-size: 13px; font-weight: 600; color: #475569;
+            transition: all .12s; text-decoration: none; margin-bottom: 2px;
         }
         .nav-item:hover { background: #f8fafc; color: #1e293b; }
-        .nav-item.active {
-            background: #fdf1f0; color: var(--red); font-weight: 700;
-            border-left-color: var(--red);
-        }
-        .nav-item .nav-icon { width: 18px; text-align: center; font-size: 13px; flex-shrink: 0; }
-        .nav-item .nav-badge {
+        .nav-item.active { background: #fdf1f0; color: var(--red); font-weight: 700; }
+        .nav-item .nav-icon { width: 20px; text-align: center; font-size: 14px; flex-shrink: 0; }
+        .nav-badge {
             margin-left: auto; font-size: 9px; font-weight: 800; text-transform: uppercase;
-            background: #f1f5f9; color: #94a3b8; padding: 2px 6px; border-radius: 4px;
+            background: #fee2e2; color: #991b1b; padding: 2px 6px; border-radius: 4px;
         }
-        .nav-item.active .nav-badge { background: #fee2e2; color: var(--red); }
 
         /* ── MAIN CONTENT ── */
-        .guida-main { flex: 1; min-width: 0; padding: 32px; max-width: 900px; }
+        .guida-main { flex: 1; min-width: 0; padding: 28px 32px; max-width: 860px; }
 
-        /* ── SECTION CARDS ── */
-        .sezione-header {
-            display: flex; align-items: flex-start; gap: 16px; margin-bottom: 24px;
-        }
+        /* ── SECTION HEADER ── */
+        .sezione-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
         .sezione-icona {
-            width: 52px; height: 52px; border-radius: 14px; background: var(--red);
+            width: 48px; height: 48px; border-radius: 14px; background: var(--red);
             display: flex; align-items: center; justify-content: center;
-            font-size: 22px; color: #fff; flex-shrink: 0;
+            font-size: 20px; color: #fff; flex-shrink: 0;
         }
-        .sezione-titolo { font-size: 26px; font-weight: 900; color: var(--dark); line-height: 1.2; }
-        .sezione-desc { font-size: 14px; color: #64748b; margin-top: 4px; line-height: 1.6; }
-        .meta-row {
-            display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 8px;
-        }
+        .sezione-titolo { font-size: 22px; font-weight: 900; color: var(--dark); line-height: 1.2; }
+        .sezione-desc { font-size: 13px; color: #64748b; margin-top: 4px; line-height: 1.6; }
+        .meta-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
         .meta-chip {
-            display: inline-flex; align-items: center; gap: 5px;
+            display: inline-flex; align-items: center; gap: 4px;
             font-size: 10px; font-weight: 700; text-transform: uppercase;
-            letter-spacing: .06em; padding: 3px 9px; border-radius: 99px;
+            letter-spacing: .06em; padding: 3px 8px; border-radius: 99px;
         }
-        .chip-ruolo { background: #f1f5f9; color: #475569; }
-        .chip-data  { background: #fffbeb; color: #92400e; }
-        .chip-admin { background: #fee2e2; color: #991b1b; }
-        .chip-tutti { background: #f0fdf4; color: #166534; }
 
-        /* ── FUNZIONALITÀ ── */
+        /* ── SUBSECTION ── */
+        .sub-header {
+            display: flex; align-items: center; gap: 10px;
+            margin: 28px 0 14px; padding-bottom: 10px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        .sub-icon {
+            width: 32px; height: 32px; border-radius: 8px; background: #fdf1f0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; color: var(--red); flex-shrink: 0;
+        }
+        .sub-titolo { font-size: 15px; font-weight: 800; color: var(--dark); }
+        .sub-desc { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+        /* ── CARDS ── */
         .card {
-            background: #fff; border-radius: 16px; padding: 20px 24px;
-            border: 1px solid #f1f5f9; box-shadow: 0 1px 3px rgba(0,0,0,.05);
-            margin-bottom: 16px;
+            background: #fff; border-radius: 14px; padding: 18px 20px;
+            border: 1px solid #f1f5f9; box-shadow: 0 1px 3px rgba(0,0,0,.04);
+            margin-bottom: 12px;
         }
         .card-title {
-            font-size: 11px; font-weight: 800; text-transform: uppercase;
-            letter-spacing: .1em; color: #94a3b8; margin-bottom: 14px;
+            font-size: 10px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: .1em; color: #94a3b8; margin-bottom: 12px;
             display: flex; align-items: center; gap: 8px;
         }
         .card-title::before {
@@ -107,21 +103,21 @@
         }
 
         /* Feature list */
-        .feature-list { display: flex; flex-direction: column; gap: 10px; }
-        .feature-item { display: flex; align-items: flex-start; gap: 12px; }
+        .feature-list { display: flex; flex-direction: column; gap: 8px; }
+        .feature-item { display: flex; align-items: flex-start; gap: 10px; }
         .feature-dot {
-            width: 28px; height: 28px; border-radius: 8px; background: #fdf1f0;
+            width: 26px; height: 26px; border-radius: 7px; background: #fdf1f0;
             display: flex; align-items: center; justify-content: center;
-            font-size: 12px; color: var(--red); flex-shrink: 0; margin-top: 1px;
+            font-size: 11px; color: var(--red); flex-shrink: 0; margin-top: 1px;
         }
         .feature-text { font-size: 13px; color: #334155; line-height: 1.5; }
         .feature-text strong { color: #1e293b; font-weight: 700; }
 
         /* Steps */
-        .step-list { display: flex; flex-direction: column; gap: 12px; }
-        .step-item { display: flex; gap: 14px; align-items: flex-start; }
+        .step-list { display: flex; flex-direction: column; gap: 10px; }
+        .step-item { display: flex; gap: 12px; align-items: flex-start; }
         .step-num {
-            width: 26px; height: 26px; border-radius: 50%; background: var(--red);
+            width: 24px; height: 24px; border-radius: 50%; background: var(--red);
             color: #fff; font-size: 11px; font-weight: 800; display: flex;
             align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;
         }
@@ -137,65 +133,18 @@
         /* Note */
         .note-box {
             background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px;
-            padding: 12px 16px; font-size: 12px; color: #78350f; line-height: 1.6;
-            display: flex; gap: 10px; align-items: flex-start;
+            padding: 10px 14px; font-size: 12px; color: #78350f; line-height: 1.6;
+            display: flex; gap: 8px; align-items: flex-start; margin-bottom: 12px;
         }
         .note-box i { margin-top: 2px; flex-shrink: 0; }
-
-        /* Ruoli table */
-        .ruoli-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-        .ruolo-item {
-            display: flex; align-items: center; gap: 6px;
-            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
-            padding: 6px 12px; font-size: 12px;
-        }
-        .ruolo-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-
-        /* Home page overview */
-        .overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .overview-item {
-            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;
-            padding: 14px 16px; display: flex; align-items: center; gap: 12px;
-            cursor: pointer; transition: all .15s; text-decoration: none; color: inherit;
-        }
-        .overview-item:hover { border-color: var(--red); background: #fdf1f0; }
-        .overview-item .ov-icon {
-            width: 36px; height: 36px; border-radius: 10px; background: var(--red);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 15px; color: #fff; flex-shrink: 0;
-        }
-        .overview-item .ov-name { font-size: 13px; font-weight: 700; color: #1e293b; }
-        .overview-item .ov-desc { font-size: 11px; color: #94a3b8; margin-top: 2px; }
-
-        /* Search highlight */
-        .search-hl { background: #fef9c3; border-radius: 2px; }
-
-        /* Empty search */
-        .empty-search {
-            text-align: center; padding: 60px 20px; color: #94a3b8;
-        }
-
-        /* Divider */
-        .section-divider { border: none; border-top: 1px solid #f1f5f9; margin: 20px 0; }
 
         @media (max-width: 768px) {
             .sidebar { display: none; }
             .guida-main { padding: 16px; }
-            .overview-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body class="pb-20">
-
-<header class="bg-white border-b p-4 px-6 md:px-8 flex justify-between items-center sticky top-0 z-50 shadow-sm">
-    <div class="flex items-center gap-4">
-        <img src="../../assets/images/logom361_rosso.jpg" alt="Logo" class="h-8" onerror="this.style.display='none'">
-        <h1 class="font-bold text-lg border-l pl-4 text-slate-700">Guida all'uso</h1>
-    </div>
-    <a href="../../index.html" class="text-sm font-bold text-slate-500 hover:text-[#B5453A] flex items-center gap-2 transition-colors">
-        <i class="fas fa-arrow-left"></i> Home
-    </a>
-</header>
 
 <div class="guida-wrap">
 
@@ -203,7 +152,7 @@
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-search">
             <i class="fas fa-search search-icon"></i>
-            <input type="text" id="search-input" placeholder="Cerca nella guida…" oninput="searchGuida(this.value)">
+            <input type="text" id="search-input" placeholder="Cerca…" oninput="searchGuida(this.value)">
         </div>
         <nav class="sidebar-nav" id="sidebar-nav"></nav>
     </aside>
@@ -213,406 +162,359 @@
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// ═══════════════════════════════════════════════════════════════
+// GUIDA_DATA
+// ═══════════════════════════════════════════════════════════════
+const GUIDA_DATA = { sezioni: [
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// GUIDA_DATA — Aggiorna questa struttura quando implementi nuove funzionalità.
-// Ogni sezione ha: id, icona (FontAwesome), titolo, gruppo, ruoli, aggiornato,
-// descrizione, funzionalita[], passaggi[], note (opzionale).
-// ═══════════════════════════════════════════════════════════════════════════════
-
-const GUIDA_DATA = {
-
-  meta: {
-    appName: 'Meridiano 361 — Empori',
-    versione: '2026.06',
-    aggiornata: '2026-06-06'
+  {
+    id: 'home',
+    icona: 'fa-house',
+    titolo: 'Home',
+    ruoli: ['tutti'],
+    aggiornato: '2026-06-06',
+    descrizione: 'La schermata principale raccoglie tutti gli accessi alle sezioni dell\'app. Le sezioni visibili dipendono dai permessi assegnati al tuo profilo.',
+    funzionalita: [
+      { icona: 'fa-grid-2',             testo: '<strong>Area Clienti</strong> — Ordini, Prenotazioni, Richieste Info, Tessere fedeltà' },
+      { icona: 'fa-store',              testo: '<strong>Area Emporio</strong> — Turni, Cassa, Preordini, Prezzi, Materiali' },
+      { icona: 'fa-lock',               testo: '<strong>Permessi</strong> — Le sezioni che non hai il permesso di vedere non compaiono nella home' },
+      { icona: 'fa-right-from-bracket', testo: '<strong>Logout</strong> — Bottone in alto a destra per uscire dall\'account' }
+    ],
+    passaggi: [],
+    note: null
   },
 
-  sezioni: [
+  {
+    id: 'ordini',
+    icona: 'fa-bag-shopping',
+    titolo: 'Ordini',
+    ruoli: ['admin', 'dipendente', 'coordinatore', 'responsabile'],
+    aggiornato: '2026-06-06',
+    descrizione: 'Gestione completa degli ordini clienti: inserimento, avanzamento stato e archivio storico.',
+    funzionalita: [],
+    passaggi: [],
+    note: null,
+    sottosezioni: [
+      {
+        titolo: 'Ordini in Corso',
+        icona: 'fa-clock',
+        descrizione: 'Mostra tutti gli ordini aperti con il loro stato di avanzamento. Da qui puoi seguire ogni ordine dal momento dell\'inserimento fino all\'evasione.',
+        funzionalita: [
+          { icona: 'fa-filter',       testo: '<strong>Filtri di stato</strong> — Tutti, Merce da ordinare, Merce ordinata, Da avvisare, Cliente avvisato' },
+          { icona: 'fa-search',       testo: '<strong>Ricerca</strong> — Per nome cliente, emporio, data inserimento' },
+          { icona: 'fa-tag',          testo: '<strong>Badge automatici</strong> — Lo stato cambia automaticamente in base alla disponibilità della merce' },
+          { icona: 'fa-pen-to-square',testo: '<strong>Titolo editabile</strong> — Clicca sul titolo della card per rinominare l\'ordine' },
+          { icona: 'fa-box-check',    testo: '<strong>Ritirato / Spedito</strong> — Spuntando questa voce l\'ordine va automaticamente in Archiviati' },
+          { icona: 'fa-eye',          testo: '<strong>Riepilogo</strong> — Dettaglio completo (articoli, quantità, totali) in modale' }
+        ],
+        passaggi: [
+          { titolo: 'Controlla lo stato',       testo: 'Usa i tab in alto per filtrare: "Merce da ordinare" mostra gli ordini in attesa; "Da avvisare" quelli pronti per il ritiro.' },
+          { titolo: 'Aggiorna la disponibilità',testo: 'Clicca su Modifica per aprire il modulo e aggiornare le colonne Pronta, Da forn., Da empori.', tip: 'Le celle "Pronta" sono quelle verdi — compilale per far avanzare lo stato.' },
+          { titolo: 'Avvisa il cliente',         testo: 'Quando la merce è tutta pronta, spunta "Cliente avvisato".' },
+          { titolo: 'Archivia',                  testo: 'Quando il cliente ritira o la spedizione è partita, spunta "Ritirato / Spedito".' }
+        ],
+        note: 'Il titolo viene generato automaticamente dalle prime descrizioni degli articoli, ma puoi modificarlo in qualsiasi momento cliccandoci sopra.'
+      },
+      {
+        titolo: 'Nuovo Ordine',
+        icona: 'fa-plus',
+        descrizione: 'Crea un ordine standard (singoli prodotti) o un ordine bomboniere (con tipologie e confezionamento). Il numero d\'ordine viene generato automaticamente.',
+        funzionalita: [
+          { icona: 'fa-gift',        testo: '<strong>Tipo ordine</strong> — Scegli tra "Ordine Standard" e "Ordine Bomboniere" (con confezionamento, cartoncini, omaggio)' },
+          { icona: 'fa-address-book',testo: '<strong>Rubrica clienti</strong> — Cerca un cliente esistente per nome o cognome, oppure aggiungine uno nuovo al volo' },
+          { icona: 'fa-plus',        testo: '<strong>Righe prodotto</strong> — Aggiungi più righe: codice, descrizione, prezzo, quantità, disponibilità per fonte' },
+          { icona: 'fa-layer-group', testo: '<strong>Tipologie bomboniere</strong> — Gruppi separati con confezionamento e cartoncini omaggio indipendenti' },
+          { icona: 'fa-print',       testo: '<strong>Preventivo</strong> — Stampa un preventivo formattato (solo bomboniere)' }
+        ],
+        passaggi: [
+          { titolo: 'Scegli il tipo',            testo: 'Seleziona "Ordine Standard" o "Ordine Bomboniere".' },
+          { titolo: 'Cerca o crea il cliente',   testo: 'Usa "Cerca cliente" per trovarne uno in rubrica oppure "Nuovo cliente" per aggiungerne uno.', tip: 'Una volta selezionato un cliente dalla rubrica, puoi modificarne i dati e salvarli direttamente.' },
+          { titolo: 'Inserisci gli articoli',    testo: 'Compila codice, descrizione e prezzo. Usa le colonne Pronta, Da forn., Da empori per la disponibilità.' },
+          { titolo: 'Salva',                      testo: 'Clicca "Salva Ordine". L\'ordine appare subito in "Ordini in Corso".' }
+        ],
+        note: 'Le colonne "Da forn." e "Da empori" non incidono sul totale — servono solo per tracciare la provenienza della merce.'
+      },
+      {
+        titolo: 'Archiviati',
+        icona: 'fa-archive',
+        descrizione: 'Storico di tutti gli ordini evasi. Puoi consultare i dettagli, modificare o ripristinare un ordine in "In Corso".',
+        funzionalita: [
+          { icona: 'fa-search',      testo: '<strong>Ricerca</strong> — Per cliente, numero ordine, emporio o anno' },
+          { icona: 'fa-rotate-left', testo: '<strong>Ripristina</strong> — Rimanda un ordine in "In Corso" se necessario' },
+          { icona: 'fa-eye',         testo: '<strong>Riepilogo</strong> — Dettaglio completo in modale' }
+        ],
+        passaggi: [],
+        note: null
+      }
+    ]
+  },
 
-    // ─── HOME ────────────────────────────────────────────────────────────────
-    {
-      id: 'home',
-      icona: 'fa-house',
-      titolo: 'Home & Dashboard',
-      gruppo: 'Generale',
-      ruoli: ['tutti'],
-      aggiornato: '2026-06-06',
-      descrizione: 'La schermata principale raccoglie tutti gli accessi alle sezioni dell\'app. Le sezioni visibili dipendono dai permessi assegnati al tuo profilo.',
-      funzionalita: [
-        { icona: 'fa-grid-2', testo: '<strong>Area Clienti</strong> — Ordini, Prenotazioni, Richieste Info, Tessere fedeltà' },
-        { icona: 'fa-store', testo: '<strong>Area Emporio</strong> — Turni, Cassa, Preordini, Prezzi, Calendario commerciale' },
-        { icona: 'fa-lock', testo: '<strong>Permessi</strong> — Le sezioni che non hai il permesso di vedere non compaiono nella home' },
-        { icona: 'fa-right-from-bracket', testo: '<strong>Logout</strong> — Bottone in alto a destra per uscire dall\'account' }
-      ],
-      passaggi: [],
-      note: null
-    },
+  {
+    id: 'prenotazioni',
+    icona: 'fa-calendar-check',
+    titolo: 'Prenotazioni',
+    ruoli: ['admin', 'dipendente', 'coordinatore', 'volontario', 'scu'],
+    aggiornato: '2026-06-06',
+    descrizione: 'Gestisce le prenotazioni di prodotti per ogni emporio. Gli operatori inseriscono i clienti interessati, le quantità e tracciano chi è stato avvisato o ha già ritirato.',
+    funzionalita: [
+      { icona: 'fa-store',       testo: '<strong>Tab per emporio</strong> — Ogni emporio ha la sua colonna. Gli operatori non-admin vedono solo il proprio.' },
+      { icona: 'fa-table',       testo: '<strong>Tabella prodotti</strong> — Lista condivisa di prodotti prenotabili gestita centralmente' },
+      { icona: 'fa-check',       testo: '<strong>Pronto / Avvisato</strong> — Checkbox per segnare che la merce è arrivata e che il cliente è stato contattato' },
+      { icona: 'fa-sigma',       testo: '<strong>Tab Sintesi</strong> — Riepilogo delle quantità prenotate per ogni prodotto e emporio' },
+      { icona: 'fa-floppy-disk', testo: '<strong>Salvataggio automatico</strong> — Ogni 30 secondi. Usa "Salva" per forzarlo.' }
+    ],
+    passaggi: [
+      { titolo: 'Seleziona il tuo emporio', testo: 'Clicca sul tab del tuo emporio.' },
+      { titolo: 'Aggiungi un cliente',      testo: 'Clicca "Aggiungi cliente" e compila i dati. Poi inserisci le quantità per ogni prodotto.' },
+      { titolo: 'Segnala pronto e avvisato',testo: 'Quando la merce arriva, spunta "Pronto". Dopo aver contattato il cliente, spunta "Avvisato".', tip: 'Il colore della riga cambia a conferma della spunta.' },
+      { titolo: 'Consulta la sintesi',       testo: 'Usa il tab "Sintesi" per vedere il riepilogo totale per emporio.' }
+    ],
+    note: null
+  },
 
-    // ─── ORDINI ──────────────────────────────────────────────────────────────
-    {
-      id: 'ordini-incorso',
-      icona: 'fa-clock',
-      titolo: 'Ordini in Corso',
-      gruppo: 'Ordini',
-      ruoli: ['admin', 'dipendente', 'coordinatore', 'responsabile'],
-      aggiornato: '2026-06-06',
-      descrizione: 'Mostra tutti gli ordini aperti con il loro stato di avanzamento. Da qui puoi seguire ogni ordine dal momento dell\'inserimento fino all\'evasione e all\'archiviazione.',
-      funzionalita: [
-        { icona: 'fa-filter', testo: '<strong>Filtri di stato</strong> — Tutti, Merce da ordinare, Merce ordinata, Da avvisare, Cliente avvisato' },
-        { icona: 'fa-search', testo: '<strong>Ricerca</strong> — Per nome cliente, emporio di riferimento, data inserimento' },
-        { icona: 'fa-tag', testo: '<strong>Badge automatici</strong> — Lo stato dell\'ordine cambia automaticamente in base alla disponibilità della merce (colonne "Pronta")' },
-        { icona: 'fa-pen-to-square', testo: '<strong>Titolo editabile</strong> — Clicca sul titolo della card per rinominare l\'ordine' },
-        { icona: 'fa-check-square', testo: '<strong>Cliente avvisato</strong> — Spunta la checkbox per segnare che il cliente è stato contattato' },
-        { icona: 'fa-box-check', testo: '<strong>Ritirato / Spedito</strong> — Spuntando questa voce l\'ordine viene automaticamente spostato in Archiviati' },
-        { icona: 'fa-eye', testo: '<strong>Riepilogo</strong> — Visualizza tutti i dettagli dell\'ordine (articoli, quantità, totali) in un modale' }
-      ],
-      passaggi: [
-        { titolo: 'Controlla lo stato', testo: 'Usa i tab in alto per filtrare: "Merce da ordinare" mostra gli ordini in attesa; "Da avvisare" quelli pronti per il ritiro.' },
-        { titolo: 'Aggiorna la disponibilità', testo: 'Clicca su Modifica (icona matita) per aprire il modulo e aggiornare le colonne Pronta, Da forn., Da empori. I badge si aggiornano in automatico.', tip: 'Le celle "Pronta" sono quelle verdi — compilale per far avanzare lo stato.' },
-        { titolo: 'Avvisa il cliente', testo: 'Quando la merce è tutta pronta, spunta "Cliente avvisato". L\'ordine passa nella tab apposita.' },
-        { titolo: 'Archivia', testo: 'Quando il cliente ritira o la spedizione è partita, spunta "Ritirato / Spedito". L\'ordine va in Archiviati.' }
-      ],
-      note: 'Il titolo dell\'ordine viene generato automaticamente dalle prime descrizioni degli articoli, ma puoi modificarlo in qualsiasi momento cliccandoci sopra.'
-    },
+  {
+    id: 'info',
+    icona: 'fa-message',
+    titolo: 'Info Clienti',
+    ruoli: ['admin', 'dipendente', 'coordinatore', 'responsabile', 'volontario'],
+    aggiornato: '2026-06-06',
+    descrizione: 'Gestisce le richieste di informazioni e gli appuntamenti ricevuti dai clienti. Ogni richiesta viene assegnata a un emporio e tracciata fino alla risposta.',
+    funzionalita: [
+      { icona: 'fa-store',       testo: '<strong>Selezione emporio</strong> — Le richieste sono organizzate per emporio.' },
+      { icona: 'fa-plus',        testo: '<strong>Nuova richiesta</strong> — Cliente, contatti, giorno/orario preferito e descrizione' },
+      { icona: 'fa-reply',       testo: '<strong>Risposta</strong> — Scrivi la risposta nella card e clicca "Rispondi"' },
+      { icona: 'fa-box-archive', testo: '<strong>Archivia</strong> — Sposta una richiesta evasa nella tab Archiviate' },
+      { icona: 'fa-table',       testo: '<strong>Recap completo</strong> — Tutte le richieste di tutti gli empori (solo admin)' }
+    ],
+    passaggi: [
+      { titolo: 'Aggiungi una richiesta', testo: 'Clicca "Nuova Richiesta", compila il form con i dati del cliente e salva.' },
+      { titolo: 'Rispondi',               testo: 'Nella card della richiesta, scrivi la risposta nel campo di testo e clicca "Rispondi".' },
+      { titolo: 'Archivia',               testo: 'Una volta evasa, clicca "Richiesta da archiviare" per spostarla dalla lista attive.' }
+    ],
+    note: null
+  },
 
-    {
-      id: 'ordini-nuovo',
-      icona: 'fa-plus',
-      titolo: 'Nuovo Ordine',
-      gruppo: 'Ordini',
-      ruoli: ['admin', 'dipendente', 'coordinatore', 'responsabile'],
-      aggiornato: '2026-06-06',
-      descrizione: 'Crea un ordine standard (singoli prodotti) o un ordine bomboniere (con tipologie, confezionamento e cartoncini). Il numero d\'ordine viene generato automaticamente.',
-      funzionalita: [
-        { icona: 'fa-gift', testo: '<strong>Tipo ordine</strong> — Scegli tra "Ordine Standard" (prodotti vari) e "Ordine Bomboniere" (con confezionamento, cartoncini, omaggio)' },
-        { icona: 'fa-user', testo: '<strong>Autocomplete cliente</strong> — Digita il cognome e l\'app cerca nella rubrica. Puoi anche aggiungere un nuovo cliente al volo.' },
-        { icona: 'fa-plus', testo: '<strong>Righe prodotto</strong> — Aggiungi più righe. Per ogni prodotto: codice, descrizione, prezzo, quantità, disponibilità suddivisa per fonte' },
-        { icona: 'fa-layer-group', testo: '<strong>Tipologie bomboniere</strong> — Aggiungi più gruppi (es. "per invitati", "per testimoni"). Ogni gruppo ha confezionamento e cartoncini omaggio separati' },
-        { icona: 'fa-print', testo: '<strong>Preventivo</strong> — Stampa un preventivo formattato direttamente dal modulo (solo bomboniere)' },
-        { icona: 'fa-whatsapp fab', testo: '<strong>WhatsApp</strong> — Attiva il link WA sul numero di cellulare del cliente per contattarlo rapidamente' }
-      ],
-      passaggi: [
-        { titolo: 'Scegli il tipo', testo: 'Seleziona "Ordine Standard" per prodotti normali o "Ordine Bomboniere" per articoli con confezionamento.' },
-        { titolo: 'Compila emporio e cliente', testo: 'Seleziona l\'emporio, l\'operatore e la data. Cerca il cliente per cognome oppure inserisci i dati manualmente.', tip: 'Usa "Nuovo cliente" per aggiungere il cliente alla rubrica in un\'unica operazione.' },
-        { titolo: 'Inserisci gli articoli', testo: 'Compila codice, descrizione e prezzo. Usa le colonne "Pronta", "Da forn.", "Da empori" per indicare subito la disponibilità.' },
-        { titolo: 'Bomboniere: aggiungi confezionamento', testo: 'Spunta la checkbox CB per attivare il confezionamento. Scegli Completo o Senza confetti, inserisci il costo e la quantità.' },
-        { titolo: 'Salva', testo: 'Clicca "Salva Ordine". L\'ordine appare subito in "Ordini in Corso".' }
-      ],
-      note: 'Le colonne "Da forn." e "Da empori" non incidono sul totale — servono solo per tracciare da dove arriva la merce.'
-    },
+  {
+    id: 'turni',
+    icona: 'fa-users',
+    titolo: 'Turni',
+    ruoli: ['admin', 'dipendente', 'coordinatore', 'responsabile', 'volontario', 'scu'],
+    aggiornato: '2026-06-06',
+    descrizione: 'Calendario mensile dei turni per emporio. I gestori pianificano i turni di mattina, pomeriggio e sera; i volontari e gli SCU possono aggiungersi autonomamente.',
+    funzionalita: [
+      { icona: 'fa-calendar',     testo: '<strong>Calendario mensile</strong> — Naviga tra i mesi con le frecce. Tre fasce orarie: mattina, pomeriggio, sera.' },
+      { icona: 'fa-toggle-on',    testo: '<strong>Apertura / Chiusura</strong> — Clicca sulla cella colorata per alternare aperto (verde) e chiuso (rosso).' },
+      { icona: 'fa-user-plus',    testo: '<strong>Aggiungi operatore</strong> — Clicca "+" per aprire il selettore.' },
+      { icona: 'fa-circle-xmark', testo: '<strong>Rimuovi operatore</strong> — Clicca la × accanto al nome.' },
+      { icona: 'fa-clock',        testo: '<strong>Orari</strong> — Pannello per gli orari predefiniti annuali, mensili, settimanali, giornalieri.' }
+    ],
+    passaggi: [
+      { titolo: 'Volontari e SCU: aggiungi te stesso', testo: 'Nella cella del turno che vuoi coprire, clicca "+ Io". Il tuo nome viene aggiunto direttamente.' },
+      { titolo: 'Gestori: aggiungi un operatore',      testo: 'Clicca "+" nella cella desiderata. Si apre il selettore con tutti gli operatori disponibili.', tip: 'Puoi aggiungere più operatori allo stesso turno.' },
+      { titolo: 'Apri / chiudi un giorno',              testo: 'Clicca sulla cella verde o rossa a sinistra del giorno.' },
+      { titolo: 'Imposta gli orari',                    testo: 'Apri il pannello Orari (icona orologio). Puoi definire orari a livello annuale, mensile, settimanale o giornaliero.' }
+    ],
+    note: 'Volontari e SCU vedono solo se stessi e usano il bottone "+ Io". Non possono modificare i turni degli altri.'
+  },
 
-    {
-      id: 'ordini-archiviati',
-      icona: 'fa-archive',
-      titolo: 'Ordini Archiviati',
-      gruppo: 'Ordini',
-      ruoli: ['admin', 'dipendente', 'coordinatore', 'responsabile'],
-      aggiornato: '2026-06-06',
-      descrizione: 'Storico di tutti gli ordini evasi. Puoi consultare i dettagli, modificare, ripristinare un ordine in "In Corso" o eliminarlo definitivamente.',
-      funzionalita: [
-        { icona: 'fa-search', testo: '<strong>Ricerca</strong> — Per cliente, numero ordine, emporio o anno' },
-        { icona: 'fa-rotate-left', testo: '<strong>Ripristina</strong> — Rimanda un ordine in "In Corso" se necessario' },
-        { icona: 'fa-eye', testo: '<strong>Riepilogo</strong> — Visualizza il dettaglio completo in un modale' }
-      ],
-      passaggi: [],
-      note: null
-    },
+  {
+    id: 'cassa',
+    icona: 'fa-cash-register',
+    titolo: 'Cassa',
+    ruoli: ['admin', 'dipendente', 'coordinatore'],
+    aggiornato: '2026-06-06',
+    descrizione: 'Sezione per la riconciliazione e il controllo degli incassi dell\'emporio. Include le viste commerciale, amministrativa e IVA.',
+    funzionalita: [
+      { icona: 'fa-coins',             testo: '<strong>Cassa commerciale</strong> — Inserimento e verifica degli incassi giornalieri' },
+      { icona: 'fa-building-columns',  testo: '<strong>Cassa amministrativa</strong> — Riconciliazione dei movimenti' },
+      { icona: 'fa-percent',           testo: '<strong>Cassa IVA</strong> — Calcolo e controllo dell\'IVA' }
+    ],
+    passaggi: [],
+    note: null
+  },
 
-    // ─── PRENOTAZIONI ─────────────────────────────────────────────────────────
-    {
-      id: 'prenotazioni',
-      icona: 'fa-calendar-check',
-      titolo: 'Prenotazioni',
-      gruppo: 'Clienti',
-      ruoli: ['admin', 'dipendente', 'coordinatore', 'volontario', 'scu'],
-      aggiornato: '2026-06-06',
-      descrizione: 'Gestisce le prenotazioni di prodotti per ogni emporio. Gli operatori inseriscono i clienti interessati, le quantità e tracciano chi è stato avvisato o ha già ritirato.',
-      funzionalita: [
-        { icona: 'fa-store', testo: '<strong>Tab per emporio</strong> — Ogni emporio ha la sua colonna prenotazioni. Gli operatori non-admin vedono solo il proprio emporio.' },
-        { icona: 'fa-table', testo: '<strong>Tabella prodotti</strong> — Lista condivisa di prodotti prenotabili (descrizione, codice, prezzo) gestita centralmente' },
-        { icona: 'fa-check', testo: '<strong>Pronto / Avvisato</strong> — Checkbox per segnare che la merce è arrivata e che il cliente è stato contattato' },
-        { icona: 'fa-sigma', testo: '<strong>Tab Sintesi</strong> — Vista riepilogativa delle quantità prenotate per ogni prodotto e per ogni emporio' },
-        { icona: 'fa-floppy-disk', testo: '<strong>Salvataggio automatico</strong> — I dati vengono salvati ogni 30 secondi. Usa il bottone "Salva" per forzare un salvataggio immediato.' }
-      ],
-      passaggi: [
-        { titolo: 'Seleziona il tuo emporio', testo: 'Clicca sul tab del tuo emporio. Se sei operatore, vedrai solo il tuo.' },
-        { titolo: 'Aggiungi un cliente', testo: 'Clicca "Aggiungi cliente" e compila nome, cognome, cellulare. Poi inserisci le quantità per ogni prodotto.' },
-        { titolo: 'Segnala pronto e avvisato', testo: 'Quando la merce arriva, spunta "Pronto". Dopo aver contattato il cliente, spunta "Avvisato".', tip: 'Il colore della riga cambia a conferma della spunta.' },
-        { titolo: 'Consulta la sintesi', testo: 'Usa il tab "Sintesi" per vedere un riepilogo delle quantità totali prenotate per emporio.' }
-      ],
-      note: null
-    },
+  {
+    id: 'preordini',
+    icona: 'fa-clipboard-list',
+    titolo: 'Preordini',
+    ruoli: ['admin', 'dipendente', 'coordinatore'],
+    aggiornato: '2026-06-06',
+    descrizione: 'Gestisce le campagne di preordine ai fornitori. Ogni campagna raccoglie le quantità ordinate da ogni emporio, con confronto rispetto all\'anno precedente.',
+    funzionalita: [
+      { icona: 'fa-folder-open', testo: '<strong>Campagne</strong> — Seleziona o crea una nuova campagna' },
+      { icona: 'fa-table',       testo: '<strong>Tabella Excel-like</strong> — Naviga con Tab, Enter e frecce. Totali in tempo reale.' },
+      { icona: 'fa-upload',      testo: '<strong>Importa</strong> — Copia le quantità dalla campagna precedente come punto di partenza' },
+      { icona: 'fa-chart-bar',   testo: '<strong>Riepilogo</strong> — Tabella comparativa per categoria con variazione % rispetto all\'anno precedente' },
+      { icona: 'fa-file-csv',    testo: '<strong>Esporta CSV</strong> — Scarica i dati per inviarli al fornitore' }
+    ],
+    passaggi: [
+      { titolo: 'Seleziona la campagna',           testo: 'Dal menu a tendina scegli la campagna attiva, oppure creane una nuova.' },
+      { titolo: 'Inserisci le quantità',           testo: 'Clicca su una cella e inserisci la quantità. Usa Tab per passare alla cella successiva.', tip: 'Se la quantità non è multiplo della confezione, apparirà un avviso con il valore corretto suggerito.' },
+      { titolo: 'Confronta con l\'anno precedente',testo: 'Ogni colonna mostra venduto e ordinato dell\'anno corrente e precedente affiancati.' },
+      { titolo: 'Esporta',                         testo: 'Clicca "Esporta CSV" per scaricare il file da inviare al fornitore.' }
+    ],
+    note: 'Gli operatori non-admin possono accedere solo alle campagne che includono il loro emporio.'
+  },
 
-    // ─── TURNI ───────────────────────────────────────────────────────────────
-    {
-      id: 'turni',
-      icona: 'fa-calendar-days',
-      titolo: 'Turni',
-      gruppo: 'Emporio',
-      ruoli: ['admin', 'dipendente', 'coordinatore', 'responsabile', 'volontario', 'scu'],
-      aggiornato: '2026-06-06',
-      descrizione: 'Calendario mensile dei turni per emporio. I gestori pianificano i turni di mattina, pomeriggio e sera; i volontari e gli SCU possono aggiungere autonomamente il proprio nome.',
-      funzionalita: [
-        { icona: 'fa-calendar', testo: '<strong>Calendario mensile</strong> — Naviga tra i mesi con le frecce. Ogni riga è un giorno, con tre fasce orarie: mattina, pomeriggio, sera.' },
-        { icona: 'fa-toggle-on', testo: '<strong>Apertura / Chiusura</strong> — Clicca sulla cella colorata per alternare aperto (verde) e chiuso (rosso). I giorni chiusi negli orari non permettono l\'inserimento.' },
-        { icona: 'fa-user-plus', testo: '<strong>Aggiungi operatore</strong> — Clicca "+" per aprire il selettore. I gestori vedono tutti gli operatori; volontari e SCU vedono solo se stessi.' },
-        { icona: 'fa-circle-xmark', testo: '<strong>Rimuovi operatore</strong> — Clicca la × accanto al nome per rimuoverlo dal turno (solo per chi ha il permesso).' },
-        { icona: 'fa-clock', testo: '<strong>Orari</strong> — Pannello laterale per impostare gli orari predefiniti annuali, mensili, settimanali e giornalieri. Gerarchia a cascata.' },
-        { icona: 'fa-user-shield', testo: '<strong>Anagrafica operatori</strong> — Scheda per ogni operatore con tipo contratto, date inizio/fine, badge scadenza contratto.' }
-      ],
-      passaggi: [
-        { titolo: 'Volontari e SCU: aggiungi te stesso', testo: 'Nella cella del turno che vuoi coprire, clicca il bottone "+ Io". Il tuo nome viene aggiunto direttamente, senza scegliere da un menu.' },
-        { titolo: 'Gestori: aggiungi un operatore', testo: 'Clicca "+" nella cella desiderata. Si apre il selettore con tutti gli operatori disponibili per quell\'emporio.', tip: 'Puoi aggiungere più operatori allo stesso turno.' },
-        { titolo: 'Apri / chiudi un giorno', testo: 'Clicca sulla cella verde o rossa a sinistra del giorno per cambiare lo stato di apertura.' },
-        { titolo: 'Imposta gli orari', testo: 'Apri il pannello Orari (icona orologio in alto a destra). Puoi definire orari predefiniti a livello annuale, mensile, settimanale o giornaliero.' }
-      ],
-      note: 'I volontari e gli SCU hanno un flusso semplificato: vedono solo se stessi e usano il bottone "+ Io". Non possono modificare i turni degli altri.'
-    },
+  {
+    id: 'prezzi',
+    icona: 'fa-tag',
+    titolo: 'Prezzi',
+    ruoli: ['admin', 'dipendente', 'coordinatore', 'volontario'],
+    aggiornato: '2026-06-06',
+    descrizione: 'Lista dei frontalini ed etichette prezzi da stampare o creare per ogni emporio. Traccia cosa è già fatto e cosa manca.',
+    funzionalita: [
+      { icona: 'fa-store',      testo: '<strong>Vista per emporio</strong> — Gli operatori non-admin vedono solo il proprio.' },
+      { icona: 'fa-list-check', testo: '<strong>Frontalini / Etichette</strong> — Due liste separate con contatore "Da fare"' },
+      { icona: 'fa-filter',     testo: '<strong>Filtri</strong> — Tutti, Da fare, Fatti' },
+      { icona: 'fa-check',      testo: '<strong>Segna come fatto</strong> — Spunta la checkbox per marcare il prezzo come completato' },
+      { icona: 'fa-trash',      testo: '<strong>Elimina fatti</strong> — Rimuovi tutti i prezzi completati con un click' }
+    ],
+    passaggi: [
+      { titolo: 'Seleziona il tuo emporio',  testo: 'Dalla griglia home, clicca sull\'emporio di tua competenza.' },
+      { titolo: 'Aggiungi un prezzo da fare',testo: 'Usa il form in basso: inserisci codice, descrizione, quantità e prezzo. Clicca "Aggiungi".' },
+      { titolo: 'Segna come completato',     testo: 'Spunta la checkbox a sinistra della riga una volta fatto.' },
+      { titolo: 'Pulisci la lista',          testo: 'Usa "Elimina tutti i prezzi fatti" per azzerare i completati.' }
+    ],
+    note: null
+  },
 
-    // ─── CASSA ───────────────────────────────────────────────────────────────
-    {
-      id: 'cassa',
-      icona: 'fa-cash-register',
-      titolo: 'Controllo Cassa',
-      gruppo: 'Emporio',
-      ruoli: ['admin', 'dipendente', 'coordinatore'],
-      aggiornato: '2026-06-06',
-      descrizione: 'Sezione per la riconciliazione e il controllo degli incassi dell\'emporio. Include le viste commerciale, amministrativa e IVA.',
-      funzionalita: [
-        { icona: 'fa-coins', testo: '<strong>Cassa commerciale</strong> — Inserimento e verifica degli incassi giornalieri' },
-        { icona: 'fa-building-columns', testo: '<strong>Cassa amministrativa</strong> — Riconciliazione amministrativa dei movimenti' },
-        { icona: 'fa-percent', testo: '<strong>Cassa IVA</strong> — Calcolo e controllo dell\'IVA sui movimenti' }
-      ],
-      passaggi: [],
-      note: null
-    },
+  {
+    id: 'impostazioni',
+    icona: 'fa-gear',
+    titolo: 'Impostazioni',
+    ruoli: ['admin'],
+    aggiornato: '2026-06-06',
+    descrizione: 'Pannello riservato agli amministratori. Gestisce gli operatori, i permessi per sezione, gli empori attivi e il backup dei dati.',
+    funzionalita: [
+      { icona: 'fa-users',             testo: '<strong>Operatori</strong> — Aggiungi, modifica o elimina operatori. Ogni operatore ha: nome, ruolo, emporio, telefono, email.' },
+      { icona: 'fa-shield-check',      testo: '<strong>Permessi</strong> — Per ogni operatore definisci quali sezioni può vedere e su quali può operare.' },
+      { icona: 'fa-calendar-lines',    testo: '<strong>Tipo contratto</strong> — Imposta tipo contratto e date inizio/fine. L\'app segnala i contratti in scadenza.' },
+      { icona: 'fa-database',          testo: '<strong>Backup</strong> — Esporta tutti i dati in CSV.' },
+      { icona: 'fa-circle-info',       testo: '<strong>Info app</strong> — Statistiche in tempo reale: ordini attivi, operatori registrati, versione.' }
+    ],
+    passaggi: [
+      { titolo: 'Aggiungi un operatore', testo: 'Clicca "Aggiungi" nel gruppo emporio corretto. Compila nome, ruolo, email (usata per il login), telefono.' },
+      { titolo: 'Assegna i permessi',   testo: 'Clicca sull\'icona scudo dell\'operatore. Abilita "Può vedere" per ogni sezione.', tip: 'Disabilitare "Può vedere" nasconde l\'intera sezione all\'utente.' },
+      { titolo: 'Backup',               testo: 'Usa "Esporta CSV" periodicamente per avere una copia locale dei dati.' }
+    ],
+    note: 'Sezione riservata esclusivamente agli amministratori.'
+  }
 
-    // ─── PREORDINI ───────────────────────────────────────────────────────────
-    {
-      id: 'preordini',
-      icona: 'fa-boxes-stacked',
-      titolo: 'Preordini Fornitori',
-      gruppo: 'Emporio',
-      ruoli: ['admin', 'dipendente', 'coordinatore'],
-      aggiornato: '2026-06-06',
-      descrizione: 'Gestisce le campagne di preordine ai fornitori. Ogni campagna raccoglie le quantità ordinate da ogni emporio, con confronto rispetto all\'anno precedente.',
-      funzionalita: [
-        { icona: 'fa-folder-open', testo: '<strong>Campagne</strong> — Seleziona o crea una nuova campagna (nome, anno, stagione, empori partecipanti)' },
-        { icona: 'fa-table', testo: '<strong>Tabella Excel-like</strong> — Naviga tra le celle con Tab, Enter e frecce. I totali si aggiornano in tempo reale.' },
-        { icona: 'fa-upload', testo: '<strong>Importa</strong> — Copia le quantità ordinate dalla campagna precedente come punto di partenza' },
-        { icona: 'fa-plus', testo: '<strong>Aggiungi prodotto</strong> — Inserisci un nuovo prodotto con fornitore (nuovo o esistente), categoria, codice, descrizione, confezione, PVP' },
-        { icona: 'fa-chart-bar', testo: '<strong>Riepilogo</strong> — Tabella comparativa per categoria con variazione % rispetto all\'anno precedente' },
-        { icona: 'fa-file-csv', testo: '<strong>Esporta CSV</strong> — Scarica i dati della campagna per inviarli al fornitore' }
-      ],
-      passaggi: [
-        { titolo: 'Seleziona la campagna', testo: 'Dal menu a tendina scegli la campagna attiva, oppure creane una nuova con il bottone apposito.' },
-        { titolo: 'Inserisci le quantità', testo: 'Clicca su una cella e inserisci la quantità. Usa Tab per passare alla cella successiva, Enter per andare sotto.', tip: 'Se la quantità non è multiplo della confezione, apparirà un avviso con il valore corretto suggerito.' },
-        { titolo: 'Confronta con l\'anno precedente', testo: 'Ogni colonna mostra venduto e ordinato dell\'anno corrente e dell\'anno precedente affiancati.' },
-        { titolo: 'Esporta', testo: 'Clicca "Esporta CSV" per scaricare il file da inviare al fornitore.' }
-      ],
-      note: 'Gli operatori non-admin possono accedere solo alle campagne che includono il loro emporio.'
-    },
-
-    // ─── PREZZI ──────────────────────────────────────────────────────────────
-    {
-      id: 'prezzi',
-      icona: 'fa-tag',
-      titolo: 'Prezzi da Fare',
-      gruppo: 'Emporio',
-      ruoli: ['admin', 'dipendente', 'coordinatore', 'volontario'],
-      aggiornato: '2026-06-06',
-      descrizione: 'Lista dei frontalini ed etichette prezzi da stampare o creare per ogni emporio. Traccia cosa è già fatto e cosa manca.',
-      funzionalita: [
-        { icona: 'fa-store', testo: '<strong>Vista per emporio</strong> — Seleziona l\'emporio dalla griglia iniziale. Gli operatori non-admin vedono solo il proprio.' },
-        { icona: 'fa-list-check', testo: '<strong>Tab Frontalini / Etichette</strong> — Due liste separate con contatore "Da fare"' },
-        { icona: 'fa-filter', testo: '<strong>Filtri</strong> — Tutti, Da fare, Fatti' },
-        { icona: 'fa-check', testo: '<strong>Segna come fatto</strong> — Spunta la checkbox nella riga per marcare il prezzo come completato' },
-        { icona: 'fa-trash', testo: '<strong>Elimina fatti</strong> — Rimuovi tutti i prezzi già completati con un click' }
-      ],
-      passaggi: [
-        { titolo: 'Seleziona il tuo emporio', testo: 'Dalla griglia home della sezione, clicca sull\'emporio di tua competenza.' },
-        { titolo: 'Aggiungi un prezzo da fare', testo: 'Usa il form in basso per inserire codice, descrizione, quantità e prezzo. Clicca "Aggiungi".' },
-        { titolo: 'Segna come completato', testo: 'Spunta la checkbox a sinistra della riga una volta che il prezzo è stato stampato o etichettato.' },
-        { titolo: 'Pulisci la lista', testo: 'Quando hai finito, usa "Elimina tutti i prezzi fatti" per azzerare i completati.' }
-      ],
-      note: null
-    },
-
-    // ─── INFO ────────────────────────────────────────────────────────────────
-    {
-      id: 'info',
-      icona: 'fa-envelope',
-      titolo: 'Richieste Info',
-      gruppo: 'Clienti',
-      ruoli: ['admin', 'dipendente', 'coordinatore', 'responsabile', 'volontario'],
-      aggiornato: '2026-06-06',
-      descrizione: 'Gestisce le richieste di informazioni e gli appuntamenti ricevuti dai clienti. Ogni richiesta viene assegnata a un emporio e tracciata fino alla risposta.',
-      funzionalita: [
-        { icona: 'fa-store', testo: '<strong>Selezione emporio</strong> — Le richieste sono organizzate per emporio. Gli operatori vedono solo il proprio.' },
-        { icona: 'fa-plus', testo: '<strong>Nuova richiesta</strong> — Inserisci cliente, contatti, giorno/orario preferito e descrizione della richiesta' },
-        { icona: 'fa-reply', testo: '<strong>Risposta</strong> — Scrivi la risposta nella textarea della card e clicca "Rispondi". La card mostra la risposta salvata.' },
-        { icona: 'fa-box-archive', testo: '<strong>Archivia</strong> — Sposta una richiesta evasa nella tab Archiviate' },
-        { icona: 'fa-table', testo: '<strong>Recap completo</strong> — Tabella con tutte le richieste (attive e archiviate) di tutti gli empori (solo admin)' }
-      ],
-      passaggi: [
-        { titolo: 'Aggiungi una richiesta', testo: 'Clicca "Nuova Richiesta", compila il form con i dati del cliente e salva.' },
-        { titolo: 'Rispondi', testo: 'Nella card della richiesta, scrivi la risposta nel campo di testo e clicca "Rispondi".' },
-        { titolo: 'Archivia', testo: 'Una volta evasa, clicca "Richiesta da archiviare" per spostarla fuori dalla lista attive.' }
-      ],
-      note: null
-    },
-
-    // ─── IMPOSTAZIONI ────────────────────────────────────────────────────────
-    {
-      id: 'impostazioni',
-      icona: 'fa-gear',
-      titolo: 'Impostazioni',
-      gruppo: 'Amministrazione',
-      ruoli: ['admin'],
-      aggiornato: '2026-06-06',
-      descrizione: 'Pannello riservato agli amministratori. Gestisce gli operatori, i permessi per sezione, gli empori attivi e il backup dei dati.',
-      funzionalita: [
-        { icona: 'fa-users', testo: '<strong>Operatori</strong> — Aggiungi, modifica o elimina gli operatori. Ogni operatore ha: nome, ruolo, emporio principale, empori aggiuntivi, telefono, email.' },
-        { icona: 'fa-shield-check', testo: '<strong>Permessi</strong> — Per ogni operatore definisci quali sezioni può vedere e su quali può operare. "Sola lettura" nasconde tutti i bottoni di modifica.' },
-        { icona: 'fa-calendar-lines', testo: '<strong>Tipo contratto e periodo</strong> — Nella sezione Turni → Anagrafica puoi impostare tipo contratto (indeterminato, determinato, SCU, volontario) e date inizio/fine. L\'app segnala i contratti in scadenza.' },
-        { icona: 'fa-database', testo: '<strong>Backup</strong> — Esporta tutti i dati in CSV. Sincronizza gli account Supabase Auth con gli operatori registrati.' },
-        { icona: 'fa-circle-info', testo: '<strong>Info app</strong> — Statistiche in tempo reale: numero ordini attivi, operatori registrati, versione.' }
-      ],
-      passaggi: [
-        { titolo: 'Aggiungi un operatore', testo: 'Clicca "Aggiungi" nel gruppo emporio corretto. Compila nome, ruolo, email (usata per il login), telefono.' },
-        { titolo: 'Assegna i permessi', testo: 'Clicca sull\'icona scudo dell\'operatore. Abilita "Può vedere" per ogni sezione e, se necessario, "Può operare".', tip: 'Disabilitare "Può vedere" nasconde l\'intera sezione all\'utente.' },
-        { titolo: 'Imposta il contratto', testo: 'Nella sezione Turni → Anagrafica, apri la scheda dell\'operatore e inserisci tipo contratto e date. L\'app mostrerà un badge se il contratto scade entro 30 giorni.' },
-        { titolo: 'Backup', testo: 'Usa "Esporta CSV" periodicamente per avere una copia locale dei dati.' }
-      ],
-      note: 'Solo l\'account emilio.mazzolari@gmail.com può accedere a questa sezione.'
-    }
-
-  ] // fine sezioni
-
-}; // fine GUIDA_DATA
+]}; // fine GUIDA_DATA
 
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// RENDERING ENGINE — Non modificare salvo per aggiungere nuovi tipi di blocco
-// ═══════════════════════════════════════════════════════════════════════════════
-
+// ═══════════════════════════════════════════════════
+// RENDERING
+// ═══════════════════════════════════════════════════
 const RUOLO_COLORS = {
-  'admin':        '#fee2e2:#991b1b',
-  'dipendente':   '#e0f2fe:#0369a1',
-  'coordinatore': '#f3e8ff:#7e22ce',
-  'responsabile': '#fef9c3:#92400e',
-  'volontario':   '#f0fdf4:#166534',
-  'scu':          '#fff7ed:#c2410c',
-  'tutti':        '#f0fdf4:#166534'
+  'admin':'#fee2e2:#991b1b','dipendente':'#e0f2fe:#0369a1',
+  'coordinatore':'#f3e8ff:#7e22ce','responsabile':'#fef9c3:#92400e',
+  'volontario':'#f0fdf4:#166534','scu':'#fff7ed:#c2410c','tutti':'#f0fdf4:#166534'
 };
-
 const RUOLO_LABELS = {
-  'admin': 'Admin', 'dipendente': 'Dipendente', 'coordinatore': 'Coordinatore/trice',
-  'responsabile': 'Responsabile', 'volontario': 'Volontario/a', 'scu': 'Servizio Civile',
-  'tutti': 'Tutti gli utenti'
+  'admin':'Admin','dipendente':'Dipendente','coordinatore':'Coordinatore/trice',
+  'responsabile':'Responsabile','volontario':'Volontario/a','scu':'Servizio Civile','tutti':'Tutti'
 };
 
 let sezioneAttiva = null;
 
 function init() {
   buildSidebar();
-  const primo = GUIDA_DATA.sezioni[0];
-  mostraSezione(primo.id);
+  mostraSezione(GUIDA_DATA.sezioni[0].id);
 }
 
-function buildSidebar() {
+function buildSidebar(matches) {
   const nav = document.getElementById('sidebar-nav');
-  const gruppi = {};
-  GUIDA_DATA.sezioni.forEach(s => {
-    if (!gruppi[s.gruppo]) gruppi[s.gruppo] = [];
-    gruppi[s.gruppo].push(s);
-  });
-
-  let html = '';
-  Object.entries(gruppi).forEach(([gruppo, sezioni]) => {
-    html += `<div class="nav-group-label">${gruppo}</div>`;
-    sezioni.forEach(s => {
-      const isAdmin = s.ruoli.length === 1 && s.ruoli[0] === 'admin';
-      html += `
-        <div class="nav-item" id="nav-${s.id}" onclick="mostraSezione('${s.id}')">
-          <span class="nav-icon"><i class="fas ${s.icona}"></i></span>
-          <span>${s.titolo}</span>
-          ${isAdmin ? '<span class="nav-badge">Admin</span>' : ''}
-        </div>`;
-    });
-  });
-  nav.innerHTML = html;
+  const lista = matches || GUIDA_DATA.sezioni;
+  nav.innerHTML = lista.map(s => {
+    const adminOnly = s.ruoli.length === 1 && s.ruoli[0] === 'admin';
+    return `<div class="nav-item${sezioneAttiva === s.id ? ' active' : ''}" id="nav-${s.id}" onclick="mostraSezione('${s.id}')">
+      <span class="nav-icon"><i class="fas ${s.icona}"></i></span>
+      <span>${s.titolo}</span>
+      ${adminOnly ? '<span class="nav-badge">Admin</span>' : ''}
+    </div>`;
+  }).join('');
 }
 
 function mostraSezione(id) {
   sezioneAttiva = id;
   const s = GUIDA_DATA.sezioni.find(x => x.id === id);
   if (!s) return;
-
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   const navEl = document.getElementById(`nav-${id}`);
-  if (navEl) {
-    navEl.classList.add('active');
-    navEl.scrollIntoView({ block: 'nearest' });
-  }
-
+  if (navEl) { navEl.classList.add('active'); navEl.scrollIntoView({ block: 'nearest' }); }
   renderSezione(s);
+}
+
+function ruoliHtml(ruoli) {
+  return ruoli.map(r => {
+    const [bg, fg] = (RUOLO_COLORS[r] || '#f1f5f9:#475569').split(':');
+    const label = RUOLO_LABELS[r] || r;
+    return `<span class="meta-chip" style="background:${bg};color:${fg}">${label}</span>`;
+  }).join('');
+}
+
+function renderFunz(funzionalita) {
+  if (!funzionalita.length) return '';
+  return `<div class="card">
+    <div class="card-title">Funzionalità principali</div>
+    <div class="feature-list">${funzionalita.map(f => `
+      <div class="feature-item">
+        <div class="feature-dot"><i class="fas ${f.icona}"></i></div>
+        <div class="feature-text">${f.testo}</div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function renderPassaggi(passaggi) {
+  if (!passaggi.length) return '';
+  return `<div class="card">
+    <div class="card-title">Come si usa</div>
+    <div class="step-list">${passaggi.map((p, i) => `
+      <div class="step-item">
+        <div class="step-num">${i + 1}</div>
+        <div class="step-body">
+          <div class="step-title">${p.titolo}</div>
+          <div class="step-text">${p.testo}</div>
+          ${p.tip ? `<div class="step-tip"><i class="fas fa-lightbulb"></i> ${p.tip}</div>` : ''}
+        </div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function renderNote(note) {
+  if (!note) return '';
+  return `<div class="note-box"><i class="fas fa-circle-info"></i><div>${note}</div></div>`;
 }
 
 function renderSezione(s) {
   const main = document.getElementById('guida-main');
-
-  // Ruoli chips
-  const ruoliHtml = s.ruoli.map(r => {
-    const [bg, fg] = (RUOLO_COLORS[r] || '#f1f5f9:#475569').split(':');
-    const label = RUOLO_LABELS[r] || r;
-    const icon = r === 'tutti' ? 'fa-users' : r === 'admin' ? 'fa-crown' : 'fa-user';
-    return `<span class="meta-chip" style="background:${bg};color:${fg}"><i class="fas ${icon}" style="font-size:9px"></i> ${label}</span>`;
-  }).join('');
-
-  // Aggiornato
   const dataFmt = new Date(s.aggiornato).toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' });
-  const dataChip = `<span class="meta-chip chip-data"><i class="fas fa-clock" style="font-size:9px"></i> Aggiornato: ${dataFmt}</span>`;
 
-  // Funzionalità
-  const funzHtml = s.funzionalita.length > 0 ? `
-    <div class="card">
-      <div class="card-title">Funzionalità principali</div>
-      <div class="feature-list">
-        ${s.funzionalita.map(f => `
-          <div class="feature-item">
-            <div class="feature-dot"><i class="fas ${f.icona}"></i></div>
-            <div class="feature-text">${f.testo}</div>
-          </div>`).join('')}
-      </div>
-    </div>` : '';
+  let body = '';
 
-  // Passaggi
-  const passHtml = s.passaggi.length > 0 ? `
-    <div class="card">
-      <div class="card-title">Come si usa</div>
-      <div class="step-list">
-        ${s.passaggi.map((p, i) => `
-          <div class="step-item">
-            <div class="step-num">${i + 1}</div>
-            <div class="step-body">
-              <div class="step-title">${p.titolo}</div>
-              <div class="step-text">${p.testo}</div>
-              ${p.tip ? `<div class="step-tip"><i class="fas fa-lightbulb"></i> ${p.tip}</div>` : ''}
-            </div>
-          </div>`).join('')}
-      </div>
-    </div>` : '';
-
-  // Nota
-  const notaHtml = s.note ? `
-    <div class="note-box">
-      <i class="fas fa-circle-info"></i>
-      <div>${s.note}</div>
-    </div>` : '';
+  if (s.sottosezioni && s.sottosezioni.length) {
+    // Sezione con sottosezioni (es. Ordini)
+    s.sottosezioni.forEach(sub => {
+      body += `
+        <div class="sub-header">
+          <div class="sub-icon"><i class="fas ${sub.icona}"></i></div>
+          <div>
+            <div class="sub-titolo">${sub.titolo}</div>
+            ${sub.descrizione ? `<div class="sub-desc">${sub.descrizione}</div>` : ''}
+          </div>
+        </div>
+        ${renderFunz(sub.funzionalita)}
+        ${renderPassaggi(sub.passaggi)}
+        ${renderNote(sub.note)}`;
+    });
+  } else {
+    body = renderFunz(s.funzionalita) + renderPassaggi(s.passaggi) + renderNote(s.note);
+  }
 
   main.innerHTML = `
     <div class="sezione-header">
@@ -620,54 +522,43 @@ function renderSezione(s) {
       <div>
         <div class="sezione-titolo">${s.titolo}</div>
         <div class="sezione-desc">${s.descrizione}</div>
-        <div class="meta-row">${ruoliHtml} ${dataChip}</div>
+        <div class="meta-row">
+          ${ruoliHtml(s.ruoli)}
+          <span class="meta-chip" style="background:#fffbeb;color:#92400e"><i class="fas fa-clock" style="font-size:9px"></i> ${dataFmt}</span>
+        </div>
       </div>
     </div>
-    ${funzHtml}
-    ${passHtml}
-    ${notaHtml}
-    <div style="height:40px"></div>
-  `;
+    ${body}
+    <div style="height:40px"></div>`;
 }
 
-// ── RICERCA ──────────────────────────────────────────────────────────────────
+// ── RICERCA ──────────────────────────────────────
 function searchGuida(q) {
   q = q.trim().toLowerCase();
-  const nav = document.getElementById('sidebar-nav');
-
-  if (!q) {
-    buildSidebar();
-    if (sezioneAttiva) {
-      document.getElementById(`nav-${sezioneAttiva}`)?.classList.add('active');
-    }
-    return;
-  }
+  if (!q) { buildSidebar(); if (sezioneAttiva) document.getElementById(`nav-${sezioneAttiva}`)?.classList.add('active'); return; }
 
   const matches = GUIDA_DATA.sezioni.filter(s => {
-    const haystack = [
-      s.titolo, s.descrizione, s.gruppo,
+    const subText = (s.sottosezioni || []).map(sub =>
+      [sub.titolo, sub.descrizione,
+       ...sub.funzionalita.map(f => f.testo),
+       ...sub.passaggi.map(p => p.titolo + ' ' + p.testo),
+       sub.note || ''].join(' ')
+    ).join(' ');
+    const haystack = [s.titolo, s.descrizione,
       ...s.funzionalita.map(f => f.testo),
-      ...s.passaggi.map(p => p.titolo + ' ' + p.testo + ' ' + (p.tip || '')),
-      s.note || ''
-    ].join(' ').toLowerCase();
+      ...s.passaggi.map(p => p.titolo + ' ' + p.testo),
+      s.note || '', subText].join(' ').toLowerCase();
     return haystack.includes(q);
   });
 
+  buildSidebar(matches);
   if (matches.length === 0) {
-    nav.innerHTML = '<div class="empty-search"><i class="fas fa-magnifying-glass fa-2x mb-3"></i><br>Nessun risultato</div>';
-    return;
+    document.getElementById('sidebar-nav').innerHTML =
+      '<div style="padding:20px 12px;text-align:center;color:#94a3b8;font-size:12px"><i class="fas fa-magnifying-glass" style="display:block;font-size:20px;margin-bottom:8px"></i>Nessun risultato</div>';
   }
-
-  nav.innerHTML = `<div class="nav-group-label">Risultati (${matches.length})</div>` +
-    matches.map(s => `
-      <div class="nav-item" id="nav-${s.id}" onclick="mostraSezione('${s.id}')">
-        <span class="nav-icon"><i class="fas ${s.icona}"></i></span>
-        <span>${s.titolo}</span>
-      </div>`).join('');
 }
 
 document.addEventListener('DOMContentLoaded', init);
-
 </script>
 
 <script src="../../scripts/auth.js"></script>

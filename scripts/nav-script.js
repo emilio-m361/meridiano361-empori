@@ -112,7 +112,7 @@
       { id: 'listino',    label: 'Vetrina',     icon: 'fa-list-ul',           href: 'pages/listino-prezzi/listino-prezzi.html',       section: null, active: true },
     ]},
     { group: null, items: [
-      { id: 'guida', label: 'Guida', icon: 'fa-book-open', href: 'pages/guida/guida.html', section: null, active: true },
+      { id: 'guida', label: 'Aiuto', icon: 'fa-circle-question', href: 'pages/guida/guida.html', section: null, active: true },
       { id: 'logout', label: 'Esci', icon: 'fa-right-from-bracket', href: '#', section: null, active: true, isLogout: true },
     ]},
   ];
