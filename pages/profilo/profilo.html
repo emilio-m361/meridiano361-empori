@@ -520,6 +520,10 @@ async function init() {
 
   syncToggleGrande();
 
+  // Apri tutte le sezioni all'avvio (eccetto cambia-password)
+  ['calendario', 'dati-lavorativi', 'dati-personali', 'notifiche', 'segnalazioni', 'testo-grande'].forEach(id => setSec(id, true));
+  setSec('cambia-password', false);
+
   // Tipo grid nel form
   buildTipoGrid();
 
@@ -805,9 +809,17 @@ function toggleSec(id) {
   const body    = document.getElementById('sec-' + id);
   const chevron = document.getElementById('chev-' + id);
   if (!body) return;
-  const open = body.style.display !== 'none';
-  body.style.display = open ? 'none' : '';
-  if (chevron) chevron.style.transform = open ? '' : 'rotate(180deg)';
+  const isOpen = body.getAttribute('data-open') !== 'false';
+  setSec(id, !isOpen);
+}
+
+function setSec(id, open) {
+  const body    = document.getElementById('sec-' + id);
+  const chevron = document.getElementById('chev-' + id);
+  if (!body) return;
+  body.style.display = open ? '' : 'none';
+  body.setAttribute('data-open', open ? 'true' : 'false');
+  if (chevron) chevron.style.transform = open ? 'rotate(180deg)' : '';
 }
 
 /* ─── Dati personali ─── */
@@ -992,9 +1004,9 @@ function _showMsg(el, tipo, testo) {
 /* ─── Sicurezza: cambia password ─── */
 function toggleCambioPassword() {
   const body = document.getElementById('sec-cambia-password');
-  const wasOpen = body && body.style.display !== 'none';
+  const wasOpen = body && body.getAttribute('data-open') !== 'false' && body.style.display !== 'none';
   toggleSec('cambia-password');
-  if (!wasOpen) document.getElementById('pwd-new').focus();
+  if (!wasOpen) setTimeout(() => document.getElementById('pwd-new').focus(), 50);
 }
 
 async function salvaPassword() {
