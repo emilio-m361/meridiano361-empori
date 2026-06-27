@@ -83,11 +83,10 @@
       <div class="nav-card-title">Turni</div>
     </a>
 
-    <div class="nav-card wip">
+    <a href="pages/calendario/index.html" class="nav-card" id="card-calendario" style="display:none">
       <div class="nav-card-icon"><i class="fas fa-calendar-days"></i></div>
       <div class="nav-card-title">Calendario</div>
-      <span class="wip-badge">In costruzione</span>
-    </div>
+    </a>
 
   </div>
 
@@ -98,6 +97,12 @@
 (async function applicaPermessi() {
   const user = JSON.parse(localStorage.getItem('m361_user') || 'null');
   if (!user || !user.id) return;
+
+  // Mostra card calendario solo all'admin
+  if (user.email === 'e.mazzolari@meridiano361.it') {
+    const cardCal = document.getElementById('card-calendario');
+    if (cardCal) cardCal.style.display = '';
+  }
   try {
     const _db = supabase.createClient(
       'https://hsalynvxazxqtmsvjrzc.supabase.co',
