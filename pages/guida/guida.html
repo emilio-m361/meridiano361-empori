@@ -152,7 +152,7 @@
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-search">
             <i class="fas fa-search search-icon"></i>
-            <input type="text" id="search-input" placeholder="Cerca…" oninput="searchGuida(this.value)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <input type="text" id="search-input" placeholder="Cerca…" oninput="searchGuida(this.value)" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" readonly onfocus="this.removeAttribute('readonly')" onblur="if(!this.value)this.setAttribute('readonly','')">
         </div>
         <nav class="sidebar-nav" id="sidebar-nav"></nav>
     </aside>
