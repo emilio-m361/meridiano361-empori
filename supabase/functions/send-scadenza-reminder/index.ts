@@ -139,10 +139,18 @@ Deno.serve(async (req) => {
     });
   }
 
-  // Responsabili acquisti → email + push
-  const { data: respAcq } = await db.from("operatori").select("nome, email").eq("is_resp_acquisti", true).eq("attivo", true);
-  const rispNomi  = (respAcq ?? []).map(r => (r.nome ?? "").toLowerCase().trim());
-  const rispEmail = (respAcq ?? []).map(r => r.email).filter(Boolean) as string[];
+  // Responsabili acquisti → email + push (filtrati per emporio)
+  const { data: respAcq } = await db.from("operatori").select("nome, email, emporio").eq("is_resp_acquisti", true).eq("attivo", true);
+  const empToRespAcqNomi  = new Map<string, string[]>();
+  const empToRespAcqEmail = new Map<string, string[]>();
+  for (const op of (respAcq ?? [])) {
+    const emp  = (op.emporio ?? "").toLowerCase().trim();
+    const nome = (op.nome ?? "").toLowerCase().trim();
+    if (!empToRespAcqNomi.has(emp))  empToRespAcqNomi.set(emp, []);
+    if (!empToRespAcqEmail.has(emp)) empToRespAcqEmail.set(emp, []);
+    empToRespAcqNomi.get(emp)!.push(nome);
+    if (op.email) empToRespAcqEmail.get(emp)!.push(op.email);
+  }
 
   // Responsabili emporio → push (per emporio del prodotto)
   const { data: respEmporiRaw } = await db.from("operatori")
@@ -186,9 +194,13 @@ Deno.serve(async (req) => {
     const subject = `⚠️ Scadenza prodotto: ${p.descrizione} — Emporio ${p.emporio}`;
     const html    = emailHtml(p, giorni);
 
-    // Invia push ai responsabili acquisti
+    const empKey          = (p.emporio ?? "").toLowerCase().trim();
+    const rispNomiForEmp  = empToRespAcqNomi.get(empKey)  ?? [];
+    const rispEmailForEmp = empToRespAcqEmail.get(empKey) ?? [];
+
+    // Invia push ai responsabili acquisti dello stesso emporio
     if (VAPID_PUB && VAPID_PRIV) {
-      for (const nome of rispNomi) {
+      for (const nome of rispNomiForEmp) {
         for (const sub of nomeToSubs.get(nome) ?? []) {
           try {
             if (!dryrun) {
@@ -210,9 +222,9 @@ Deno.serve(async (req) => {
 
     // Invia push ai responsabili emporio dello stesso emporio (se non già coperti da resp acquisti)
     if (VAPID_PUB && VAPID_PRIV) {
-      const empNomi = empToRespEmpori.get((p.emporio ?? "").toLowerCase().trim()) ?? [];
+      const empNomi = empToRespEmpori.get(empKey) ?? [];
       for (const nome of empNomi) {
-        if (rispNomi.includes(nome)) continue; // già notificato come resp acquisti
+        if (rispNomiForEmp.includes(nome)) continue; // già notificato come resp acquisti
         for (const sub of nomeToSubs.get(nome) ?? []) {
           try {
             if (!dryrun) {
@@ -232,8 +244,8 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Invia email ai responsabili acquisti
-    for (const email of rispEmail) {
+    // Invia email ai responsabili acquisti dello stesso emporio
+    for (const email of rispEmailForEmp) {
       if (!dryrun) await sendEmail(email, subject, html);
       results.email_inviate++;
     }
