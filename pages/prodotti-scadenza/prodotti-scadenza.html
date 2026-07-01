@@ -697,12 +697,11 @@ function aggPrezzo(){
   if(sc>0){
     scEl.textContent=`−${sc}%`;scEl.style.color=ucol;
     box.style.borderColor=ucol+'55';
-    ext.style.display='block';
   } else {
     scEl.textContent='Nessuno';scEl.style.color='var(--G)';
-    box.style.borderColor='var(--Gl)';ext.style.display='none';ppRow.style.display='none';
-    return;
+    box.style.borderColor='var(--Gl)';
   }
+  ext.style.display='block';
 
   // Price preview
   if(!prz){ppRow.style.display='none';return;}
