@@ -153,19 +153,6 @@ function getCurrentPageId(){ return 'calendario'; }
       </div>
     </div>
     <div class="flt-wrap">
-      <button class="flt-btn" id="flt-btn-pdv" onclick="toggleFlt('pdv')">
-        <span id="flt-lbl-pdv">PDV</span><i class="fas fa-chevron-down flt-arr"></i>
-      </button>
-      <div class="flt-pop" id="flt-pop-pdv">
-        <button class="flt-opt active" data-pdv="" onclick="setPdv('')">Tutti</button>
-        <button class="flt-opt" data-pdv="CR" onclick="setPdv('CR')">Cremona</button>
-        <button class="flt-opt" data-pdv="CA" onclick="setPdv('CA')">Casalmaggiore</button>
-        <button class="flt-opt" data-pdv="VI" onclick="setPdv('VI')">Viadana</button>
-        <button class="flt-opt" data-pdv="RE" onclick="setPdv('RE')">Reggio E.</button>
-        <button class="flt-opt" data-pdv="WEB" onclick="setPdv('WEB')">Web</button>
-      </div>
-    </div>
-    <div class="flt-wrap">
       <button class="flt-btn" id="flt-btn-tipo" onclick="toggleFlt('tipo')">
         <span id="flt-lbl-tipo">Tipologia</span><i class="fas fa-chevron-down flt-arr"></i>
       </button>
@@ -177,6 +164,39 @@ function getCurrentPageId(){ return 'calendario'; }
         <button class="flt-opt" data-tipo="Focus" onclick="setTipo('Focus')">Focus</button>
         <button class="flt-opt" data-tipo="Evento" onclick="setTipo('Evento')">Evento</button>
         <button class="flt-opt" data-tipo="Altro" onclick="setTipo('Altro')">Altro</button>
+      </div>
+    </div>
+    <div class="flt-wrap">
+      <button class="flt-btn" id="flt-btn-data-ini" onclick="toggleFlt('data-ini')">
+        <span id="flt-lbl-data-ini">Data inizio</span><i class="fas fa-chevron-down flt-arr"></i>
+      </button>
+      <div class="flt-pop" id="flt-pop-data-ini" style="padding:10px 12px;min-width:190px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--s400);margin-bottom:6px">Dal giorno</div>
+        <input type="date" id="flt-input-data-ini" style="width:100%;border:1px solid var(--s200);border-radius:7px;padding:6px 8px;font-family:'Nunito',sans-serif;font-size:13px;outline:none" onchange="setDataIni(this.value)" onclick="event.stopPropagation()">
+        <button onclick="setDataIni('')" style="margin-top:8px;font-size:12px;color:var(--s400);background:none;border:none;cursor:pointer;padding:0;font-family:'Nunito',sans-serif">✕ Rimuovi filtro</button>
+      </div>
+    </div>
+    <div class="flt-wrap">
+      <button class="flt-btn" id="flt-btn-data-fin" onclick="toggleFlt('data-fin')">
+        <span id="flt-lbl-data-fin">Data fine</span><i class="fas fa-chevron-down flt-arr"></i>
+      </button>
+      <div class="flt-pop" id="flt-pop-data-fin" style="padding:10px 12px;min-width:190px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--s400);margin-bottom:6px">Fino al giorno</div>
+        <input type="date" id="flt-input-data-fin" style="width:100%;border:1px solid var(--s200);border-radius:7px;padding:6px 8px;font-family:'Nunito',sans-serif;font-size:13px;outline:none" onchange="setDataFin(this.value)" onclick="event.stopPropagation()">
+        <button onclick="setDataFin('')" style="margin-top:8px;font-size:12px;color:var(--s400);background:none;border:none;cursor:pointer;padding:0;font-family:'Nunito',sans-serif">✕ Rimuovi filtro</button>
+      </div>
+    </div>
+    <div class="flt-wrap">
+      <button class="flt-btn" id="flt-btn-pdv" onclick="toggleFlt('pdv')">
+        <span id="flt-lbl-pdv">Punto vendita</span><i class="fas fa-chevron-down flt-arr"></i>
+      </button>
+      <div class="flt-pop" id="flt-pop-pdv">
+        <button class="flt-opt active" data-pdv="" onclick="setPdv('')">Tutti</button>
+        <button class="flt-opt" data-pdv="CR" onclick="setPdv('CR')">Cremona</button>
+        <button class="flt-opt" data-pdv="CA" onclick="setPdv('CA')">Casalmaggiore</button>
+        <button class="flt-opt" data-pdv="VI" onclick="setPdv('VI')">Viadana</button>
+        <button class="flt-opt" data-pdv="RE" onclick="setPdv('RE')">Reggio E.</button>
+        <button class="flt-opt" data-pdv="WEB" onclick="setPdv('WEB')">Web</button>
       </div>
     </div>
   </div>
@@ -364,6 +384,8 @@ let _annoAttivo = 2026;
 let _settoreAttivo = '';
 let _pdvAttivo = '';
 let _tipoAttivo = '';
+let _dataIni = '';
+let _dataFin = '';
 let _canEdit = false;
 let _editId = null;
 let _inlineCtx = null;
@@ -397,6 +419,8 @@ function filtered(){
       const pdv=e.pdv_data||{};
       if(!pdv[_pdvAttivo]?.aderisce) return false;
     }
+    if(_dataIni && e.data_inizio && e.data_inizio < _dataIni) return false;
+    if(_dataFin && e.data_fine  && e.data_fine  > _dataFin)  return false;
     return true;
   });
 }
@@ -527,9 +551,25 @@ function setSettore(s){
 function setPdv(p){
   _pdvAttivo=p;
   document.querySelectorAll('[data-pdv]').forEach(c=>c.classList.toggle('active',c.dataset.pdv===p));
-  document.getElementById('flt-lbl-pdv').textContent=p?(PDV_LABELS[p]||p):'PDV';
+  document.getElementById('flt-lbl-pdv').textContent=p?(PDV_LABELS[p]||p):'Punto vendita';
   document.getElementById('flt-btn-pdv').classList.toggle('on',!!p);
   closeFlt(); render();
+}
+function setDataIni(v){
+  _dataIni=v;
+  document.getElementById('flt-input-data-ini').value=v;
+  document.getElementById('flt-lbl-data-ini').textContent=v?fmtDate(v):'Data inizio';
+  document.getElementById('flt-btn-data-ini').classList.toggle('on',!!v);
+  if(!v) closeFlt();
+  render();
+}
+function setDataFin(v){
+  _dataFin=v;
+  document.getElementById('flt-input-data-fin').value=v;
+  document.getElementById('flt-lbl-data-fin').textContent=v?fmtDate(v):'Data fine';
+  document.getElementById('flt-btn-data-fin').classList.toggle('on',!!v);
+  if(!v) closeFlt();
+  render();
 }
 function setTipo(t){
   _tipoAttivo=t;
