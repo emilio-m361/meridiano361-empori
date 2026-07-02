@@ -17,12 +17,10 @@ type LogEntry = {
   body?: string;
 };
 
-// "Mario" → primo nome — per testi più corti
 function primoNome(nome: string): string {
   return nome.trim().split(/\s+/)[0];
 }
 
-// ["Maria", "Luca"] → "Maria e Luca" | ["a","b","c"] → "a, b e c"
 function joinNomi(nomi: string[]): string {
   if (nomi.length === 0) return "";
   if (nomi.length === 1) return primoNome(nomi[0]);
@@ -30,7 +28,6 @@ function joinNomi(nomi: string[]): string {
   return `${ini} e ${primoNome(nomi.at(-1)!)}`;
 }
 
-// Nomi degli altri operatori attivi nel record turno, escluso il destinatario
 function altriInTurno(rec: TurnoRec, escludi: string): string[] {
   const escludiKey = escludi.toLowerCase().trim();
   return (rec.operatori ?? [])
@@ -45,21 +42,16 @@ Deno.serve(async (req) => {
   const VAPID_PRIV = Deno.env.get("VAPID_PRIVATE_KEY") ?? "";
   const VAPID_SUB  = Deno.env.get("VAPID_SUBJECT")     ?? "mailto:info@meridiano361.it";
 
-  // Verifica ora italiana — esegui solo alle 08:00 locali.
   const now = new Date();
   const romanHour = parseInt(
     now.toLocaleString("en-US", { timeZone: "Europe/Rome", hour: "numeric", hour12: false }),
     10,
   );
 
-  // ?force=1        → ignora il controllo dell'ora
-  // ?dryrun=1       → simula tutto senza inviare push reali (implica force=1)
-  // ?operatore=Nome → invia solo a quell'operatore (case-insensitive, per test)
-  // ?msg=Testo      → sovrascrive il body della notifica con testo personalizzato (solo con ?operatore)
-  const urlObj   = new URL(req.url);
-  const dryrun   = urlObj.searchParams.get("dryrun") === "1";
-  const force    = dryrun || urlObj.searchParams.get("force") === "1";
-  const soloOp   = (urlObj.searchParams.get("operatore") ?? "").toLowerCase().trim();
+  const urlObj    = new URL(req.url);
+  const dryrun    = urlObj.searchParams.get("dryrun") === "1";
+  const force     = dryrun || urlObj.searchParams.get("force") === "1";
+  const soloOp    = (urlObj.searchParams.get("operatore") ?? "").toLowerCase().trim();
   const customMsg = urlObj.searchParams.get("msg") ?? "";
 
   if (!force && romanHour !== 8) {
@@ -74,7 +66,6 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
-  // Data odierna in fuso Europe/Rome
   const dateFmt = new Intl.DateTimeFormat("it-IT", {
     timeZone: "Europe/Rome",
     year: "numeric", month: "numeric", day: "numeric",
@@ -89,21 +80,21 @@ Deno.serve(async (req) => {
     pom_open: "15:00", pom_close: "19:00",
   };
 
-  // Orari per emporio
-  const { data: orariRows } = await db.from("turni_orari").select("emporio, orari");
-  const emporiOrari: Record<string, typeof DEFAULT_HOURS> = {};
-  for (const row of orariRows ?? []) {
-    emporiOrari[row.emporio] = { ...DEFAULT_HOURS, ...(row.orari ?? {}) };
-  }
-
-  // Turni aperti di oggi
-  const { data: rawTurni, error: turniErr } = await db
-    .from("turni")
-    .select("emporio, turno, operatori")
-    .eq("anno", year)
-    .eq("mese", month)
-    .eq("giorno", day)
-    .eq("aperto", true);
+  // ── Carica tutti i dati in parallelo ────────────────────────────────────────
+  const [
+    { data: orariRows },
+    { data: rawTurni, error: turniErr },
+    { data: prefsDisab },
+    { data: tuttiOp },
+    { data: subsRaw },
+  ] = await Promise.all([
+    db.from("turni_orari").select("emporio, orari"),
+    db.from("turni").select("emporio, turno, operatori")
+      .eq("anno", year).eq("mese", month).eq("giorno", day).eq("aperto", true),
+    db.from("operatore_notif_prefs").select("operatore_id").eq("tipo", "turni").eq("abilitato", false),
+    db.from("operatori").select("id, nome"),
+    db.from("push_subscriptions").select("operatore_nome, operatore_id, endpoint, subscription"),
+  ]);
 
   if (turniErr) {
     return new Response(
@@ -112,10 +103,15 @@ Deno.serve(async (req) => {
     );
   }
 
+  const emporiOrari: Record<string, typeof DEFAULT_HOURS> = {};
+  for (const row of orariRows ?? []) {
+    emporiOrari[row.emporio] = { ...DEFAULT_HOURS, ...(row.orari ?? {}) };
+  }
+
   const turniOggi: TurnoRec[] = (rawTurni ?? []).map(t => ({
-    emporio:    t.emporio,
-    turno:      t.turno,
-    operatori:  (t.operatori ?? []) as OpEntry[],
+    emporio:   t.emporio,
+    turno:     t.turno,
+    operatori: (t.operatori ?? []) as OpEntry[],
   }));
 
   if (!turniOggi.length) {
@@ -125,8 +121,7 @@ Deno.serve(async (req) => {
     );
   }
 
-  // Raggruppa turni per nome operatore → [{turno, emporio}]
-  // Solo operatori attivi (non rimosso)
+  // Raggruppa turni per nome operatore
   const operatoriMap = new Map<string, Shift[]>();
   for (const t of turniOggi) {
     for (const op of t.operatori ?? []) {
@@ -136,18 +131,10 @@ Deno.serve(async (req) => {
     }
   }
 
-  // Preferenze notifiche disabilitate
-  const { data: prefsDisab } = await db
-    .from("operatore_notif_prefs")
-    .select("operatore_id")
-    .eq("tipo", "turni")
-    .eq("abilitato", false);
   const disabledIds = new Set((prefsDisab ?? []).map(p => p.operatore_id as string));
 
-  // Mappa nome canonico → id operatore (case-insensitive, da tabella operatori)
-  const { data: tuttiOp } = await db.from("operatori").select("id, nome");
-  const nomeToId = new Map<string, string>(); // nome_lower → uuid
-  const idToNome = new Map<string, string>(); // uuid → nome canonico
+  const nomeToId  = new Map<string, string>();
+  const idToNome  = new Map<string, string>();
   for (const op of tuttiOp ?? []) {
     if (op.nome) {
       nomeToId.set(op.nome.toLowerCase().trim(), op.id);
@@ -155,17 +142,8 @@ Deno.serve(async (req) => {
     }
   }
 
-  // ── Lookup subscription: doppio indice per massima robustezza ────────────
-  // 1) Per operatore_id (affidabile anche se operatore_nome è sbagliato/diverso)
-  // 2) Per operatore_nome (fallback per subscription senza operatore_id)
-  // Questo risolve il caso in cui il nome nel record turno ≠ nome nella subscription.
-  const { data: subsRaw } = await db
-    .from("push_subscriptions")
-    .select("operatore_nome, operatore_id, endpoint, subscription");
-
-  const nomeToSubs = new Map<string, Sub[]>(); // nome_lower → [sub]
-  const idToSubs   = new Map<string, Sub[]>(); // operatore_id → [sub]
-
+  const nomeToSubs = new Map<string, Sub[]>();
+  const idToSubs   = new Map<string, Sub[]>();
   for (const sub of (subsRaw ?? []) as Sub[]) {
     const key = (sub.operatore_nome ?? "").toLowerCase().trim();
     if (key) {
@@ -194,42 +172,38 @@ Deno.serve(async (req) => {
     log:   [] as LogEntry[],
   };
 
+  // ── Costruisci lista di task da inviare in parallelo ────────────────────────
+  type SendTask = { sub: Sub; payload: string; nome: string };
+  const sendTasks: SendTask[] = [];
+
   for (const [nome, shifts] of operatoriMap.entries()) {
-    // Filtro per singolo operatore (solo in modalità test)
     if (soloOp && !nome.toLowerCase().includes(soloOp)) {
       results.log.push({ nome, motivo_skip: `escluso da filtro ?operatore=${soloOp}` });
       continue;
     }
 
-    // Risolvi operatore_id: prima exact match sul nome del turno, poi partial match
-    // se il nome nel turno è una sottostringa del nome canonico o viceversa.
     let opId = nomeToId.get(nome.toLowerCase().trim());
     if (!opId) {
-      // Fallback: partial match — cerca se qualche operatore canonico contiene il nome del turno
       const nomeKey = nome.toLowerCase().trim();
       for (const [canonKey, id] of nomeToId.entries()) {
         if (canonKey.includes(nomeKey) || nomeKey.includes(canonKey)) {
-          opId = id;
-          break;
+          opId = id; break;
         }
       }
     }
 
-    // Notifiche turni disabilitate dall'operatore
     if (opId && disabledIds.has(opId)) {
       results.skipped++;
       results.log.push({ nome, motivo_skip: "notifiche turni disabilitate" });
       continue;
     }
 
-    // Ordina: mattina prima di pomeriggio
     const sorted = [...shifts].sort((a, b) => {
       if (a.turno === "mattina" && b.turno !== "mattina") return -1;
       if (a.turno !== "mattina" && b.turno === "mattina") return  1;
       return 0;
     });
 
-    // Costruisci le frasi per ogni fascia con nomi dei colleghi
     const fasceTesto: string[] = [];
     const fasceDiag: Array<{ fascia: string; colleghi: string[] }> = [];
     const seenFasce = new Set<string>();
@@ -244,9 +218,8 @@ Deno.serve(async (req) => {
         ? `dalle ${orari.mat_open} alle ${orari.mat_close}`
         : `dalle ${orari.pom_open} alle ${orari.pom_close}`;
 
-      const rec = turniOggi.find(t => t.emporio === s.emporio && t.turno === s.turno);
+      const rec  = turniOggi.find(t => t.emporio === s.emporio && t.turno === s.turno);
       const cols = rec ? altriInTurno(rec, nome) : [];
-
       fasceTesto.push(cols.length > 0 ? `${orarioLabel} con ${joinNomi(cols)}` : orarioLabel);
       fasceDiag.push({ fascia: orarioLabel, colleghi: cols });
     }
@@ -263,38 +236,23 @@ Deno.serve(async (req) => {
         : fasceTesto.slice(0, -1).join(", ") + " e " + fasceTesto.at(-1)
     }`;
 
-    // ── Cerca subscription: prima per ID, poi per nome, deduplicando per endpoint ──
+    // Raccogli subscription (deduplicato per endpoint)
     const seenEndpoints = new Set<string>();
     const operatoreSubs: Sub[] = [];
 
-    // 1) Per operatore_id (più affidabile — funziona anche se il nome è diverso)
     if (opId) {
       for (const s of idToSubs.get(opId) ?? []) {
-        if (!seenEndpoints.has(s.endpoint)) {
-          seenEndpoints.add(s.endpoint);
-          operatoreSubs.push(s);
-        }
+        if (!seenEndpoints.has(s.endpoint)) { seenEndpoints.add(s.endpoint); operatoreSubs.push(s); }
       }
     }
-
-    // 2) Per nome del turno (fallback — copre subscription senza operatore_id)
     for (const s of nomeToSubs.get(nome.toLowerCase().trim()) ?? []) {
-      if (!seenEndpoints.has(s.endpoint)) {
-        seenEndpoints.add(s.endpoint);
-        operatoreSubs.push(s);
-      }
+      if (!seenEndpoints.has(s.endpoint)) { seenEndpoints.add(s.endpoint); operatoreSubs.push(s); }
     }
-
-    // 3) Se opId trovato, prova anche per nome canonico (copre il caso in cui
-    //    il nome nel turno era "Chiara" ma la subscription ha "Chiara Monteverdi")
     if (opId) {
       const nomeCanon = (idToNome.get(opId) ?? "").toLowerCase().trim();
       if (nomeCanon && nomeCanon !== nome.toLowerCase().trim()) {
         for (const s of nomeToSubs.get(nomeCanon) ?? []) {
-          if (!seenEndpoints.has(s.endpoint)) {
-            seenEndpoints.add(s.endpoint);
-            operatoreSubs.push(s);
-          }
+          if (!seenEndpoints.has(s.endpoint)) { seenEndpoints.add(s.endpoint); operatoreSubs.push(s); }
         }
       }
     }
@@ -307,47 +265,56 @@ Deno.serve(async (req) => {
 
     results.log.push({ nome, turni: fasceDiag, body });
 
-    const pushTag = `m361-turno-${results.date}-${Date.now()}`;
-
     const payload = JSON.stringify({
       title: "M361 — Il tuo turno oggi",
       body,
       url: "/pages/turni/turni.html",
-      tag: pushTag,
+      tag: `m361-turno-${results.date}`,
     });
 
     for (const sub of operatoreSubs) {
-      try {
-        if (!dryrun) {
-          await webpush.sendNotification(
-            sub.subscription as webpush.PushSubscription,
-            payload,
-            { urgency: "high", TTL: 43200 },
-          );
-          await db.from("push_subscriptions")
-            .update({ last_push_at: new Date().toISOString(), last_push_ok: true })
-            .eq("endpoint", sub.endpoint);
-        }
+      sendTasks.push({ sub, payload, nome });
+    }
+  }
+
+  // ── Invia tutte le notifiche in parallelo ───────────────────────────────────
+  if (!dryrun && sendTasks.length > 0) {
+    const sendResults = await Promise.allSettled(
+      sendTasks.map(async ({ sub, payload }) => {
+        await webpush.sendNotification(
+          sub.subscription as webpush.PushSubscription,
+          payload,
+          { urgency: "high", TTL: 43200 },
+        );
+        await db.from("push_subscriptions")
+          .update({ last_push_at: new Date().toISOString(), last_push_ok: true })
+          .eq("endpoint", sub.endpoint);
+      })
+    );
+
+    for (let i = 0; i < sendResults.length; i++) {
+      const r = sendResults[i];
+      if (r.status === "fulfilled") {
         results.sent++;
-      } catch (e: unknown) {
-        const status = (e as { statusCode?: number })?.statusCode;
-        const msg    = (e as { message?: string })?.message ?? String(e);
+      } else {
+        const e      = r.reason as { statusCode?: number; message?: string };
+        const status = e?.statusCode;
+        const msg    = e?.message ?? String(r.reason);
         if (status === 404 || status === 410) {
-          await db.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
-          const last = results.log.at(-1)!;
-          last.motivo_skip = (last.motivo_skip ?? "") +
-            `token scaduto rimosso (…${sub.endpoint.slice(-20)}) `;
+          await db.from("push_subscriptions").delete().eq("endpoint", sendTasks[i].sub.endpoint);
+          const logEntry = results.log.find(l => l.nome === sendTasks[i].nome);
+          if (logEntry) logEntry.motivo_skip = (logEntry.motivo_skip ?? "") + `token scaduto rimosso `;
         } else {
-          if (!dryrun) {
-            await db.from("push_subscriptions")
-              .update({ last_push_at: new Date().toISOString(), last_push_ok: false })
-              .eq("endpoint", sub.endpoint);
-          }
           results.failed++;
-          results.errors.push(`${nome} [${sub.endpoint.slice(-12)}]: ${msg.slice(0, 120)}`);
+          await db.from("push_subscriptions")
+            .update({ last_push_at: new Date().toISOString(), last_push_ok: false })
+            .eq("endpoint", sendTasks[i].sub.endpoint);
+          results.errors.push(`${sendTasks[i].nome}: ${msg.slice(0, 120)}`);
         }
       }
     }
+  } else if (dryrun) {
+    results.sent = sendTasks.length;
   }
 
   return new Response(JSON.stringify({ ...results, dryrun }, null, 2), {
