@@ -17,18 +17,19 @@
     *{box-sizing:border-box}
     body{font-family:'Nunito',sans-serif;background:#f0f2f5;font-size:15px}
 
-    /* FILTRI — barra collassabile */
-    .filtri-bar{background:#fff;border:1px solid var(--s200);margin-bottom:12px}
-    .filtri-toggle{width:100%;display:flex;align-items:center;gap:8px;padding:9px 14px;background:transparent;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--s700)}
-    .filtri-toggle:hover{background:var(--s50)}
-    .filtri-body{padding:6px 14px 10px;border-top:1px solid var(--s100)}
-    .filtri-row{display:flex;align-items:center;flex-wrap:wrap;padding:2px 0;gap:0}
-    .filtri-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--s400);width:56px;flex-shrink:0}
-    .f-chip{padding:4px 10px;font-size:13px;font-weight:400;cursor:pointer;background:transparent;border:none;color:var(--s400);transition:color .12s;font-family:'Nunito',sans-serif}
-    .f-chip:hover{color:var(--s700)}
-    .f-chip.active{color:var(--s800);font-weight:700}
-    #filtri-arrow{font-size:11px;color:var(--s400);margin-left:auto;transition:transform .18s}
-    #filtri-arrow.open{transform:rotate(180deg)}
+    /* FILTRI — dropdown button */
+    .flt-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+    .flt-wrap{position:relative}
+    .flt-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border:1px solid var(--s200);border-radius:8px;background:#fff;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;color:var(--s600);cursor:pointer;transition:all .12s;white-space:nowrap;line-height:1.4}
+    .flt-btn:hover{border-color:var(--s300);background:var(--s50)}
+    .flt-btn.on{border-color:var(--red);color:var(--red);background:#fdf1f0}
+    .flt-arr{font-size:9px;color:var(--s400);transition:transform .14s}
+    .flt-btn.open .flt-arr{transform:rotate(180deg)}
+    .flt-pop{display:none;position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid var(--s200);border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.13);padding:6px;z-index:9999;min-width:140px}
+    .flt-pop.show{display:flex;flex-direction:column;gap:1px}
+    .flt-opt{padding:6px 10px;border-radius:6px;font-size:13px;font-weight:500;color:var(--s600);cursor:pointer;border:none;background:transparent;font-family:'Nunito',sans-serif;text-align:left;transition:background .1s;white-space:nowrap}
+    .flt-opt:hover{background:var(--s50)}
+    .flt-opt.active{color:var(--red);font-weight:700;background:#fdf1f0}
 
     /* TABLE */
     .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--s200);background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.05)}
@@ -124,49 +125,57 @@ function getCurrentPageId(){ return 'calendario'; }
     </button>
   </div>
 
-  <!-- Filtri collassabili -->
-  <div class="filtri-bar">
-    <button class="filtri-toggle" onclick="toggleFiltri()">
-      <i class="fas fa-sliders" style="font-size:12px;color:var(--s400)"></i>
-      Filtri
-      <span id="filtri-summary" style="font-size:12px;color:var(--s500);font-weight:400;flex:1;text-align:left;padding-left:6px"></span>
-      <i id="filtri-arrow" class="fas fa-chevron-up open"></i>
-    </button>
-    <div id="filtri-body">
-      <div class="filtri-row">
-        <span class="filtri-lbl">Anno</span>
-        <button class="f-chip active" data-anno="2026" onclick="setAnno(2026)">2026</button>
-        <button class="f-chip" data-anno="2025" onclick="setAnno(2025)">2025</button>
-        <button class="f-chip" data-anno="2024" onclick="setAnno(2024)">2024</button>
-        <button class="f-chip" data-anno="2023" onclick="setAnno(2023)">2023</button>
+  <!-- Filtri a dropdown -->
+  <div class="flt-bar">
+    <div class="flt-wrap">
+      <button class="flt-btn" id="flt-btn-anno" onclick="toggleFlt('anno')">
+        <span id="flt-lbl-anno">2026</span><i class="fas fa-chevron-down flt-arr"></i>
+      </button>
+      <div class="flt-pop" id="flt-pop-anno">
+        <button class="flt-opt active" data-anno="2026" onclick="setAnno(2026)">2026</button>
+        <button class="flt-opt" data-anno="2025" onclick="setAnno(2025)">2025</button>
+        <button class="flt-opt" data-anno="2024" onclick="setAnno(2024)">2024</button>
+        <button class="flt-opt" data-anno="2023" onclick="setAnno(2023)">2023</button>
       </div>
-      <div class="filtri-row">
-        <span class="filtri-lbl">Settore</span>
-        <button class="f-chip active" data-s="" onclick="setSettore('')">Tutti</button>
-        <button class="f-chip" data-s="M" onclick="setSettore('M')">M — Moda</button>
-        <button class="f-chip" data-s="C" onclick="setSettore('C')">C — Casa</button>
-        <button class="f-chip" data-s="G" onclick="setSettore('G')">G — Generale</button>
-        <button class="f-chip" data-s="A" onclick="setSettore('A')">A — Alimentare</button>
-        <button class="f-chip" data-s="N" onclick="setSettore('N')">N — Natyr</button>
+    </div>
+    <div class="flt-wrap">
+      <button class="flt-btn" id="flt-btn-settore" onclick="toggleFlt('settore')">
+        <span id="flt-lbl-settore">Settore</span><i class="fas fa-chevron-down flt-arr"></i>
+      </button>
+      <div class="flt-pop" id="flt-pop-settore">
+        <button class="flt-opt active" data-s="" onclick="setSettore('')">Tutti</button>
+        <button class="flt-opt" data-s="M" onclick="setSettore('M')">Moda</button>
+        <button class="flt-opt" data-s="C" onclick="setSettore('C')">Casa</button>
+        <button class="flt-opt" data-s="G" onclick="setSettore('G')">Generale</button>
+        <button class="flt-opt" data-s="A" onclick="setSettore('A')">Alimentare</button>
+        <button class="flt-opt" data-s="N" onclick="setSettore('N')">Natyr</button>
       </div>
-      <div class="filtri-row">
-        <span class="filtri-lbl">PDV</span>
-        <button class="f-chip active" data-pdv="" onclick="setPdv('')">Tutti</button>
-        <button class="f-chip" data-pdv="CR" onclick="setPdv('CR')">CR</button>
-        <button class="f-chip" data-pdv="CA" onclick="setPdv('CA')">CA</button>
-        <button class="f-chip" data-pdv="VI" onclick="setPdv('VI')">VI</button>
-        <button class="f-chip" data-pdv="RE" onclick="setPdv('RE')">RE</button>
-        <button class="f-chip" data-pdv="WEB" onclick="setPdv('WEB')">WEB</button>
+    </div>
+    <div class="flt-wrap">
+      <button class="flt-btn" id="flt-btn-pdv" onclick="toggleFlt('pdv')">
+        <span id="flt-lbl-pdv">PDV</span><i class="fas fa-chevron-down flt-arr"></i>
+      </button>
+      <div class="flt-pop" id="flt-pop-pdv">
+        <button class="flt-opt active" data-pdv="" onclick="setPdv('')">Tutti</button>
+        <button class="flt-opt" data-pdv="CR" onclick="setPdv('CR')">Cremona</button>
+        <button class="flt-opt" data-pdv="CA" onclick="setPdv('CA')">Casalmaggiore</button>
+        <button class="flt-opt" data-pdv="VI" onclick="setPdv('VI')">Viadana</button>
+        <button class="flt-opt" data-pdv="RE" onclick="setPdv('RE')">Reggio E.</button>
+        <button class="flt-opt" data-pdv="WEB" onclick="setPdv('WEB')">Web</button>
       </div>
-      <div class="filtri-row">
-        <span class="filtri-lbl">Tipo</span>
-        <button class="f-chip active" data-tipo="" onclick="setTipo('')">Tutti</button>
-        <button class="f-chip" data-tipo="Saldi" onclick="setTipo('Saldi')">Saldi</button>
-        <button class="f-chip" data-tipo="Promo" onclick="setTipo('Promo')">Promo</button>
-        <button class="f-chip" data-tipo="Prenotazione" onclick="setTipo('Prenotazione')">Prenotazione</button>
-        <button class="f-chip" data-tipo="Focus" onclick="setTipo('Focus')">Focus</button>
-        <button class="f-chip" data-tipo="Evento" onclick="setTipo('Evento')">Evento</button>
-        <button class="f-chip" data-tipo="Altro" onclick="setTipo('Altro')">Altro</button>
+    </div>
+    <div class="flt-wrap">
+      <button class="flt-btn" id="flt-btn-tipo" onclick="toggleFlt('tipo')">
+        <span id="flt-lbl-tipo">Tipologia</span><i class="fas fa-chevron-down flt-arr"></i>
+      </button>
+      <div class="flt-pop" id="flt-pop-tipo">
+        <button class="flt-opt active" data-tipo="" onclick="setTipo('')">Tutti</button>
+        <button class="flt-opt" data-tipo="Saldi" onclick="setTipo('Saldi')">Saldi</button>
+        <button class="flt-opt" data-tipo="Promo" onclick="setTipo('Promo')">Promo</button>
+        <button class="flt-opt" data-tipo="Prenotazione" onclick="setTipo('Prenotazione')">Prenotazione</button>
+        <button class="flt-opt" data-tipo="Focus" onclick="setTipo('Focus')">Focus</button>
+        <button class="flt-opt" data-tipo="Evento" onclick="setTipo('Evento')">Evento</button>
+        <button class="flt-opt" data-tipo="Altro" onclick="setTipo('Altro')">Altro</button>
       </div>
     </div>
   </div>
@@ -490,39 +499,43 @@ function renderMobile(evs){
 }
 
 /* ── FILTERS ── */
+function closeFlt(){
+  document.querySelectorAll('.flt-pop').forEach(p=>p.classList.remove('show'));
+  document.querySelectorAll('.flt-btn').forEach(b=>b.classList.remove('open'));
+}
+function toggleFlt(name){
+  const pop=document.getElementById('flt-pop-'+name);
+  const btn=document.getElementById('flt-btn-'+name);
+  const wasOpen=pop.classList.contains('show');
+  closeFlt();
+  if(!wasOpen){ pop.classList.add('show'); btn.classList.add('open'); }
+}
 function setAnno(a){
   _annoAttivo=a;
   document.querySelectorAll('[data-anno]').forEach(t=>t.classList.toggle('active',+t.dataset.anno===a));
-  loadEventi();
+  document.getElementById('flt-lbl-anno').textContent=a;
+  closeFlt(); loadEventi();
 }
 function setSettore(s){
   _settoreAttivo=s;
   document.querySelectorAll('[data-s]').forEach(c=>c.classList.toggle('active',c.dataset.s===s));
-  updateFiltriSummary(); render();
+  document.getElementById('flt-lbl-settore').textContent=s?(SETTORI[s]?.label||s):'Settore';
+  document.getElementById('flt-btn-settore').classList.toggle('on',!!s);
+  closeFlt(); render();
 }
 function setPdv(p){
   _pdvAttivo=p;
   document.querySelectorAll('[data-pdv]').forEach(c=>c.classList.toggle('active',c.dataset.pdv===p));
-  updateFiltriSummary(); render();
+  document.getElementById('flt-lbl-pdv').textContent=p?(PDV_LABELS[p]||p):'PDV';
+  document.getElementById('flt-btn-pdv').classList.toggle('on',!!p);
+  closeFlt(); render();
 }
 function setTipo(t){
   _tipoAttivo=t;
   document.querySelectorAll('[data-tipo]').forEach(c=>c.classList.toggle('active',c.dataset.tipo===t));
-  updateFiltriSummary(); render();
-}
-function toggleFiltri(){
-  const body=document.getElementById('filtri-body');
-  const arrow=document.getElementById('filtri-arrow');
-  const isOpen=body.style.display!=='none';
-  body.style.display=isOpen?'none':'block';
-  arrow.classList.toggle('open',!isOpen);
-}
-function updateFiltriSummary(){
-  const parts=[];
-  if(_settoreAttivo) parts.push(SETTORI[_settoreAttivo]?.label||_settoreAttivo);
-  if(_pdvAttivo) parts.push(_pdvAttivo);
-  if(_tipoAttivo) parts.push(_tipoAttivo);
-  document.getElementById('filtri-summary').textContent=parts.length?'· '+parts.join(', '):'';
+  document.getElementById('flt-lbl-tipo').textContent=t||'Tipologia';
+  document.getElementById('flt-btn-tipo').classList.toggle('on',!!t);
+  closeFlt(); render();
 }
 
 /* ── FORM ── */
@@ -710,6 +723,9 @@ document.addEventListener('click',e=>{
 
 // Chiudi modal cliccando overlay
 document.getElementById('ev-modal').addEventListener('click',function(e){ if(e.target===this) closeForm(); });
+
+// Chiudi dropdown filtri cliccando fuori
+document.addEventListener('click',e=>{ if(!e.target.closest('.flt-wrap')) closeFlt(); });
 
 // INIT
 function init(){
