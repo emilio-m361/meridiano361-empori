@@ -32,7 +32,7 @@
     .flt-opt.active{color:var(--red);font-weight:700;background:#fdf1f0}
 
     /* TABLE */
-    .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--s200);background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+    .tbl-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 190px);-webkit-overflow-scrolling:touch;border:1px solid var(--s200);background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.05)}
     .cal-tbl{width:100%;border-collapse:collapse;font-size:15px;min-width:900px}
     .cal-tbl thead th{padding:8px 10px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--s500);background:var(--s50);border-bottom:2px solid var(--s200);border-right:1px solid var(--s200);white-space:nowrap;text-align:left;position:sticky;top:0;z-index:2}
     .cal-tbl thead th:last-child{border-right:none}
@@ -42,6 +42,10 @@
     /* Raggruppamento campagna: riga superiore ha bordo top marcato */
     .cal-tbl tr.ev-first td{border-top:2px solid var(--s200)}
     .cal-tbl tr:last-child td{border-bottom:none}
+
+    /* Campagne terminate */
+    .cal-tbl tr.ev-past td{color:#adb5bd!important;background:#f8f9fa}
+    .cal-tbl tr.ev-past.ev-first td{border-top-color:#dee2e6}
 
     .td-titolo{font-weight:600;font-size:15px;cursor:pointer;min-width:130px;line-height:1.3;text-transform:uppercase}
     .td-titolo:hover{text-decoration:underline;text-underline-offset:2px}
@@ -443,17 +447,19 @@ function renderTable(evs){
   if(!tbody) return;
   if(!evs.length){ tbody.innerHTML=''; return; }
 
+  const todayStr = new Date().toISOString().split('T')[0];
   let html='';
   evs.forEach(ev=>{
-    const s    = SETTORI[ev.settore]||SETTORI.G;
-    const pdv  = ev.pdv_data||defaultPdvData();
-    const mecH = escH(ev.meccanica||'');
-    const isFw = !!mecH; // has meccanica
+    const s      = SETTORI[ev.settore]||SETTORI.G;
+    const pdv    = ev.pdv_data||defaultPdvData();
+    const mecH   = escH(ev.meccanica||'');
+    const isFw   = !!mecH; // has meccanica
+    const isPast = !!(ev.data_fine && ev.data_fine < todayStr);
 
     PDV_LIST.forEach((pk,pi)=>{
       const d   = pdv[pk]||{aderisce:false,azioni:'',r2026:'',r2025:'',r2024:'',r2023:''};
       const isF = pi===0;
-      html+=`<tr class="${isF?'ev-first':''}">`;
+      html+=`<tr class="${isF?'ev-first':''}${isPast?' ev-past':''}">`;
 
       if(isF){
         const rs=PDV_LIST.length;
